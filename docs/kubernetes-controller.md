@@ -24,14 +24,6 @@ Each component is being run on the same machines for the following reasons:
 * Running multiple copies of each component is required for H/A
 * Running each component next to the API Server eases configuration.
 
-## Copy TLS Certs
-
-```
-gcloud compute copy-files ca.pem kubernetes-key.pem kubernetes.pem controller0:~/
-gcloud compute copy-files ca.pem kubernetes-key.pem kubernetes.pem controller1:~/
-gcloud compute copy-files ca.pem kubernetes-key.pem kubernetes.pem controller2:~/
-```
-
 ## Provision the Kubernetes Controller Cluster
 
 ### controller0
