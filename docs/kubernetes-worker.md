@@ -28,6 +28,8 @@ gcloud compute copy-files ca.pem kubernetes-key.pem kubernetes.pem worker2:~/
 
 ## Provision the Kubernetes Worker Nodes
 
+The following instructions can be ran on each worker node without modification. Lets start with worker0. Don't forget to repeat these steps for worker1 and worker2.
+
 ### worker0
 
 ```
@@ -201,4 +203,37 @@ sudo systemctl start kubelet
 
 ```
 sudo systemctl status kubelet
+```
+
+
+#### kube-proxy
+
+
+```
+sudo sh -c 'echo "[Unit]
+Description=Kubernetes Kube Proxy
+Documentation=https://github.com/GoogleCloudPlatform/kubernetes
+
+[Service]
+ExecStart=/usr/bin/kube-proxy \
+  --master=https://10.240.0.20:6443 \
+  --kubeconfig=/var/lib/kubelet/kubeconfig \
+  --proxy-mode=iptables \
+  --v=2
+  
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target" > /etc/systemd/system/kube-proxy.service'
+```
+
+```
+sudo systemctl daemon-reload
+sudo systemctl enable kube-proxy
+sudo systemctl start kube-proxy
+```
+
+```
+sudo systemctl status kube-proxy
 ```
