@@ -19,20 +19,6 @@ following reasons:
 * Scaling out etcd is different than scaling out the Kubernetes Control Plane.
 * Prevent other applications from taking up resources (CPU, Memory, I/O) required by etcd.
 
-## Copy TLS Certs
-
-```
-gcloud compute copy-files ca.pem kubernetes-key.pem kubernetes.pem etcd0:~/
-```
-
-```
-gcloud compute copy-files ca.pem kubernetes-key.pem kubernetes.pem etcd1:~/
-```
-
-```
-gcloud compute copy-files ca.pem kubernetes-key.pem kubernetes.pem etcd2:~/
-```
-
 ## Provision the etcd Cluster
 
 ### etcd0

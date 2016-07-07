@@ -147,3 +147,17 @@ kubernetes.pem
 ```
 openssl x509 -in kubernetes.pem -text -noout
 ```
+
+### Copy TLS Certs
+
+```
+gcloud compute copy-files ca.pem kubernetes-key.pem kubernetes.pem controller0:~/
+gcloud compute copy-files ca.pem kubernetes-key.pem kubernetes.pem controller1:~/
+gcloud compute copy-files ca.pem kubernetes-key.pem kubernetes.pem controller2:~/
+gcloud compute copy-files ca.pem kubernetes-key.pem kubernetes.pem etcd0:~/
+gcloud compute copy-files ca.pem kubernetes-key.pem kubernetes.pem etcd1:~/
+gcloud compute copy-files ca.pem kubernetes-key.pem kubernetes.pem etcd2:~/
+gcloud compute copy-files ca.pem kubernetes-key.pem kubernetes.pem worker0:~/
+gcloud compute copy-files ca.pem kubernetes-key.pem kubernetes.pem worker1:~/
+gcloud compute copy-files ca.pem kubernetes-key.pem kubernetes.pem worker2:~/
+```
