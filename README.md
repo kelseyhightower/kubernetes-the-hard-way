@@ -13,3 +13,4 @@ The target audience for this workshop is someone planning to support a productio
 * [Bootstrapping an H/A etcd cluster](docs/etcd.md)
 * [Bootstrapping an H/A Kubernetes Control Plane](docs/kubernetes-controller.md)
 * [Bootstrapping Kubernetes Workers](docs/kubernetes-worker.md)
+* [Managing the Container Network Routes](docs/network.md)

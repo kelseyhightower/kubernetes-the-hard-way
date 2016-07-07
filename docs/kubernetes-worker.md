@@ -98,6 +98,24 @@ sudo systemctl start docker
 sudo docker version
 ```
 
+```
+Client:
+ Version:      1.11.2
+ API version:  1.23
+ Go version:   go1.5.4
+ Git commit:   b9f10c9
+ Built:        Wed Jun  1 21:20:08 2016
+ OS/Arch:      linux/amd64
+
+Server:
+ Version:      1.11.2
+ API version:  1.23
+ Go version:   go1.5.4
+ Git commit:   b9f10c9
+ Built:        Wed Jun  1 21:20:08 2016
+ OS/Arch:      linux/amd64
+```
+
 #### kubelet
 
 The Kubernetes kubelet no longer relies on docker networking for pods! The Kubelet can now use [CNI - the Container Network Interface](https://github.com/containernetworking/cni) to manage machine level networking requirements.
@@ -138,7 +156,7 @@ sudo cp kubernetes/server/bin/kubelet /usr/bin/
 ```
 
 ```
-mkdir -p /var/lib/kubelet/
+sudo mkdir -p /var/lib/kubelet/
 ```
 
 ```
