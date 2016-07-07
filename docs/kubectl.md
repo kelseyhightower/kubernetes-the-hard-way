@@ -32,8 +32,8 @@ Recall the Public IP address we allocated for the frontend load balancer:
 gcloud compute addresses list
 ```
 ```
-NAME        REGION       ADDRESS         STATUS
-kubernetes  us-central1  146.148.34.151  RESERVED
+NAME        REGION       ADDRESS          STATUS
+kubernetes  us-central1  104.197.132.159  IN_USE
 ```
 
 Recall the token we setup for the admin user:
