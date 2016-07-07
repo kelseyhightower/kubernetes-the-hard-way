@@ -23,7 +23,7 @@ nginx-2032906785-u8rzc   1/1       Running   0          21s       10.200.0.2   w
 ```
 
 ```
-kubectl expose deployment nginx
+kubectl expose deployment nginx --type NodePort
 ```
 
 ```
@@ -31,3 +31,21 @@ service "nginx" exposed
 ```
 
 > Note that --type=LoadBalancer will not work because we did not configure a cloud provider when bootstrapping this cluster.
+
+
+```
+kubectl describe svc nginx
+```
+```
+Name:			nginx
+Namespace:		default
+Labels:			run=nginx
+Selector:		run=nginx
+Type:			NodePort
+IP:			10.32.0.199
+Port:			<unset>	80/TCP
+NodePort:		<unset>	32345/TCP
+Endpoints:		10.200.0.2:80,10.200.1.2:80,10.200.2.2:80
+Session Affinity:	None
+No events.
+```
