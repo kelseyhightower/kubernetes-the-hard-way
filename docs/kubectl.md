@@ -1,4 +1,4 @@
-# Configuring Kubectl
+# Configuring the Kubernetes Client - Remote Access
 
 ## Download and Install kubectl
 
