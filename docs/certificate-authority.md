@@ -91,6 +91,8 @@ openssl x509 -in ca.pem -text -noout
 
 In this section we will generate a TLS certificate that will be valid for all Kubernetes components. This is being done for ease of use. In production you should strongly consider generating individual TLS certificates for each component.
 
+> Notice the list of hosts includes the Kubernetes Public IP Address 104.197.132.159
+
 ```
 echo '{
   "CN": "kubernetes",
@@ -104,7 +106,7 @@ echo '{
     "10.240.0.30",
     "10.240.0.31",
     "10.240.0.32",
-    "146.148.34.151",
+    "104.197.132.159",
     "127.0.0.1"
   ],
   "key": {
