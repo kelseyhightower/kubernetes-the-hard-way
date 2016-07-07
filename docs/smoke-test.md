@@ -37,17 +37,21 @@ service "nginx" exposed
 kubectl describe svc nginx
 ```
 ```
-Name:			nginx
-Namespace:		default
-Labels:			run=nginx
-Selector:		run=nginx
-Type:			NodePort
-IP:			10.32.0.199
-Port:			<unset>	80/TCP
-NodePort:		<unset>	32345/TCP
-Endpoints:		10.200.0.2:80,10.200.1.2:80,10.200.2.2:80
-Session Affinity:	None
+Name:			  nginx
+Namespace:		  default
+Labels:			  run=nginx
+Selector:		  run=nginx
+Type:			  NodePort
+IP:			      10.32.0.199
+Port:			  <unset>	80/TCP
+NodePort:		  <unset>	32345/TCP
+Endpoints:		  10.200.0.2:80,10.200.1.2:80,10.200.2.2:80
+Session Affinity: None
 No events.
+```
+
+```
+gcloud compute firewall-rules create nginx-service --allow=tcp:32345
 ```
 
 ```
@@ -66,10 +70,6 @@ worker0      us-central1-f  n1-standard-1               10.240.0.30  104.155.181
 worker1      us-central1-f  n1-standard-1               10.240.0.31  104.197.163.37   RUNNING
 worker2      us-central1-f  n1-standard-1               10.240.0.32  104.154.41.9     RUNNING
 ````
-
-```
-gcloud compute firewall-rules create nginx-service --allow=tcp:32345
-```
 
 ```
 curl http://104.155.181.141:32345
