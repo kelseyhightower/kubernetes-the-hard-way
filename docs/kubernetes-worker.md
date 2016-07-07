@@ -18,13 +18,6 @@ Kubernetes worker nodes are responsible for running your containers. All Kuberne
 
 Some people would like to run workers and cluster services anywhere in the cluster. This is totally possible, and you'll have to decide what's best for your environment.
 
-## Copy TLS Certs
-
-```
-gcloud compute copy-files ca.pem kubernetes-key.pem kubernetes.pem worker0:~/
-gcloud compute copy-files ca.pem kubernetes-key.pem kubernetes.pem worker1:~/
-gcloud compute copy-files ca.pem kubernetes-key.pem kubernetes.pem worker2:~/
-```
 
 ## Provision the Kubernetes Worker Nodes
 
