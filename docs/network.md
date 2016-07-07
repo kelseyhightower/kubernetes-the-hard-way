@@ -14,7 +14,7 @@ default-route-10-200-1-0-24     default  10.200.1.0/24  10.240.0.31             
 default-route-10-200-2-0-24     default  10.200.2.0/24  10.240.0.32               1000
 ```
 
-## Get the routing Table
+## Get the Routing Table
 
 The first thing we need to do is gather the information required to populate the router table. We need the Internal IP address and Pod Subnet for each of the worker nodes.
 
