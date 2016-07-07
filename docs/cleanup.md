@@ -11,6 +11,11 @@ gcloud compute instances delete \
 
 ## Networking
 
+
+```
+gcloud compute forwarding-rules delete kubernetes-rule
+```
+
 ```
 gcloud compute addresses delete kubernetes
 ```
@@ -21,10 +26,6 @@ gcloud compute http-health-checks delete kube-apiserver-check
 
 ```
 gcloud compute target-pools delete kubernetes-pool
-```
-
-```
-gcloud compute forwarding-rules delete kubernetes-rule
 ```
 
 ```
