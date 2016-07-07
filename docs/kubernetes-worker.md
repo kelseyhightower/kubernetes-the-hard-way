@@ -28,7 +28,7 @@ gcloud compute copy-files ca.pem kubernetes-key.pem kubernetes.pem worker2:~/
 
 ## Provision the Kubernetes Worker Nodes
 
-The following instructions can be ran on each worker node without modification. Lets start with worker0. Don't forget to repeat these steps for worker1 and worker2.
+The following instructions can be ran on each worker node without modification. Lets start with `worker0`. Don't forget to repeat these steps for `worker1` and `worker2`.
 
 ### worker0
 
