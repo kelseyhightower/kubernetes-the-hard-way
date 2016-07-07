@@ -1,6 +1,10 @@
 # Certificate Authority
 
-In this lab you will setup the necessary PKI infrastructure to secure the Kuberentes API for remote communication. This lab will leverage CloudFlare's PKI toolkit, [cfssl](https://github.com/cloudflare/cfssl), to bootstrap a Certificate Authority.
+In this lab you will setup the necessary PKI infrastructure to secure the Kuberentes components. This lab will leverage CloudFlare's PKI toolkit, [cfssl](https://github.com/cloudflare/cfssl), to bootstrap a Certificate Authority and generate TLS certificates.
+
+## Install CFSSL
+
+Follow the [CFSSL installation guide](https://github.com/cloudflare/cfssl#installation) and install `cfssl` and `cfssljson` binaries.
 
 ## Initialize a CA
 
