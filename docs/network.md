@@ -1,6 +1,6 @@
 # Managing the Container Network Routes
 
-Now that each worker node is online we need to add routes to make sure that Pods running on different machines can talk to each other. In this lab we are not going to provision any overlay networks and instead rely on layer 3 networking. That means we need to add routes to our route. In GCP each network has a route that can be configured. If this was an on-prem datacenter then ideally you would need to add the routes to your router.
+Now that each worker node is online we need to add routes to make sure that Pods running on different machines can talk to each other. In this lab we are not going to provision any overlay networks and instead rely on Layer 3 networking. That means we need to add routes to our router. In GCP each network has a router that can be configured. If this was an on-prem datacenter then ideally you would need to add the routes to your local router.
 
 After completing this lab you will have the following router entries:
 
