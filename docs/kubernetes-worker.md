@@ -98,6 +98,23 @@ sudo docker version
 
 #### kubelet
 
+The Kubernetes kubelet no longer relies on docker networking for pods! The Kubelet can now use [CNI - the Container Network Interface](https://github.com/containernetworking/cni) to managing kubernetes networking requirements.
+
+Download and install CNI plugins
+
+```
+sudo mkdir -p /opt/cni
+```
+
+```
+wget https://storage.googleapis.com/kubernetes-release/network-plugins/cni-c864f0e1ea73719b8f4582402b0847064f9883b0.tar.gz
+```
+
+```
+sudo tar -xzf cni-c864f0e1ea73719b8f4582402b0847064f9883b0.tar.gz -C /opt/cni
+```
+
+
 Download and install the Kubernetes worker binaries:
 
 ```
@@ -155,16 +172,17 @@ Requires=docker.service
 ExecStart=/usr/bin/kubelet \
   --allow-privileged=true \
   --api-servers=https://10.240.0.20:6443,https://10.240.0.21:6443,https://10.240.0.22:6443 \
-  --cloud-provider=
+  --cloud-provider= \
   --cluster-dns=10.32.0.10 \
   --cluster-domain=cluster.local \
   --configure-cbr0=true \
   --container-runtime=docker \
   --docker=unix:///var/run/docker.sock \
+  --network-plugin=kubenet \
   --kubeconfig=/var/lib/kubelet/kubeconfig \
   --reconcile-cidr=true \
   --serialize-image-pulls=false \
-  --tls-cert-file=/var/run/kubernetes/kubernetes.pem
+  --tls-cert-file=/var/run/kubernetes/kubernetes.pem \
   --tls-private-key-file=/var/run/kubernetes/kubernetes-key.pem \
   --v=2
   
