@@ -24,14 +24,40 @@ sudo cp kubernetes/platforms/linux/amd64/kubectl /usr/local/bin
 
 ## Configure Kubectl
 
+In this section you will configure the kubectl client to point to the [Kubernetes API Server Frontend Load Balancer](docs/kubernetes-controller.md#setup-kubernetes-api-server-frontend-load-balancer).
+
+Recall the Public IP address we allocated for the frontend load balancer:
+
 ```
-kubectl config set-credentials admin --token chAng3m3
+gcloud compute addresses list
 ```
+```
+NAME        REGION       ADDRESS         STATUS
+kubernetes  us-central1  146.148.34.151  RESERVED
+```
+
+Recall the token we setup for the admin user:
+
+```
+# /var/run/kubernetes/token.csv on the controller nodes
+chAng3m3,admin,admin
+```
+
+Also be sure to locate the CA certificate [created earlier](docs/certificate-authority.md). Since we are using self-signed TLS certs we need to trust the CA certificate so we can verify the remote API Servers.
+
+### Build up the kubeconfig entry
+
+The following commands will build up the default kubeconfig file used by kubectl.
+
 ```
 kubectl config set-cluster kubernetes-the-hard-way \
   --embed-certs=true \
   --certificate-authority=ca.pem \
   --server=https://146.148.34.151:6443
+```
+
+```
+kubectl config set-credentials admin --token chAng3m3
 ```
 
 ```

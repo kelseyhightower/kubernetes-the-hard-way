@@ -588,7 +588,7 @@ etcd-0               Healthy   {"health": "true"}
 etcd-2               Healthy   {"health": "true"}  
 ```
 
-## Setup Frontend LoadBalancer
+## Setup Kubernetes API Server Frontend Load Balancer
 
 ```
 gcloud compute http-health-checks create kube-apiserver-check \
