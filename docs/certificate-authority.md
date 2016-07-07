@@ -8,7 +8,9 @@ This lab will setup a Certificate Authority and generated a single set of TLS ce
 * Kubernetes API Server
 * Kubernetes Kubelet
 
-In production you should strongly consider generating individual TLS certificates for each component.
+> In production you should strongly consider generating individual TLS certificates for each component.
+
+The TLS certificates in this lab will be copied to each machine running a Kubernetes components. 
 
 ## Install CFSSL
 
@@ -71,14 +73,15 @@ ca.csr
 ca.pem
 ```
 
+### Verification
+
 ```
 openssl x509 -in ca.pem -text -noout
 ```
 
-## Generate Server and Client Certs
+## Generate the single Kubernetes TLS Cert
 
-### Generate the kube-apiserver server cert
-
+In this section we will generate a TLS certificate that will be valid for all Kubernetes components. This is being done for ease of use. In production you should strongly consider generating individual TLS certificates for each component.
 
 ```
 echo '{
@@ -120,6 +123,16 @@ cfssl gencert \
 -profile=kubernetes \
 kubernetes-csr.json | cfssljson -bare kubernetes
 ```
+
+Results:
+
+```
+kubernetes-key.pem
+kubernetes.csr
+kubernetes.pem
+```
+
+### Verification
 
 ```
 openssl x509 -in kubernetes.pem -text -noout
