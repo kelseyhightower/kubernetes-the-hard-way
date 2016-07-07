@@ -40,7 +40,7 @@ gcloud compute addresses list
 ```
 ```
 NAME        REGION       ADDRESS         STATUS
-kubernetes  us-central1  146.148.34.151  RESERVED
+kubernetes  us-central1  104.197.132.159 RESERVED
 ```
 
 ## Provision Virtual Machines
