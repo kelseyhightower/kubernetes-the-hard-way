@@ -9,7 +9,7 @@ controller1  us-central1-f  n1-standard-1  10.240.0.21  RUNNING
 controller2  us-central1-f  n1-standard-1  10.240.0.22  RUNNING
 ```
 
-In this lab you will also create a frontend load balancer with a public IP address for remote access to the API server and H/A.
+In this lab you will also create a frontend load balancer with a public IP address for remote access to the API servers and H/A.
 
 ## Why
 
