@@ -33,7 +33,10 @@ gcloud compute firewall-rules delete kubernetes-api-server
 ```
 
 ```
-gcloud compute routes delete default-route-10-200-0-0-24 
+gcloud compute routes delete default-route-10-200-0-0-24
+```
+```
 gcloud compute routes delete default-route-10-200-1-0-24
+```
 gcloud compute routes delete default-route-10-200-2-0-24
 ```
