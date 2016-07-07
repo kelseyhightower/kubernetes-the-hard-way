@@ -98,7 +98,7 @@ sudo docker version
 
 #### kubelet
 
-The Kubernetes kubelet no longer relies on docker networking for pods! The Kubelet can now use [CNI - the Container Network Interface](https://github.com/containernetworking/cni) to managing kubernetes networking requirements.
+The Kubernetes kubelet no longer relies on docker networking for pods! The Kubelet can now use [CNI - the Container Network Interface](https://github.com/containernetworking/cni) to manage machine level networking requirements.
 
 Download and install CNI plugins
 
