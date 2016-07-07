@@ -1,8 +1,15 @@
-# etcd
+# Bootstrapping a H/A etcd cluster
 
-Setup a 3 node etcd cluster.
+In this lab you will bootstrap a 3 node etcd cluster. The following virtual machines will be used:
 
-### Copy TLS Certs
+````
+NAME         ZONE           MACHINE_TYPE   INTERNAL_IP  STATUS
+etcd0        us-central1-f  n1-standard-1  10.240.0.10  RUNNING
+etcd1        us-central1-f  n1-standard-1  10.240.0.11  RUNNING
+etcd2        us-central1-f  n1-standard-1  10.240.0.12  RUNNING
+````
+
+## Copy TLS Certs
 
 ```
 gcloud compute copy-files ca.pem kubernetes-key.pem kubernetes.pem etcd0:~/
@@ -16,14 +23,16 @@ gcloud compute copy-files ca.pem kubernetes-key.pem kubernetes.pem etcd1:~/
 gcloud compute copy-files ca.pem kubernetes-key.pem kubernetes.pem etcd2:~/
 ```
 
+## Provision the etcd Cluster
 
-## etcd0
+### etcd0
 
 
 ```
 gcloud compute ssh etcd0
 ```
 
+Move the TLS certificates in place:
 
 ```
 sudo mkdir -p /etc/etcd/
@@ -32,6 +41,8 @@ sudo mkdir -p /etc/etcd/
 ```
 sudo mv ca.pem kubernetes-key.pem kubernetes.pem /etc/etcd/
 ```
+
+Download and install the etcd binaries:
 
 ```
 wget https://github.com/coreos/etcd/releases/download/v3.0.1/etcd-v3.0.1-linux-amd64.tar.gz
@@ -52,6 +63,8 @@ sudo cp etcd-v3.0.1-linux-amd64/etcd /usr/bin/
 ```
 sudo mkdir -p /var/lib/etcd
 ```
+
+Create the etcd systemd unit file:
 
 ```
 sudo sh -c 'echo "[Unit]
@@ -81,11 +94,15 @@ RestartSec=5
 WantedBy=multi-user.target" > /etc/systemd/system/etcd.service'
 ```
 
+Start etcd:
+
 ```
 sudo systemctl daemon-reload
 sudo systemctl enable etcd
 sudo systemctl start etcd
 ```
+
+### Verification
 
 ```
 sudo systemctl status etcd
@@ -102,11 +119,13 @@ error #0: client: endpoint http://127.0.0.1:2379 exceeded header timeout
 error #1: dial tcp 127.0.0.1:4001: getsockopt: connection refused
 ```
 
-## etcd1
+### etcd1
 
 ```
 gcloud compute ssh etcd1
 ```
+
+Move the TLS certificates in place:
 
 ```
 sudo mkdir -p /etc/etcd/
@@ -115,6 +134,8 @@ sudo mkdir -p /etc/etcd/
 ```
 sudo mv ca.pem kubernetes-key.pem kubernetes.pem /etc/etcd/
 ```
+
+Download and install the etcd binaries:
 
 ```
 wget https://github.com/coreos/etcd/releases/download/v3.0.1/etcd-v3.0.1-linux-amd64.tar.gz
@@ -135,6 +156,8 @@ sudo cp etcd-v3.0.1-linux-amd64/etcd /usr/bin/
 ```
 sudo mkdir /var/lib/etcd
 ```
+
+Create the etcd systemd unit file:
 
 ```
 sudo sh -c 'echo "[Unit]
@@ -164,11 +187,15 @@ RestartSec=5
 WantedBy=multi-user.target" > /etc/systemd/system/etcd.service'
 ```
 
+Start etcd:
+
 ```
 sudo systemctl daemon-reload
 sudo systemctl enable etcd
 sudo systemctl start etcd
 ```
+
+#### Verification
 
 ```
 sudo systemctl status etcd
@@ -185,11 +212,13 @@ member ffed16798470cab5 is healthy: got healthy result from https://10.240.0.11:
 cluster is healthy
 ```
 
-## etcd2
+### etcd2
 
 ```
 gcloud compute ssh etcd2
 ```
+
+Move the TLS certificates in place:
 
 ```
 sudo mkdir -p /etc/etcd/
@@ -198,6 +227,8 @@ sudo mkdir -p /etc/etcd/
 ```
 sudo mv ca.pem kubernetes-key.pem kubernetes.pem /etc/etcd/
 ```
+
+Download and install the etcd binaries:
 
 ```
 wget https://github.com/coreos/etcd/releases/download/v3.0.1/etcd-v3.0.1-linux-amd64.tar.gz
@@ -218,6 +249,8 @@ sudo cp etcd-v3.0.1-linux-amd64/etcd /usr/bin/
 ```
 sudo mkdir /var/lib/etcd
 ```
+
+Create the etcd systemd unit file:
 
 ```
 sudo sh -c 'echo "[Unit]
@@ -247,11 +280,15 @@ RestartSec=5
 WantedBy=multi-user.target" > /etc/systemd/system/etcd.service'
 ```
 
+Start etcd:
+
 ```
 sudo systemctl daemon-reload
 sudo systemctl enable etcd
 sudo systemctl start etcd
 ```
+
+#### Verification
 
 ```
 sudo systemctl status etcd
