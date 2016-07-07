@@ -587,3 +587,46 @@ etcd-1               Healthy   {"health": "true"}
 etcd-0               Healthy   {"health": "true"}   
 etcd-2               Healthy   {"health": "true"}  
 ```
+
+## Setup Frontend LoadBalancer
+
+```
+gcloud compute http-health-checks create kube-apiserver-check \
+  --description "Kubernetes API Server Health Check" \
+  --port 8080 \
+  --request-path /healthz
+```
+
+```
+gcloud compute target-pools create kubernetes-pool \
+  --region us-central1 \
+  --health-check kube-apiserver-check
+```
+
+```
+gcloud compute target-pools add-instances kubernetes-pool \
+  --instances controller0,controller1,controller2 \
+  --zone us-central1-f
+```
+
+```
+gcloud compute addresses list
+```
+
+```
+NAME        REGION       ADDRESS         STATUS
+kubernetes  us-central1  146.148.34.151  RESERVED
+```
+
+```
+gcloud compute forwarding-rules create kubernetes \
+  --region us-central1 \
+  --ports 6443 \
+  --address 146.148.34.151 \
+  --target-pool kubernetes-pool
+```
+
+```
+gcloud compute firewall-rules create kubernetes-api-server \
+  --allow tcp:6443
+```
