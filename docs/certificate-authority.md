@@ -1,8 +1,8 @@
 # Setting up a Certificate Authority and TLS Cert Generation
 
-In this lab you will setup the necessary PKI infrastructure to secure the Kuberentes components. This lab will leverage CloudFlare's PKI toolkit, [cfssl](https://github.com/cloudflare/cfssl), to bootstrap a Certificate Authority and generate TLS certificates.
+In this lab you will setup the necessary PKI infrastructure to secure the Kubernetes components. This lab will leverage CloudFlare's PKI toolkit, [cfssl](https://github.com/cloudflare/cfssl), to bootstrap a Certificate Authority and generate TLS certificates.
 
-This lab will setup a Certificate Authority and generated a single set of TLS certificates that can be used to secure the following Kubernetes components:
+This lab will setup a Certificate Authority and generate a single set of TLS certificates that can be used to secure the following Kubernetes components:
 
 * etcd
 * Kubernetes API Server
