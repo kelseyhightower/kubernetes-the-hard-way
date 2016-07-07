@@ -32,4 +32,5 @@ The resulting cluster will be missing the following items:
 * [Bootstrapping Kubernetes Workers](docs/kubernetes-worker.md)
 * [Configuring the Kubernetes Client - Remote Access](docs/kubectl.md)
 * [Managing the Container Network Routes](docs/network.md)
+* [Smoke Test](docs/smoke-test.md)
 * [Cleaning Up](docs/cleanup.md)
