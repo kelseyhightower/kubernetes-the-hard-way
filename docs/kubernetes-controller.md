@@ -584,6 +584,8 @@ etcd-2               Healthy   {"health": "true"}
 
 ## Setup Kubernetes API Server Frontend Load Balancer
 
+The virtual machines created in this tutorial will not have permission to complete this section. Run the following commands from the same place used to create the virtual machines for this tutorial. 
+
 ```
 gcloud compute http-health-checks create kube-apiserver-check \
   --description "Kubernetes API Server Health Check" \
