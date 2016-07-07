@@ -28,13 +28,7 @@ Each component is being run on the same machines for the following reasons:
 
 ```
 gcloud compute copy-files ca.pem kubernetes-key.pem kubernetes.pem controller0:~/
-```
-
-```
 gcloud compute copy-files ca.pem kubernetes-key.pem kubernetes.pem controller1:~/
-```
-
-```
 gcloud compute copy-files ca.pem kubernetes-key.pem kubernetes.pem controller2:~/
 ```
 
