@@ -158,6 +158,7 @@ ExecStart=/usr/bin/kubelet \
   --cloud-provider=
   --cluster-dns=10.32.0.10 \
   --cluster-domain=cluster.local \
+  --configure-cbr0=true \
   --container-runtime=docker \
   --docker=unix:///var/run/docker.sock \
   --kubeconfig=/var/lib/kubelet/kubeconfig \
