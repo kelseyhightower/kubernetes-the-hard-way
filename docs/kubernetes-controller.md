@@ -619,7 +619,7 @@ kubernetes  us-central1  146.148.34.151  RESERVED
 ```
 
 ```
-gcloud compute forwarding-rules create kubernetes \
+gcloud compute forwarding-rules create kubernetes-rule \
   --region us-central1 \
   --ports 6443 \
   --address 146.148.34.151 \
