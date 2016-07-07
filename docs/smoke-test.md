@@ -18,6 +18,7 @@ deployment "nginx" created
 ```
 kubectl get pods -o wide
 ```
+```
 NAME                     READY     STATUS    RESTARTS   AGE       IP           NODE
 nginx-2032906785-ms8hw   1/1       Running   0          21s       10.200.2.2   worker2
 nginx-2032906785-sokxz   1/1       Running   0          21s       10.200.1.2   worker1
