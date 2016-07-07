@@ -21,3 +21,13 @@ nginx-2032906785-ms8hw   1/1       Running   0          21s       10.200.2.2   w
 nginx-2032906785-sokxz   1/1       Running   0          21s       10.200.1.2   worker1
 nginx-2032906785-u8rzc   1/1       Running   0          21s       10.200.0.2   worker0
 ```
+
+```
+kubectl expose deployment nginx
+```
+
+```
+service "nginx" exposed
+```
+
+> Note that --type=LoadBalancer will not work because we did not configure a cloud provider when bootstrapping this cluster.
