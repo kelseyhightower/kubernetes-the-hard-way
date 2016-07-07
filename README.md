@@ -4,7 +4,7 @@ This tutorial will walk you through setting up Kubernetes the hard way. This gui
 
 ## Target Audience
 
-The target audience for this tutorial is someone planning to support a production Kubernetes cluster and wants to understand how everything fits together. After completing this workshop I encourage you to automate away the manual steps presented in this guide.
+The target audience for this tutorial is someone planning to support a production Kubernetes cluster and wants to understand how everything fits together. After completing this tutorial I encourage you to automate away the manual steps presented in this guide.
 
 ## Cluster Details
 
