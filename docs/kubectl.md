@@ -53,7 +53,7 @@ The following commands will build up the default kubeconfig file used by kubectl
 kubectl config set-cluster kubernetes-the-hard-way \
   --embed-certs=true \
   --certificate-authority=ca.pem \
-  --server=https://146.148.34.151:6443
+  --server=https://104.197.132.159:6443
 ```
 
 ```
