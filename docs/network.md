@@ -18,10 +18,6 @@ default-route-10-200-2-0-24     default  10.200.2.0/24  10.240.0.32             
 
 The first thing we need to do is gather the information required to populate the router table. We need the Internal IP address and Pod Subnet for each of the worker nodes.
 
-```
-gcloud compute ssh controller0
-```
-
 Use `kubectl` to print the `InternalIP` and `podCIDR` for each worker node:
 
 ```
