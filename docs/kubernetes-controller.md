@@ -611,14 +611,14 @@ gcloud compute addresses list
 
 ```
 NAME        REGION       ADDRESS         STATUS
-kubernetes  us-central1  146.148.34.151  RESERVED
+kubernetes  us-central1  104.197.132.159 RESERVED
 ```
 
 ```
 gcloud compute forwarding-rules create kubernetes-rule \
   --region us-central1 \
   --ports 6443 \
-  --address 146.148.34.151 \
+  --address 104.197.132.159 \
   --target-pool kubernetes-pool
 ```
 
