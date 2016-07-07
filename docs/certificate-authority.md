@@ -10,14 +10,12 @@ This lab will setup a Certificate Authority and generated a single set of TLS ce
 
 > In production you should strongly consider generating individual TLS certificates for each component.
 
-After completing this lab you should have the following TLS certificates:
+After completing this lab you should have the following TLS keys and certificates:
 
 ```
 ca-key.pem
-ca.csr
 ca.pem
 kubernetes-key.pem
-kubernetes.csr
 kubernetes.pem
 ```
 
