@@ -1,7 +1,16 @@
-# Kubernetes Controller
+# Bootstrapping an H/A Kubernetes Control Plane
+
+In this lab you will bootstrap a 3 node Kubernetes controller cluster. The following virtual machines will be used:
+
+```
+NAME         ZONE           MACHINE_TYPE   INTERNAL_IP  STATUS
+controller0  us-central1-f  n1-standard-1  10.240.0.20  RUNNING
+controller1  us-central1-f  n1-standard-1  10.240.0.21  RUNNING
+controller2  us-central1-f  n1-standard-1  10.240.0.22  RUNNING
+```
 
 
-### Copy TLS Certs
+## Copy TLS Certs
 
 ```
 gcloud compute copy-files ca.pem kubernetes-key.pem kubernetes.pem controller0:~/
@@ -15,12 +24,25 @@ gcloud compute copy-files ca.pem kubernetes-key.pem kubernetes.pem controller1:~
 gcloud compute copy-files ca.pem kubernetes-key.pem kubernetes.pem controller2:~/
 ```
 
+## Provision the Kubernetes Controller Cluster
 
 ### controller0
 
 ```
 gcloud compute ssh controller0
 ```
+
+Move the TLS certificates in place:
+
+```
+sudo mkdir -p /var/run/kubernetes
+```
+
+```
+sudo mv ca.pem kubernetes-key.pem kubernetes.pem /var/run/kubernetes/
+```
+
+Download and install the Kubernetes controller binaries:
 
 ```
 wget https://github.com/kubernetes/kubernetes/releases/download/v1.3.0/kubernetes.tar.gz
@@ -41,17 +63,7 @@ sudo cp kubernetes/server/bin/kube-scheduler /usr/bin/
 sudo cp kubernetes/server/bin/kubectl /usr/bin/
 ```
 
-```
-sudo mkdir -p /var/run/kubernetes
-```
-
-
-```
-sudo mv ca.pem kubernetes-key.pem kubernetes.pem /var/run/kubernetes/
-
-```
-
-### Kubernetes API Server
+#### Kubernetes API Server
 
 ```
 wget https://storage.googleapis.com/hightowerlabs/authorization-policy.jsonl
@@ -120,7 +132,7 @@ sudo systemctl start kube-apiserver
 sudo systemctl status kube-apiserver
 ```
 
-### Kubernetes Controller Manager
+#### Kubernetes Controller Manager
 
 ```
 sudo sh -c 'echo "[Unit]
@@ -154,7 +166,7 @@ sudo systemctl start kube-controller-manager
 sudo systemctl status kube-controller-manager
 ```
 
-### Kubernetes Scheduler
+#### Kubernetes Scheduler
 
 ```
 sudo sh -c 'echo "[Unit]
@@ -184,7 +196,7 @@ sudo systemctl status kube-scheduler
 ```
 
 
-### Verify 
+#### Verification 
 
 ```
 kubectl get componentstatuses

@@ -9,6 +9,16 @@ etcd1        us-central1-f  n1-standard-1  10.240.0.11  RUNNING
 etcd2        us-central1-f  n1-standard-1  10.240.0.12  RUNNING
 ````
 
+## Why
+
+All Kubernetes components are stateless which greatly simplifies managing a Kubernetes cluster. All state is stored
+in etcd, which is a database and must be treated special. etcd is being run on a dedicated set of machines for the 
+following reasons:
+
+* The etcd lifecycle is not tied to Kubernetes. We should be able to upgrade etcd independently of Kubernetes.
+* Scaling out etcd is different than scaling out the Kubernetes Control Plane.
+* Prevent other applications from taking up resources (CPU, Memory, I/O) required by etcd.
+
 ## Copy TLS Certs
 
 ```
