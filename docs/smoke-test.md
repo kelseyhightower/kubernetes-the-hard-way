@@ -5,9 +5,6 @@ This lab walks you through a quick smoke test to make sure things are working.
 ## Test
 
 ```
-```
-
-```
 kubectl run nginx --image=nginx --port=80 --replicas=3
 ```
 
