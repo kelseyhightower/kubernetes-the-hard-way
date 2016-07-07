@@ -45,6 +45,16 @@ kubernetes  us-central1  146.148.34.151  RESERVED
 
 ## Provision Virtual Machines
 
+All the VMs in this lab will be provisioned using Ubuntu 16.04 mainly because it runs a newish Linux Kernel that has good support for Docker.
+
+```
+$ uname -a
+```
+
+```
+Linux controller0 4.4.0-28-generic #47-Ubuntu SMP Fri Jun 24 10:09:13 UTC 2016 x86_64 x86_64 x86_64 GNU/Linux
+```
+
 ### etcd
 
 ```
