@@ -1,6 +1,6 @@
 # Bootstrapping Kubernetes Workers
 
-In this lab you will bootstrap a 3 Kubernetes worker nodes. The following virtual machines will be used:
+In this lab you will bootstrap 3 Kubernetes worker nodes. The following virtual machines will be used:
 
 ```
 NAME         ZONE           MACHINE_TYPE   INTERNAL_IP  STATUS
