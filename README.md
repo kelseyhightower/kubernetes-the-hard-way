@@ -25,12 +25,12 @@ The resulting cluster will be missing the following items:
 
 ## Labs
 
-* [Cloud Infrastructure Provisioning](docs/infrastructure.md)
-* [Setting up a CA and TLS Cert Generation](docs/certificate-authority.md)
-* [Bootstrapping an H/A etcd cluster](docs/etcd.md)
-* [Bootstrapping an H/A Kubernetes Control Plane](docs/kubernetes-controller.md)
-* [Bootstrapping Kubernetes Workers](docs/kubernetes-worker.md)
-* [Configuring the Kubernetes Client - Remote Access](docs/kubectl.md)
-* [Managing the Container Network Routes](docs/network.md)
-* [Smoke Test](docs/smoke-test.md)
-* [Cleaning Up](docs/cleanup.md)
+* [Cloud Infrastructure Provisioning](docs/01-infrastructure.md)
+* [Setting up a CA and TLS Cert Generation](docs/02-certificate-authority.md)
+* [Bootstrapping an H/A etcd cluster](docs/03-etcd.md)
+* [Bootstrapping an H/A Kubernetes Control Plane](docs/04-kubernetes-controller.md)
+* [Bootstrapping Kubernetes Workers](docs/05-kubernetes-worker.md)
+* [Configuring the Kubernetes Client - Remote Access](docs/06-kubectl.md)
+* [Managing the Container Network Routes](docs/07-network.md)
+* [Smoke Test](docs/08-smoke-test.md)
+* [Cleaning Up](docs/09-cleanup.md)
