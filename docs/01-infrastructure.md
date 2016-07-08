@@ -54,44 +54,44 @@ kubernetes  us-central1  kubernetes  10.240.0.0/24
 
 ```
 gcloud compute firewall-rules create kubernetes-allow-icmp \
+  --allow icmp \
   --network kubernetes \
-  --source-ranges 0.0.0.0/0 \
-  --allow icmp
+  --source-ranges 0.0.0.0/0 
 ```
 
 ```
 gcloud compute firewall-rules create kubernetes-allow-internal \
+  --allow tcp:0-65535,udp:0-65535,icmp \
   --network kubernetes \
-  --source-ranges 10.240.0.0/24 \
-  --allow tcp:0-65535,udp:0-65535,icmp
+  --source-ranges 10.240.0.0/24
 ```
 
 ```
 gcloud compute firewall-rules create kubernetes-allow-rdp \
+  --allow tcp:3389 \
   --network kubernetes \
-  --source-ranges 0.0.0.0/0 \
-  --allow tcp:3389
+  --source-ranges 0.0.0.0/0
 ```
 
 ```
 gcloud compute firewall-rules create kubernetes-allow-ssh \
+  --allow tcp:22 \
   --network kubernetes \
-  --source-ranges 0.0.0.0/0 \
-  --allow tcp:22
+  --source-ranges 0.0.0.0/0
 ```
 
 ```
 gcloud compute firewall-rules create kubernetes-allow-healthz \
-  --network kubernetes \
   --allow tcp:8080 \
+  --network kubernetes \
   --source-ranges 130.211.0.0/22
 ```
 
 ```
 gcloud compute firewall-rules create kubernetes-allow-api-server \
+  --allow tcp:6443 \
   --network kubernetes \
-  --source-ranges 0.0.0.0/0 \
-  --allow tcp:6443
+  --source-ranges 0.0.0.0/0
 ```
 
 
