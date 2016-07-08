@@ -2,24 +2,20 @@
 
 ## Download and Install kubectl
 
-```
-wget https://github.com/kubernetes/kubernetes/releases/download/v1.3.0/kubernetes.tar.gz
-```
-
-```
-tar -xvf kubernetes.tar.gz
-```
-
 ### OS X
 
 ```
-sudo cp kubernetes/platforms/darwin/amd64/kubectl /usr/local/bin
+wget https://storage.googleapis.com/kubernetes-release/release/v1.3.0/bin/darwin/amd64/kubectl
+chmod +x kubectl
+sudo cp kubectl /usr/local/bin
 ```
 
 ### Linux
 
 ```
-sudo cp kubernetes/platforms/linux/amd64/kubectl /usr/local/bin
+wget https://storage.googleapis.com/kubernetes-release/release/v1.3.0/bin/linux/amd64/kubectl
+chmod +x kubectl
+sudo cp kubectl /usr/local/bin
 ```
 
 ## Configure Kubectl
