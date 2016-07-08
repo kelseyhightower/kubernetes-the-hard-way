@@ -25,7 +25,7 @@ worker2      us-central1-f  n1-standard-1               10.240.0.32  104.154.41.
 
 > All machines will be provisioned with fixed private IP addresses to simplify the bootstrap process.
 
-To make our Kubernetes control plane remotely accessable a public IP address will be provisioned and assigned to a Load Balancer that will sit in front of the 3 Kubernetes controllers.
+To make our Kubernetes control plane remotely accessible, a public IP address will be provisioned and assigned to a Load Balancer that will sit in front of the 3 Kubernetes controllers.
 
 ## Create the Kubernetes Public IP Address
 
