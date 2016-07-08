@@ -33,25 +33,12 @@ service "nginx" exposed
 > Note that --type=LoadBalancer will not work because we did not configure a cloud provider when bootstrapping this cluster.
 
 
-```
-kubectl describe svc nginx
-```
-```
-Name:			  nginx
-Namespace:		  default
-Labels:			  run=nginx
-Selector:		  run=nginx
-Type:			  NodePort
-IP:			      10.32.0.199
-Port:			  <unset>	80/TCP
-NodePort:		  <unset>	32345/TCP
-Endpoints:		  10.200.0.2:80,10.200.1.2:80,10.200.2.2:80
-Session Affinity: None
-No events.
-```
+export NODE_PORT=$(kubectl get svc nginx --output=jsonpath='{range .spec.ports[0]}{.nodePort}')
 
 ```
-gcloud compute firewall-rules create nginx-service --allow=tcp:32345
+gcloud compute firewall-rules create kubernetes-nginx-service \
+  --network kubernetes \
+  --allow=tcp:${NODE_PORT}
 ```
 
 ```
@@ -60,19 +47,20 @@ gcloud compute instances list
 
 ````
 NAME         ZONE           MACHINE_TYPE   PREEMPTIBLE  INTERNAL_IP  EXTERNAL_IP      STATUS
-controller0  us-central1-f  n1-standard-1               10.240.0.20  146.148.34.151   RUNNING
-controller1  us-central1-f  n1-standard-1               10.240.0.21  104.197.49.230   RUNNING
-controller2  us-central1-f  n1-standard-1               10.240.0.22  130.211.123.47   RUNNING
-etcd0        us-central1-f  n1-standard-1               10.240.0.10  104.197.163.174  RUNNING
-etcd1        us-central1-f  n1-standard-1               10.240.0.11  146.148.43.6     RUNNING
-etcd2        us-central1-f  n1-standard-1               10.240.0.12  162.222.179.131  RUNNING
-worker0      us-central1-f  n1-standard-1               10.240.0.30  104.155.181.141  RUNNING
-worker1      us-central1-f  n1-standard-1               10.240.0.31  104.197.163.37   RUNNING
-worker2      us-central1-f  n1-standard-1               10.240.0.32  104.154.41.9     RUNNING
+controller0  us-central1-f  n1-standard-1               10.240.0.20  XXX.XXX.XXX.XXX  RUNNING
+controller1  us-central1-f  n1-standard-1               10.240.0.21  XXX.XXX.XXX.XXX  RUNNING
+controller2  us-central1-f  n1-standard-1               10.240.0.22  XXX.XXX.XXX.XXX  RUNNING
+etcd0        us-central1-f  n1-standard-1               10.240.0.10  XXX.XXX.XXX.XXX  RUNNING
+etcd1        us-central1-f  n1-standard-1               10.240.0.11  XXX.XXX.XXX.XXX  RUNNING
+etcd2        us-central1-f  n1-standard-1               10.240.0.12  XXX.XXX.XXX.XXX  RUNNING
+worker0      us-central1-f  n1-standard-1               10.240.0.30  XXX.XXX.XXX.XXX  RUNNING
+worker1      us-central1-f  n1-standard-1               10.240.0.31  XXX.XXX.XXX.XXX  RUNNING
+worker2      us-central1-f  n1-standard-1               10.240.0.32  XXX.XXX.XXX.XXX  RUNNING
 ````
 
+
 ```
-curl http://104.155.181.141:32345
+curl http://XXX.XXX.XXX.XXX:${NODE_PORT}
 ```
 
 ```
