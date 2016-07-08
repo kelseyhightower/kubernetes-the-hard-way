@@ -32,8 +32,9 @@ service "nginx" exposed
 
 > Note that --type=LoadBalancer will not work because we did not configure a cloud provider when bootstrapping this cluster.
 
-
+```
 export NODE_PORT=$(kubectl get svc nginx --output=jsonpath='{range .spec.ports[0]}{.nodePort}')
+```
 
 ```
 gcloud compute firewall-rules create kubernetes-nginx-service \
