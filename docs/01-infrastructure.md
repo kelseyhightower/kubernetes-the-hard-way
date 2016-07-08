@@ -33,8 +33,6 @@ To make our Kubernetes control plane remotely accessible, a public IP address wi
 gcloud compute networks create kubernetes --mode custom
 ```
 
-Output:
-
 ```
 NAME        MODE    IPV4_RANGE  GATEWAY_IPV4
 kubernetes  custom
@@ -48,8 +46,6 @@ gcloud compute networks subnets create kubernetes \
   --range 10.240.0.0/24 \
   --region us-central1
 ```
-
-Output:
 
 ```
 NAME        REGION       NETWORK     RANGE
