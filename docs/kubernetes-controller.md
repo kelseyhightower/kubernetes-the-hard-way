@@ -47,22 +47,18 @@ sudo mv ca.pem kubernetes-key.pem kubernetes.pem /var/run/kubernetes/
 Download and install the Kubernetes controller binaries:
 
 ```
-wget https://github.com/kubernetes/kubernetes/releases/download/v1.3.0/kubernetes.tar.gz
+wget https://storage.googleapis.com/kubernetes-release/release/v1.3.0/bin/linux/amd64/kube-apiserver
+wget https://storage.googleapis.com/kubernetes-release/release/v1.3.0/bin/linux/amd64/kube-controller-manager
+wget https://storage.googleapis.com/kubernetes-release/release/v1.3.0/bin/linux/amd64/kube-scheduler
+wget https://storage.googleapis.com/kubernetes-release/release/v1.3.0/bin/linux/amd64/kubectl
 ```
 
 ```
-tar -xvf kubernetes.tar.gz
+chmod +x kube-apiserver kube-controller-manager kube-scheduler kubectl
 ```
 
 ```
-tar -xvf kubernetes/server/kubernetes-server-linux-amd64.tar.gz
-```
-
-```
-sudo cp kubernetes/server/bin/kube-apiserver /usr/bin/
-sudo cp kubernetes/server/bin/kube-controller-manager /usr/bin/
-sudo cp kubernetes/server/bin/kube-scheduler /usr/bin/
-sudo cp kubernetes/server/bin/kubectl /usr/bin/
+sudo mv kube-apiserver kube-controller-manager kube-scheduler kubectl /usr/bin/
 ```
 
 #### Kubernetes API Server
@@ -233,22 +229,18 @@ sudo mv ca.pem kubernetes-key.pem kubernetes.pem /var/run/kubernetes/
 Download and install the Kubernetes controller binaries:
 
 ```
-wget https://github.com/kubernetes/kubernetes/releases/download/v1.3.0/kubernetes.tar.gz
+wget https://storage.googleapis.com/kubernetes-release/release/v1.3.0/bin/linux/amd64/kube-apiserver
+wget https://storage.googleapis.com/kubernetes-release/release/v1.3.0/bin/linux/amd64/kube-controller-manager
+wget https://storage.googleapis.com/kubernetes-release/release/v1.3.0/bin/linux/amd64/kube-scheduler
+wget https://storage.googleapis.com/kubernetes-release/release/v1.3.0/bin/linux/amd64/kubectl
 ```
 
 ```
-tar -xvf kubernetes.tar.gz
+chmod +x kube-apiserver kube-controller-manager kube-scheduler kubectl
 ```
 
 ```
-tar -xvf kubernetes/server/kubernetes-server-linux-amd64.tar.gz
-```
-
-```
-sudo cp kubernetes/server/bin/kube-apiserver /usr/bin/
-sudo cp kubernetes/server/bin/kube-controller-manager /usr/bin/
-sudo cp kubernetes/server/bin/kube-scheduler /usr/bin/
-sudo cp kubernetes/server/bin/kubectl /usr/bin/
+sudo mv kube-apiserver kube-controller-manager kube-scheduler kubectl /usr/bin/
 ```
 
 #### Kubernetes API Server
@@ -417,22 +409,18 @@ sudo mv ca.pem kubernetes-key.pem kubernetes.pem /var/run/kubernetes/
 Download and install the Kubernetes controller binaries:
 
 ```
-wget https://github.com/kubernetes/kubernetes/releases/download/v1.3.0/kubernetes.tar.gz
+wget https://storage.googleapis.com/kubernetes-release/release/v1.3.0/bin/linux/amd64/kube-apiserver
+wget https://storage.googleapis.com/kubernetes-release/release/v1.3.0/bin/linux/amd64/kube-controller-manager
+wget https://storage.googleapis.com/kubernetes-release/release/v1.3.0/bin/linux/amd64/kube-scheduler
+wget https://storage.googleapis.com/kubernetes-release/release/v1.3.0/bin/linux/amd64/kubectl
 ```
 
 ```
-tar -xvf kubernetes.tar.gz
+chmod +x kube-apiserver kube-controller-manager kube-scheduler kubectl
 ```
 
 ```
-tar -xvf kubernetes/server/kubernetes-server-linux-amd64.tar.gz
-```
-
-```
-sudo cp kubernetes/server/bin/kube-apiserver /usr/bin/
-sudo cp kubernetes/server/bin/kube-controller-manager /usr/bin/
-sudo cp kubernetes/server/bin/kube-scheduler /usr/bin/
-sudo cp kubernetes/server/bin/kubectl /usr/bin/
+sudo mv kube-apiserver kube-controller-manager kube-scheduler kubectl /usr/bin/
 ```
 
 #### Kubernetes API Server

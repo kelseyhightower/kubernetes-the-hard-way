@@ -131,21 +131,17 @@ sudo tar -xzf cni-c864f0e1ea73719b8f4582402b0847064f9883b0.tar.gz -C /opt/cni
 Download and install the Kubernetes worker binaries:
 
 ```
-wget https://github.com/kubernetes/kubernetes/releases/download/v1.3.0/kubernetes.tar.gz
+wget https://storage.googleapis.com/kubernetes-release/release/v1.3.0/bin/linux/amd64/kubectl
+wget https://storage.googleapis.com/kubernetes-release/release/v1.3.0/bin/linux/amd64/kube-proxy
+wget https://storage.googleapis.com/kubernetes-release/release/v1.3.0/bin/linux/amd64/kubelet
 ```
 
 ```
-tar -xvf kubernetes.tar.gz
+chmod +x kubectl kube-proxy kubelet
 ```
 
 ```
-tar -xvf kubernetes/server/kubernetes-server-linux-amd64.tar.gz
-```
-
-```
-sudo cp kubernetes/server/bin/kubectl /usr/bin/
-sudo cp kubernetes/server/bin/kube-proxy /usr/bin/
-sudo cp kubernetes/server/bin/kubelet /usr/bin/
+sudo mv kubectl kube-proxy kubelet /usr/bin/
 ```
 
 ```
