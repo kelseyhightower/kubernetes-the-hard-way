@@ -40,6 +40,8 @@ NAME        MODE    IPV4_RANGE  GATEWAY_IPV4
 kubernetes  custom
 ```
 
+Create a subnet for the Kubernetes cluster:
+
 ```
 gcloud compute networks subnets create kubernetes \
   --network kubernetes \
