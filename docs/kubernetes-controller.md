@@ -271,7 +271,9 @@ gcloud compute target-pools add-instances kubernetes-pool \
   --instances controller0,controller1,controller2
 ```
 
+```
 export KUBERNETES_PUBLIC_IP_ADDRESS=$(gcloud compute addresses describe kubernetes --format 'value(address)')
+```
 
 ```
 gcloud compute forwarding-rules create kubernetes-rule \
