@@ -138,33 +138,33 @@ All the VMs in this lab will be provisioned using Ubuntu 16.04 mainly because it
 gcloud compute instances create etcd0 \
  --boot-disk-size 200GB \
  --can-ip-forward \
- --image-project ubuntu-os-cloud \
  --image ubuntu-1604-xenial-v20160627 \
+ --image-project ubuntu-os-cloud \
  --machine-type n1-standard-1 \
- --subnet kubernetes \
- --private-network-ip 10.240.0.10
+ --private-network-ip 10.240.0.10 \
+ --subnet kubernetes
 ```
 
 ```
 gcloud compute instances create etcd1 \
  --boot-disk-size 200GB \
  --can-ip-forward \
- --image-project ubuntu-os-cloud \
  --image ubuntu-1604-xenial-v20160627 \
+ --image-project ubuntu-os-cloud \
  --machine-type n1-standard-1 \
- --subnet kubernetes \
- --private-network-ip 10.240.0.11
+ --private-network-ip 10.240.0.11 \
+ --subnet kubernetes
 ```
 
 ```
 gcloud compute instances create etcd2 \
  --boot-disk-size 200GB \
  --can-ip-forward \
- --image-project ubuntu-os-cloud \
  --image ubuntu-1604-xenial-v20160627 \
+ --image-project ubuntu-os-cloud \
  --machine-type n1-standard-1 \
- --subnet kubernetes \
- --private-network-ip 10.240.0.12
+ --private-network-ip 10.240.0.12 \
+ --subnet kubernetes
 ```
 
 ### Kubernetes Controllers
@@ -173,33 +173,33 @@ gcloud compute instances create etcd2 \
 gcloud compute instances create controller0 \
  --boot-disk-size 200GB \
  --can-ip-forward \
- --image-project ubuntu-os-cloud \
  --image ubuntu-1604-xenial-v20160627 \
+ --image-project ubuntu-os-cloud \
  --machine-type n1-standard-1 \
- --subnet kubernetes \
- --private-network-ip 10.240.0.20
+ --private-network-ip 10.240.0.20 \
+ --subnet kubernetes
 ```
 
 ```
 gcloud compute instances create controller1 \
  --boot-disk-size 200GB \
  --can-ip-forward \
- --image-project ubuntu-os-cloud \
  --image ubuntu-1604-xenial-v20160627 \
+ --image-project ubuntu-os-cloud \
  --machine-type n1-standard-1 \
- --subnet kubernetes \
- --private-network-ip 10.240.0.21
+ --private-network-ip 10.240.0.21 \
+ --subnet kubernetes
 ```
 
 ```
 gcloud compute instances create controller2 \
  --boot-disk-size 200GB \
  --can-ip-forward \
- --image-project ubuntu-os-cloud \
  --image ubuntu-1604-xenial-v20160627 \
+ --image-project ubuntu-os-cloud \
  --machine-type n1-standard-1 \
- --subnet kubernetes \
- --private-network-ip 10.240.0.22
+ --private-network-ip 10.240.0.22 \
+ --subnet kubernetes
 ```
 
 ### Kubernetes Workers
@@ -208,31 +208,31 @@ gcloud compute instances create controller2 \
 gcloud compute instances create worker0 \
  --boot-disk-size 200GB \
  --can-ip-forward \
- --image-project ubuntu-os-cloud \
  --image ubuntu-1604-xenial-v20160627 \
+ --image-project ubuntu-os-cloud \
  --machine-type n1-standard-1 \
- --subnet kubernetes \
- --private-network-ip 10.240.0.30
+ --private-network-ip 10.240.0.30 \
+ --subnet kubernetes
 ```
 
 ```
 gcloud compute instances create worker1 \
  --boot-disk-size 200GB \
  --can-ip-forward \
- --image-project ubuntu-os-cloud \
  --image ubuntu-1604-xenial-v20160627 \
+ --image-project ubuntu-os-cloud \
  --machine-type n1-standard-1 \
- --subnet kubernetes \
- --private-network-ip 10.240.0.31
+ --private-network-ip 10.240.0.31 \
+ --subnet kubernetes
 ```
 
 ```
 gcloud compute instances create worker2 \
  --boot-disk-size 200GB \
  --can-ip-forward \
- --image-project ubuntu-os-cloud \
  --image ubuntu-1604-xenial-v20160627 \
+ --image-project ubuntu-os-cloud \
  --machine-type n1-standard-1 \
- --subnet kubernetes \
- --private-network-ip 10.240.0.32
+ --private-network-ip 10.240.0.32 \
+ --subnet kubernetes
 ```
