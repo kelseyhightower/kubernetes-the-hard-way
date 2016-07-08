@@ -12,20 +12,102 @@ gcloud compute instances list
 
 ````
 NAME         ZONE           MACHINE_TYPE   PREEMPTIBLE  INTERNAL_IP  EXTERNAL_IP      STATUS
-controller0  us-central1-f  n1-standard-1               10.240.0.20  146.148.34.151   RUNNING
-controller1  us-central1-f  n1-standard-1               10.240.0.21  104.197.49.230   RUNNING
-controller2  us-central1-f  n1-standard-1               10.240.0.22  130.211.123.47   RUNNING
-etcd0        us-central1-f  n1-standard-1               10.240.0.10  104.197.163.174  RUNNING
-etcd1        us-central1-f  n1-standard-1               10.240.0.11  146.148.43.6     RUNNING
-etcd2        us-central1-f  n1-standard-1               10.240.0.12  162.222.179.131  RUNNING
-worker0      us-central1-f  n1-standard-1               10.240.0.30  104.155.181.141  RUNNING
-worker1      us-central1-f  n1-standard-1               10.240.0.31  104.197.163.37   RUNNING
-worker2      us-central1-f  n1-standard-1               10.240.0.32  104.154.41.9     RUNNING
+controller0  us-central1-f  n1-standard-1               10.240.0.20  XXX.XXX.XXX.XXX  RUNNING
+controller1  us-central1-f  n1-standard-1               10.240.0.21  XXX.XXX.XXX.XXX  RUNNING
+controller2  us-central1-f  n1-standard-1               10.240.0.22  XXX.XXX.XXX.XXX  RUNNING
+etcd0        us-central1-f  n1-standard-1               10.240.0.10  XXX.XXX.XXX.XXX  RUNNING
+etcd1        us-central1-f  n1-standard-1               10.240.0.11  XXX.XXX.XXX.XXX  RUNNING
+etcd2        us-central1-f  n1-standard-1               10.240.0.12  XXX.XXX.XXX.XXX  RUNNING
+worker0      us-central1-f  n1-standard-1               10.240.0.30  XXX.XXX.XXX.XXX  RUNNING
+worker1      us-central1-f  n1-standard-1               10.240.0.31  XXX.XXX.XXX.XXX  RUNNING
+worker2      us-central1-f  n1-standard-1               10.240.0.32  XXX.XXX.XXX.XXX  RUNNING
 ````
 
 > All machines will be provisioned with fixed private IP addresses to simplify the bootstrap process.
 
 To make our Kubernetes control plane remotely accessable a public IP address will be provisioned and assigned to a Load Balancer that will sit in front of the 3 Kubernetes controllers.
+
+## Create a Custom Network
+
+```
+gcloud compute networks create kubernetes --mode custom
+```
+
+```
+NAME        MODE    IPV4_RANGE  GATEWAY_IPV4
+kubernetes  custom
+```
+
+```
+gcloud compute networks subnets create kubernetes \
+  --network kubernetes \
+  --region us-central1 \
+  --range 10.240.0.0/24
+```
+
+```
+NAME        REGION       NETWORK     RANGE
+kubernetes  us-central1  kubernetes  10.240.0.0/24
+```
+
+### Firewall Rules
+
+```
+gcloud compute firewall-rules create kubernetes-allow-icmp \
+  --network kubernetes \
+  --source-ranges 0.0.0.0/0 \
+  --allow icmp
+```
+
+```
+gcloud compute firewall-rules create kubernetes-allow-internal \
+  --network kubernetes \
+  --source-ranges 10.240.0.0/24 \
+  --allow tcp:0-65535,udp:0-65535,icmp
+```
+
+```
+gcloud compute firewall-rules create kubernetes-allow-rdp \
+  --network kubernetes \
+  --source-ranges 0.0.0.0/0 \
+  --allow tcp:3389
+```
+
+```
+gcloud compute firewall-rules create kubernetes-allow-ssh \
+  --network kubernetes \
+  --source-ranges 0.0.0.0/0 \
+  --allow tcp:22
+```
+
+```
+gcloud compute firewall-rules create kubernetes-allow-healthz \
+  --network kubernetes \
+  --allow tcp:8080 \
+  --source-ranges 130.211.0.0/22
+```
+
+```
+gcloud compute firewall-rules create kubernetes-allow-api-server \
+  --network kubernetes \
+  --source-ranges 0.0.0.0/0 \
+  --allow tcp:6443
+```
+
+
+```
+gcloud compute firewall-rules list --filter "network=kubernetes"
+```
+
+```
+NAME                         NETWORK     SRC_RANGES      RULES                         SRC_TAGS  TARGET_TAGS
+kubernetes-allow-api-server  kubernetes  0.0.0.0/0       tcp:6443
+kubernetes-allow-healthz     kubernetes  130.211.0.0/22  tcp:8080
+kubernetes-allow-icmp        kubernetes  0.0.0.0/0       icmp
+kubernetes-allow-internal    kubernetes  10.240.0.0/24   tcp:0-65535,udp:0-65535,icmp
+kubernetes-allow-rdp         kubernetes  0.0.0.0/0       tcp:3389
+kubernetes-allow-ssh         kubernetes  0.0.0.0/0       tcp:22
+```
 
 ## Create the Kubernetes Public IP Address
 
@@ -36,11 +118,11 @@ gcloud compute addresses create kubernetes
 ```
 
 ```
-gcloud compute addresses list
+gcloud compute addresses list kubernetes
 ```
 ```
-NAME        REGION       ADDRESS         STATUS
-kubernetes  us-central1  104.197.132.159 RESERVED
+NAME        REGION       ADDRESS          STATUS
+kubernetes  us-central1  XXX.XXX.XXX.XXX  RESERVED
 ```
 
 ## Provision Virtual Machines
@@ -57,6 +139,7 @@ gcloud compute instances create etcd0 \
  --image-project ubuntu-os-cloud \
  --image ubuntu-1604-xenial-v20160627 \
  --machine-type n1-standard-1 \
+ --subnet kubernetes \
  --private-network-ip 10.240.0.10
 ```
 
@@ -67,6 +150,7 @@ gcloud compute instances create etcd1 \
  --image-project ubuntu-os-cloud \
  --image ubuntu-1604-xenial-v20160627 \
  --machine-type n1-standard-1 \
+ --subnet kubernetes \
  --private-network-ip 10.240.0.11
 ```
 
@@ -77,6 +161,7 @@ gcloud compute instances create etcd2 \
  --image-project ubuntu-os-cloud \
  --image ubuntu-1604-xenial-v20160627 \
  --machine-type n1-standard-1 \
+ --subnet kubernetes \
  --private-network-ip 10.240.0.12
 ```
 
@@ -89,6 +174,7 @@ gcloud compute instances create controller0 \
  --image-project ubuntu-os-cloud \
  --image ubuntu-1604-xenial-v20160627 \
  --machine-type n1-standard-1 \
+ --subnet kubernetes \
  --private-network-ip 10.240.0.20
 ```
 
@@ -99,6 +185,7 @@ gcloud compute instances create controller1 \
  --image-project ubuntu-os-cloud \
  --image ubuntu-1604-xenial-v20160627 \
  --machine-type n1-standard-1 \
+ --subnet kubernetes \
  --private-network-ip 10.240.0.21
 ```
 
@@ -109,6 +196,7 @@ gcloud compute instances create controller2 \
  --image-project ubuntu-os-cloud \
  --image ubuntu-1604-xenial-v20160627 \
  --machine-type n1-standard-1 \
+ --subnet kubernetes \
  --private-network-ip 10.240.0.22
 ```
 
@@ -121,6 +209,7 @@ gcloud compute instances create worker0 \
  --image-project ubuntu-os-cloud \
  --image ubuntu-1604-xenial-v20160627 \
  --machine-type n1-standard-1 \
+ --subnet kubernetes \
  --private-network-ip 10.240.0.30
 ```
 
@@ -131,6 +220,7 @@ gcloud compute instances create worker1 \
  --image-project ubuntu-os-cloud \
  --image ubuntu-1604-xenial-v20160627 \
  --machine-type n1-standard-1 \
+ --subnet kubernetes \
  --private-network-ip 10.240.0.31
 ```
 
@@ -141,5 +231,6 @@ gcloud compute instances create worker2 \
  --image-project ubuntu-os-cloud \
  --image ubuntu-1604-xenial-v20160627 \
  --machine-type n1-standard-1 \
+ --subnet kubernetes \
  --private-network-ip 10.240.0.32
 ```

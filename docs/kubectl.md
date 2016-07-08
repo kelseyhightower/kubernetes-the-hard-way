@@ -22,14 +22,8 @@ sudo cp kubectl /usr/local/bin
 
 In this section you will configure the kubectl client to point to the [Kubernetes API Server Frontend Load Balancer](docs/kubernetes-controller.md#setup-kubernetes-api-server-frontend-load-balancer).
 
-Recall the Public IP address we allocated for the frontend load balancer:
-
 ```
-gcloud compute addresses list
-```
-```
-NAME        REGION       ADDRESS          STATUS
-kubernetes  us-central1  104.197.132.159  IN_USE
+export KUBERNETES_PUBLIC_IP_ADDRESS=$(gcloud compute addresses describe kubernetes --format 'value(address)')
 ```
 
 Recall the token we setup for the admin user:
@@ -49,7 +43,7 @@ The following commands will build up the default kubeconfig file used by kubectl
 kubectl config set-cluster kubernetes-the-hard-way \
   --embed-certs=true \
   --certificate-authority=ca.pem \
-  --server=https://104.197.132.159:6443
+  --server=https://${KUBERNETES_PUBLIC_IP_ADDRESS}:6443
 ```
 
 ```

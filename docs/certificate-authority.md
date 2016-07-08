@@ -91,10 +91,13 @@ openssl x509 -in ca.pem -text -noout
 
 In this section we will generate a TLS certificate that will be valid for all Kubernetes components. This is being done for ease of use. In production you should strongly consider generating individual TLS certificates for each component.
 
-> Notice the list of hosts includes the Kubernetes Public IP Address 104.197.132.159
+Create the `kubernetes-csr.json` file:
+
+export KUBERNETES_PUBLIC_IP_ADDRESS=$(gcloud compute addresses describe kubernetes --format 'value(address)')
 
 ```
-echo '{
+cat > kubernetes-csr.json <<EOF
+{
   "CN": "kubernetes",
   "hosts": [
     "10.240.0.10",
@@ -106,7 +109,7 @@ echo '{
     "10.240.0.30",
     "10.240.0.31",
     "10.240.0.32",
-    "104.197.132.159",
+    "${KUBERNETES_PUBLIC_IP_ADDRESS}",
     "127.0.0.1"
   ],
   "key": {
@@ -122,8 +125,15 @@ echo '{
       "ST": "Oregon"
     }
   ]
-}' > kubernetes-csr.json
+}
+EOF
 ```
+
+```
+gcloud compute addresses list kubernetes
+```
+
+Generate the Kubernetes certificate and private key:
 
 ```
 cfssl gencert \

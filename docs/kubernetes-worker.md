@@ -21,13 +21,9 @@ Some people would like to run workers and cluster services anywhere in the clust
 
 ## Provision the Kubernetes Worker Nodes
 
-The following instructions can be ran on each worker node without modification. Lets start with `worker0`. Don't forget to repeat these steps for `worker1` and `worker2`.
+Run the following commands on `worker0`, `worker1`, `worker2`:
 
-### worker0
-
-```
-gcloud compute ssh worker0
-```
+> SSH into each machine using the `gcloud compute ssh` command
 
 #### Move the TLS certificates in place
 
@@ -52,11 +48,7 @@ tar -xvf docker-1.11.2.tgz
 ```
 
 ```
-sudo cp docker/docker /usr/bin/
-sudo cp docker/docker-containerd /usr/bin/
-sudo cp docker/docker-containerd-ctr /usr/bin/
-sudo cp docker/docker-containerd-shim /usr/bin/
-sudo cp docker/docker-runc /usr/bin/
+sudo cp docker/docker* /usr/bin/
 ```
 
 Create the Docker systemd unit file:
@@ -91,23 +83,6 @@ sudo systemctl start docker
 sudo docker version
 ```
 
-```
-Client:
- Version:      1.11.2
- API version:  1.23
- Go version:   go1.5.4
- Git commit:   b9f10c9
- Built:        Wed Jun  1 21:20:08 2016
- OS/Arch:      linux/amd64
-
-Server:
- Version:      1.11.2
- API version:  1.23
- Go version:   go1.5.4
- Git commit:   b9f10c9
- Built:        Wed Jun  1 21:20:08 2016
- OS/Arch:      linux/amd64
-```
 
 #### kubelet
 
@@ -124,7 +99,7 @@ wget https://storage.googleapis.com/kubernetes-release/network-plugins/cni-c864f
 ```
 
 ```
-sudo tar -xzf cni-c864f0e1ea73719b8f4582402b0847064f9883b0.tar.gz -C /opt/cni
+sudo tar -xvf cni-c864f0e1ea73719b8f4582402b0847064f9883b0.tar.gz -C /opt/cni
 ```
 
 
@@ -209,7 +184,7 @@ sudo systemctl start kubelet
 ```
 
 ```
-sudo systemctl status kubelet
+sudo systemctl status kubelet --no-pager
 ```
 
 
@@ -242,5 +217,5 @@ sudo systemctl start kube-proxy
 ```
 
 ```
-sudo systemctl status kube-proxy
+sudo systemctl status kube-proxy --no-pager
 ```

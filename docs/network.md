@@ -5,13 +5,13 @@ Now that each worker node is online we need to add routes to make sure that Pods
 After completing this lab you will have the following router entries:
 
 ```
-$ gcloud compute routes list
+$ gcloud compute routes list --filter "network=kubernetes"
 ```
 ```
-NAME                            NETWORK  DEST_RANGE     NEXT_HOP                  PRIORITY
-default-route-10-200-0-0-24     default  10.200.0.0/24  10.240.0.30               1000
-default-route-10-200-1-0-24     default  10.200.1.0/24  10.240.0.31               1000
-default-route-10-200-2-0-24     default  10.200.2.0/24  10.240.0.32               1000
+NAME                            NETWORK     DEST_RANGE     NEXT_HOP                  PRIORITY
+kubernetes-route-10-200-0-0-24  kubernetes  10.200.0.0/24  10.240.0.30               1000
+kubernetes-route-10-200-1-0-24  kubernetes  10.200.1.0/24  10.240.0.31               1000
+kubernetes-route-10-200-2-0-24  kubernetes  10.200.2.0/24  10.240.0.32               1000
 ```
 
 ## Get the Routing Table
@@ -36,19 +36,22 @@ Output:
 Use `gcloud` to add the routes to GCP:
 
 ```
-gcloud compute routes create default-route-10-200-0-0-24 \
+gcloud compute routes create kubernetes-route-10-200-0-0-24 \
+  --network kubernetes \
   --next-hop-address 10.240.0.30 \
   --destination-range 10.200.0.0/24
 ```
 
 ```
-gcloud compute routes create default-route-10-200-1-0-24 \
+gcloud compute routes create kubernetes-route-10-200-1-0-24 \
+  --network kubernetes \
   --next-hop-address 10.240.0.31 \
   --destination-range 10.200.1.0/24
 ```
 
 ```
-gcloud compute routes create default-route-10-200-2-0-24 \
+gcloud compute routes create kubernetes-route-10-200-2-0-24 \
+  --network kubernetes \
   --next-hop-address 10.240.0.32 \
   --destination-range 10.200.2.0/24
 ```
