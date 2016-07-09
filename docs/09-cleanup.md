@@ -42,3 +42,7 @@ gcloud compute routes delete \
   kubernetes-route-10-200-1-0-24 \
   kubernetes-route-10-200-2-0-24
 ```
+
+```
+gcloud compute networks delete kubernetes
+```
