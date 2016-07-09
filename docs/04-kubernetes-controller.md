@@ -269,8 +269,9 @@ gcloud compute http-health-checks create kube-apiserver-check \
 
 ```
 gcloud compute target-pools create kubernetes-pool \
-  --region us-central1 \
-  --health-check kube-apiserver-check
+  --health-check kube-apiserver-check \
+  --region us-central1
+  
 ```
 
 ```
