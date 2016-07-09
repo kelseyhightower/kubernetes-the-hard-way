@@ -223,3 +223,5 @@ sudo systemctl start kube-proxy
 ```
 sudo systemctl status kube-proxy --no-pager
 ```
+
+> Remember to run these steps on `worker0`, `worker1`, and `worker2`
