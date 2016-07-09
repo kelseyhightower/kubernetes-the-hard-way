@@ -123,13 +123,14 @@ sudo systemctl enable etcd
 sudo systemctl start etcd
 ```
 
-> Remember to run these steps on `etcd0`, `etcd1`, and `etcd2`
 
 ### Verification
 
 ```
 sudo systemctl status etcd --no-pager
 ```
+
+> Remember to run these steps on `etcd0`, `etcd1`, and `etcd2`
 
 ## Verification
 
