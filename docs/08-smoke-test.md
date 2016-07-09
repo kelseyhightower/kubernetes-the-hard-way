@@ -38,8 +38,8 @@ export NODE_PORT=$(kubectl get svc nginx --output=jsonpath='{range .spec.ports[0
 
 ```
 gcloud compute firewall-rules create kubernetes-nginx-service \
-  --network kubernetes \
-  --allow=tcp:${NODE_PORT}
+  --allow=tcp:${NODE_PORT} \
+  --network kubernetes
 ```
 
 ```
