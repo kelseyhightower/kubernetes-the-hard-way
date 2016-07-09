@@ -33,7 +33,11 @@ gcloud compute addresses delete kubernetes
 gcloud compute firewall-rules delete \
   kubernetes-allow-api-server \
   kubernetes-allow-healthz \
-  kubernetes-nginx-service
+  kubernetes-allow-icmp \
+  kubernetes-allow-internal \
+  kubernetes-allow-rdp \
+  kubernetes-nginx-service \
+  kubernetes-allow-ssh
 ```
 
 ```
@@ -41,6 +45,10 @@ gcloud compute routes delete \
   kubernetes-route-10-200-0-0-24 \
   kubernetes-route-10-200-1-0-24 \
   kubernetes-route-10-200-2-0-24
+```
+
+```
+gcloud compute networks subnets delete kubernetes
 ```
 
 ```
