@@ -24,6 +24,35 @@ kubernetes.pem
 
 Follow the [CFSSL installation guide](https://github.com/cloudflare/cfssl#installation) and install `cfssl` and `cfssljson` binaries.
 
+### OS X
+
+```
+wget https://pkg.cfssl.org/R1.2/cfssl_darwin-amd64
+chmod +x cfssl_darwin-amd64
+sudo mv cfssl_darwin-amd64 /usr/local/bin/cfssl
+```
+
+```
+wget https://pkg.cfssl.org/R1.2/cfssljson_darwin-amd64
+chmod +x cfssljson_darwin-amd64
+sudo mv cfssljson_darwin-amd64 /usr/local/bin/cfssljson
+```
+
+
+### Linux
+
+```
+wget https://pkg.cfssl.org/R1.2/cfssl_linux-amd64
+chmod +x cfssl_linux-amd64
+sudo mv cfssl_darwin-amd64 /usr/local/bin/cfssl
+```
+
+```
+wget https://pkg.cfssl.org/R1.2/cfssljson_linux-amd64
+chmod +x cfssljson_linux-amd64
+sudo mv cfssljson_linux-amd64 /usr/local/bin/cfssljson
+```
+
 ## Setting up a Certificate Authority
 
 ### Create the CA configuration file

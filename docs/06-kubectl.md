@@ -7,7 +7,7 @@
 ```
 wget https://storage.googleapis.com/kubernetes-release/release/v1.3.0/bin/darwin/amd64/kubectl
 chmod +x kubectl
-sudo cp kubectl /usr/local/bin
+sudo mv kubectl /usr/local/bin
 ```
 
 ### Linux
@@ -15,7 +15,7 @@ sudo cp kubectl /usr/local/bin
 ```
 wget https://storage.googleapis.com/kubernetes-release/release/v1.3.0/bin/linux/amd64/kubectl
 chmod +x kubectl
-sudo cp kubectl /usr/local/bin
+sudo mv kubectl /usr/local/bin
 ```
 
 ## Configure Kubectl
