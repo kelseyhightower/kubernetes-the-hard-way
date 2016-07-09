@@ -81,7 +81,7 @@ kubectl get nodes
 ```
 ```
 NAME      STATUS    AGE
-worker0   Ready     10m
-worker1   Ready     12m
-worker2   Ready     14m
+worker0   Ready     7m
+worker1   Ready     5m
+worker2   Ready     2m
 ```
