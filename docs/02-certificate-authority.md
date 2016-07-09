@@ -94,7 +94,8 @@ In this section we will generate a TLS certificate that will be valid for all Ku
 Create the `kubernetes-csr.json` file:
 
 ```
-export KUBERNETES_PUBLIC_IP_ADDRESS=$(gcloud compute addresses describe kubernetes --format 'value(address)')
+export KUBERNETES_PUBLIC_IP_ADDRESS=$(gcloud compute addresses describe kubernetes \
+  --format 'value(address)')
 ```
 
 ```
@@ -131,10 +132,6 @@ cat > kubernetes-csr.json <<EOF
 EOF
 ```
 
-```
-gcloud compute addresses list kubernetes
-```
-
 Generate the Kubernetes certificate and private key:
 
 ```
@@ -160,7 +157,7 @@ kubernetes.pem
 openssl x509 -in kubernetes.pem -text -noout
 ```
 
-### Copy TLS Certs
+## Copy TLS Certs
 
 ```
 gcloud compute copy-files ca.pem kubernetes-key.pem kubernetes.pem controller0:~/
