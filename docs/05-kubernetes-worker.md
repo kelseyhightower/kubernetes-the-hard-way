@@ -3,11 +3,15 @@
 In this lab you will bootstrap 3 Kubernetes worker nodes. The following virtual machines will be used:
 
 ```
-NAME         ZONE           MACHINE_TYPE   INTERNAL_IP  STATUS
-worker0      us-central1-f  n1-standard-1  10.240.0.30  RUNNING
-worker1      us-central1-f  n1-standard-1  10.240.0.31  RUNNING
-worker2      us-central1-f  n1-standard-1  10.240.0.32  RUNNING
+gcloud compute instances list
 ```
+
+````
+NAME         ZONE           MACHINE_TYPE   PREEMPTIBLE  INTERNAL_IP  EXTERNAL_IP      STATUS
+worker0      us-central1-f  n1-standard-1               10.240.0.30  XXX.XXX.XXX.XXX  RUNNING
+worker1      us-central1-f  n1-standard-1               10.240.0.31  XXX.XXX.XXX.XXX  RUNNING
+worker2      us-central1-f  n1-standard-1               10.240.0.32  XXX.XXX.XXX.XXX  RUNNING
+````
 
 ## Why
 
