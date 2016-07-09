@@ -285,7 +285,7 @@ export KUBERNETES_PUBLIC_IP_ADDRESS=$(gcloud compute addresses describe kubernet
 
 ```
 gcloud compute forwarding-rules create kubernetes-rule \
+  --address ${KUBERNETES_PUBLIC_IP_ADDRESS} \
   --ports 6443 \
-  --address $KUBERNETES_PUBLIC_IP_ADDRESS \
   --target-pool kubernetes-pool
 ```
