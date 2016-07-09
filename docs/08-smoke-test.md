@@ -32,6 +32,8 @@ service "nginx" exposed
 
 > Note that --type=LoadBalancer will not work because we did not configure a cloud provider when bootstrapping this cluster.
 
+Grab the `NodePort` that was setup for the nginx service:
+
 ```
 export NODE_PORT=$(kubectl get svc nginx --output=jsonpath='{range .spec.ports[0]}{.nodePort}')
 ```
@@ -42,26 +44,17 @@ gcloud compute firewall-rules create kubernetes-nginx-service \
   --network kubernetes
 ```
 
-```
-gcloud compute instances list
-```
-
-````
-NAME         ZONE           MACHINE_TYPE   PREEMPTIBLE  INTERNAL_IP  EXTERNAL_IP      STATUS
-controller0  us-central1-f  n1-standard-1               10.240.0.20  XXX.XXX.XXX.XXX  RUNNING
-controller1  us-central1-f  n1-standard-1               10.240.0.21  XXX.XXX.XXX.XXX  RUNNING
-controller2  us-central1-f  n1-standard-1               10.240.0.22  XXX.XXX.XXX.XXX  RUNNING
-etcd0        us-central1-f  n1-standard-1               10.240.0.10  XXX.XXX.XXX.XXX  RUNNING
-etcd1        us-central1-f  n1-standard-1               10.240.0.11  XXX.XXX.XXX.XXX  RUNNING
-etcd2        us-central1-f  n1-standard-1               10.240.0.12  XXX.XXX.XXX.XXX  RUNNING
-worker0      us-central1-f  n1-standard-1               10.240.0.30  XXX.XXX.XXX.XXX  RUNNING
-worker1      us-central1-f  n1-standard-1               10.240.0.31  XXX.XXX.XXX.XXX  RUNNING
-worker2      us-central1-f  n1-standard-1               10.240.0.32  XXX.XXX.XXX.XXX  RUNNING
-````
-
+Grab the `EXTERNAL_IP` for one of the worker nodes:
 
 ```
-curl http://XXX.XXX.XXX.XXX:${NODE_PORT}
+export NODE_PUBLIC_IP=$(gcloud compute instances describe worker0 \
+  --format 'value(networkInterfaces[0].accessConfigs[0].natIP)')
+```
+
+Test the nginx service using cURL:
+
+```
+curl http://${NODE_PUBLIC_IP}:${NODE_PORT}
 ```
 
 ```
