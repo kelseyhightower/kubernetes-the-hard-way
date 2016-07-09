@@ -50,11 +50,7 @@ tar -xvf etcd-v3.0.1-linux-amd64.tar.gz
 ```
 
 ```
-sudo cp etcd-v3.0.1-linux-amd64/etcdctl /usr/bin/
-```
-
-```
-sudo cp etcd-v3.0.1-linux-amd64/etcd /usr/bin/
+sudo cp etcd-v3.0.1-linux-amd64/etcd* /usr/bin/
 ```
 
 ```
