@@ -279,7 +279,8 @@ gcloud compute target-pools add-instances kubernetes-pool \
 ```
 
 ```
-export KUBERNETES_PUBLIC_IP_ADDRESS=$(gcloud compute addresses describe kubernetes --format 'value(address)')
+export KUBERNETES_PUBLIC_IP_ADDRESS=$(gcloud compute addresses describe kubernetes \
+  --format 'value(address)')
 ```
 
 ```
