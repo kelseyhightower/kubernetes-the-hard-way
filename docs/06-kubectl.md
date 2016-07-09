@@ -23,7 +23,8 @@ sudo cp kubectl /usr/local/bin
 In this section you will configure the kubectl client to point to the [Kubernetes API Server Frontend Load Balancer](docs/kubernetes-controller.md#setup-kubernetes-api-server-frontend-load-balancer).
 
 ```
-export KUBERNETES_PUBLIC_IP_ADDRESS=$(gcloud compute addresses describe kubernetes --format 'value(address)')
+export KUBERNETES_PUBLIC_IP_ADDRESS=$(gcloud compute addresses describe kubernetes \
+  --format 'value(address)')
 ```
 
 Recall the token we setup for the admin user:
