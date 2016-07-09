@@ -65,10 +65,32 @@ chmod +x kube-apiserver kube-controller-manager kube-scheduler kubectl
 sudo mv kube-apiserver kube-controller-manager kube-scheduler kubectl /usr/bin/
 ```
 
-#### Kubernetes API Server
+### Kubernetes API Server
+
+#### Setup Authentication and Authorization
+
+##### Authentication
+
+[Token based authentication](http://kubernetes.io/docs/admin/authentication) will be used to limit access to Kubernetes API.
 
 ```
-wget https://storage.googleapis.com/hightowerlabs/authorization-policy.jsonl
+wget https://raw.githubusercontent.com/kelseyhightower/kubernetes-the-hard-way/master/token.csv
+```
+
+```
+cat token.csv
+```
+
+```
+sudo mv token.csv /var/lib/kubernetes/
+```
+
+##### Authorization
+
+Attribute-Based Access Control (ABAC) will be used to authorize access to the Kubernetes API. In this lab ABAC will be setup using the Kuberentes policy file backend as documented in the [Kubernetes authorization guide](http://kubernetes.io/docs/admin/authorization).
+
+```
+wget https://raw.githubusercontent.com/kelseyhightower/kubernetes-the-hard-way/master/authorization-policy.jsonl
 ```
 
 ```
@@ -79,17 +101,7 @@ cat authorization-policy.jsonl
 sudo mv authorization-policy.jsonl /var/lib/kubernetes/
 ```
 
-```
-wget https://storage.googleapis.com/hightowerlabs/token.csv
-```
-
-```
-cat token.csv
-```
-
-```
-sudo mv token.csv /var/lib/kubernetes/
-```
+### Create the systemd unit file 
 
 Capture the internal IP address:
 
@@ -154,7 +166,7 @@ sudo systemctl start kube-apiserver
 sudo systemctl status kube-apiserver --no-pager
 ```
 
-#### Kubernetes Controller Manager
+### Kubernetes Controller Manager
 
 ```
 cat > kube-controller-manager.service <<"EOF"
@@ -200,7 +212,7 @@ sudo systemctl start kube-controller-manager
 sudo systemctl status kube-controller-manager --no-pager
 ```
 
-#### Kubernetes Scheduler
+### Kubernetes Scheduler
 
 ```
 cat > kube-scheduler.service <<"EOF"
@@ -240,7 +252,7 @@ sudo systemctl status kube-scheduler --no-pager
 ```
 
 
-#### Verification 
+### Verification
 
 ```
 kubectl get componentstatuses
