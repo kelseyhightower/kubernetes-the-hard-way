@@ -26,8 +26,6 @@ This lab requires the `cfssl` and `cfssljson` binaries. Download them from the [
 
 ### OS X
 
-Download 
-
 ```
 wget https://pkg.cfssl.org/R1.2/cfssl_darwin-amd64
 chmod +x cfssl_darwin-amd64
