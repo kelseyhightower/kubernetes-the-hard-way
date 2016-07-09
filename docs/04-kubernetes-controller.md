@@ -254,6 +254,8 @@ etcd-0               Healthy   {"health": "true"}
 etcd-2               Healthy   {"health": "true"}  
 ```
 
+> Remember to run these steps on `controller0`, `controller1`, and `controller2`
+
 ## Setup Kubernetes API Server Frontend Load Balancer
 
 The virtual machines created in this tutorial will not have permission to complete this section. Run the following commands from the same place used to create the virtual machines for this tutorial. 
