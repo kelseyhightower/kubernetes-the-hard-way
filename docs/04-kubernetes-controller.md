@@ -3,10 +3,15 @@
 In this lab you will bootstrap a 3 node Kubernetes controller cluster. The following virtual machines will be used:
 
 ```
-NAME         ZONE           MACHINE_TYPE   INTERNAL_IP  STATUS
-controller0  us-central1-f  n1-standard-1  10.240.0.20  RUNNING
-controller1  us-central1-f  n1-standard-1  10.240.0.21  RUNNING
-controller2  us-central1-f  n1-standard-1  10.240.0.22  RUNNING
+gcloud compute instances list
+```
+
+```
+NAME         ZONE           MACHINE_TYPE   PREEMPTIBLE  INTERNAL_IP  EXTERNAL_IP      STATUS
+controller0  us-central1-f  n1-standard-1               10.240.0.20  XXX.XXX.XXX.XXX  RUNNING
+controller1  us-central1-f  n1-standard-1               10.240.0.21  XXX.XXX.XXX.XXX  RUNNING
+controller2  us-central1-f  n1-standard-1               10.240.0.22  XXX.XXX.XXX.XXX  RUNNING
+etcd0        us-central1-f  n1-standard-1               10.240.0.10  XXX.XXX.XXX.XXX  RUNNING
 ```
 
 In this lab you will also create a frontend load balancer with a public IP address for remote access to the API servers and H/A.
