@@ -132,6 +132,10 @@ cat > kubernetes-csr.json <<EOF
 {
   "CN": "kubernetes",
   "hosts": [
+    "worker0",
+    "worker1",
+    "worker2",
+    "10.32.0.1",
     "10.240.0.10",
     "10.240.0.11",
     "10.240.0.12",

@@ -41,11 +41,11 @@ Run the following commands on `controller0`, `controller1`, `controller2`:
 Move the TLS certificates in place:
 
 ```
-sudo mkdir -p /var/run/kubernetes
+sudo mkdir -p /var/lib/kubernetes
 ```
 
 ```
-sudo mv ca.pem kubernetes-key.pem kubernetes.pem /var/run/kubernetes/
+sudo mv ca.pem kubernetes-key.pem kubernetes.pem /var/lib/kubernetes/
 ```
 
 Download and install the Kubernetes controller binaries:
@@ -76,7 +76,7 @@ cat authorization-policy.jsonl
 ```
 
 ```
-sudo mv authorization-policy.jsonl /var/run/kubernetes/
+sudo mv authorization-policy.jsonl /var/lib/kubernetes/
 ```
 
 ```
@@ -88,7 +88,7 @@ cat token.csv
 ```
 
 ```
-sudo mv token.csv /var/run/kubernetes/
+sudo mv token.csv /var/lib/kubernetes/
 ```
 
 Capture the internal IP address:
@@ -113,19 +113,19 @@ ExecStart=/usr/bin/kube-apiserver \
   --allow-privileged=true \
   --apiserver-count=3 \
   --authorization-mode=ABAC \
-  --authorization-policy-file=/var/run/kubernetes/authorization-policy.jsonl \
+  --authorization-policy-file=/var/lib/kubernetes/authorization-policy.jsonl \
   --bind-address=0.0.0.0 \
   --enable-swagger-ui=true \
-  --etcd-cafile=/var/run/kubernetes/ca.pem \
+  --etcd-cafile=/var/lib/kubernetes/ca.pem \
   --insecure-bind-address=0.0.0.0 \
-  --kubelet-certificate-authority=/var/run/kubernetes/ca.pem \
+  --kubelet-certificate-authority=/var/lib/kubernetes/ca.pem \
   --etcd-servers=https://10.240.0.10:2379,https://10.240.0.11:2379,https://10.240.0.12:2379 \
-  --service-account-key-file=/var/run/kubernetes/kubernetes-key.pem \
+  --service-account-key-file=/var/lib/kubernetes/kubernetes-key.pem \
   --service-cluster-ip-range=10.32.0.0/24 \
   --service-node-port-range=30000-32767 \
-  --tls-cert-file=/var/run/kubernetes/kubernetes.pem \
-  --tls-private-key-file=/var/run/kubernetes/kubernetes-key.pem \
-  --token-auth-file=/var/run/kubernetes/token.csv \
+  --tls-cert-file=/var/lib/kubernetes/kubernetes.pem \
+  --tls-private-key-file=/var/lib/kubernetes/kubernetes-key.pem \
+  --token-auth-file=/var/lib/kubernetes/token.csv \
   --v=2
 Restart=on-failure
 RestartSec=5
@@ -169,8 +169,8 @@ ExecStart=/usr/bin/kube-controller-manager \
   --cluster-name=kubernetes \
   --leader-elect=true \
   --master=http://INTERNAL_IP:8080 \
-  --root-ca-file=/var/run/kubernetes/ca.pem \
-  --service-account-private-key-file=/var/run/kubernetes/kubernetes-key.pem \
+  --root-ca-file=/var/lib/kubernetes/ca.pem \
+  --service-account-private-key-file=/var/lib/kubernetes/kubernetes-key.pem \
   --service-cluster-ip-range=10.32.0.0/24 \
   --v=2
 Restart=on-failure
