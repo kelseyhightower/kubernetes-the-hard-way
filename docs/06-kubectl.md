@@ -42,8 +42,8 @@ The following commands will build up the default kubeconfig file used by kubectl
 
 ```
 kubectl config set-cluster kubernetes-the-hard-way \
-  --embed-certs=true \
   --certificate-authority=ca.pem \
+  --embed-certs=true \
   --server=https://${KUBERNETES_PUBLIC_IP_ADDRESS}:6443
 ```
 
