@@ -22,9 +22,11 @@ kubernetes.pem
 
 ## Install CFSSL
 
-Follow the [CFSSL installation guide](https://github.com/cloudflare/cfssl#installation) and install `cfssl` and `cfssljson` binaries.
+This lab requires the `cfssl` and `cfssljson` binaries. Download them from the [cfssl repository](https://pkg.cfssl.org).
 
 ### OS X
+
+Download 
 
 ```
 wget https://pkg.cfssl.org/R1.2/cfssl_darwin-amd64
