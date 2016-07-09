@@ -44,7 +44,7 @@ sudo mv cfssljson_darwin-amd64 /usr/local/bin/cfssljson
 ```
 wget https://pkg.cfssl.org/R1.2/cfssl_linux-amd64
 chmod +x cfssl_linux-amd64
-sudo mv cfssl_darwin-amd64 /usr/local/bin/cfssl
+sudo mv cfssl_linux-amd64 /usr/local/bin/cfssl
 ```
 
 ```
