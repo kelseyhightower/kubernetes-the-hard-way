@@ -136,11 +136,11 @@ Generate the Kubernetes certificate and private key:
 
 ```
 cfssl gencert \
--ca=ca.pem \
--ca-key=ca-key.pem \
--config=ca-config.json \
--profile=kubernetes \
-kubernetes-csr.json | cfssljson -bare kubernetes
+  -ca=ca.pem \
+  -ca-key=ca-key.pem \
+  -config=ca-config.json \
+  -profile=kubernetes \
+  kubernetes-csr.json | cfssljson -bare kubernetes
 ```
 
 Results:
