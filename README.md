@@ -27,7 +27,7 @@ The resulting cluster will be missing the following items:
 
 ## Labs
 
-The following labs assume you have a working [Google Compute Platform](https://cloud.google.com) account and a recent version of the [Google Cloud SDK](https://cloud.google.com/sdk/) (116.0.0+) installed. While GCP will be used for basic infrastructure needs, the things learned in this tutorial apply to every platform.
+The following labs assume you have a working [Google Cloud Platform](https://cloud.google.com) account and a recent version of the [Google Cloud SDK](https://cloud.google.com/sdk/) (116.0.0+) installed. While GCP will be used for basic infrastructure needs, the things learned in this tutorial apply to every platform.
 
 * [Cloud Infrastructure Provisioning](docs/01-infrastructure.md)
 * [Setting up a CA and TLS Cert Generation](docs/02-certificate-authority.md)
