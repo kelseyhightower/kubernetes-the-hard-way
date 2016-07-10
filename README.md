@@ -27,6 +27,8 @@ The resulting cluster will be missing the following items:
 
 ## Labs
 
+The following labs assume you have a working [Google Compute Platform](https://cloud.google.com) account and a recent version of the [Google Cloud SDK](https://cloud.google.com/sdk/) (116.0.0+) installed.
+
 * [Cloud Infrastructure Provisioning](docs/01-infrastructure.md)
 * [Setting up a CA and TLS Cert Generation](docs/02-certificate-authority.md)
 * [Bootstrapping an H/A etcd cluster](docs/03-etcd.md)
