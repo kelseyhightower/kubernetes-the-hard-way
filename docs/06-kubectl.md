@@ -20,7 +20,7 @@ sudo mv kubectl /usr/local/bin
 
 ## Configure Kubectl
 
-In this section you will configure the kubectl client to point to the [Kubernetes API Server Frontend Load Balancer](docs/kubernetes-controller.md#setup-kubernetes-api-server-frontend-load-balancer).
+In this section you will configure the kubectl client to point to the [Kubernetes API Server Frontend Load Balancer](04-kubernetes-controller.md#setup-kubernetes-api-server-frontend-load-balancer).
 
 ```
 export KUBERNETES_PUBLIC_IP_ADDRESS=$(gcloud compute addresses describe kubernetes \
@@ -34,7 +34,7 @@ Recall the token we setup for the admin user:
 chAng3m3,admin,admin
 ```
 
-Also be sure to locate the CA certificate [created earlier](docs/certificate-authority.md). Since we are using self-signed TLS certs we need to trust the CA certificate so we can verify the remote API Servers.
+Also be sure to locate the CA certificate [created earlier](02-certificate-authority.md). Since we are using self-signed TLS certs we need to trust the CA certificate so we can verify the remote API Servers.
 
 ### Build up the kubeconfig entry
 
