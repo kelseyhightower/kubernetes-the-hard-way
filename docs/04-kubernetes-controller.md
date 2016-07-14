@@ -287,7 +287,8 @@ gcloud compute target-pools create kubernetes-pool \
 
 ```
 gcloud compute target-pools add-instances kubernetes-pool \
-  --instances controller0,controller1,controller2
+  --instances controller0,controller1,controller2 \
+  --zone us-central1-f
 ```
 
 ```

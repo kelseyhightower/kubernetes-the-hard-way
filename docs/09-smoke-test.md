@@ -48,7 +48,8 @@ Grab the `EXTERNAL_IP` for one of the worker nodes:
 
 ```
 export NODE_PUBLIC_IP=$(gcloud compute instances describe worker0 \
-  --format 'value(networkInterfaces[0].accessConfigs[0].natIP)')
+  --format 'value(networkInterfaces[0].accessConfigs[0].natIP)' \
+  --zone us-central1-f)
 ```
 
 Test the nginx service using cURL:
