@@ -30,7 +30,7 @@ export KUBERNETES_PUBLIC_IP_ADDRESS=$(gcloud compute addresses describe kubernet
 Recall the token we setup for the admin user:
 
 ```
-# /var/run/kubernetes/token.csv on the controller nodes
+# /var/lib/kubernetes/token.csv on the controller nodes
 chAng3m3,admin,admin
 ```
 
