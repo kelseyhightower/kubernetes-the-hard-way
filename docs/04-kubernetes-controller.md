@@ -113,48 +113,41 @@ export INTERNAL_IP=$(curl -s -H "Metadata-Flavor: Google" \
 Create the systemd unit file:
 
 ```
-cat > kube-apiserver.service <<"EOF"
-[Unit]
+sudo sh -c "echo '[Unit]
 Description=Kubernetes API Server
 Documentation=https://github.com/GoogleCloudPlatform/kubernetes
 
 [Service]
-ExecStart=/usr/bin/kube-apiserver \
-  --admission-control=NamespaceLifecycle,LimitRanger,SecurityContextDeny,ServiceAccount,ResourceQuota \
-  --advertise-address=INTERNAL_IP \
-  --allow-privileged=true \
-  --apiserver-count=3 \
-  --authorization-mode=ABAC \
-  --authorization-policy-file=/var/lib/kubernetes/authorization-policy.jsonl \
-  --bind-address=0.0.0.0 \
-  --enable-swagger-ui=true \
-  --etcd-cafile=/var/lib/kubernetes/ca.pem \
-  --insecure-bind-address=0.0.0.0 \
-  --kubelet-certificate-authority=/var/lib/kubernetes/ca.pem \
-  --etcd-servers=https://10.240.0.10:2379,https://10.240.0.11:2379,https://10.240.0.12:2379 \
-  --service-account-key-file=/var/lib/kubernetes/kubernetes-key.pem \
-  --service-cluster-ip-range=10.32.0.0/24 \
-  --service-node-port-range=30000-32767 \
-  --tls-cert-file=/var/lib/kubernetes/kubernetes.pem \
-  --tls-private-key-file=/var/lib/kubernetes/kubernetes-key.pem \
-  --token-auth-file=/var/lib/kubernetes/token.csv \
+ExecStart=/usr/bin/kube-apiserver \\
+  --admission-control=NamespaceLifecycle,LimitRanger,SecurityContextDeny,ServiceAccount,ResourceQuota \\
+  --advertise-address=$INTERNAL_IP \\
+  --allow-privileged=true \\
+  --apiserver-count=3 \\
+  --authorization-mode=ABAC \\
+  --authorization-policy-file=/var/lib/kubernetes/authorization-policy.jsonl \\
+  --bind-address=0.0.0.0 \\
+  --enable-swagger-ui=true \\
+  --etcd-cafile=/var/lib/kubernetes/ca.pem \\
+  --insecure-bind-address=0.0.0.0 \\
+  --kubelet-certificate-authority=/var/lib/kubernetes/ca.pem \\
+  --etcd-servers=https://10.240.0.10:2379,https://10.240.0.11:2379,https://10.240.0.12:2379 \\
+  --service-account-key-file=/var/lib/kubernetes/kubernetes-key.pem \\
+  --service-cluster-ip-range=10.32.0.0/24 \\
+  --service-node-port-range=30000-32767 \\
+  --tls-cert-file=/var/lib/kubernetes/kubernetes.pem \\
+  --tls-private-key-file=/var/lib/kubernetes/kubernetes-key.pem \\
+  --token-auth-file=/var/lib/kubernetes/token.csv \\
   --v=2
 Restart=on-failure
 RestartSec=5
 
 [Install]
-WantedBy=multi-user.target
-EOF
-```
-
-```
-sed -i s/INTERNAL_IP/$INTERNAL_IP/g kube-apiserver.service
+WantedBy=multi-user.target' > /etc/systemd/system/kube-apiserver.service"
 ```
 
 ```
 sudo mv kube-apiserver.service /etc/systemd/system/
 ```
-
 
 ```
 sudo systemctl daemon-reload
@@ -169,38 +162,27 @@ sudo systemctl status kube-apiserver --no-pager
 ### Kubernetes Controller Manager
 
 ```
-cat > kube-controller-manager.service <<"EOF"
-[Unit]
+sudo su -c "echo '[Unit]
 Description=Kubernetes Controller Manager
 Documentation=https://github.com/GoogleCloudPlatform/kubernetes
 
 [Service]
-ExecStart=/usr/bin/kube-controller-manager \
-  --allocate-node-cidrs=true \
-  --cluster-cidr=10.200.0.0/16 \
-  --cluster-name=kubernetes \
-  --leader-elect=true \
-  --master=http://INTERNAL_IP:8080 \
-  --root-ca-file=/var/lib/kubernetes/ca.pem \
-  --service-account-private-key-file=/var/lib/kubernetes/kubernetes-key.pem \
-  --service-cluster-ip-range=10.32.0.0/24 \
+ExecStart=/usr/bin/kube-controller-manager \\
+  --allocate-node-cidrs=true \\
+  --cluster-cidr=10.200.0.0/16 \\
+  --cluster-name=kubernetes \\
+  --leader-elect=true \\
+  --master=http://$INTERNAL_IP:8080 \\
+  --root-ca-file=/var/lib/kubernetes/ca.pem \\
+  --service-account-private-key-file=/var/lib/kubernetes/kubernetes-key.pem \\
+  --service-cluster-ip-range=10.32.0.0/24 \\
   --v=2
 Restart=on-failure
 RestartSec=5
 
 [Install]
-WantedBy=multi-user.target
-EOF
+WantedBy=multi-user.target' > /etc/systemd/system/kube-controller-manager.service"
 ```
-
-```
-sed -i s/INTERNAL_IP/$INTERNAL_IP/g kube-controller-manager.service
-```
-
-```
-sudo mv kube-controller-manager.service /etc/systemd/system/
-```
-
 
 ```
 sudo systemctl daemon-reload
@@ -215,30 +197,20 @@ sudo systemctl status kube-controller-manager --no-pager
 ### Kubernetes Scheduler
 
 ```
-cat > kube-scheduler.service <<"EOF"
-[Unit]
+sudo sh -c "echo '[Unit]
 Description=Kubernetes Scheduler
 Documentation=https://github.com/GoogleCloudPlatform/kubernetes
 
 [Service]
-ExecStart=/usr/bin/kube-scheduler \
-  --leader-elect=true \
-  --master=http://INTERNAL_IP:8080 \
+ExecStart=/usr/bin/kube-scheduler \\
+  --leader-elect=true \\
+  --master=http://$INTERNAL_IP:8080 \\
   --v=2
 Restart=on-failure
 RestartSec=5
 
 [Install]
-WantedBy=multi-user.target
-EOF
-```
-
-```
-sed -i s/INTERNAL_IP/$INTERNAL_IP/g kube-scheduler.service
-```
-
-```
-sudo mv kube-scheduler.service /etc/systemd/system/
+WantedBy=multi-user.target' > /etc/systemd/system/kube-scheduler.service"
 ```
 
 ```
