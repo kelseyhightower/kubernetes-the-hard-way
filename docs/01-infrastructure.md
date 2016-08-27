@@ -27,6 +27,15 @@ worker2      us-central1-f  n1-standard-1               10.240.0.32  XXX.XXX.XXX
 
 To make our Kubernetes control plane remotely accessible, a public IP address will be provisioned and assigned to a Load Balancer that will sit in front of the 3 Kubernetes controllers.
 
+## Setup your Google Cloud SDK
+
+Grab the appropriate version of the [Google Cloud SDK](https://cloud.google.com/sdk/docs/).
+
+```
+gcloud config set compute/region us-central1
+gcloud config set compute/zone us-central1-f
+```
+
 ## Create a Custom Network
 
 ```
@@ -43,8 +52,7 @@ Create a subnet for the Kubernetes cluster:
 ```
 gcloud compute networks subnets create kubernetes \
   --network kubernetes \
-  --range 10.240.0.0/24 \
-  --region us-central1
+  --range 10.240.0.0/24
 ```
 
 ```
