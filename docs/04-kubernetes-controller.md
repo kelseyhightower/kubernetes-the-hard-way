@@ -62,10 +62,11 @@ sudo mv kube-apiserver kube-controller-manager kube-scheduler kubectl /usr/bin/
 
 [Token based authentication](http://kubernetes.io/docs/admin/authentication) will be used to limit access to the Kubernetes API. The authentication token is used by the following components:
 
-* The Kubernetes kubelet which runs on the worker nodes
-* The kubectl commandline tool
+* kubelet (client)
+* kubectl (client)
+* Kubernetes API Server (server)
 
-The other components, mainly the scheduler and controller manager, access the Kubernetes API server locally over the insecure API port which does not require authentication. The insecure port is only enabled for local access.
+The other components, mainly the `scheduler` and `controller manager`, access the Kubernetes API server locally over the insecure API port which does not require authentication. The insecure port is only enabled for local access.
 
 Download the example token file:
 
