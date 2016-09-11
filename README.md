@@ -30,7 +30,7 @@ The resulting cluster will be missing the following items:
 This tutorial assumes you have access to one of the following:
 
 * [Google Cloud Platform](https://cloud.google.com) and the [Google Cloud SDK](https://cloud.google.com/sdk/) (125.0.0+)
-* [Amazon Web Services](https://aws.amazon.com) and the [AWS CLI](https://aws.amazon.com/cli) (1.10.63+)
+* [Amazon Web Services](https://aws.amazon.com), the [AWS CLI](https://aws.amazon.com/cli) (1.10.63+), and [jq](https://stedolan.github.io/jq) (1.5+)
 
 While GCP or AWS will be used for basic infrastructure needs, the things learned in this tutorial apply to every platform.
 
