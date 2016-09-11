@@ -206,14 +206,28 @@ openssl x509 -in kubernetes.pem -text -noout
 
 ## Copy TLS Certs
 
+Set the list of Kubernetes hosts where the certs should be copied to:
+
 ```
-gcloud compute copy-files ca.pem kubernetes-key.pem kubernetes.pem controller0:~/
-gcloud compute copy-files ca.pem kubernetes-key.pem kubernetes.pem controller1:~/
-gcloud compute copy-files ca.pem kubernetes-key.pem kubernetes.pem controller2:~/
-gcloud compute copy-files ca.pem kubernetes-key.pem kubernetes.pem etcd0:~/
-gcloud compute copy-files ca.pem kubernetes-key.pem kubernetes.pem etcd1:~/
-gcloud compute copy-files ca.pem kubernetes-key.pem kubernetes.pem etcd2:~/
-gcloud compute copy-files ca.pem kubernetes-key.pem kubernetes.pem worker0:~/
-gcloud compute copy-files ca.pem kubernetes-key.pem kubernetes.pem worker1:~/
-gcloud compute copy-files ca.pem kubernetes-key.pem kubernetes.pem worker2:~/
+KUBERNETES_HOSTS=(controller0 controller1 controller2 etcd0 etcd1 etcd2 worker0 worker1 worker2)
+```
+
+### GCE
+
+```
+for host in ${KUBERNETES_HOSTS[*]}; do
+  gcloud compute copy-files ca.pem kubernetes-key.pem kubernetes.pem ${host}:~/
+done
+```
+
+### AWS
+
+```
+for host in ${KUBERNETES_HOSTS[*]}; do
+  PUBLIC_IP_ADDRESS=$(aws ec2 describe-instances \
+    --filters "Name=tag:Name,Values=${host}" | \
+    jq -j '.Reservations[].Instances[].PublicIpAddress')
+  scp ca.pem kubernetes-key.pem kubernetes.pem \
+    ubuntu@${PUBLIC_IP_ADDRESS}:~/
+done
 ```
