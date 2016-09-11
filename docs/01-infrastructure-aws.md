@@ -2,6 +2,8 @@
 
 This lab will walk you through provisioning the compute instances required for running a H/A Kubernetes cluster. A total of 9 virtual machines will be created.
 
+The guide assumes you'll be creating resources in the `us-west-2` region.
+
 After completing this guide you should have the following compute instances:
 
 ![EC2 Console](ec2-instances.png)
