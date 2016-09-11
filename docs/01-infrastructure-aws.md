@@ -272,7 +272,7 @@ WORKER_0_PUBLIC_IP_ADDRESS=$(aws ec2 describe-instances \
     jq -j '.Reservations[].Instances[].PublicIpAddress')
 ```
 
-> The instance public IP address can also be obtained from the EC2 console. Each node will be tagged with a unqiue name.
+> The instance public IP address can also be obtained from the EC2 console. Each node will be tagged with a unique name.
 
 ```
 ssh ubuntu@${WORKER_0_PUBLIC_IP_ADDRESS}
