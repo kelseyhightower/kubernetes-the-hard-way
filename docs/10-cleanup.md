@@ -105,6 +105,14 @@ aws ec2 delete-key-pair --key-name kubernetes
 
 ### Networking
 
+Be sure to wait about a minute for all VMs to terminates to avoid the following errors:
+
+```
+An error occurred (DependencyViolation) when calling ...
+```
+
+Network resources cannot be deleted while VMs hold a reference to them.
+
 #### Load Balancers
 
 ```
