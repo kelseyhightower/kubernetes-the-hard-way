@@ -8,6 +8,8 @@ This tutorial is optimized for learning, which means taking the long route to he
 
 The target audience for this tutorial is someone planning to support a production Kubernetes cluster and wants to understand how everything fits together. After completing this tutorial I encourage you to automate away the manual steps presented in this guide.
 
+* This tutorial is for educational purposes only. There is much more configuration required for a production ready cluster.
+
 ## Cluster Details
 
 * Kubernetes 1.3.6
