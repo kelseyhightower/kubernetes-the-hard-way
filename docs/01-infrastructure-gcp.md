@@ -25,7 +25,7 @@ worker2      us-central1-f  n1-standard-1               10.240.0.32  XXX.XXX.XXX
 
 To make our Kubernetes control plane remotely accessible, a public IP address will be provisioned and assigned to a Load Balancer that will sit in front of the 3 Kubernetes controllers.
 
-## Create a Custom Network
+## Networking
 
 ```
 gcloud compute networks create kubernetes --mode custom
@@ -109,7 +109,7 @@ kubernetes-allow-rdp         kubernetes  0.0.0.0/0       tcp:3389
 kubernetes-allow-ssh         kubernetes  0.0.0.0/0       tcp:22
 ```
 
-## Create the Kubernetes Public IP Address
+### Kubernetes Public Address
 
 Create a public IP address that will be used by remote clients to connect to the Kubernetes control plane:
 
@@ -129,8 +129,9 @@ kubernetes  us-central1  XXX.XXX.XXX.XXX  RESERVED
 
 All the VMs in this lab will be provisioned using Ubuntu 16.04 mainly because it runs a newish Linux Kernel that has good support for Docker.
 
+### Virtual Machines
 
-### etcd
+#### etcd
 
 ```
 gcloud compute instances create etcd0 \
@@ -165,7 +166,7 @@ gcloud compute instances create etcd2 \
  --subnet kubernetes
 ```
 
-### Kubernetes Controllers
+#### Kubernetes Controllers
 
 ```
 gcloud compute instances create controller0 \
@@ -200,7 +201,7 @@ gcloud compute instances create controller2 \
  --subnet kubernetes
 ```
 
-### Kubernetes Workers
+#### Kubernetes Workers
 
 ```
 gcloud compute instances create worker0 \

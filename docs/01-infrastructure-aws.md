@@ -10,7 +10,9 @@ After completing this guide you should have the following compute instances:
 
 To make our Kubernetes control plane remotely accessible, a public IP address will be provisioned and assigned to a Load Balancer that will sit in front of the 3 Kubernetes controllers.
 
-## Create a Custom Network
+## Networking
+
+### VPC
 
 ```
 VPC_ID=$(aws ec2 create-vpc \
@@ -36,6 +38,8 @@ aws ec2 modify-vpc-attribute \
   --enable-dns-hostnames '{"Value": true}'
 ```
 
+### DHCP Option Sets
+
 ```
 DHCP_OPTION_SET_ID=$(aws ec2 create-dhcp-options \
   --dhcp-configuration "Key=domain-name,Values=us-west-2.compute.internal" \
@@ -55,6 +59,8 @@ aws ec2 associate-dhcp-options \
   --vpc-id ${VPC_ID}
 ```
 
+### Subnets
+
 Create a subnet for the Kubernetes cluster:
 
 ```
@@ -70,7 +76,7 @@ aws ec2 create-tags \
   --tags Key=Name,Value=kubernetes
 ```
 
-Create an internet gateway
+### Internet Gateways
 
 ```
 INTERNET_GATEWAY_ID=$(aws ec2 create-internet-gateway | \
@@ -89,7 +95,7 @@ aws ec2 attach-internet-gateway \
   --vpc-id ${VPC_ID}
 ```
 
-### Route Table
+### Route Tables
 
 ```
 ROUTE_TABLE_ID=$(aws ec2 create-route-table \
@@ -162,9 +168,9 @@ aws ec2 authorize-security-group-ingress \
   --cidr 0.0.0.0/0
 ```
 
-## Create the Kubernetes Public IP Address
+### Kubernetes Public Address
 
-Create a public IP address that will be used by remote clients to connect to the Kubernetes control plane:
+An ELB will be used to load balance traffic across the Kubernetes control plane.
 
 ```
 aws elb create-load-balancer \
@@ -173,6 +179,7 @@ aws elb create-load-balancer \
   --subnets ${SUBNET_ID} \
   --security-groups ${SECURITY_GROUP_ID}
 ```
+
 ```
 KUBERNETES_PUBLIC_IP_ADDRESS=$(aws elb describe-load-balancers \
   --load-balancer-name kubernetes | \
@@ -257,7 +264,9 @@ chmod 600 ~/.ssh/kubernetes_the_hard_way
 ssh-add ~/.ssh/kubernetes_the_hard_way 
 ```
 
-### etcd
+### Virtual Machines
+
+#### etcd
 
 ```
 ETCD_0_INSTANCE_ID=$(aws ec2 run-instances \
@@ -316,7 +325,7 @@ aws ec2 create-tags \
   --tags Key=Name,Value=etcd2
 ```
 
-### Kubernetes Controllers
+#### Kubernetes Controllers
 
 ```
 CONTROLLER_0_INSTANCE_ID=$(aws ec2 run-instances \
@@ -378,7 +387,7 @@ aws ec2 create-tags \
   --tags Key=Name,Value=controller2
 ``` 
 
-### Kubernetes Workers
+#### Kubernetes Workers
 
 ```
 WORKER_0_INSTANCE_ID=$(aws ec2 run-instances \
