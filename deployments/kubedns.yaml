@@ -12,36 +12,34 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# This file should be kept in sync with cluster/images/hyperkube/dns-rc.yaml
-
-# TODO - At some point, we need to rename all skydns-*.yaml.* files to kubedns-*.yaml.*
-
-# Warning: This is a file generated from the base underscore template file: skydns-rc.yaml.base
-
-apiVersion: v1
-kind: ReplicationController
+apiVersion: extensions/v1beta1
+kind: Deployment
 metadata:
-  name: kube-dns-v18
+  name: kube-dns-v19
   namespace: kube-system
   labels:
     k8s-app: kube-dns
-    version: v18
+    version: v19
     kubernetes.io/cluster-service: "true"
 spec:
-  replicas: 2 
+  replicas: 2
   selector:
-    k8s-app: kube-dns
-    version: v18
+    matchLabels:
+      k8s-app: kube-dns
+      version: v19
   template:
     metadata:
       labels:
         k8s-app: kube-dns
-        version: v18
+        version: v19
         kubernetes.io/cluster-service: "true"
+      annotations:
+        scheduler.alpha.kubernetes.io/critical-pod: ''
+        scheduler.alpha.kubernetes.io/tolerations: '[{"key":"CriticalAddonsOnly", "operator":"Exists"}]'
     spec:
       containers:
       - name: kubedns
-        image: gcr.io/google_containers/kubedns-amd64:1.6
+        image: gcr.io/google_containers/kubedns-amd64:1.7
         resources:
           # TODO: Set memory limits when we've profiled the container for large
           # clusters, then set request = limit to keep this container in
@@ -49,10 +47,10 @@ spec:
           # "burstable" category so the kubelet doesn't backoff from restarting it.
           limits:
             cpu: 100m
-            memory: 200Mi
+            memory: 170Mi
           requests:
             cpu: 100m
-            memory: 100Mi
+            memory: 70Mi
         livenessProbe:
           httpGet:
             path: /healthz
@@ -96,15 +94,15 @@ spec:
           name: dns-tcp
           protocol: TCP
       - name: healthz
-        image: gcr.io/google_containers/exechealthz-amd64:1.0
+        image: gcr.io/google_containers/exechealthz-amd64:1.1
         resources:
           # keep request = limit to keep this container in guaranteed class
           limits:
             cpu: 10m
-            memory: 20Mi
+            memory: 50Mi
           requests:
             cpu: 10m
-            memory: 20Mi
+            memory: 50Mi
         args:
         - -cmd=nslookup kubernetes.default.svc.cluster.local 127.0.0.1 >/dev/null && nslookup kubernetes.default.svc.cluster.local 127.0.0.1:10053 >/dev/null
         - -port=8080

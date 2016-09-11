@@ -7,10 +7,10 @@ In this lab you will deploy the DNS add-on which is required for every Kubernete
 
 ## Cluster DNS Add-on
 
-### Create the `skydns` service:
+### Create the `kubedns` service:
 
 ```
-kubectl create -f https://raw.githubusercontent.com/kelseyhightower/kubernetes-the-hard-way/master/skydns-svc.yaml
+kubectl create -f https://raw.githubusercontent.com/kelseyhightower/kubernetes-the-hard-way/master/services/kubedns.yaml
 ```
 
 #### Verification
@@ -23,10 +23,10 @@ NAME       CLUSTER-IP   EXTERNAL-IP   PORT(S)         AGE
 kube-dns   10.32.0.10   <none>        53/UDP,53/TCP   1m
 ```
 
-### Create the `skydns` replication controller:
+### Create the `kubedns` deployment:
 
 ```
-kubectl create -f https://raw.githubusercontent.com/kelseyhightower/kubernetes-the-hard-way/master/skydns-rc.yaml
+kubectl create -f https://raw.githubusercontent.com/kelseyhightower/kubernetes-the-hard-way/master/deployments/kubedns.yaml
 ```
 
 #### Verification
