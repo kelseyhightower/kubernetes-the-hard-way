@@ -120,19 +120,6 @@ aws elb delete-load-balancer \
   --load-balancer-name kubernetes
 ```
 
-#### Security Groups
-
-```
-SECURITY_GROUP_ID=$(aws ec2 describe-security-groups \
-  --filters "Name=tag:Name,Values=kubernetes" | \
-  jq -r '.SecurityGroups[].GroupId')
-```
-
-```
-aws ec2 delete-security-group \
-  --group-id ${SECURITY_GROUP_ID}
-```
-
 #### Internet Gateways
 
 ```
@@ -156,6 +143,19 @@ aws ec2 detach-internet-gateway \
 ```
 aws ec2 delete-internet-gateway \
   --internet-gateway-id ${INTERNET_GATEWAY_ID}
+```
+
+#### Security Groups
+
+```
+SECURITY_GROUP_ID=$(aws ec2 describe-security-groups \
+  --filters "Name=tag:Name,Values=kubernetes" | \
+  jq -r '.SecurityGroups[].GroupId')
+```
+
+```
+aws ec2 delete-security-group \
+  --group-id ${SECURITY_GROUP_ID}
 ```
 
 #### Subnets
