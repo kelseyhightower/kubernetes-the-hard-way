@@ -25,14 +25,14 @@ In this section you will configure the kubectl client to point to the [Kubernete
 ### GCE
 
 ```
-KUBERNETES_PUBLIC_IP_ADDRESS=$(gcloud compute addresses describe kubernetes \
+KUBERNETES_PUBLIC_ADDRESS=$(gcloud compute addresses describe kubernetes \
   --format 'value(address)')
 ```
 
 ### AWS
 
 ```
-KUBERNETES_PUBLIC_IP_ADDRESS=$(aws elb describe-load-balancers \
+KUBERNETES_PUBLIC_ADDRESS=$(aws elb describe-load-balancers \
   --load-balancer-name kubernetes | \
   jq -r '.LoadBalancerDescriptions[].DNSName')
 ```
@@ -55,7 +55,7 @@ The following commands will build up the default kubeconfig file used by kubectl
 kubectl config set-cluster kubernetes-the-hard-way \
   --certificate-authority=ca.pem \
   --embed-certs=true \
-  --server=https://${KUBERNETES_PUBLIC_IP_ADDRESS}:6443
+  --server=https://${KUBERNETES_PUBLIC_ADDRESS}:6443
 ```
 
 ```
