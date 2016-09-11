@@ -184,7 +184,7 @@ aws elb create-load-balancer \
 
 All the VMs in this lab will be provisioned using Ubuntu 16.04 mainly because it runs a newish Linux Kernel that has good support for Docker.
 
-All Virtual Machine will be created with the `--no-source-dest-check` flag to enable traffic between foreign subnets to flow. The will enable Pods to communicate with nodes and other Pods via the Service IP. 
+All virtual machines in this section will be created with the `--no-source-dest-check` flag to enable traffic between foreign subnets to flow. The will enable Pods to communicate with nodes and other Pods via the Kubernetes service IP.
 
 ### Create Instance IAM Policies
 
