@@ -125,16 +125,16 @@ In this section we will generate a TLS certificate that will be valid for all Ku
 #### GCE
 
 ```
-export KUBERNETES_PUBLIC_IP_ADDRESS=$(gcloud compute addresses describe kubernetes \
+KUBERNETES_PUBLIC_IP_ADDRESS=$(gcloud compute addresses describe kubernetes \
   --format 'value(address)')
 ```
 
 #### AWS
 
 ```
-export KUBERNETES_PUBLIC_IP_ADDRESS=$(aws ec2 allocate-address \
-  --domain vpc | \
-  jq -r '.PublicIp') 
+KUBERNETES_PUBLIC_IP_ADDRESS=$(aws elb describe-load-balancers \
+  --load-balancer-name kubernetes | \
+  jq -r '.LoadBalancerDescriptions[].DNSName')
 ```
 
 ---

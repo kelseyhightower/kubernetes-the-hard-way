@@ -131,9 +131,16 @@ aws ec2 authorize-security-group-ingress \
 Create a public IP address that will be used by remote clients to connect to the Kubernetes control plane:
 
 ```
-KUBERNETES_PUBLIC_IP=$(aws ec2 allocate-address \
-  --domain vpc | \
-  jq -r '.PublicIp') 
+aws elb create-load-balancer \
+  --load-balancer-name kubernetes \
+  --listeners "Protocol=TCP,LoadBalancerPort=6443,InstanceProtocol=TCP,InstancePort=6443" \
+  --subnets ${SUBNET_ID} \
+  --security-groups ${SECURITY_GROUP_ID}
+```
+```
+KUBERNETES_PUBLIC_IP_ADDRESS=$(aws elb describe-load-balancers \
+  --load-balancer-name kubernetes | \
+  jq -r '.LoadBalancerDescriptions[].DNSName')
 ```
 
 ## Provision Virtual Machines

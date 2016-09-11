@@ -306,14 +306,6 @@ gcloud compute forwarding-rules create kubernetes-rule \
 ### AWS
 
 ```
-aws elb create-load-balancer \
-  --load-balancer-name kubernetes \
-  --listeners "Protocol=TCP,LoadBalancerPort=6443,InstanceProtocol=TCP,InstancePort=6443" \
-  --subnets ${SUBNET_ID} \
-  --security-groups ${SECURITY_GROUP_ID}
-```
-
-```
 aws elb register-instances-with-load-balancer \
   --load-balancer-name kubernetes \
   --instances ${CONTROLLER_0_INSTANCE_ID} ${CONTROLLER_1_INSTANCE_ID} ${CONTROLLER_2_INSTANCE_ID}
