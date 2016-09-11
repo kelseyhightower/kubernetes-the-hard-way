@@ -25,14 +25,14 @@ In this section you will configure the kubectl client to point to the [Kubernete
 ### GCE
 
 ```
-export KUBERNETES_PUBLIC_IP_ADDRESS=$(gcloud compute addresses describe kubernetes \
+KUBERNETES_PUBLIC_IP_ADDRESS=$(gcloud compute addresses describe kubernetes \
   --format 'value(address)')
 ```
 
 ### AWS
 
 ```
-export KUBERNETES_PUBLIC_IP_ADDRESS=$(aws elb describe-load-balancers \
+KUBERNETES_PUBLIC_IP_ADDRESS=$(aws elb describe-load-balancers \
   --load-balancer-name kubernetes | \
   jq -r '.LoadBalancerDescriptions[].DNSName')
 ```
