@@ -2,6 +2,15 @@
 
 This lab will walk you through provisioning the compute instances required for running a H/A Kubernetes cluster. A total of 9 virtual machines will be created.
 
+If you are following this guide using the GCP free trial you may run into the following error:
+
+```
+ERROR: (gcloud.compute.instances.create) Some requests did not succeed:
+ - Quota 'CPUS' exceeded. Limit: 8.0
+```
+
+This means you'll only be able to create 8 machines until you upgrade your account. In that case skip the provisioning of the `worker2` node to avoid hitting the CPUS qouta.
+
 After completing this guide you should have the following compute instances:
 
 ```
@@ -224,6 +233,8 @@ gcloud compute instances create worker1 \
  --private-network-ip 10.240.0.31 \
  --subnet kubernetes
 ```
+
+If you are using the GCP free trial which limits your account to 8 nodes, skip the creation of `worker2` to avoid hitting the CPUS qouta.
 
 ```
 gcloud compute instances create worker2 \
