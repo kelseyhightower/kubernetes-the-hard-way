@@ -184,6 +184,8 @@ aws elb create-load-balancer \
 
 All the VMs in this lab will be provisioned using Ubuntu 16.04 mainly because it runs a newish Linux Kernel that has good support for Docker.
 
+All Virtual Machine will be created with the `--no-source-dest-check` flag to enable traffic between foreign subnets to flow. The will enable Pods to communicate with nodes and other Pods via the Service IP. 
+
 ### Create Instance IAM Policies
 
 ```
@@ -336,6 +338,12 @@ CONTROLLER_0_INSTANCE_ID=$(aws ec2 run-instances \
 ```
 
 ```
+aws ec2 modify-instance-attribute \
+  --instance-id ${CONTROLLER_0_INSTANCE_ID} \
+  --no-source-dest-check
+```
+
+```
 aws ec2 create-tags \
   --resources ${CONTROLLER_0_INSTANCE_ID} \
   --tags Key=Name,Value=controller0
@@ -356,6 +364,12 @@ CONTROLLER_1_INSTANCE_ID=$(aws ec2 run-instances \
 ```
 
 ```
+aws ec2 modify-instance-attribute \
+  --instance-id ${CONTROLLER_1_INSTANCE_ID} \
+  --no-source-dest-check
+```
+
+```
 aws ec2 create-tags \
   --resources ${CONTROLLER_1_INSTANCE_ID} \
   --tags Key=Name,Value=controller1
@@ -373,6 +387,12 @@ CONTROLLER_2_INSTANCE_ID=$(aws ec2 run-instances \
   --private-ip-address 10.240.0.22 \
   --subnet-id ${SUBNET_ID} | \
   jq -r '.Instances[].InstanceId')
+```
+
+```
+aws ec2 modify-instance-attribute \
+  --instance-id ${CONTROLLER_2_INSTANCE_ID} \
+  --no-source-dest-check
 ```
 
 ```
@@ -398,6 +418,12 @@ WORKER_0_INSTANCE_ID=$(aws ec2 run-instances \
 ```
 
 ```
+aws ec2 modify-instance-attribute \
+  --instance-id ${WORKER_0_INSTANCE_ID} \
+  --no-source-dest-check
+```
+
+```
 aws ec2 create-tags \
   --resources ${WORKER_0_INSTANCE_ID} \
   --tags Key=Name,Value=worker0
@@ -418,6 +444,12 @@ WORKER_1_INSTANCE_ID=$(aws ec2 run-instances \
 ```
 
 ```
+aws ec2 modify-instance-attribute \
+  --instance-id ${WORKER_1_INSTANCE_ID} \
+  --no-source-dest-check
+```
+
+```
 aws ec2 create-tags \
   --resources ${WORKER_1_INSTANCE_ID} \
   --tags Key=Name,Value=worker1
@@ -435,6 +467,12 @@ WORKER_2_INSTANCE_ID=$(aws ec2 run-instances \
   --private-ip-address 10.240.0.32 \
   --subnet-id ${SUBNET_ID} | \
   jq -r '.Instances[].InstanceId')
+```
+
+```
+aws ec2 modify-instance-attribute \
+  --instance-id ${WORKER_2_INSTANCE_ID} \
+  --no-source-dest-check
 ```
 
 ```
