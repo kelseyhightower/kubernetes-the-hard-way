@@ -1,6 +1,4 @@
-# Cloud Infrastructure Provisioning
-
-Kubernetes can be installed just about anywhere physical or virtual machines can be run. In this lab we are going to focus on [Google Cloud Platform](https://cloud.google.com/) (IaaS).
+# Cloud Infrastructure Provisioning - Google Cloud Platform
 
 This lab will walk you through provisioning the compute instances required for running a H/A Kubernetes cluster. A total of 9 virtual machines will be created.
 
