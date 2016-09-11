@@ -2,16 +2,9 @@
 
 In this lab you will bootstrap 3 Kubernetes worker nodes. The following virtual machines will be used:
 
-```
-gcloud compute instances list
-```
-
-````
-NAME         ZONE           MACHINE_TYPE   PREEMPTIBLE  INTERNAL_IP  EXTERNAL_IP      STATUS
-worker0      us-central1-f  n1-standard-1               10.240.0.30  XXX.XXX.XXX.XXX  RUNNING
-worker1      us-central1-f  n1-standard-1               10.240.0.31  XXX.XXX.XXX.XXX  RUNNING
-worker2      us-central1-f  n1-standard-1               10.240.0.32  XXX.XXX.XXX.XXX  RUNNING
-````
+* worker0
+* worker1
+* worker2
 
 ## Why
 
@@ -26,8 +19,6 @@ Some people would like to run workers and cluster services anywhere in the clust
 ## Provision the Kubernetes Worker Nodes
 
 Run the following commands on `worker0`, `worker1`, `worker2`:
-
-> SSH into each machine using the `gcloud compute ssh` command
 
 #### Move the TLS certificates in place
 
@@ -110,9 +101,9 @@ sudo tar -xvf cni-c864f0e1ea73719b8f4582402b0847064f9883b0.tar.gz -C /opt/cni
 Download and install the Kubernetes worker binaries:
 
 ```
-wget https://storage.googleapis.com/kubernetes-release/release/v1.3.0/bin/linux/amd64/kubectl
-wget https://storage.googleapis.com/kubernetes-release/release/v1.3.0/bin/linux/amd64/kube-proxy
-wget https://storage.googleapis.com/kubernetes-release/release/v1.3.0/bin/linux/amd64/kubelet
+wget https://storage.googleapis.com/kubernetes-release/release/v1.3.6/bin/linux/amd64/kubectl
+wget https://storage.googleapis.com/kubernetes-release/release/v1.3.6/bin/linux/amd64/kube-proxy
+wget https://storage.googleapis.com/kubernetes-release/release/v1.3.6/bin/linux/amd64/kubelet
 ```
 
 ```
