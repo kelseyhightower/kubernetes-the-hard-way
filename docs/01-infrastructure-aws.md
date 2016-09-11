@@ -107,6 +107,14 @@ aws ec2 authorize-security-group-ingress \
 ```
 aws ec2 authorize-security-group-ingress \
   --group-id ${SECURITY_GROUP_ID} \
+  --protocol all \
+  --port 0-65535 \
+  --cidr 10.240.0.0/16
+```
+
+```
+aws ec2 authorize-security-group-ingress \
+  --group-id ${SECURITY_GROUP_ID} \
   --protocol tcp \
   --port 22 \
   --cidr 0.0.0.0/0
