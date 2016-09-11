@@ -85,14 +85,14 @@ EOF
 #### GCE
 
 ```
-export INTERNAL_IP=$(curl -s -H "Metadata-Flavor: Google" \
+INTERNAL_IP=$(curl -s -H "Metadata-Flavor: Google" \
   http://metadata.google.internal/computeMetadata/v1/instance/network-interfaces/0/ip)
 ```
 
 #### AWS
 
 ```
-export INTERNAL_IP=$(curl -s http://169.254.169.254/latest/meta-data/local-ipv4)
+INTERNAL_IP=$(curl -s http://169.254.169.254/latest/meta-data/local-ipv4)
 ```
 
 ---
@@ -100,7 +100,7 @@ export INTERNAL_IP=$(curl -s http://169.254.169.254/latest/meta-data/local-ipv4)
 Set the etcd name:
 
 ```
-export ETCD_NAME=etcd$(echo $INTERNAL_IP | cut -c 11)
+ETCD_NAME=etcd$(echo $INTERNAL_IP | cut -c 11)
 ```
 
 ```
