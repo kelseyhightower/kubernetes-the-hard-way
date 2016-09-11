@@ -10,7 +10,7 @@ The target audience for this tutorial is someone planning to support a productio
 
 ## Cluster Details
 
-* Kubernetes 1.3.0
+* Kubernetes 1.3.6
 * Docker 1.11.2
 * [CNI Based Networking](https://github.com/containernetworking/cni)
 * Secure communication between all components (etcd, control plane, workers)
@@ -27,7 +27,12 @@ The resulting cluster will be missing the following items:
 
 ## Labs
 
-The following labs assume you have a working [Google Cloud Platform](https://cloud.google.com) account and a recent version of the [Google Cloud SDK](https://cloud.google.com/sdk/) (116.0.0+) installed. While GCP will be used for basic infrastructure needs, the things learned in this tutorial apply to every platform.
+This tutorial assumes you have access to one of the following:
+
+* [Google Cloud Platform](https://cloud.google.com) and the [Google Cloud SDK](https://cloud.google.com/sdk/) (125.0.0+)
+* [Amazon Web Services](https://aws.amazon.com) and the [AWS CLI](https://aws.amazon.com/cli) (1.10.63+)
+
+While GCP or AWS will be used for basic infrastructure needs, the things learned in this tutorial apply to every platform.
 
 * [Cloud Infrastructure Provisioning](docs/01-infrastructure.md)
 * [Setting up a CA and TLS Cert Generation](docs/02-certificate-authority.md)
