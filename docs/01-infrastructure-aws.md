@@ -402,6 +402,6 @@ WORKER_2_INSTANCE_ID=$(aws ec2 run-instances \
 
 ```
 aws ec2 create-tags \
-  --resources ${CONTROLLER_2_INSTANCE_ID} \
+  --resources ${WORKER_2_INSTANCE_ID} \
   --tags Key=Name,Value=worker2
 ```
