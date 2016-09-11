@@ -59,7 +59,7 @@ gcloud compute networks delete kubernetes
 
 ## AWS
 
-### VMs
+### Virtual Machines
 
 ```
 KUBERNETES_HOSTS=(controller0 controller1 controller2 etcd0 etcd1 etcd2 worker0 worker1 worker2)
