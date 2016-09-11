@@ -262,6 +262,22 @@ chmod 600 ~/.ssh/kubernetes_the_hard_way
 ssh-add ~/.ssh/kubernetes_the_hard_way 
 ```
 
+#### SSH Access
+
+Once the virtual machines are created you'll be able to login into each machine using ssh like this:
+
+```
+WORKER_0_PUBLIC_IP_ADDRESS=$(aws ec2 describe-instances \
+    --filters "Name=tag:Name,Values=worker0" | \
+    jq -j '.Reservations[].Instances[].PublicIpAddress')
+```
+
+> The instance public IP address can also be obtained from the EC2 console. Each node will be tagged with a unqiue name.
+
+```
+ssh ubuntu@${WORKER_0_PUBLIC_IP_ADDRESS}
+```
+
 ### Virtual Machines
 
 #### etcd
