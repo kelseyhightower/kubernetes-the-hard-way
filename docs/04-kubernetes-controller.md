@@ -97,14 +97,14 @@ Capture the internal IP address:
 #### GCE
 
 ```
-export INTERNAL_IP=$(curl -s -H "Metadata-Flavor: Google" \
+INTERNAL_IP=$(curl -s -H "Metadata-Flavor: Google" \
   http://metadata.google.internal/computeMetadata/v1/instance/network-interfaces/0/ip)
 ```
 
 #### AWS
 
 ```
-export INTERNAL_IP=$(curl -s http://169.254.169.254/latest/meta-data/local-ipv4)
+INTERNAL_IP=$(curl -s http://169.254.169.254/latest/meta-data/local-ipv4)
 ```
 
 ---
@@ -292,13 +292,13 @@ gcloud compute target-pools add-instances kubernetes-pool \
 ```
 
 ```
-export KUBERNETES_PUBLIC_IP_ADDRESS=$(gcloud compute addresses describe kubernetes \
+KUBERNETES_PUBLIC_ADDRESS=$(gcloud compute addresses describe kubernetes \
   --format 'value(address)')
 ```
 
 ```
 gcloud compute forwarding-rules create kubernetes-rule \
-  --address ${KUBERNETES_PUBLIC_IP_ADDRESS} \
+  --address ${KUBERNETES_PUBLIC_ADDRESS} \
   --ports 6443 \
   --target-pool kubernetes-pool
 ```
