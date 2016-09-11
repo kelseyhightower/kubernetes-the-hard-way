@@ -271,6 +271,8 @@ etcd-2               Healthy   {"health": "true"}
 
 The virtual machines created in this tutorial will not have permission to complete this section. Run the following commands from the same place used to create the virtual machines for this tutorial. 
 
+### GCE
+
 ```
 gcloud compute http-health-checks create kube-apiserver-check \
   --description "Kubernetes API Server Health Check" \
@@ -299,4 +301,20 @@ gcloud compute forwarding-rules create kubernetes-rule \
   --address ${KUBERNETES_PUBLIC_IP_ADDRESS} \
   --ports 6443 \
   --target-pool kubernetes-pool
+```
+
+### AWS
+
+```
+aws elb create-load-balancer \
+  --load-balancer-name kubernetes \
+  --listeners "Protocol=TCP,LoadBalancerPort=6443,InstanceProtocol=TCP,InstancePort=6443" \
+  --subnets ${SUBNET_ID} \
+  --security-groups ${SECURITY_GROUP_ID}
+```
+
+```
+aws elb register-instances-with-load-balancer \
+  --load-balancer-name kubernetes \
+  --instances ${CONTROLLER_0_INSTANCE_ID} ${CONTROLLER_1_INSTANCE_ID} ${CONTROLLER_2_INSTANCE_ID}
 ```
