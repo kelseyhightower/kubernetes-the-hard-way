@@ -2,17 +2,9 @@
 
 In this lab you will bootstrap a 3 node Kubernetes controller cluster. The following virtual machines will be used:
 
-```
-gcloud compute instances list
-```
-
-```
-NAME         ZONE           MACHINE_TYPE   PREEMPTIBLE  INTERNAL_IP  EXTERNAL_IP      STATUS
-controller0  us-central1-f  n1-standard-1               10.240.0.20  XXX.XXX.XXX.XXX  RUNNING
-controller1  us-central1-f  n1-standard-1               10.240.0.21  XXX.XXX.XXX.XXX  RUNNING
-controller2  us-central1-f  n1-standard-1               10.240.0.22  XXX.XXX.XXX.XXX  RUNNING
-etcd0        us-central1-f  n1-standard-1               10.240.0.10  XXX.XXX.XXX.XXX  RUNNING
-```
+* controller0
+* controller1
+* controller2
 
 In this lab you will also create a frontend load balancer with a public IP address for remote access to the API servers and H/A.
 
@@ -35,9 +27,6 @@ Each component is being run on the same machines for the following reasons:
 
 Run the following commands on `controller0`, `controller1`, `controller2`:
 
-> SSH into each machine using the `gcloud compute ssh` command
-
-
 Move the TLS certificates in place:
 
 ```
@@ -51,10 +40,10 @@ sudo mv ca.pem kubernetes-key.pem kubernetes.pem /var/lib/kubernetes/
 Download and install the Kubernetes controller binaries:
 
 ```
-wget https://storage.googleapis.com/kubernetes-release/release/v1.3.0/bin/linux/amd64/kube-apiserver
-wget https://storage.googleapis.com/kubernetes-release/release/v1.3.0/bin/linux/amd64/kube-controller-manager
-wget https://storage.googleapis.com/kubernetes-release/release/v1.3.0/bin/linux/amd64/kube-scheduler
-wget https://storage.googleapis.com/kubernetes-release/release/v1.3.0/bin/linux/amd64/kubectl
+wget https://storage.googleapis.com/kubernetes-release/release/v1.3.6/bin/linux/amd64/kube-apiserver
+wget https://storage.googleapis.com/kubernetes-release/release/v1.3.6/bin/linux/amd64/kube-controller-manager
+wget https://storage.googleapis.com/kubernetes-release/release/v1.3.6/bin/linux/amd64/kube-scheduler
+wget https://storage.googleapis.com/kubernetes-release/release/v1.3.6/bin/linux/amd64/kubectl
 ```
 
 ```
@@ -105,10 +94,20 @@ sudo mv authorization-policy.jsonl /var/lib/kubernetes/
 
 Capture the internal IP address:
 
+#### GCE
+
 ```
 export INTERNAL_IP=$(curl -s -H "Metadata-Flavor: Google" \
   http://metadata.google.internal/computeMetadata/v1/instance/network-interfaces/0/ip)
 ```
+
+#### AWS
+
+```
+export INTERNAL_IP=$(curl -s http://169.254.169.254/latest/meta-data/local-ipv4)
+```
+
+---
 
 Create the systemd unit file:
 
