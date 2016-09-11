@@ -150,18 +150,6 @@ aws ec2 delete-internet-gateway \
   --internet-gateway-id ${INTERNET_GATEWAY_ID}
 ```
 
-#### Route Tables
-
-```
-ROUTE_TABLE_ID=$(aws ec2 describe-route-tables \
-  --filters "Name=tag:Name,Values=kubernetes" | \
-  jq -r '.RouteTables[].RouteTableId')
-```
-
-```
-aws ec2 delete-route-table --route-table-id ${ROUTE_TABLE_ID}
-```
-
 #### Subnets
 
 ```
@@ -172,6 +160,18 @@ SUBNET_ID=$(aws ec2 describe-subnets \
 
 ```
 aws ec2 delete-subnet --subnet-id ${SUBNET_ID}
+```
+
+#### Route Tables
+
+```
+ROUTE_TABLE_ID=$(aws ec2 describe-route-tables \
+  --filters "Name=tag:Name,Values=kubernetes" | \
+  jq -r '.RouteTables[].RouteTableId')
+```
+
+```
+aws ec2 delete-route-table --route-table-id ${ROUTE_TABLE_ID}
 ```
 
 #### VPC
