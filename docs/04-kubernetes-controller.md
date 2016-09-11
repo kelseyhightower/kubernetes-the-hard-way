@@ -76,7 +76,7 @@ sudo mv token.csv /var/lib/kubernetes/
 
 ##### Authorization
 
-Attribute-Based Access Control (ABAC) will be used to authorize access to the Kubernetes API. In this lab ABAC will be setup using the Kuberentes policy file backend as documented in the [Kubernetes authorization guide](http://kubernetes.io/docs/admin/authorization).
+Attribute-Based Access Control (ABAC) will be used to authorize access to the Kubernetes API. In this lab ABAC will be setup using the Kubernetes policy file backend as documented in the [Kubernetes authorization guide](http://kubernetes.io/docs/admin/authorization).
 
 ```
 wget https://raw.githubusercontent.com/kelseyhightower/kubernetes-the-hard-way/master/authorization-policy.jsonl
