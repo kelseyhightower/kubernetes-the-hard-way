@@ -8,6 +8,8 @@ This tutorial is optimized for learning, which means taking the long route to he
 
 The target audience for this tutorial is someone planning to support a production Kubernetes cluster and wants to understand how everything fits together. After completing this tutorial I encourage you to automate away the manual steps presented in this guide.
 
+Please note that for AWS the configuration is not production suitable, and you should use a tool such as [kops](https://github.com/kubernetes/kops) instead.
+
 ## Cluster Details
 
 * Kubernetes 1.3.6
@@ -24,6 +26,7 @@ The resulting cluster will be missing the following items:
 * [Cluster add-ons](https://github.com/kubernetes/kubernetes/tree/master/cluster/addons)
 * [Logging](http://kubernetes.io/docs/user-guide/logging)
 * [No Cloud Provider Integration](http://kubernetes.io/docs/getting-started-guides/)
+* Unsupported and not production suitable on AWS.  Please use for educational purposes only.
 
 ### Assumptions
 
