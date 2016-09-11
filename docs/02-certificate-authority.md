@@ -120,19 +120,19 @@ openssl x509 -in ca.pem -text -noout
 
 In this section we will generate a TLS certificate that will be valid for all Kubernetes components. This is being done for ease of use. In production you should strongly consider generating individual TLS certificates for each component.
 
-### Set the Kubernetes Public IP Address
+### Set the Kubernetes Public Address
 
 #### GCE
 
 ```
-KUBERNETES_PUBLIC_IP_ADDRESS=$(gcloud compute addresses describe kubernetes \
+KUBERNETES_PUBLIC_ADDRESS=$(gcloud compute addresses describe kubernetes \
   --format 'value(address)')
 ```
 
 #### AWS
 
 ```
-KUBERNETES_PUBLIC_IP_ADDRESS=$(aws elb describe-load-balancers \
+KUBERNETES_PUBLIC_ADDRESS=$(aws elb describe-load-balancers \
   --load-balancer-name kubernetes | \
   jq -r '.LoadBalancerDescriptions[].DNSName')
 ```
@@ -159,7 +159,7 @@ cat > kubernetes-csr.json <<EOF
     "10.240.0.30",
     "10.240.0.31",
     "10.240.0.32",
-    "${KUBERNETES_PUBLIC_IP_ADDRESS}",
+    "${KUBERNETES_PUBLIC_ADDRESS}",
     "127.0.0.1"
   ],
   "key": {
