@@ -164,7 +164,7 @@ aws ec2 authorize-security-group-ingress \
 aws ec2 authorize-security-group-ingress \
   --group-id ${SECURITY_GROUP_ID} \
   --protocol tcp \
-  --port 443 \
+  --port 6443 \
   --cidr 0.0.0.0/0
 ```
 
@@ -178,12 +178,6 @@ aws elb create-load-balancer \
   --listeners "Protocol=TCP,LoadBalancerPort=6443,InstanceProtocol=TCP,InstancePort=6443" \
   --subnets ${SUBNET_ID} \
   --security-groups ${SECURITY_GROUP_ID}
-```
-
-```
-KUBERNETES_PUBLIC_IP_ADDRESS=$(aws elb describe-load-balancers \
-  --load-balancer-name kubernetes | \
-  jq -r '.LoadBalancerDescriptions[].DNSName')
 ```
 
 ## Provision Virtual Machines
