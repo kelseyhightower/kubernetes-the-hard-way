@@ -19,6 +19,12 @@ VPC_ID=$(aws ec2 create-vpc \
 ```
 
 ```
+aws ec2 create-tags \
+  --resources ${VPC_ID} \
+  --tags Key=Name,Value=kubernetes
+```
+
+```
 aws ec2 modify-vpc-attribute \
   --vpc-id ${VPC_ID} \
   --enable-dns-support '{"Value": true}'
@@ -38,6 +44,12 @@ DHCP_OPTION_SET_ID=$(aws ec2 create-dhcp-options \
 ```
 
 ```
+aws ec2 create-tags \
+  --resources ${DHCP_OPTION_SET_ID} \
+  --tags Key=Name,Value=kubernetes
+```
+
+```
 aws ec2 associate-dhcp-options \
   --dhcp-options-id ${DHCP_OPTION_SET_ID} \
   --vpc-id ${VPC_ID}
@@ -52,11 +64,23 @@ SUBNET_ID=$(aws ec2 create-subnet \
   jq -r '.Subnet.SubnetId')
 ```
 
+```
+aws ec2 create-tags \
+  --resources ${SUBNET_ID} \
+  --tags Key=Name,Value=kubernetes
+```
+
 Create an internet gateway
 
 ```
 INTERNET_GATEWAY_ID=$(aws ec2 create-internet-gateway | \
   jq -r '.InternetGateway.InternetGatewayId')
+```
+
+```
+aws ec2 create-tags \
+  --resources ${INTERNET_GATEWAY_ID} \
+  --tags Key=Name,Value=kubernetes
 ```
 
 ```
@@ -71,6 +95,12 @@ aws ec2 attach-internet-gateway \
 ROUTE_TABLE_ID=$(aws ec2 create-route-table \
   --vpc-id ${VPC_ID} | \
   jq -r '.RouteTable.RouteTableId')
+```
+
+```
+aws ec2 create-tags \
+  --resources ${ROUTE_TABLE_ID} \
+  --tags Key=Name,Value=kubernetes
 ```
 
 ```
@@ -94,6 +124,12 @@ SECURITY_GROUP_ID=$(aws ec2 create-security-group \
   --description "Kubernetes security group" \
   --vpc-id ${VPC_ID} | \
   jq -r '.GroupId')
+```
+
+```
+aws ec2 create-tags \
+  --resources ${SECURITY_GROUP_ID} \
+  --tags Key=Name,Value=kubernetes
 ```
 
 ```
