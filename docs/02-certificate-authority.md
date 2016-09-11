@@ -214,6 +214,10 @@ KUBERNETES_HOSTS=(controller0 controller1 controller2 etcd0 etcd1 etcd2 worker0 
 
 ### GCE
 
+The following command will:
+
+* Copy the TLS certificates and keys to each Kubernetes host using the `gcloud compute copy-files` command.
+
 ```
 for host in ${KUBERNETES_HOSTS[*]}; do
   gcloud compute copy-files ca.pem kubernetes-key.pem kubernetes.pem ${host}:~/
@@ -221,6 +225,10 @@ done
 ```
 
 ### AWS
+
+The following command will:
+ * Extract the public IP address for each Kubernetes host
+ * Copy the TLS certificates and keys to each Kubernetes host using `scp`
 
 ```
 for host in ${KUBERNETES_HOSTS[*]}; do
