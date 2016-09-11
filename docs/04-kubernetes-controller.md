@@ -60,15 +60,26 @@ sudo mv kube-apiserver kube-controller-manager kube-scheduler kubectl /usr/bin/
 
 ##### Authentication
 
-[Token based authentication](http://kubernetes.io/docs/admin/authentication) will be used to limit access to Kubernetes API.
+[Token based authentication](http://kubernetes.io/docs/admin/authentication) will be used to limit access to the Kubernetes API. The authentication token is used by the following components:
+
+* The Kubernetes kubelet which runs on the worker nodes
+* The kubectl commandline tool
+
+The other components, mainly the scheduler and controller manager, access the Kubernetes API server locally over the insecure API port which does not require authentication. The insecure port is only enabled for local access.
+
+Download the example token file:
 
 ```
 wget https://raw.githubusercontent.com/kelseyhightower/kubernetes-the-hard-way/master/token.csv
 ```
 
+Review the example token file and replace the default token.
+
 ```
 cat token.csv
 ```
+
+Move the token file into the Kubernetes configuration directory so it can be read by the Kubernetes API server.
 
 ```
 sudo mv token.csv /var/lib/kubernetes/
@@ -78,13 +89,19 @@ sudo mv token.csv /var/lib/kubernetes/
 
 Attribute-Based Access Control (ABAC) will be used to authorize access to the Kubernetes API. In this lab ABAC will be setup using the Kubernetes policy file backend as documented in the [Kubernetes authorization guide](http://kubernetes.io/docs/admin/authorization).
 
+Download the example authorization policy file:
+
 ```
 wget https://raw.githubusercontent.com/kelseyhightower/kubernetes-the-hard-way/master/authorization-policy.jsonl
 ```
 
+Review the example authorization policy file. No changes are required.
+
 ```
 cat authorization-policy.jsonl
 ```
+
+Move the authorization policy file into the Kubernetes configuration directory so it can be read by the Kubernetes API server.
 
 ```
 sudo mv authorization-policy.jsonl /var/lib/kubernetes/
