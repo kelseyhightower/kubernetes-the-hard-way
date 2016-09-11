@@ -6,22 +6,7 @@ This lab will walk you through provisioning the compute instances required for r
 
 After completing this guide you should have the following compute instances:
 
-```
-aws ec2 describe-instances \
-  --filters "Name=instance-state-name,Values=running" | \
-  jq -j '.Reservations[].Instances[] | .InstanceId, "  ", .Placement.AvailabilityZone, "  ", .PrivateIpAddress, "  ", .PublicIpAddress, "\n"'
-```
-```
-i-f3714f2e  us-west-2c  10.240.0.22  XX.XXX.XX.XX
-i-ae714f73  us-west-2c  10.240.0.11  XX.XX.XX.XXX
-i-f4714f29  us-west-2c  10.240.0.21  XX.XX.XXX.XXX
-i-f6714f2b  us-west-2c  10.240.0.12  XX.XX.XX.XX
-i-e26e503f  us-west-2c  10.240.0.30  XX.XX.XXX.XXX
-i-e36e503e  us-west-2c  10.240.0.31  XX.XX.XX.XX
-i-e8714f35  us-west-2c  10.240.0.10  XX.XX.XXX.XXX
-i-78704ea5  us-west-2c  10.240.0.20  XX.XX.XXX.XXX
-i-4a6e5097  us-west-2c  10.240.0.32  XX.XX.XX.XX
-```
+![EC2 Console](ec2-instances.png)
 
 > All machines will be provisioned with fixed private IP addresses to simplify the bootstrap process.
 
@@ -404,4 +389,24 @@ WORKER_2_INSTANCE_ID=$(aws ec2 run-instances \
 aws ec2 create-tags \
   --resources ${WORKER_2_INSTANCE_ID} \
   --tags Key=Name,Value=worker2
+```
+
+
+## Verify
+
+```
+aws ec2 describe-instances \
+  --filters "Name=instance-state-name,Values=running" | \
+  jq -j '.Reservations[].Instances[] | .InstanceId, "  ", .Placement.AvailabilityZone, "  ", .PrivateIpAddress, "  ", .PublicIpAddress, "\n"'
+```
+```
+i-f3714f2e  us-west-2c  10.240.0.22  XX.XXX.XX.XX
+i-ae714f73  us-west-2c  10.240.0.11  XX.XX.XX.XXX
+i-f4714f29  us-west-2c  10.240.0.21  XX.XX.XXX.XXX
+i-f6714f2b  us-west-2c  10.240.0.12  XX.XX.XX.XX
+i-e26e503f  us-west-2c  10.240.0.30  XX.XX.XXX.XXX
+i-e36e503e  us-west-2c  10.240.0.31  XX.XX.XX.XX
+i-e8714f35  us-west-2c  10.240.0.10  XX.XX.XXX.XXX
+i-78704ea5  us-west-2c  10.240.0.20  XX.XX.XXX.XXX
+i-4a6e5097  us-west-2c  10.240.0.32  XX.XX.XX.XX
 ```
