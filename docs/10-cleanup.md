@@ -68,8 +68,9 @@ KUBERNETES_HOSTS=(controller0 controller1 controller2 etcd0 etcd1 etcd2 worker0 
 ```
 for host in ${KUBERNETES_HOSTS[*]}; do
   INSTANCE_ID=$(aws ec2 describe-instances \
-    --filters "Name=tag:Name,Values=${host}" | \
-    jq -j '.Reservations[].Instances[].InstanceId')
+    --filters "Name=tag:Name,Values=${host}" \
+    --output text \
+    --query 'Reservations[].Instances[].InstanceId')
   aws ec2 terminate-instances --instance-ids ${INSTANCE_ID}
 done
 ```
@@ -124,14 +125,16 @@ aws elb delete-load-balancer \
 
 ```
 VPC_ID=$(aws ec2 describe-vpcs \
-  --filters "Name=tag:Name,Values=kubernetes" | \
-  jq -r '.Vpcs[].VpcId')
+  --filters "Name=tag:Name,Values=kubernetes" \
+  --output text \
+  --query 'Vpcs[].VpcId')
 ```
 
 ```
 INTERNET_GATEWAY_ID=$(aws ec2 describe-internet-gateways \
-  --filters "Name=tag:Name,Values=kubernetes" | \
-  jq -r '.InternetGateways[].InternetGatewayId')
+  --filters "Name=tag:Name,Values=kubernetes" \
+  --output text \
+  --query 'InternetGateways[].InternetGatewayId')
 ```
 
 ```
@@ -149,8 +152,9 @@ aws ec2 delete-internet-gateway \
 
 ```
 SECURITY_GROUP_ID=$(aws ec2 describe-security-groups \
-  --filters "Name=tag:Name,Values=kubernetes" | \
-  jq -r '.SecurityGroups[].GroupId')
+  --filters "Name=tag:Name,Values=kubernetes" \
+  --output text \
+  --query 'SecurityGroups[].GroupId')
 ```
 
 ```
@@ -162,8 +166,9 @@ aws ec2 delete-security-group \
 
 ```
 SUBNET_ID=$(aws ec2 describe-subnets \
-  --filters "Name=tag:Name,Values=kubernetes" | \
-  jq -r '.Subnets[].SubnetId')
+  --filters "Name=tag:Name,Values=kubernetes" \
+  --output text \
+  --query 'Subnets[].SubnetId')
 ```
 
 ```
@@ -174,8 +179,9 @@ aws ec2 delete-subnet --subnet-id ${SUBNET_ID}
 
 ```
 ROUTE_TABLE_ID=$(aws ec2 describe-route-tables \
-  --filters "Name=tag:Name,Values=kubernetes" | \
-  jq -r '.RouteTables[].RouteTableId')
+  --filters "Name=tag:Name,Values=kubernetes" \
+  --output text \
+  --query 'RouteTables[].RouteTableId')
 ```
 
 ```
@@ -186,8 +192,9 @@ aws ec2 delete-route-table --route-table-id ${ROUTE_TABLE_ID}
 
 ```
 VPC_ID=$(aws ec2 describe-vpcs \
-  --filters "Name=tag:Name,Values=kubernetes" | \
-  jq -r '.Vpcs[].VpcId')
+  --filters "Name=tag:Name,Values=kubernetes" \
+  --output text \
+  --query 'Vpcs[].VpcId')
 ```
 
 ```
@@ -198,8 +205,9 @@ aws ec2 delete-vpc --vpc-id ${VPC_ID}
 
 ```
 DHCP_OPTION_SET_ID=$(aws ec2 describe-dhcp-options \
-  --filters "Name=tag:Name,Values=kubernetes" | \
-  jq -r '.DhcpOptions[].DhcpOptionsId')
+  --filters "Name=tag:Name,Values=kubernetes" \
+  --output text \
+  --query 'DhcpOptions[].DhcpOptionsId')
 ```
 
 ```
