@@ -364,7 +364,7 @@ CONTROLLER_0_INSTANCE_ID=$(aws ec2 run-instances \
   --private-ip-address 10.240.0.20 \
   --subnet-id ${SUBNET_ID} \
   --output text \
-  --query '.Instances[].InstanceId')
+  --query 'Instances[].InstanceId')
 ```
 
 ```
