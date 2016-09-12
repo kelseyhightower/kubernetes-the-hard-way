@@ -20,7 +20,7 @@ To make our Kubernetes control plane remotely accessible, a public IP address wi
 VPC_ID=$(aws ec2 create-vpc \
   --cidr-block 10.240.0.0/16 \
   --output text \
-  --query '.Vpc.VpcId')
+  --query 'Vpc.VpcId')
 ```
 
 ```
