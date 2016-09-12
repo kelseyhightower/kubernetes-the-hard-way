@@ -27,6 +27,12 @@ Each component is being run on the same machines for the following reasons:
 
 Run the following commands on `controller0`, `controller1`, `controller2`:
 
+You can ssh into each instance using the `gcloud` command. Assuming the Google Compute project you created for this example was called `kubernetes-the-hard-way` and you created your instances in the zone `us-central1-a`, you can log into `etcd0` instance with the following command:
+
+```
+gcloud compute --project "kubernetes-the-hard-way" ssh --zone "us-central1-a" "etcd0"
+```
+
 Move the TLS certificates in place:
 
 ```
