@@ -21,7 +21,7 @@ The target audience for this tutorial is someone planning to support a productio
 * Docker 1.11.2
 * [CNI Based Networking](https://github.com/containernetworking/cni)
 * Secure communication between all components (etcd, control plane, workers)
-* Default Service Account and Secrets 
+* Default Service Account and Secrets
 
 
 ### What's Missing
@@ -46,12 +46,14 @@ AWS
 
 * The us-west-2 region will be used
 
-## Labs
+## Platforms
 
 This tutorial assumes you have access to one of the following:
 
 * [Google Cloud Platform](https://cloud.google.com) and the [Google Cloud SDK](https://cloud.google.com/sdk/) (125.0.0+)
 * [Amazon Web Services](https://aws.amazon.com), the [AWS CLI](https://aws.amazon.com/cli) (1.10.63+), and [jq](https://stedolan.github.io/jq) (1.5+)
+
+## Labs
 
 While GCP or AWS will be used for basic infrastructure needs, the things learned in this tutorial apply to every platform.
 
