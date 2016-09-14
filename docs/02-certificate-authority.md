@@ -135,7 +135,7 @@ KUBERNETES_PUBLIC_ADDRESS=$(gcloud compute addresses describe kubernetes \
 KUBERNETES_PUBLIC_ADDRESS=$(aws elb describe-load-balancers \
   --load-balancer-name kubernetes \
   --output text \
-  --query '.LoadBalancerDescriptions[].DNSName')
+  --query 'LoadBalancerDescriptions[].DNSName')
 ```
 
 ---
