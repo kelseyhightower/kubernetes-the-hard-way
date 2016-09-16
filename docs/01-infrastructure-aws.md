@@ -18,8 +18,9 @@ To make our Kubernetes control plane remotely accessible, a public IP address wi
 
 ```
 VPC_ID=$(aws ec2 create-vpc \
-  --cidr-block 10.240.0.0/16 | \
-  jq -r '.Vpc.VpcId')
+  --cidr-block 10.240.0.0/16 \
+  --output text \
+  --query 'Vpc.VpcId')
 ```
 
 ```
@@ -45,8 +46,9 @@ aws ec2 modify-vpc-attribute \
 ```
 DHCP_OPTION_SET_ID=$(aws ec2 create-dhcp-options \
   --dhcp-configuration "Key=domain-name,Values=us-west-2.compute.internal" \
-    "Key=domain-name-servers,Values=AmazonProvidedDNS" | \
-  jq -r '.DhcpOptions.DhcpOptionsId')
+    "Key=domain-name-servers,Values=AmazonProvidedDNS" \
+  --output text \
+  --query 'DhcpOptions.DhcpOptionsId')
 ```
 
 ```
@@ -68,8 +70,9 @@ Create a subnet for the Kubernetes cluster:
 ```
 SUBNET_ID=$(aws ec2 create-subnet \
   --vpc-id ${VPC_ID} \
-  --cidr-block 10.240.0.0/24 | \
-  jq -r '.Subnet.SubnetId')
+  --cidr-block 10.240.0.0/24 \
+  --output text \
+  --query 'Subnet.SubnetId')
 ```
 
 ```
@@ -81,8 +84,9 @@ aws ec2 create-tags \
 ### Internet Gateways
 
 ```
-INTERNET_GATEWAY_ID=$(aws ec2 create-internet-gateway | \
-  jq -r '.InternetGateway.InternetGatewayId')
+INTERNET_GATEWAY_ID=$(aws ec2 create-internet-gateway \
+  --output text \
+  --query 'InternetGateway.InternetGatewayId')
 ```
 
 ```
@@ -101,8 +105,9 @@ aws ec2 attach-internet-gateway \
 
 ```
 ROUTE_TABLE_ID=$(aws ec2 create-route-table \
-  --vpc-id ${VPC_ID} | \
-  jq -r '.RouteTable.RouteTableId')
+  --vpc-id ${VPC_ID} \
+  --output text \
+  --query 'RouteTable.RouteTableId')
 ```
 
 ```
@@ -130,8 +135,9 @@ aws ec2 create-route \
 SECURITY_GROUP_ID=$(aws ec2 create-security-group \
   --group-name kubernetes \
   --description "Kubernetes security group" \
-  --vpc-id ${VPC_ID} | \
-  jq -r '.GroupId')
+  --vpc-id ${VPC_ID} \
+  --output text \
+  --query 'GroupId')
 ```
 
 ```
@@ -250,8 +256,9 @@ IMAGE_ID="ami-746aba14"
 ### Generate A SSH Key Pair
 
 ```
-aws ec2 create-key-pair --key-name kubernetes | \
-  jq -r '.KeyMaterial' > ~/.ssh/kubernetes_the_hard_way
+aws ec2 create-key-pair --key-name kubernetes \
+  --output text \
+  --query 'KeyMaterial' > ~/.ssh/kubernetes_the_hard_way
 ```
 
 ```
@@ -268,8 +275,9 @@ Once the virtual machines are created you'll be able to login into each machine 
 
 ```
 WORKER_0_PUBLIC_IP_ADDRESS=$(aws ec2 describe-instances \
-    --filters "Name=tag:Name,Values=worker0" | \
-    jq -j '.Reservations[].Instances[].PublicIpAddress')
+    --filters "Name=tag:Name,Values=worker0" \
+    --output text \
+    --query 'Reservations[].Instances[].PublicIpAddress')
 ```
 
 > The instance public IP address can also be obtained from the EC2 console. Each node will be tagged with a unique name.
@@ -291,8 +299,9 @@ ETCD_0_INSTANCE_ID=$(aws ec2 run-instances \
   --security-group-ids ${SECURITY_GROUP_ID} \
   --instance-type t2.small \
   --private-ip-address 10.240.0.10 \
-  --subnet-id ${SUBNET_ID} | \
-  jq -r '.Instances[].InstanceId')
+  --subnet-id ${SUBNET_ID} \
+  --output text \
+  --query 'Instances[].InstanceId')
 ```
 
 ```
@@ -310,8 +319,9 @@ ETCD_1_INSTANCE_ID=$(aws ec2 run-instances \
   --security-group-ids ${SECURITY_GROUP_ID} \
   --instance-type t2.small \
   --private-ip-address 10.240.0.11 \
-  --subnet-id ${SUBNET_ID} | \
-  jq -r '.Instances[].InstanceId')
+  --subnet-id ${SUBNET_ID} \
+  --output text \
+  --query 'Instances[].InstanceId')
 ```
 
 ```
@@ -329,8 +339,9 @@ ETCD_2_INSTANCE_ID=$(aws ec2 run-instances \
   --security-group-ids ${SECURITY_GROUP_ID} \
   --instance-type t2.small \
   --private-ip-address 10.240.0.12 \
-  --subnet-id ${SUBNET_ID} | \
-  jq -r '.Instances[].InstanceId')
+  --subnet-id ${SUBNET_ID} \
+  --output text \
+  --query 'Instances[].InstanceId')
 ```
 
 ```
@@ -351,8 +362,9 @@ CONTROLLER_0_INSTANCE_ID=$(aws ec2 run-instances \
   --security-group-ids ${SECURITY_GROUP_ID} \
   --instance-type t2.small \
   --private-ip-address 10.240.0.20 \
-  --subnet-id ${SUBNET_ID} | \
-  jq -r '.Instances[].InstanceId')
+  --subnet-id ${SUBNET_ID} \
+  --output text \
+  --query 'Instances[].InstanceId')
 ```
 
 ```
@@ -377,8 +389,9 @@ CONTROLLER_1_INSTANCE_ID=$(aws ec2 run-instances \
   --security-group-ids ${SECURITY_GROUP_ID} \
   --instance-type t2.small \
   --private-ip-address 10.240.0.21 \
-  --subnet-id ${SUBNET_ID} | \
-  jq -r '.Instances[].InstanceId')
+  --subnet-id ${SUBNET_ID} \
+  --output text \
+  --query 'Instances[].InstanceId')
 ```
 
 ```
@@ -403,8 +416,9 @@ CONTROLLER_2_INSTANCE_ID=$(aws ec2 run-instances \
   --security-group-ids ${SECURITY_GROUP_ID} \
   --instance-type t2.small \
   --private-ip-address 10.240.0.22 \
-  --subnet-id ${SUBNET_ID} | \
-  jq -r '.Instances[].InstanceId')
+  --subnet-id ${SUBNET_ID} \
+  --output text \
+  --query 'Instances[].InstanceId')
 ```
 
 ```
@@ -431,8 +445,9 @@ WORKER_0_INSTANCE_ID=$(aws ec2 run-instances \
   --security-group-ids ${SECURITY_GROUP_ID} \
   --instance-type t2.small \
   --private-ip-address 10.240.0.30 \
-  --subnet-id ${SUBNET_ID} | \
-  jq -r '.Instances[].InstanceId')
+  --subnet-id ${SUBNET_ID} \
+  --output text \
+  --query 'Instances[].InstanceId')
 ```
 
 ```
@@ -457,8 +472,9 @@ WORKER_1_INSTANCE_ID=$(aws ec2 run-instances \
   --security-group-ids ${SECURITY_GROUP_ID} \
   --instance-type t2.small \
   --private-ip-address 10.240.0.31 \
-  --subnet-id ${SUBNET_ID} | \
-  jq -r '.Instances[].InstanceId')
+  --subnet-id ${SUBNET_ID} \
+  --output text \
+  --query 'Instances[].InstanceId')
 ```
 
 ```
@@ -483,8 +499,9 @@ WORKER_2_INSTANCE_ID=$(aws ec2 run-instances \
   --security-group-ids ${SECURITY_GROUP_ID} \
   --instance-type t2.small \
   --private-ip-address 10.240.0.32 \
-  --subnet-id ${SUBNET_ID} | \
-  jq -r '.Instances[].InstanceId')
+  --subnet-id ${SUBNET_ID} \
+  --output text \
+  --query 'Instances[].InstanceId')
 ```
 
 ```
@@ -504,8 +521,9 @@ aws ec2 create-tags \
 
 ```
 aws ec2 describe-instances \
-  --filters "Name=instance-state-name,Values=running" | \
-  jq -j '.Reservations[].Instances[] | .InstanceId, "  ", .Placement.AvailabilityZone, "  ", .PrivateIpAddress, "  ", .PublicIpAddress, "\n"'
+  --filters "Name=instance-state-name,Values=running" \
+  --output text \
+  --query 'Reservations[].Instances[].{ID:InstanceId, AZ:Placement.AvailabilityZone, PrivateIP:PrivateIpAddress, PublicIP:PublicIpAddress}'
 ```
 ```
 i-f3714f2e  us-west-2c  10.240.0.22  XX.XXX.XX.XX

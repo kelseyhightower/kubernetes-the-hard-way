@@ -59,8 +59,9 @@ NODE_PUBLIC_IP=$(gcloud compute instances describe worker0 \
 
 ```
 SECURITY_GROUP_ID=$(aws ec2 describe-security-groups \
-  --filters "Name=tag:Name,Values=kubernetes" | \
-  jq -r '.SecurityGroups[].GroupId')
+  --filters "Name=tag:Name,Values=kubernetes" \
+  --output text \
+  --query 'SecurityGroups[].GroupId')
 ```
 
 ```
@@ -75,8 +76,9 @@ Grab the `EXTERNAL_IP` for one of the worker nodes:
 
 ```
 NODE_PUBLIC_IP=$(aws ec2 describe-instances \
-  --filters "Name=tag:Name,Values=worker0" | \
-  jq -j '.Reservations[].Instances[].PublicIpAddress')
+  --filters "Name=tag:Name,Values=worker0" \
+  --output text \
+  --query 'Reservations[].Instances[].PublicIpAddress')
 ```
 
 ---

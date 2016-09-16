@@ -76,14 +76,16 @@ gcloud compute routes create kubernetes-route-10-200-2-0-24 \
 
 ```
 ROUTE_TABLE_ID=$(aws ec2 describe-route-tables \
-  --filters "Name=tag:Name,Values=kubernetes" | \
-  jq -r '.RouteTables[].RouteTableId')
+  --filters "Name=tag:Name,Values=kubernetes" \
+  --output text \
+  --query 'RouteTables[].RouteTableId')
 ```
 
 ```
 WORKER_0_INSTANCE_ID=$(aws ec2 describe-instances \
-  --filters "Name=tag:Name,Values=worker0" | \
-  jq -j '.Reservations[].Instances[].InstanceId')
+  --filters "Name=tag:Name,Values=worker0" \
+  --output text \
+  --query 'Reservations[].Instances[].InstanceId')
 ```
 
 ```
@@ -95,8 +97,9 @@ aws ec2 create-route \
 
 ```
 WORKER_1_INSTANCE_ID=$(aws ec2 describe-instances \
-  --filters "Name=tag:Name,Values=worker1" | \
-  jq -j '.Reservations[].Instances[].InstanceId')
+  --filters "Name=tag:Name,Values=worker1" \
+  --output text \
+  --query 'Reservations[].Instances[].InstanceId')
 ```
 
 ```
@@ -108,8 +111,9 @@ aws ec2 create-route \
 
 ```
 WORKER_2_INSTANCE_ID=$(aws ec2 describe-instances \
-  --filters "Name=tag:Name,Values=worker2" | \
-  jq -j '.Reservations[].Instances[].InstanceId')
+  --filters "Name=tag:Name,Values=worker2" \
+  --output text \
+  --query 'Reservations[].Instances[].InstanceId')
 ```
 
 ```

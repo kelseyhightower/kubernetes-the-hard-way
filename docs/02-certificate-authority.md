@@ -133,8 +133,9 @@ KUBERNETES_PUBLIC_ADDRESS=$(gcloud compute addresses describe kubernetes \
 
 ```
 KUBERNETES_PUBLIC_ADDRESS=$(aws elb describe-load-balancers \
-  --load-balancer-name kubernetes | \
-  jq -r '.LoadBalancerDescriptions[].DNSName')
+  --load-balancer-name kubernetes \
+  --output text \
+  --query 'LoadBalancerDescriptions[].DNSName')
 ```
 
 ---
@@ -236,8 +237,9 @@ The following command will:
 ```
 for host in ${KUBERNETES_HOSTS[*]}; do
   PUBLIC_IP_ADDRESS=$(aws ec2 describe-instances \
-    --filters "Name=tag:Name,Values=${host}" | \
-    jq -r '.Reservations[].Instances[].PublicIpAddress')
+    --filters "Name=tag:Name,Values=${host}" \
+    --output text \
+    --query 'Reservations[].Instances[].PublicIpAddress')
   scp ca.pem kubernetes-key.pem kubernetes.pem \
     ubuntu@${PUBLIC_IP_ADDRESS}:~/
 done
