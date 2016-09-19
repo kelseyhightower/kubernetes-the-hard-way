@@ -4,7 +4,7 @@ Now that each worker node is online we need to add routes to make sure that Pods
 
 ## Container Subnets
 
-The IP addresses for each pod will be allocated from the `podCIDR` range assinged to each Kubernetes worker through the node registration process.
+The IP addresses for each pod will be allocated from the `podCIDR` range assigned to each Kubernetes worker through the node registration process.
 
 During the worker setup process the following flags were set on the Kubelet to ensure each node obtained a `podCIDR` from the API server:
 
