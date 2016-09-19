@@ -505,16 +505,16 @@ aws ec2 create-tags \
 ```
 aws ec2 describe-instances \
   --filters "Name=instance-state-name,Values=running" | \
-  jq -j '.Reservations[].Instances[] | .InstanceId, "  ", .Placement.AvailabilityZone, "  ", .PrivateIpAddress, "  ", .PublicIpAddress, "\n"'
+  jq -j '.Reservations[].Instances[] | .InstanceId, "  ", .Placement.AvailabilityZone, "  ", .PrivateIpAddress, "  ", .PublicIpAddress, "\t", ((.Tags[]? | select(.Key == "Name")) | .Value) // "-", "\n"'
 ```
 ```
-i-f3714f2e  us-west-2c  10.240.0.22  XX.XXX.XX.XX
-i-ae714f73  us-west-2c  10.240.0.11  XX.XX.XX.XXX
-i-f4714f29  us-west-2c  10.240.0.21  XX.XX.XXX.XXX
-i-f6714f2b  us-west-2c  10.240.0.12  XX.XX.XX.XX
-i-e26e503f  us-west-2c  10.240.0.30  XX.XX.XXX.XXX
-i-e36e503e  us-west-2c  10.240.0.31  XX.XX.XX.XX
-i-e8714f35  us-west-2c  10.240.0.10  XX.XX.XXX.XXX
-i-78704ea5  us-west-2c  10.240.0.20  XX.XX.XXX.XXX
-i-4a6e5097  us-west-2c  10.240.0.32  XX.XX.XX.XX
+i-f3714f2e  us-west-2c  10.240.0.22  XX.XXX.XX.XX     controller2
+i-ae714f73  us-west-2c  10.240.0.11  XX.XX.XX.XXX     etcd1
+i-f4714f29  us-west-2c  10.240.0.21  XX.XX.XXX.XXX    controller1
+i-f6714f2b  us-west-2c  10.240.0.12  XX.XX.XX.XX      etcd2
+i-e26e503f  us-west-2c  10.240.0.30  XX.XX.XXX.XXX    worker0
+i-e36e503e  us-west-2c  10.240.0.31  XX.XX.XX.XX      worker1
+i-e8714f35  us-west-2c  10.240.0.10  XX.XX.XXX.XXX    etcd0
+i-78704ea5  us-west-2c  10.240.0.20  XX.XX.XXX.XXX    controller0
+i-4a6e5097  us-west-2c  10.240.0.32  XX.XX.XX.XX      worker2
 ```
