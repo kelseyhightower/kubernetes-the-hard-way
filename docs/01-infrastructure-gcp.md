@@ -24,6 +24,17 @@ To make our Kubernetes control plane remotely accessible, a public IP address wi
 
 ## Networking
 
+Set the region and zone to us-central1:
+
+```
+gcloud config set compute/region us-central1
+```
+
+```
+gcloud config set compute/zone us-central1-f
+```
+Create a Kubernetes network:
+
 ```
 gcloud compute networks create kubernetes --mode custom
 ```
