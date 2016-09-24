@@ -140,6 +140,12 @@ All the VMs in this lab will be provisioned using Ubuntu 16.04 mainly because it
 
 ### Virtual Machines
 
+To avoid specifying the zone for each VM, you may wish to specify a default zone.
+
+```
+gcloud config set compute/zone us-central1-a
+```
+
 #### etcd
 
 ```
