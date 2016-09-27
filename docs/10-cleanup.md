@@ -7,8 +7,7 @@
 ```
 gcloud compute instances delete \
   controller0 controller1 controller2 \
-  worker0 worker1 worker2 \
-  etcd0 etcd1 etcd2
+  worker0 worker1 worker2
 ```
 
 ### Networking
@@ -62,7 +61,7 @@ gcloud compute networks delete kubernetes
 ### Virtual Machines
 
 ```
-KUBERNETES_HOSTS=(controller0 controller1 controller2 etcd0 etcd1 etcd2 worker0 worker1 worker2)
+KUBERNETES_HOSTS=(controller0 controller1 controller2 worker0 worker1 worker2)
 ```
 
 ```
