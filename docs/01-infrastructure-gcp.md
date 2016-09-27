@@ -1,15 +1,6 @@
 # Cloud Infrastructure Provisioning - Google Cloud Platform
 
-This lab will walk you through provisioning the compute instances required for running a H/A Kubernetes cluster. A total of 9 virtual machines will be created.
-
-If you are following this guide using the GCP free trial you may run into the following error:
-
-```
-ERROR: (gcloud.compute.instances.create) Some requests did not succeed:
- - Quota 'CPUS' exceeded. Limit: 8.0
-```
-
-This means you'll only be able to create 8 machines until you upgrade your account. In that case skip the provisioning of the `worker2` node to avoid hitting the CPUS qouta.
+This lab will walk you through provisioning the compute instances required for running a H/A Kubernetes cluster. A total of 6 virtual machines will be created.
 
 After completing this guide you should have the following compute instances:
 
@@ -19,15 +10,12 @@ gcloud compute instances list
 
 ````
 NAME         ZONE           MACHINE_TYPE   PREEMPTIBLE  INTERNAL_IP  EXTERNAL_IP      STATUS
-controller0  us-central1-f  n1-standard-1               10.240.0.20  XXX.XXX.XXX.XXX  RUNNING
-controller1  us-central1-f  n1-standard-1               10.240.0.21  XXX.XXX.XXX.XXX  RUNNING
-controller2  us-central1-f  n1-standard-1               10.240.0.22  XXX.XXX.XXX.XXX  RUNNING
-etcd0        us-central1-f  n1-standard-1               10.240.0.10  XXX.XXX.XXX.XXX  RUNNING
-etcd1        us-central1-f  n1-standard-1               10.240.0.11  XXX.XXX.XXX.XXX  RUNNING
-etcd2        us-central1-f  n1-standard-1               10.240.0.12  XXX.XXX.XXX.XXX  RUNNING
-worker0      us-central1-f  n1-standard-1               10.240.0.30  XXX.XXX.XXX.XXX  RUNNING
-worker1      us-central1-f  n1-standard-1               10.240.0.31  XXX.XXX.XXX.XXX  RUNNING
-worker2      us-central1-f  n1-standard-1               10.240.0.32  XXX.XXX.XXX.XXX  RUNNING
+controller0  us-central1-f  n1-standard-1               10.240.0.10  XXX.XXX.XXX.XXX  RUNNING
+controller1  us-central1-f  n1-standard-1               10.240.0.11  XXX.XXX.XXX.XXX  RUNNING
+controller2  us-central1-f  n1-standard-1               10.240.0.12  XXX.XXX.XXX.XXX  RUNNING
+worker0      us-central1-f  n1-standard-1               10.240.0.20  XXX.XXX.XXX.XXX  RUNNING
+worker1      us-central1-f  n1-standard-1               10.240.0.21  XXX.XXX.XXX.XXX  RUNNING
+worker2      us-central1-f  n1-standard-1               10.240.0.22  XXX.XXX.XXX.XXX  RUNNING
 ````
 
 > All machines will be provisioned with fixed private IP addresses to simplify the bootstrap process.
@@ -50,8 +38,7 @@ Create a subnet for the Kubernetes cluster:
 ```
 gcloud compute networks subnets create kubernetes \
   --network kubernetes \
-  --range 10.240.0.0/24 \
-  --region us-central1
+  --range 10.240.0.0/24
 ```
 
 ```
@@ -140,13 +127,13 @@ All the VMs in this lab will be provisioned using Ubuntu 16.04 mainly because it
 
 ### Virtual Machines
 
-#### etcd
+#### Kubernetes Controllers
 
 ```
-gcloud compute instances create etcd0 \
+gcloud compute instances create controller0 \
  --boot-disk-size 200GB \
  --can-ip-forward \
- --image ubuntu-1604-xenial-v20160627 \
+ --image ubuntu-1604-xenial-v20160921 \
  --image-project ubuntu-os-cloud \
  --machine-type n1-standard-1 \
  --private-network-ip 10.240.0.10 \
@@ -154,10 +141,10 @@ gcloud compute instances create etcd0 \
 ```
 
 ```
-gcloud compute instances create etcd1 \
+gcloud compute instances create controller1 \
  --boot-disk-size 200GB \
  --can-ip-forward \
- --image ubuntu-1604-xenial-v20160627 \
+ --image ubuntu-1604-xenial-v20160921 \
  --image-project ubuntu-os-cloud \
  --machine-type n1-standard-1 \
  --private-network-ip 10.240.0.11 \
@@ -165,48 +152,13 @@ gcloud compute instances create etcd1 \
 ```
 
 ```
-gcloud compute instances create etcd2 \
- --boot-disk-size 200GB \
- --can-ip-forward \
- --image ubuntu-1604-xenial-v20160627 \
- --image-project ubuntu-os-cloud \
- --machine-type n1-standard-1 \
- --private-network-ip 10.240.0.12 \
- --subnet kubernetes
-```
-
-#### Kubernetes Controllers
-
-```
-gcloud compute instances create controller0 \
- --boot-disk-size 200GB \
- --can-ip-forward \
- --image ubuntu-1604-xenial-v20160627 \
- --image-project ubuntu-os-cloud \
- --machine-type n1-standard-1 \
- --private-network-ip 10.240.0.20 \
- --subnet kubernetes
-```
-
-```
-gcloud compute instances create controller1 \
- --boot-disk-size 200GB \
- --can-ip-forward \
- --image ubuntu-1604-xenial-v20160627 \
- --image-project ubuntu-os-cloud \
- --machine-type n1-standard-1 \
- --private-network-ip 10.240.0.21 \
- --subnet kubernetes
-```
-
-```
 gcloud compute instances create controller2 \
  --boot-disk-size 200GB \
  --can-ip-forward \
- --image ubuntu-1604-xenial-v20160627 \
+ --image ubuntu-1604-xenial-v20160921 \
  --image-project ubuntu-os-cloud \
  --machine-type n1-standard-1 \
- --private-network-ip 10.240.0.22 \
+ --private-network-ip 10.240.0.12 \
  --subnet kubernetes
 ```
 
@@ -216,10 +168,10 @@ gcloud compute instances create controller2 \
 gcloud compute instances create worker0 \
  --boot-disk-size 200GB \
  --can-ip-forward \
- --image ubuntu-1604-xenial-v20160627 \
+ --image ubuntu-1604-xenial-v20160921 \
  --image-project ubuntu-os-cloud \
  --machine-type n1-standard-1 \
- --private-network-ip 10.240.0.30 \
+ --private-network-ip 10.240.0.20 \
  --subnet kubernetes
 ```
 
@@ -227,22 +179,20 @@ gcloud compute instances create worker0 \
 gcloud compute instances create worker1 \
  --boot-disk-size 200GB \
  --can-ip-forward \
- --image ubuntu-1604-xenial-v20160627 \
+ --image ubuntu-1604-xenial-v20160921 \
  --image-project ubuntu-os-cloud \
  --machine-type n1-standard-1 \
- --private-network-ip 10.240.0.31 \
+ --private-network-ip 10.240.0.21 \
  --subnet kubernetes
 ```
-
-If you are using the GCP free trial which limits your account to 8 nodes, skip the creation of `worker2` to avoid hitting the CPUS qouta.
 
 ```
 gcloud compute instances create worker2 \
  --boot-disk-size 200GB \
  --can-ip-forward \
- --image ubuntu-1604-xenial-v20160627 \
+ --image ubuntu-1604-xenial-v20160921 \
  --image-project ubuntu-os-cloud \
  --machine-type n1-standard-1 \
- --private-network-ip 10.240.0.32 \
+ --private-network-ip 10.240.0.22 \
  --subnet kubernetes
 ```

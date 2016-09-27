@@ -149,9 +149,9 @@ cat > kubernetes-csr.json <<EOF
     "worker0",
     "worker1",
     "worker2",
-    "ip-10-240-0-30",
-    "ip-10-240-0-31",
-    "ip-10-240-0-32",
+    "ip-10-240-0-20",
+    "ip-10-240-0-21",
+    "ip-10-240-0-22",
     "10.32.0.1",
     "10.240.0.10",
     "10.240.0.11",
@@ -159,9 +159,6 @@ cat > kubernetes-csr.json <<EOF
     "10.240.0.20",
     "10.240.0.21",
     "10.240.0.22",
-    "10.240.0.30",
-    "10.240.0.31",
-    "10.240.0.32",
     "${KUBERNETES_PUBLIC_ADDRESS}",
     "127.0.0.1"
   ],
@@ -212,7 +209,7 @@ openssl x509 -in kubernetes.pem -text -noout
 Set the list of Kubernetes hosts where the certs should be copied to:
 
 ```
-KUBERNETES_HOSTS=(controller0 controller1 controller2 etcd0 etcd1 etcd2 worker0 worker1 worker2)
+KUBERNETES_HOSTS=(controller0 controller1 controller2 worker0 worker1 worker2)
 ```
 
 ### GCE
