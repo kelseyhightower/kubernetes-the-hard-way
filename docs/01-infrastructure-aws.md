@@ -170,6 +170,13 @@ aws ec2 authorize-security-group-ingress \
   --cidr 0.0.0.0/0
 ```
 
+```
+aws ec2 authorize-security-group-ingress \
+  --group-id ${SECURITY_GROUP_ID} \
+  --protocol all \
+  --source-group ${SECURITY_GROUP_ID}
+```
+
 ### Kubernetes Public Address
 
 An ELB will be used to load balance traffic across the Kubernetes control plane.
