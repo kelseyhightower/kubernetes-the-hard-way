@@ -28,22 +28,12 @@ To make our Kubernetes control plane remotely accessible, a public IP address wi
 gcloud compute networks create kubernetes --mode custom
 ```
 
-```
-NAME        MODE    IPV4_RANGE  GATEWAY_IPV4
-kubernetes  custom
-```
-
 Create a subnet for the Kubernetes cluster:
 
 ```
 gcloud compute networks subnets create kubernetes \
   --network kubernetes \
   --range 10.240.0.0/24
-```
-
-```
-NAME        REGION       NETWORK     RANGE
-kubernetes  us-central1  kubernetes  10.240.0.0/24
 ```
 
 ### Firewall Rules
