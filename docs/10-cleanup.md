@@ -13,24 +13,24 @@ gcloud compute instances delete \
 ### Networking
 
 ```
-gcloud compute forwarding-rules delete kubernetes-rule
+gcloud -q compute forwarding-rules delete kubernetes-rule
 ```
 
 ```
-gcloud compute target-pools delete kubernetes-pool
+gcloud -q compute target-pools delete kubernetes-pool
 ```
 
 ```
-gcloud compute http-health-checks delete kube-apiserver-check
+gcloud -q compute http-health-checks delete kube-apiserver-check
 ```
 
 ```
-gcloud compute addresses delete kubernetes
+gcloud -q compute addresses delete kubernetes
 ```
 
 
 ```
-gcloud compute firewall-rules delete \
+gcloud -q compute firewall-rules delete \
   kubernetes-allow-api-server \
   kubernetes-allow-healthz \
   kubernetes-allow-icmp \
@@ -41,18 +41,18 @@ gcloud compute firewall-rules delete \
 ```
 
 ```
-gcloud compute routes delete \
+gcloud -q compute routes delete \
   kubernetes-route-10-200-0-0-24 \
   kubernetes-route-10-200-1-0-24 \
   kubernetes-route-10-200-2-0-24
 ```
 
 ```
-gcloud compute networks subnets delete kubernetes
+gcloud -q compute networks subnets delete kubernetes
 ```
 
 ```
-gcloud compute networks delete kubernetes
+gcloud -q compute networks delete kubernetes
 ```
 
 
