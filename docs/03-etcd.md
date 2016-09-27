@@ -67,7 +67,6 @@ Description=etcd
 Documentation=https://github.com/coreos
 
 [Service]
-Type=notify
 ExecStart=/usr/bin/etcd --name ETCD_NAME \
   --cert-file=/etc/etcd/kubernetes.pem \
   --key-file=/etc/etcd/kubernetes-key.pem \
