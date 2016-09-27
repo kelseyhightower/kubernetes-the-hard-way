@@ -1,6 +1,6 @@
 # Cloud Infrastructure Provisioning - Amazon Web Services
 
-This lab will walk you through provisioning the compute instances required for running a H/A Kubernetes cluster. A total of 9 virtual machines will be created.
+This lab will walk you through provisioning the compute instances required for running a H/A Kubernetes cluster. A total of 6 virtual machines will be created.
 
 The guide assumes you'll be creating resources in the `us-west-2` region.
 
@@ -280,65 +280,6 @@ ssh ubuntu@${WORKER_0_PUBLIC_IP_ADDRESS}
 
 ### Virtual Machines
 
-#### etcd
-
-```
-ETCD_0_INSTANCE_ID=$(aws ec2 run-instances \
-  --associate-public-ip-address \
-  --image-id ${IMAGE_ID} \
-  --count 1 \
-  --key-name kubernetes \
-  --security-group-ids ${SECURITY_GROUP_ID} \
-  --instance-type t2.small \
-  --private-ip-address 10.240.0.10 \
-  --subnet-id ${SUBNET_ID} | \
-  jq -r '.Instances[].InstanceId')
-```
-
-```
-aws ec2 create-tags \
-  --resources ${ETCD_0_INSTANCE_ID} \
-  --tags Key=Name,Value=etcd0
-```
-
-```
-ETCD_1_INSTANCE_ID=$(aws ec2 run-instances \
-  --associate-public-ip-address \
-  --image-id ${IMAGE_ID} \
-  --count 1 \
-  --key-name kubernetes \
-  --security-group-ids ${SECURITY_GROUP_ID} \
-  --instance-type t2.small \
-  --private-ip-address 10.240.0.11 \
-  --subnet-id ${SUBNET_ID} | \
-  jq -r '.Instances[].InstanceId')
-```
-
-```
-aws ec2 create-tags \
-  --resources ${ETCD_1_INSTANCE_ID} \
-  --tags Key=Name,Value=etcd1
-```
-
-```
-ETCD_2_INSTANCE_ID=$(aws ec2 run-instances \
-  --associate-public-ip-address \
-  --image-id ${IMAGE_ID} \
-  --count 1 \
-  --key-name kubernetes \
-  --security-group-ids ${SECURITY_GROUP_ID} \
-  --instance-type t2.small \
-  --private-ip-address 10.240.0.12 \
-  --subnet-id ${SUBNET_ID} | \
-  jq -r '.Instances[].InstanceId')
-```
-
-```
-aws ec2 create-tags \
-  --resources ${ETCD_2_INSTANCE_ID} \
-  --tags Key=Name,Value=etcd2
-```
-
 #### Kubernetes Controllers
 
 ```
@@ -350,7 +291,7 @@ CONTROLLER_0_INSTANCE_ID=$(aws ec2 run-instances \
   --key-name kubernetes \
   --security-group-ids ${SECURITY_GROUP_ID} \
   --instance-type t2.small \
-  --private-ip-address 10.240.0.20 \
+  --private-ip-address 10.240.0.10 \
   --subnet-id ${SUBNET_ID} | \
   jq -r '.Instances[].InstanceId')
 ```
@@ -376,7 +317,7 @@ CONTROLLER_1_INSTANCE_ID=$(aws ec2 run-instances \
   --key-name kubernetes \
   --security-group-ids ${SECURITY_GROUP_ID} \
   --instance-type t2.small \
-  --private-ip-address 10.240.0.21 \
+  --private-ip-address 10.240.0.11 \
   --subnet-id ${SUBNET_ID} | \
   jq -r '.Instances[].InstanceId')
 ```
@@ -402,7 +343,7 @@ CONTROLLER_2_INSTANCE_ID=$(aws ec2 run-instances \
   --key-name kubernetes \
   --security-group-ids ${SECURITY_GROUP_ID} \
   --instance-type t2.small \
-  --private-ip-address 10.240.0.22 \
+  --private-ip-address 10.240.0.12 \
   --subnet-id ${SUBNET_ID} | \
   jq -r '.Instances[].InstanceId')
 ```
@@ -430,7 +371,7 @@ WORKER_0_INSTANCE_ID=$(aws ec2 run-instances \
   --key-name kubernetes \
   --security-group-ids ${SECURITY_GROUP_ID} \
   --instance-type t2.small \
-  --private-ip-address 10.240.0.30 \
+  --private-ip-address 10.240.0.20 \
   --subnet-id ${SUBNET_ID} | \
   jq -r '.Instances[].InstanceId')
 ```
@@ -456,7 +397,7 @@ WORKER_1_INSTANCE_ID=$(aws ec2 run-instances \
   --key-name kubernetes \
   --security-group-ids ${SECURITY_GROUP_ID} \
   --instance-type t2.small \
-  --private-ip-address 10.240.0.31 \
+  --private-ip-address 10.240.0.21 \
   --subnet-id ${SUBNET_ID} | \
   jq -r '.Instances[].InstanceId')
 ```
@@ -482,7 +423,7 @@ WORKER_2_INSTANCE_ID=$(aws ec2 run-instances \
   --key-name kubernetes \
   --security-group-ids ${SECURITY_GROUP_ID} \
   --instance-type t2.small \
-  --private-ip-address 10.240.0.32 \
+  --private-ip-address 10.240.0.22 \
   --subnet-id ${SUBNET_ID} | \
   jq -r '.Instances[].InstanceId')
 ```
@@ -508,13 +449,10 @@ aws ec2 describe-instances \
   jq -j '.Reservations[].Instances[] | .InstanceId, "  ", .Placement.AvailabilityZone, "  ", .PrivateIpAddress, "  ", .PublicIpAddress, "\n"'
 ```
 ```
-i-f3714f2e  us-west-2c  10.240.0.22  XX.XXX.XX.XX
 i-ae714f73  us-west-2c  10.240.0.11  XX.XX.XX.XXX
 i-f4714f29  us-west-2c  10.240.0.21  XX.XX.XXX.XXX
 i-f6714f2b  us-west-2c  10.240.0.12  XX.XX.XX.XX
-i-e26e503f  us-west-2c  10.240.0.30  XX.XX.XXX.XXX
-i-e36e503e  us-west-2c  10.240.0.31  XX.XX.XX.XX
+i-e26e503f  us-west-2c  10.240.0.22  XX.XX.XXX.XXX
 i-e8714f35  us-west-2c  10.240.0.10  XX.XX.XXX.XXX
 i-78704ea5  us-west-2c  10.240.0.20  XX.XX.XXX.XXX
-i-4a6e5097  us-west-2c  10.240.0.32  XX.XX.XX.XX
 ```

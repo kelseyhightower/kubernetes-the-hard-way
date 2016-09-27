@@ -27,19 +27,19 @@ sudo mkdir -p /var/lib/kubernetes
 ```
 
 ```
-sudo mv ca.pem kubernetes-key.pem kubernetes.pem /var/lib/kubernetes/
+sudo cp ca.pem kubernetes-key.pem kubernetes.pem /var/lib/kubernetes/
 ```
 
 #### Docker
 
-Kubernetes should be compatible with the Docker 1.9.x - 1.11.x:
+Kubernetes should be compatible with the Docker 1.9.x - 1.12.x:
 
 ```
-wget https://get.docker.com/builds/Linux/x86_64/docker-1.11.2.tgz
+wget https://get.docker.com/builds/Linux/x86_64/docker-1.12.1.tgz
 ```
 
 ```
-tar -xvf docker-1.11.2.tgz
+tar -xvf docker-1.12.1.tgz
 ```
 
 ```
@@ -90,20 +90,24 @@ sudo mkdir -p /opt/cni
 ```
 
 ```
-wget https://storage.googleapis.com/kubernetes-release/network-plugins/cni-c864f0e1ea73719b8f4582402b0847064f9883b0.tar.gz
+wget https://storage.googleapis.com/kubernetes-release/network-plugins/cni-07a8a28637e97b22eb8dfe710eeae1344f69d16e.tar.gz
 ```
 
 ```
-sudo tar -xvf cni-c864f0e1ea73719b8f4582402b0847064f9883b0.tar.gz -C /opt/cni
+sudo tar -xvf cni-07a8a28637e97b22eb8dfe710eeae1344f69d16e.tar.gz -C /opt/cni
 ```
 
 
 Download and install the Kubernetes worker binaries:
 
 ```
-wget https://storage.googleapis.com/kubernetes-release/release/v1.3.6/bin/linux/amd64/kubectl
-wget https://storage.googleapis.com/kubernetes-release/release/v1.3.6/bin/linux/amd64/kube-proxy
-wget https://storage.googleapis.com/kubernetes-release/release/v1.3.6/bin/linux/amd64/kubelet
+wget https://storage.googleapis.com/kubernetes-release/release/v1.4.0/bin/linux/amd64/kubectl
+```
+```
+wget https://storage.googleapis.com/kubernetes-release/release/v1.4.0/bin/linux/amd64/kube-proxy
+```
+```
+wget https://storage.googleapis.com/kubernetes-release/release/v1.4.0/bin/linux/amd64/kubelet
 ```
 
 ```
@@ -124,7 +128,7 @@ kind: Config
 clusters:
 - cluster:
     certificate-authority: /var/lib/kubernetes/ca.pem
-    server: https://10.240.0.20:6443
+    server: https://10.240.0.10:6443
   name: kubernetes
 contexts:
 - context:
@@ -150,7 +154,7 @@ Requires=docker.service
 [Service]
 ExecStart=/usr/bin/kubelet \
   --allow-privileged=true \
-  --api-servers=https://10.240.0.20:6443,https://10.240.0.21:6443,https://10.240.0.22:6443 \
+  --api-servers=https://10.240.0.10:6443,https://10.240.0.11:6443,https://10.240.0.12:6443 \
   --cloud-provider= \
   --cluster-dns=10.32.0.10 \
   --cluster-domain=cluster.local \
@@ -193,7 +197,7 @@ Documentation=https://github.com/GoogleCloudPlatform/kubernetes
 
 [Service]
 ExecStart=/usr/bin/kube-proxy \
-  --master=https://10.240.0.20:6443 \
+  --master=https://10.240.0.10:6443 \
   --kubeconfig=/var/lib/kubelet/kubeconfig \
   --proxy-mode=iptables \
   --v=2

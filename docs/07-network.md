@@ -42,9 +42,9 @@ kubectl get nodes \
 Output:
 
 ```
-10.240.0.30 10.200.0.0/24 
-10.240.0.31 10.200.1.0/24 
-10.240.0.32 10.200.2.0/24 
+10.240.0.20 10.200.0.0/24 
+10.240.0.21 10.200.1.0/24 
+10.240.0.22 10.200.2.0/24 
 ```
 
 ## Create Routes
@@ -54,21 +54,21 @@ Output:
 ```
 gcloud compute routes create kubernetes-route-10-200-0-0-24 \
   --network kubernetes \
-  --next-hop-address 10.240.0.30 \
+  --next-hop-address 10.240.0.20 \
   --destination-range 10.200.0.0/24
 ```
 
 ```
 gcloud compute routes create kubernetes-route-10-200-1-0-24 \
   --network kubernetes \
-  --next-hop-address 10.240.0.31 \
+  --next-hop-address 10.240.0.21 \
   --destination-range 10.200.1.0/24
 ```
 
 ```
 gcloud compute routes create kubernetes-route-10-200-2-0-24 \
   --network kubernetes \
-  --next-hop-address 10.240.0.32 \
+  --next-hop-address 10.240.0.22 \
   --destination-range 10.200.2.0/24
 ```
 

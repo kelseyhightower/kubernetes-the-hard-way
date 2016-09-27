@@ -27,24 +27,38 @@ Each component is being run on the same machines for the following reasons:
 
 Run the following commands on `controller0`, `controller1`, `controller2`:
 
-Move the TLS certificates in place:
+### TLS Certificates
+
+The TLS certificates created in the [Setting up a CA and TLS Cert Generation](02-certificate-authority.md) lab will be used to secure communication between the Kubernetes API server and Kubernetes clients such as `kubectl` and the `kubelet` agent. The TLS certificates will also be used to authenticate the Kubernetes API server to etcd via TLC client auth.
+
+Copy the TLS certificates to the Kubernetes configuration directory:
 
 ```
 sudo mkdir -p /var/lib/kubernetes
 ```
 
 ```
-sudo mv ca.pem kubernetes-key.pem kubernetes.pem /var/lib/kubernetes/
+sudo cp ca.pem kubernetes-key.pem kubernetes.pem /var/lib/kubernetes/
 ```
 
-Download and install the Kubernetes controller binaries:
+### Download and install the Kubernetes controller binaries
+
+Download the official Kubernetes release binaries:
 
 ```
-wget https://storage.googleapis.com/kubernetes-release/release/v1.3.6/bin/linux/amd64/kube-apiserver
-wget https://storage.googleapis.com/kubernetes-release/release/v1.3.6/bin/linux/amd64/kube-controller-manager
-wget https://storage.googleapis.com/kubernetes-release/release/v1.3.6/bin/linux/amd64/kube-scheduler
-wget https://storage.googleapis.com/kubernetes-release/release/v1.3.6/bin/linux/amd64/kubectl
+wget https://storage.googleapis.com/kubernetes-release/release/v1.4.0/bin/linux/amd64/kube-apiserver
 ```
+```
+wget https://storage.googleapis.com/kubernetes-release/release/v1.4.0/bin/linux/amd64/kube-controller-manager
+```
+```
+wget https://storage.googleapis.com/kubernetes-release/release/v1.4.0/bin/linux/amd64/kube-scheduler
+```
+```
+wget https://storage.googleapis.com/kubernetes-release/release/v1.4.0/bin/linux/amd64/kubectl
+```
+
+Install the Kubernetes binaries:
 
 ```
 chmod +x kube-apiserver kube-controller-manager kube-scheduler kubectl
@@ -300,8 +314,7 @@ gcloud compute http-health-checks create kube-apiserver-check \
 
 ```
 gcloud compute target-pools create kubernetes-pool \
-  --health-check kube-apiserver-check \
-  --region us-central1
+  --health-check kube-apiserver-check
 ```
 
 ```
