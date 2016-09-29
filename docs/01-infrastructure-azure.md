@@ -122,7 +122,7 @@ ssh-keygen -t rsa -f ./keys/cluster
 
 ### Storage Accounts 
 
-Create storage account for control plane VMs
+Create storage account for control plane VMs (Etcd & Controllers)
 
 ```
 azure storage account create $controlPlaneStorageAccount \
@@ -152,7 +152,7 @@ azure storage account create $workersStorageAccount \
 azure network nic create \
 	--resource-group the-hard-way \
 	--name jumpbox-nic \
-	--private-ip-address "10.0.0.4" \
+	--private-ip-address "10.0.0.5" \
 	--subnet-vnet-name the-hard-way-net  \
 	--subnet-name kubernetes  \
 	--public-ip-name the-hard-way-jumpbox \
@@ -284,6 +284,51 @@ azure vm create \
 
 ### Kubernetes Controllers
 
+
+#### Workers Internal Load Balancer 
+
+
+Create load balancer 
+
+```
+azure network lb create \
+	--resource-group the-hard-way \
+	--name the-hard-way-clb \
+	--location "West Us"
+```
+
+Create & the front-end IP to the internal load balancer
+
+```
+azure network lb frontend-ip create \
+	--resource-group the-hard-way \
+	--name the-hard-way-cfe  \
+	--lb-name the-hard-way-clb \
+	--private-ip-address "10.0.0.4" \
+	--subnet-vnet-name the-hard-way-net \
+	--subnet-name kubernetes
+```
+
+Create a backend address pool for the load balancer
+
+```
+clbbackendPoolId=$(azure network lb address-pool create \
+	--resource-group the-hard-way \
+	--lb-name the-hard-way-clb \
+	--name backend-pool \
+	--json | jq -r '.id')
+```
+
+#### Create Controllers Availablity set
+
+```
+azure availset create \
+	--resource-group the-hard-way \
+	--name controllers-availset \
+	--location "West Us"
+```
+
+
 #### Controller 0 
 
 Create Nic
@@ -295,6 +340,7 @@ azure network nic create \
 	--private-ip-address "10.240.0.20" \
 	--subnet-vnet-name the-hard-way-net  \
 	--subnet-name kubernetes  \
+	--lb-address-pool-ids $clbbackendPoolId \
 	--location "West Us"
 ```
 
@@ -308,6 +354,7 @@ azure vm create \
     --nic-name controller-0-nic \
 	--vnet-name the-hard-way-net  \
 	--vnet-subnet-name kubernetes  \
+	--availset-name controllers-availset \
     --os-type linux \
     --image-urn $imageUrn \
     --storage-account-name $controlPlaneStorageAccount \
@@ -329,7 +376,8 @@ azure network nic create \
 	--private-ip-address "10.240.0.21" \
 	--subnet-vnet-name the-hard-way-net  \
 	--subnet-name kubernetes  \
-	--location "West Us"  
+	--lb-address-pool-ids $clbbackendPoolId \
+	--location "West Us"
 ```
 
 Create VM
@@ -342,6 +390,7 @@ azure vm create \
     --nic-name controller-1-nic \
 	--vnet-name the-hard-way-net  \
 	--vnet-subnet-name kubernetes  \
+	--availset-name controllers-availset \
     --os-type linux \
     --image-urn $imageUrn \
     --storage-account-name $controlPlaneStorageAccount \
@@ -363,7 +412,8 @@ azure network nic create \
 	--private-ip-address "10.240.0.22" \
 	--subnet-vnet-name the-hard-way-net  \
 	--subnet-name kubernetes  \
-	--location "West Us"  
+	--lb-address-pool-ids $clbbackendPoolId \
+	--location "West Us"
 ```
 
 Create VM
@@ -376,6 +426,7 @@ azure vm create \
     --nic-names controller-2-nic \
 	--vnet-name the-hard-way-net  \
 	--vnet-subnet-name kubernetes  \
+	--availset-name controllers-availset \
     --os-type linux \
     --image-urn $imageUrn \
     --storage-account-name $controlPlaneStorageAccount \
@@ -389,7 +440,7 @@ azure vm create \
 
 ### Kubernetes Workers
 
-#### Load Balancer 
+#### Workers External Load Balancer 
 
 Create public IP + DNS label for workers ingestion load balancer
 
@@ -426,7 +477,7 @@ azure network lb frontend-ip create \
 Create a backend address pool for the load balancer
 
 ```
-backendPoolId=$(azure network lb address-pool create \
+wlbbackendPoolId=$(azure network lb address-pool create \
 	--resource-group the-hard-way \
 	--lb-name the-hard-way-lb \
 	--name backend-pool \
@@ -454,7 +505,7 @@ azure network nic create \
 	--subnet-vnet-name the-hard-way-net  \
 	--subnet-name kubernetes  \
 	--enable-ip-forwarding "true" \
-	--lb-address-pool-ids $backendPoolId \
+	--lb-address-pool-ids $wlbbackendPoolId \
 	--location "West Us"  
 ```
 
@@ -491,7 +542,7 @@ azure network nic create \
 	--subnet-vnet-name the-hard-way-net  \
 	--subnet-name kubernetes  \
 	--enable-ip-forwarding "true" \
-	--lb-address-pool-ids $backendPoolId \
+	--lb-address-pool-ids $wlbbackendPoolId \
 	--location "West Us"
 ```
 
@@ -528,8 +579,8 @@ azure network nic create \
 	--subnet-vnet-name the-hard-way-net  \
 	--subnet-name kubernetes  \
 	--enable-ip-forwarding "true" \
-	--lb-address-pool-ids $backendPoolId \
-	--location "West Us" 
+	--lb-address-pool-ids $wlbbackendPoolId \
+	--location "West Us"
 ```
 
 Create VM
