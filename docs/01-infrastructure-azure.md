@@ -1,4 +1,16 @@
 # Cloud Infrastructure Provisioning - Azure
+This lab will walk you through provisioning the compute instances required for running a H/A Kubernetes cluster. A total of 10 virtual machines will be created.
+
+The guide assumes you'll be creating resources in the `West Us` region as a single Azure Resource Manager resource group.
+
+After completing this guide you should have the following compute instances:
+
+##### add screen shot ####
+
+> All machines and load balancers will be provisioned with fixed private IP addresses to simplify the bootstrap process.
+
+The control plane machines are only accessible via a jump box (a VM with publically accessable ssh). The workers machines are exposed via external load balancer that carries both an public IP and public addressable dns FQDN. 
+
 
 ## Variables
 
@@ -6,10 +18,10 @@
 #change the following values as needed. 
 
 # dns for jumpbox is <jumpboxDnsLabel>.westus.cloudapp.azure.com
-jumpboxDnsLabel="the-hardway-way-jumpbox" 
+jumpboxDnsLabel="the-hard-way-jumpbox" 
 
 # dns for workers is <workersDnsLabel>.westus.cloudapp.azure.com
-workersDnsLabel="the-hardway-way" 
+workersDnsLabel="the-hard-way" 
 
 #storage account used by jumpbox + controllers + Etcd VMs
 controlPlaneStorageAccount="thehardwaycsa" 
