@@ -139,10 +139,11 @@ KUBERNETES_PUBLIC_ADDRESS=$(aws elb describe-load-balancers \
 
 #### Azure
 ```
-KUBERNETES_PUBLIC_ADDRESS=$(azure network public-ip show \
+KUBERNETES_PUBLIC_ADDRESS=$(azure network lb show \
   --resource-group the-hard-way \
-  --name the-hard-way-workers \
-  --json | jq -r '.dnsSettings.fqdn')
+  --name the-hard-way-clb \
+  --json | \
+  jq -r '.frontendIPConfigurations[0].privateIPAddress')
 ```
 
 ---
@@ -252,7 +253,7 @@ done
 ```
 
 ### Azure
-If you used the jumpbox to configure the CA
+If you are using the jumpbox to create the certificates
 ```
 for host in ${KUBERNETES_HOSTS[*]}; do
   scp -i ./cluster ca.pem kubernetes-key.pem kubernetes.pem \

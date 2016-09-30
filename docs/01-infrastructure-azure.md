@@ -24,7 +24,7 @@ jumpboxDnsLabel="the-hard-way-jumpbox"
 workersDnsLabel="the-hard-way" 
 
 #storage account used by jumpbox + controllers + Etcd VMs
-controlPlaneStorageAccount="thehardwaycsa" 
+controlPlaneStorageAccount="thehardwaycsa"
 
 #storage account used by workers VMs
 workersStorageAccount="thehardwaywsa"
@@ -108,11 +108,11 @@ azure network vnet subnet set \
 	--vnet-name the-hard-way-net \
 	--name kubernetes \
 	--network-security-group-name the-hard-way-nsg \
-	--route-table-name the-hard-way-rtable 
+	--route-table-name the-hard-way-rtable
 ```
 
 
-Create Public IP + DNS Lable for JumpBox
+Create Public IP + DNS label for JumpBox
 
 ```
 azure network public-ip create \
@@ -297,10 +297,10 @@ azure vm create \
 ### Kubernetes Controllers
 
 
-#### Workers Internal Load Balancer 
+#### Controllers Internal Load Balancer 
 
 
-Create load balancer 
+Create controllers load balancer 
 
 ```
 azure network lb create \
@@ -309,7 +309,7 @@ azure network lb create \
 	--location "West Us"
 ```
 
-Create & the front-end IP to the internal load balancer
+Create & assign the front-end private IP to the internal load balancer
 
 ```
 azure network lb frontend-ip create \
@@ -331,7 +331,7 @@ clbbackendPoolId=$(azure network lb address-pool create \
 	--json | jq -r '.id')
 ```
 
-#### Create Controllers Availablity set
+#### Create controllers availability set
 
 ```
 azure availset create \
@@ -474,7 +474,7 @@ azure network lb create \
 	--location "West Us"
 ```
 
-Create & the front-end IP to the load balancer
+Assign the front-end public IP to the load balancer
 
 ```
 azure network lb frontend-ip create \
@@ -651,7 +651,7 @@ ssh -i ./keys/cluster \
 	thehardway@$jumpboxDnsLabel.westus.cloudapp.azure.com
 ```
 
-### Copy the Private Key to Jumpbox 
+### Copy the cluster private key to Jumpbox 
 
 ```
 scp -i ./keys/cluster \
