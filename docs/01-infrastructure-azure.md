@@ -26,7 +26,7 @@ workersDnsLabel="the-hard-way"
 #storage account used by jumpbox + controllers + Etcd VMs
 controlPlaneStorageAccount="thehardwaycsa" 
 
-#storage account used by workers
+#storage account used by workers VMs
 workersStorageAccount="thehardwaywsa"
 
 # all vms are using ubunut 16.4 LTS 
@@ -72,7 +72,7 @@ azure network nsg rule create \
 	--name allow-ssh-jumpbox \
 	--protocol tcp \
 	--access allow  \
-	--destination-address-prefix 10.0.0.4/32 \
+	--destination-address-prefix 10.0.0.5/32 \
 	--destination-port-range 22 \
 	--priority 100 \
 	--direction inbound
@@ -97,7 +97,7 @@ azure network vnet subnet create \
 	--resource-group the-hard-way \
 	--vnet-name the-hard-way-net \
 	--name kubernetes \
-	--address-prefix 10.0.0.0/8 
+	--address-prefix 10.0.0.0/8
 ```
 
 Link Routing Table and NSG to Kubernetes Subnet
@@ -203,7 +203,7 @@ azure network nic create \
 	--private-ip-address "10.240.0.10" \
 	--subnet-vnet-name the-hard-way-net  \
 	--subnet-name kubernetes  \
-	--location "West Us"  
+	--location "West Us"
 ```
 Create VM
 
@@ -270,7 +270,7 @@ azure network nic create \
 	--private-ip-address "10.240.0.12" \
 	--subnet-vnet-name the-hard-way-net  \
 	--subnet-name kubernetes  \
-	--location "West Us"  
+	--location "West Us"
 ```
 
 Create VM
@@ -518,7 +518,7 @@ azure network nic create \
 	--subnet-name kubernetes  \
 	--enable-ip-forwarding "true" \
 	--lb-address-pool-ids $wlbbackendPoolId \
-	--location "West Us"  
+	--location "West Us"
 ```
 
 Create VM
