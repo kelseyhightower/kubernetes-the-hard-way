@@ -210,7 +210,7 @@ Create VM
 ```
 azure vm create \
 	--resource-group the-hard-way \
-	--name etcd-0 \
+	--name etcd0 \
 	--vm-size Standard_D4 \
 	--nic-name etcd-0-nic \
 	--vnet-name the-hard-way-net  \
@@ -244,7 +244,7 @@ Create VM
 ```
 azure vm create \
 	--resource-group the-hard-way \
-	--name etcd-1 \
+	--name etcd1 \
 	--vm-size Standard_D4 \
 	--nic-name etcd-1-nic \
 	--vnet-name the-hard-way-net  \
@@ -278,7 +278,7 @@ Create VM
 ```
 azure vm create \
 	--resource-group the-hard-way \
-	--name etcd-2 \
+	--name etcd2 \
 	--vm-size Standard_D4 \
 	--nic-name etcd-2-nic \
 	--vnet-name the-hard-way-net  \
@@ -361,7 +361,7 @@ Create VM
 ```
 azure vm create \
 	--resource-group the-hard-way \
-    --name controller-0 \
+    --name controller0 \
     --vm-size Standard_D4 \
     --nic-name controller-0-nic \
 	--vnet-name the-hard-way-net  \
@@ -397,7 +397,7 @@ Create VM
 ```
 azure vm create \
 	--resource-group the-hard-way \
-    --name controller-1 \
+    --name controller1 \
     --vm-size Standard_D4 \
     --nic-name controller-1-nic \
 	--vnet-name the-hard-way-net  \
@@ -433,7 +433,7 @@ Create VM
 ```
 azure vm create \
 	--resource-group the-hard-way \
-    --name controller-2 \
+    --name controller2 \
     --vm-size Standard_D4 \
     --nic-names controller-2-nic \
 	--vnet-name the-hard-way-net  \
@@ -526,7 +526,7 @@ Create VM
 ```
 azure vm create \
 	--resource-group the-hard-way \
-    --name worker-0 \
+    --name worker0 \
     --vm-size Standard_D4 \
     --nic-name worker-0-nic \
 	--vnet-name the-hard-way-net  \
@@ -563,7 +563,7 @@ Create VM
 ```
 azure vm create \
 	--resource-group the-hard-way \
-    --name worker-1 \
+    --name worker1 \
     --vm-size Standard_D4 \
     --nic-name worker-1-nic \
 	--vnet-name the-hard-way-net  \
@@ -600,7 +600,7 @@ Create VM
 ```
 azure vm create \
 	--resource-group the-hard-way \
-    --name worker-2 \
+    --name worker2 \
     --vm-size Standard_D4 \
     --nic-name worker-2-nic \
 	--vnet-name the-hard-way-net  \

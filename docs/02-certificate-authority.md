@@ -137,6 +137,14 @@ KUBERNETES_PUBLIC_ADDRESS=$(aws elb describe-load-balancers \
   jq -r '.LoadBalancerDescriptions[].DNSName')
 ```
 
+#### Azure
+```
+KUBERNETES_PUBLIC_ADDRESS=$(azure network public-ip show \
+  --resource-group the-hard-way \
+  --name the-hard-way-workers \
+  --json | jq -r '.dnsSettings.fqdn')
+```
+
 ---
 
 Create the `kubernetes-csr.json` file:
@@ -241,4 +249,43 @@ for host in ${KUBERNETES_HOSTS[*]}; do
   scp ca.pem kubernetes-key.pem kubernetes.pem \
     ubuntu@${PUBLIC_IP_ADDRESS}:~/
 done
+```
+
+### Azure
+If you used the jumpbox to configure the CA
+```
+for host in ${KUBERNETES_HOSTS[*]}; do
+  scp -i ./cluster ca.pem kubernetes-key.pem kubernetes.pem \
+    thehardway@${host}:~/
+done
+```
+If you used a different machine
+```
+
+#Get jumpbox address
+
+KUBERNETES_JUMPBOX_ADDRESS=$(azure network public-ip show \
+  --resource-group the-hard-way \
+  --name the-hard-way-jumpbox \
+  --json | jq -r '.dnsSettings.fqdn')
+
+#Copy files to jumpbox 
+scp -i ./keys/cluster \
+  ca.pem \
+  kubernetes-key.pem \
+  kubernetes.pem \
+  thehardway@$KUBERNETES_JUMPBOX_ADDRESS:~/
+
+# Copy files from jumpbox to vms
+ssh -i ./keys/cluster \
+  thehardway@$KUBERNETES_JUMPBOX_ADDRESS <<'EOF'
+  
+  KUBERNETES_HOSTS=(controller0 controller1 controller2 etcd0 etcd1 etcd2 worker0 worker1 worker2)
+  for host in ${KUBERNETES_HOSTS[*]}; do
+  scp -i ./cluster ca.pem kubernetes-key.pem kubernetes.pem \
+    thehardway@${host}:~/
+  done
+  
+EOF
+
 ```
