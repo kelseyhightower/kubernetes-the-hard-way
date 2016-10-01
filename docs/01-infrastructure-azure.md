@@ -3,35 +3,39 @@ This lab will walk you through provisioning the compute instances required for r
 
 The guide assumes you'll be creating resources in the `West Us` region as a single Azure Resource Manager resource group.
 
-After completing this guide you should have the following compute instances:
 
-##### add screen shot ####
+> All machines will be provisioned with fixed private IP addresses to simplify the bootstrap process.
 
-> All machines and load balancers will be provisioned with fixed private IP addresses to simplify the bootstrap process.
-
-The control plane machines are only accessible via a jump box (a VM with publically accessable ssh). The workers machines are exposed via external load balancer that carries both an public IP and public addressable dns FQDN. 
+The cluster VNs are only accessible via a jump box (a VM with publicly accessible ssh endpoint). The workers machines are exposed via external load balancer that carries both an public IP and public FQDN. 
 
 
 ## Variables
 
-```
-#change the following values as needed. 
+Change the following values as needed. 
 
+```
 # dns for jumpbox is <jumpboxDnsLabel>.westus.cloudapp.azure.com
 jumpboxDnsLabel="the-hard-way-jumpbox" 
+```
 
+```
 # dns for workers is <workersDnsLabel>.westus.cloudapp.azure.com
 workersDnsLabel="the-hard-way" 
+```
 
+```
 #storage account used by jumpbox + controllers + Etcd VMs
 controlPlaneStorageAccount="thehardwaycsa"
+```
 
+```
 #storage account used by workers VMs
 workersStorageAccount="thehardwaywsa"
+```
 
+```
 # all vms are using ubunut 16.4 LTS 
 imageUrn="Canonical:UbuntuServer:16.04.0-LTS:latest"
-
 ```
 
 ## Create Resource Group
@@ -63,7 +67,7 @@ azure network nsg create \
 ```
 
 
-Create NSG Rule Allowing SSH to Our Jump Box
+Create NSG rule allowing SSH to the jumpbox
 
 ```
 azure network nsg rule create \
@@ -90,12 +94,11 @@ azure network vnet create \
 	--location "West Us"
 ```
 
-Create Subnets
+Create subnets
 
 ```
-# Azure UDR routes traffic going outside 
-# the subnet
-# workers have to be on their own subnet
+# Azure UDR routes traffic subnet's eggress
+# workers & pod ips have to be 2 separate subnets
 
 azure network vnet subnet create \
 	--resource-group the-hard-way \
@@ -146,7 +149,7 @@ azure network public-ip create \
 
 ## Virtual Machines
 
-Create SSH Key (Used by All VMs)
+Create SSH keys (Used by All VMs)
 
 ```
 mkdir keys
@@ -165,7 +168,7 @@ azure storage account create $controlPlaneStorageAccount \
 	--location "West Us"
 ```
 
-Create storage account for works VMs
+Create storage account for workers VMs
 
 ```
 azure storage account create $workersStorageAccount \
@@ -179,7 +182,7 @@ azure storage account create $workersStorageAccount \
 
 ### Jump Box
 
-#### Create Nic (Private IP + Public IP)
+#### Create Nic (Private IP + Public IP + FQDN)
 
 ```
 azure network nic create \
@@ -320,8 +323,7 @@ azure vm create \
 
 #### Controllers Internal Load Balancer 
 
-
-Create controllers internal load balancer 
+Create load balancer 
 
 ```
 azure network lb create \
@@ -495,7 +497,7 @@ azure network lb create \
 	--location "West Us"
 ```
 
-Assign the front-end public IP to the load balancer
+Assign the front-end public IP + FQDN to the load balancer
 
 ```
 azure network lb frontend-ip create \
@@ -670,7 +672,7 @@ ssh -i ./keys/cluster \
 	thehardway@$jumpboxDnsLabel.westus.cloudapp.azure.com
 ```
 
-### Copy the cluster private key to Jumpbox 
+### Copy the cluster private key to jumpbox 
 
 ```
 scp -i ./keys/cluster \

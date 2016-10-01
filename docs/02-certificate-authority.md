@@ -270,14 +270,15 @@ If you used a different machine
 
 ```
 
-#Get jumpbox address
+# Get jumpbox address
 
 KUBERNETES_JUMPBOX_ADDRESS=$(azure network public-ip show \
   --resource-group the-hard-way \
   --name the-hard-way-jumpbox \
   --json | jq -r '.dnsSettings.fqdn')
 
-#Copy files to jumpbox 
+# Copy files to jumpbox 
+
 scp -i ./keys/cluster \
   ca.pem \
   kubernetes-key.pem \
@@ -295,5 +296,4 @@ ssh -i ./keys/cluster \
   done
   
 EOF
-
 ```

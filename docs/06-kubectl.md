@@ -40,10 +40,10 @@ KUBERNETES_PUBLIC_ADDRESS=$(aws elb describe-load-balancers \
 ### Azure 
 
 ```
-# for this work, we are configuring kubectl on jumpbox
+# we are configuring kubectl on jumpbox
 # The controllers are exposed via internal load balancer
 # access is only allowed within the VNET 
-# (or ssh -L ... port 6443 .. from jumpbox to internal lb) 
+# (outside the vnet ssh -L ... port 6443 .. from jumpbox to internal lb) 
 KUBERNETES_PUBLIC_ADDRESS=$(azure network lb show \
   --resource-group the-hard-way \
   --name the-hard-way-clb \

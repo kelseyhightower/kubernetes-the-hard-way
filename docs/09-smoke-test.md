@@ -89,7 +89,7 @@ NODE_PUBLIC_IP=$(azure network public-ip show \
   --name the-hard-way-workers \
   --json | jq -r '.dnsSettings.fqdn')
 
-# Add NSG rule to enable traffic to node ports
+# Add NSG rule to enable traffic to workers' node ports
 
 azure network nsg rule create \
 	--resource-group the-hard-way \
@@ -103,7 +103,7 @@ azure network nsg rule create \
 	--priority 110 \
 	--direction inbound
 
-# Create balancing rules NODE_PORT:NODE_PORT on the load balancer
+# Create load balancer rule NODE_PORT:NODE_PORT on the load balancer
 
 azure network lb probe create \
   --resource-group the-hard-way \
