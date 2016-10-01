@@ -138,6 +138,9 @@ KUBERNETES_PUBLIC_ADDRESS=$(aws elb describe-load-balancers \
 ```
 
 #### Azure
+
+this gets the address of the internal controllers load balancer
+
 ```
 KUBERNETES_PUBLIC_ADDRESS=$(azure network lb show \
   --resource-group the-hard-way \
@@ -253,14 +256,18 @@ done
 ```
 
 ### Azure
+
 If you are using the jumpbox to create the certificates
+
 ```
 for host in ${KUBERNETES_HOSTS[*]}; do
   scp -i ./cluster ca.pem kubernetes-key.pem kubernetes.pem \
     thehardway@${host}:~/
 done
 ```
+
 If you used a different machine
+
 ```
 
 #Get jumpbox address

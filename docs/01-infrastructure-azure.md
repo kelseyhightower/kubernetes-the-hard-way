@@ -90,19 +90,40 @@ azure network vnet create \
 	--location "West Us"
 ```
 
-Create Kubernetes Subnet
+Create Subnets
 
 ```
+# Azure UDR routes traffic going outside 
+# the subnet
+# workers have to be on their own subnet
+
+azure network vnet subnet create \
+	--resource-group the-hard-way \
+	--vnet-name the-hard-way-net \
+	--name kubernetes-mgmt \
+	--address-prefix 10.0.0.0/16
+
+
 azure network vnet subnet create \
 	--resource-group the-hard-way \
 	--vnet-name the-hard-way-net \
 	--name kubernetes \
-	--address-prefix 10.0.0.0/8
-```
+	--address-prefix 10.239.0.0/11
 
-Link Routing Table and NSG to Kubernetes Subnet
 
 ```
+
+Link routing table and NSG to Kubernetes/-mgmt subnets
+
+```
+azure network vnet subnet set \
+	--resource-group the-hard-way \
+	--vnet-name the-hard-way-net \
+	--name kubernetes-mgmt \
+	--network-security-group-name the-hard-way-nsg \
+	--route-table-name the-hard-way-rtable
+
+
 azure network vnet subnet set \
 	--resource-group the-hard-way \
 	--vnet-name the-hard-way-net \
@@ -112,13 +133,13 @@ azure network vnet subnet set \
 ```
 
 
-Create Public IP + DNS label for JumpBox
+Create public IP + DNS label for the jumpbox
 
 ```
 azure network public-ip create \
 	--resource-group the-hard-way \
 	--name the-hard-way-jumpbox  \
-	--allocation-method Static \
+	--allocation-method Dynamic \
 	--domain-name-label $jumpboxDnsLabel \
 	--location "West Us"
 ```
@@ -166,7 +187,7 @@ azure network nic create \
 	--name jumpbox-nic \
 	--private-ip-address "10.0.0.5" \
 	--subnet-vnet-name the-hard-way-net  \
-	--subnet-name kubernetes  \
+	--subnet-name kubernetes-mgmt  \
 	--public-ip-name the-hard-way-jumpbox \
 	--location "West Us"
 ```
@@ -180,7 +201,7 @@ azure vm create \
 	--vm-size Standard_A1 \
 	--nic-name jumpbox-nic \
 	--vnet-name the-hard-way-net  \
-	--vnet-subnet-name kubernetes  \
+	--vnet-subnet-name kubernetes-mgmt  \
 	--os-type linux \
 	--image-urn $imageUrn \
 	--storage-account-name $controlPlaneStorageAccount \
@@ -300,7 +321,7 @@ azure vm create \
 #### Controllers Internal Load Balancer 
 
 
-Create controllers load balancer 
+Create controllers internal load balancer 
 
 ```
 azure network lb create \
@@ -316,7 +337,7 @@ azure network lb frontend-ip create \
 	--resource-group the-hard-way \
 	--name the-hard-way-cfe  \
 	--lb-name the-hard-way-clb \
-	--private-ip-address "10.0.0.4" \
+	--private-ip-address "10.240.0.4" \
 	--subnet-vnet-name the-hard-way-net \
 	--subnet-name kubernetes
 ```
@@ -454,13 +475,13 @@ azure vm create \
 
 #### Workers External Load Balancer 
 
-Create public IP + DNS label for workers ingestion load balancer
+Create public IP + DNS label for workers ingestion external load balancer
 
 ```
 azure network public-ip create \
 	--resource-group the-hard-way \
 	--name the-hard-way-workers  \
-	--allocation-method Static \
+	--allocation-method Dynamic \
 	--domain-name-label $workersDnsLabel \
 	--location "West Us"
 ```
@@ -481,9 +502,7 @@ azure network lb frontend-ip create \
 	--resource-group the-hard-way \
 	--name the-hard-way-fe  \
 	--lb-name the-hard-way-lb \
-	--public-ip-name the-hard-way-workers \
-	--subnet-vnet-name the-hard-way-net \
-	--subnet-name kubernetes
+	--public-ip-name the-hard-way-workers
 ```
 
 Create a backend address pool for the load balancer

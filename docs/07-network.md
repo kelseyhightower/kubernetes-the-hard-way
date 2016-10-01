@@ -118,3 +118,31 @@ aws ec2 create-route \
   --destination-cidr-block 10.200.2.0/24 \
   --instance-id ${WORKER_2_INSTANCE_ID}
 ```
+
+### Azure
+
+```
+azure network route-table route create \
+  --resource-group the-hard-way \
+  --name worker0-route \
+  --route-table-name the-hard-way-rtable \
+  --address-prefix 10.200.0.0/24 \
+  --next-hop-ip-address 10.240.0.30 \
+  --next-hop-type VirtualAppliance
+
+azure network route-table route create \
+  --resource-group the-hard-way \
+  --name worker1-route \
+  --route-table-name the-hard-way-rtable \
+  --address-prefix 10.200.1.0/24 \
+  --next-hop-ip-address 10.240.0.31 \
+  --next-hop-type VirtualAppliance
+
+azure network route-table route create \
+  --resource-group the-hard-way \
+  --name worker2-route \
+  --route-table-name the-hard-way-rtable \
+  --address-prefix 10.200.2.0/24 \
+  --next-hop-ip-address 10.240.0.32 \
+  --next-hop-type VirtualAppliance  
+```

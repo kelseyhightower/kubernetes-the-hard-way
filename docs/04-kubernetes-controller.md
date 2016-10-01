@@ -126,6 +126,7 @@ INTERNAL_IP=$(curl -s http://169.254.169.254/latest/meta-data/local-ipv4)
 ```
 
 #### Azure
+
 ```
 INTERNAL_IP=$(ifconfig eth0 | grep 'inet ' | cut -d: -f2 | awk '{print $1}')
 ```
@@ -336,6 +337,7 @@ aws elb register-instances-with-load-balancer \
 
 
 ### Azure
+
 ```
 azure network lb probe create \
   --resource-group the-hard-way \
@@ -355,5 +357,4 @@ azure network lb rule create \
   --frontend-ip-name the-hard-way-cfe \
   --backend-address-pool-name backend-pool\
   --probe-name controller-api-server-health
-
 ```
