@@ -452,7 +452,7 @@ aws ec2 create-tags \
 
 ```
 aws ec2 describe-instances \
-  --filters "Name=instance-state-name,Values=running" | \
+  --filters "Name=instance-state-name,Values=running" "Name=vpc-id,Values=${VPC_ID}" | \
   jq -j '.Reservations[].Instances[] | .InstanceId, "  ", .Placement.AvailabilityZone, "  ", .PrivateIpAddress, "  ", .PublicIpAddress, "\n"'
 ```
 ```
