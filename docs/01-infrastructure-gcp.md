@@ -111,7 +111,7 @@ kubernetes-allow-ssh         kubernetes  0.0.0.0/0       tcp:22
 Create a public IP address that will be used by remote clients to connect to the Kubernetes control plane:
 
 ```
-gcloud compute addresses create kubernetes
+gcloud compute addresses create kubernetes --region=us-central1
 ```
 
 ```
