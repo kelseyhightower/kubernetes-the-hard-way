@@ -48,7 +48,7 @@ AWS
 
 * The us-west-2 region will be used
 
-AWS
+Azure
 
 * The "west us" region will be used
 

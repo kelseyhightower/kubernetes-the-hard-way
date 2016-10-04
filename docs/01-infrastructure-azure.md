@@ -6,7 +6,7 @@ The guide assumes you'll be creating resources in the `West Us` region as a sing
 
 > All machines will be provisioned with fixed private IP addresses to simplify the bootstrap process.
 
-The cluster VNs are only accessible via a jump box (a VM with publicly accessible ssh endpoint). The workers machines are exposed via external load balancer that carries both an public IP and public FQDN. 
+The cluster VMs are only accessible via a jump box (a VM with publicly accessible ssh endpoint). The workers machines are exposed via external load balancer that carries both an public IP and public FQDN. 
 
 
 ## Variables
@@ -97,8 +97,9 @@ azure network vnet create \
 Create subnets
 
 ```
-# Azure UDR routes traffic subnet's eggress
-# workers & pod ips have to be 2 separate subnets
+# Azure UDR "user defined routes" in custom routing tables 
+# routes traffic leaving the subnet.
+# Workers & pods (IPs) have to be in two separate subnets
 
 azure network vnet subnet create \
 	--resource-group the-hard-way \
