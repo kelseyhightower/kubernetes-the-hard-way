@@ -111,7 +111,7 @@ azure network vnet subnet create \
 	--resource-group the-hard-way \
 	--vnet-name the-hard-way-net \
 	--name kubernetes \
-	--address-prefix 10.239.0.0/11
+	--address-prefix 10.224.0.0/11
 
 
 ```
