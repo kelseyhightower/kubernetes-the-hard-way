@@ -35,6 +35,7 @@ workersStorageAccount="thehardwaywsa"
 
 ```
 # all vms are using ubunut 16.4 LTS 
+#(Publisher)
 imageUrn="Canonical:UbuntuServer:16.04.0-LTS:latest"
 ```
 
@@ -57,7 +58,7 @@ azure network route-table create \
 	--location "West Us"
 ```
 
-### Create Network Security Group
+### Create Network Security Group (NSG)
 
 ```
 azure network nsg create \
@@ -76,7 +77,7 @@ azure network nsg rule create \
 	--name allow-ssh-jumpbox \
 	--protocol tcp \
 	--access allow  \
-	--destination-address-prefix 10.0.0.5/32 \
+	--destination-address-prefix 10.0.0.5 \
 	--destination-port-range 22 \
 	--priority 100 \
 	--direction inbound
@@ -117,7 +118,7 @@ azure network vnet subnet create \
 
 ```
 
-Link routing table and NSG to Kubernetes/-mgmt subnets
+Associate the routing table and NSG to Kubernetes/-mgmt subnets
 
 ```
 azure network vnet subnet set \
@@ -183,7 +184,7 @@ azure storage account create $workersStorageAccount \
 
 ### Jump Box
 
-#### Create Nic (Private IP + Public IP + FQDN)
+#### Create NIC (Private IP + Public IP + FQDN)
 
 ```
 azure network nic create \
