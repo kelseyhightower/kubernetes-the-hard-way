@@ -57,7 +57,7 @@ azure network route-table create \
 	--location "West Us"
 ```
 
-### Create Network Security Group
+### Create Network Security Group (NSG)
 
 ```
 azure network nsg create \
@@ -76,7 +76,7 @@ azure network nsg rule create \
 	--name allow-ssh-jumpbox \
 	--protocol tcp \
 	--access allow  \
-	--destination-address-prefix 10.0.0.5/32 \
+	--destination-address-prefix 10.0.0.5 \
 	--destination-port-range 22 \
 	--priority 100 \
 	--direction inbound
@@ -117,7 +117,7 @@ azure network vnet subnet create \
 
 ```
 
-Link routing table and NSG to Kubernetes/-mgmt subnets
+Associate the routing table and NSG to Kubernetes/-mgmt subnets
 
 ```
 azure network vnet subnet set \
@@ -183,7 +183,7 @@ azure storage account create $workersStorageAccount \
 
 ### Jump Box
 
-#### Create Nic (Private IP + Public IP + FQDN)
+#### Create NIC (Private IP + Public IP + FQDN)
 
 ```
 azure network nic create \
@@ -236,7 +236,7 @@ Create VM
 azure vm create \
 	--resource-group the-hard-way \
 	--name etcd0 \
-	--vm-size Standard_D4 \
+	--vm-size Standard_A1 \
 	--nic-name etcd-0-nic \
 	--vnet-name the-hard-way-net  \
 	--vnet-subnet-name kubernetes  \
@@ -270,7 +270,7 @@ Create VM
 azure vm create \
 	--resource-group the-hard-way \
 	--name etcd1 \
-	--vm-size Standard_D4 \
+	--vm-size Standard_A1 \
 	--nic-name etcd-1-nic \
 	--vnet-name the-hard-way-net  \
 	--vnet-subnet-name kubernetes  \
@@ -304,7 +304,7 @@ Create VM
 azure vm create \
 	--resource-group the-hard-way \
 	--name etcd2 \
-	--vm-size Standard_D4 \
+	--vm-size Standard_A1 \
 	--nic-name etcd-2-nic \
 	--vnet-name the-hard-way-net  \
 	--vnet-subnet-name kubernetes  \
@@ -386,7 +386,7 @@ Create VM
 azure vm create \
 	--resource-group the-hard-way \
     --name controller0 \
-    --vm-size Standard_D4 \
+    --vm-size Standard_A1 \
     --nic-name controller-0-nic \
 	--vnet-name the-hard-way-net  \
 	--vnet-subnet-name kubernetes  \
@@ -422,7 +422,7 @@ Create VM
 azure vm create \
 	--resource-group the-hard-way \
     --name controller1 \
-    --vm-size Standard_D4 \
+    --vm-size Standard_A1 \
     --nic-name controller-1-nic \
 	--vnet-name the-hard-way-net  \
 	--vnet-subnet-name kubernetes  \
@@ -458,7 +458,7 @@ Create VM
 azure vm create \
 	--resource-group the-hard-way \
     --name controller2 \
-    --vm-size Standard_D4 \
+    --vm-size Standard_A1 \
     --nic-names controller-2-nic \
 	--vnet-name the-hard-way-net  \
 	--vnet-subnet-name kubernetes  \
@@ -684,7 +684,7 @@ scp -i ./keys/cluster \
 ### Connecting to Other VMs
 
 ```
-# on the jumpbox 
+#from the jumpbox 
 #connect to the second controller
 
 ssh -i ./cluster \
