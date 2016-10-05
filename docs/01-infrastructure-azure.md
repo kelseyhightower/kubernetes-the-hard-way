@@ -666,6 +666,8 @@ info:    vm list command OK
 
 ## Using The Jumpbox
 
+> The Jumpbox does not have Azure CLI installed. All further Azure CLI commands should be executed on a machine with CLI installed & configured.   
+
 ### Connect to Jumpbox 
 
 ```

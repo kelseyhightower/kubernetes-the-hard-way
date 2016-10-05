@@ -121,7 +121,7 @@ azure network lb rule create \
   --frontend-port $NODE_PORT \
   --backend-port $NODE_PORT \
   --frontend-ip-name the-hard-way-fe \
-  --backend-address-pool-name backend-pool\
+  --backend-address-pool-name backend-pool \
   --probe-name nginx-app-health
 ```
 

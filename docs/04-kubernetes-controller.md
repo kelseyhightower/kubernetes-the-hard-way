@@ -355,6 +355,6 @@ azure network lb rule create \
   --frontend-port 6443 \
   --backend-port 6443 \
   --frontend-ip-name the-hard-way-cfe \
-  --backend-address-pool-name backend-pool\
+  --backend-address-pool-name backend-pool \
   --probe-name controller-api-server-health
 ```
