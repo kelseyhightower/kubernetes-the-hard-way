@@ -650,16 +650,16 @@ info:    Executing command vm list
 + Getting virtual machines                                                     
 data:    ResourceGroupName  Name          ProvisioningState  PowerState  Location  Size       
 data:    -----------------  ------------  -----------------  ----------  --------  -----------
-data:    the-hard-way       controller-0  Succeeded          VM running  westus    Standard_D4
-data:    the-hard-way       controller-1  Succeeded          VM running  westus    Standard_D4
-data:    the-hard-way       controller-2  Succeeded          VM running  westus    Standard_D4
-data:    the-hard-way       etcd-0        Succeeded          VM running  westus    Standard_D4
-data:    the-hard-way       etcd-1        Succeeded          VM running  westus    Standard_D4
-data:    the-hard-way       etcd-2        Succeeded          VM running  westus    Standard_D4
+data:    the-hard-way       controller-0  Succeeded          VM running  westus    Standard_A1
+data:    the-hard-way       controller-1  Succeeded          VM running  westus    Standard_A1
+data:    the-hard-way       controller-2  Succeeded          VM running  westus    Standard_A1
+data:    the-hard-way       etcd-0        Succeeded          VM running  westus    Standard_A1
+data:    the-hard-way       etcd-1        Succeeded          VM running  westus    Standard_A1
+data:    the-hard-way       etcd-2        Succeeded          VM running  westus    Standard_A1
 data:    the-hard-way       jumpbox       Succeeded          VM running  westus    Standard_A1
-data:    the-hard-way       worker-0      Succeeded          VM running  westus    Standard_D4
-data:    the-hard-way       worker-1      Succeeded          VM running  westus    Standard_D4
-data:    the-hard-way       worker-2      Succeeded          VM running  westus    Standard_D4
+data:    the-hard-way       worker-0      Succeeded          VM running  westus    Standard_A1
+data:    the-hard-way       worker-1      Succeeded          VM running  westus    Standard_A1
+data:    the-hard-way       worker-2      Succeeded          VM running  westus    Standard_A1
 info:    vm list command OK
 ```
 
@@ -691,6 +691,7 @@ ssh -i ./cluster \
 	thehardway@10.240.0.31  
 
 #or
+
 ssh -i ./cluster \
 	thehardway@controller-1  
 
