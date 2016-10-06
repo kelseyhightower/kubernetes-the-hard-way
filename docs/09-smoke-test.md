@@ -83,28 +83,25 @@ NODE_PUBLIC_IP=$(aws ec2 describe-instances \
 
 ```
 # Get the fqdn for the public worker ingestion load balancer
-
 NODE_PUBLIC_IP=$(azure network public-ip show \
   --resource-group the-hard-way \
   --name the-hard-way-workers \
   --json | jq -r '.dnsSettings.fqdn')
 
 # Add NSG rule to enable traffic to workers' node ports
-
 azure network nsg rule create \
 	--resource-group the-hard-way \
 	--nsg-name the-hard-way-nsg \
 	--name allow-internet-$NODE_PORT \
 	--protocol tcp \
 	--access allow  \
-  --source-address-prefix Internet \
+	--source-address-prefix Internet \
 	--destination-address-prefix 10.240.0.0/16 \
 	--destination-port-range $NODE_PORT \
 	--priority 110 \
 	--direction inbound
 
 # Create load balancer rule NODE_PORT:NODE_PORT on the load balancer
-
 azure network lb probe create \
   --resource-group the-hard-way \
   --lb-name the-hard-way-lb \
