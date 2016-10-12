@@ -160,7 +160,8 @@ cat > kubernetes-csr.json <<EOF
     "10.240.0.21",
     "10.240.0.22",
     "${KUBERNETES_PUBLIC_ADDRESS}",
-    "127.0.0.1"
+    "127.0.0.1",
+    "kubernetes.default"
   ],
   "key": {
     "algo": "rsa",
