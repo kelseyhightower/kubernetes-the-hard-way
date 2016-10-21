@@ -118,3 +118,18 @@ aws ec2 create-route \
   --destination-cidr-block 10.200.2.0/24 \
   --instance-id ${WORKER_2_INSTANCE_ID}
 ```
+
+### OpenStack
+
+```
+openstack router set --route destination=10.200.0.0/24,gateway=10.240.0.20 kubernetes
+```
+
+```
+openstack router set --route destination=10.200.1.0/24,gateway=10.240.0.21 kubernetes
+```
+
+```
+openstack router set --route destination=10.200.2.0/24,gateway=10.240.0.22 kubernetes
+```
+

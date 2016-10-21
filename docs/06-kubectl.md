@@ -36,6 +36,13 @@ KUBERNETES_PUBLIC_ADDRESS=$(aws elb describe-load-balancers \
   --load-balancer-name kubernetes | \
   jq -r '.LoadBalancerDescriptions[].DNSName')
 ```
+
+#OpenStack
+
+```
+KUBERNETES_PUBLIC_ADDRESS=$(openstack server show controller0 -f shell |grep addresses | awk '{print $2}'| sed 's/"$//')
+```
+
 ---
 
 Recall the token we setup for the admin user:

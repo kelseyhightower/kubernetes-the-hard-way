@@ -79,6 +79,25 @@ NODE_PUBLIC_IP=$(aws ec2 describe-instances \
   jq -j '.Reservations[].Instances[].PublicIpAddress')
 ```
 
+#### OpenStack
+
+```
+openstack security group rule create \
+  --ingress \
+  --protocol tcp \
+  --dst-port ${NODE_PORT} \
+  --src-ip 0.0.0.0/0  \
+  kubernetes
+
+```
+
+Add an `EXTERNAL_IP` for one of the worker nodes:
+
+```
+NODE_PUBLIC_IP=169.45.x.x
+openstack server add floating ip worker0 ${NODE_PUBLIC_IP}
+```
+
 ---
 
 Test the nginx service using cURL:

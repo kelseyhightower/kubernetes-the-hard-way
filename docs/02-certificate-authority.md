@@ -137,6 +137,12 @@ KUBERNETES_PUBLIC_ADDRESS=$(aws elb describe-load-balancers \
   jq -r '.LoadBalancerDescriptions[].DNSName')
 ```
 
+#OpenStack
+
+```
+KUBERNETES_PUBLIC_ADDRESS=$(openstack server show controller0 -f shell |grep addresses | awk '{print $2}'| sed 's/"$//')
+```
+
 ---
 
 Create the `kubernetes-csr.json` file:
@@ -237,5 +243,32 @@ for host in ${KUBERNETES_HOSTS[*]}; do
     jq -r '.Reservations[].Instances[].PublicIpAddress')
   scp ca.pem kubernetes-key.pem kubernetes.pem \
     ubuntu@${PUBLIC_IP_ADDRESS}:~/
+done
+```
+
+### OpenStack
+Since only controller0 has a public IP, you will need to SCP controller0 and then scp it to the remaining 5 hosts from there.
+
+Copy to controller0:
+
+```
+  scp ca.pem kubernetes-key.pem kubernetes.pem \
+    ubuntu@${KUBERNETES_PUBLIC_ADDRESS}:~/
+```
+
+Now SSH to controller0.
+
+Set the list of Kubernetes hosts where the certs should be copied to:
+
+```
+KUBERNETES_HOSTS=(10.240.0.10 10.240.0.11 10.240.0.12 10.240.0.20 10.240.0.21 10.240.0.22)
+```
+
+And then copy the TLS certs:
+
+```
+for host in ${KUBERNETES_HOSTS[*]}; do
+  scp ca.pem kubernetes-key.pem kubernetes.pem \
+    ubuntu@${KUBERNETES_HOSTS}:~/
 done
 ```
