@@ -27,7 +27,7 @@ To make our Kubernetes control plane remotely accessible, a Floating IP address 
 
 ## Networking
 
-```
+
 Create a Kubernetes network:
 
 ```
@@ -45,7 +45,18 @@ Create a router for the network:
 ```
 openstack router create kubernetes
 ```
+
+Attach the network to the router:
+
+```
 openstack router add subnet kubernetes kubernetes
+```
+
+Attack the router to the external network:
+
+```
+neutron router-gateway-set kubernetes external
+```
 
 
 ### Firewall Rules
