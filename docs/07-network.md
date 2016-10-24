@@ -26,7 +26,7 @@ Based on the above configuration each node will receive a `/24` subnet. For exam
 10.200.1.0/24
 10.200.2.0/24
 ...
-``` 
+```
 
 ## Get the Routing Table
 
@@ -42,9 +42,9 @@ kubectl get nodes \
 Output:
 
 ```
-10.240.0.20 10.200.0.0/24 
-10.240.0.21 10.200.1.0/24 
-10.240.0.22 10.200.2.0/24 
+10.240.0.20 10.200.0.0/24
+10.240.0.21 10.200.1.0/24
+10.240.0.22 10.200.2.0/24
 ```
 
 ## Create Routes
@@ -83,7 +83,7 @@ ROUTE_TABLE_ID=$(aws ec2 describe-route-tables \
 ```
 WORKER_0_INSTANCE_ID=$(aws ec2 describe-instances \
   --filters "Name=tag:Name,Values=worker0" | \
-  jq -j '.Reservations[].Instances[].InstanceId')
+  jq -r '.Reservations[].Instances[].InstanceId')
 ```
 
 ```
@@ -96,7 +96,7 @@ aws ec2 create-route \
 ```
 WORKER_1_INSTANCE_ID=$(aws ec2 describe-instances \
   --filters "Name=tag:Name,Values=worker1" | \
-  jq -j '.Reservations[].Instances[].InstanceId')
+  jq -r '.Reservations[].Instances[].InstanceId')
 ```
 
 ```
@@ -109,7 +109,7 @@ aws ec2 create-route \
 ```
 WORKER_2_INSTANCE_ID=$(aws ec2 describe-instances \
   --filters "Name=tag:Name,Values=worker2" | \
-  jq -j '.Reservations[].Instances[].InstanceId')
+  jq -r '.Reservations[].Instances[].InstanceId')
 ```
 
 ```

@@ -68,7 +68,7 @@ KUBERNETES_HOSTS=(controller0 controller1 controller2 worker0 worker1 worker2)
 for host in ${KUBERNETES_HOSTS[*]}; do
   INSTANCE_ID=$(aws ec2 describe-instances \
     --filters "Name=tag:Name,Values=${host}" | \
-    jq -j '.Reservations[].Instances[].InstanceId')
+    jq -r '.Reservations[].Instances[].InstanceId')
   aws ec2 terminate-instances --instance-ids ${INSTANCE_ID}
 done
 ```
