@@ -59,7 +59,7 @@ kubectl config set-cluster kubernetes-the-hard-way \
 ```
 
 ```
-kubectl config set-credentials admin --token chAng3m3
+kubectl config set-credentials admin --token=chAng3m3
 ```
 
 ```
