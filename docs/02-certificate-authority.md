@@ -118,7 +118,7 @@ openssl x509 -in ca.pem -text -noout
 
 ## Generate the single Kubernetes TLS Cert
 
-In this section we will generate a TLS certificate that will be valid for all Kubernetes components. This is being done for ease of use. In production you should strongly consider generating individual TLS certificates for each component.
+In this section we will generate a TLS certificate that will be valid for all Kubernetes components. This is being done for ease of use. In production you should strongly consider generating individual TLS certificates for each component. (But all replicas of a given component must share the same certificate.)
 
 ### Set the Kubernetes Public Address
 
