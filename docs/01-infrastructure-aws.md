@@ -2,7 +2,7 @@
 
 This lab will walk you through provisioning the compute instances required for running a H/A Kubernetes cluster. A total of 6 virtual machines will be created.
 
-The guide assumes you'll be creating resources in the `us-west-2` region.
+The guide uses the `us-west-2` region, but you can override that at the start.
 
 After completing this guide you should have the following compute instances:
 
@@ -15,6 +15,10 @@ To make our Kubernetes control plane remotely accessible, a public IP address wi
 ## Networking
 
 ### VPC
+
+```
+AWS_REGION=us-west-2
+```
 
 ```
 VPC_ID=$(aws ec2 create-vpc \
@@ -44,7 +48,7 @@ aws ec2 modify-vpc-attribute \
 
 ```
 DHCP_OPTION_SET_ID=$(aws ec2 create-dhcp-options \
-  --dhcp-configuration "Key=domain-name,Values=us-west-2.compute.internal" \
+  --dhcp-configuration "Key=domain-name,Values=$AWS_REGION.compute.internal" \
     "Key=domain-name-servers,Values=AmazonProvidedDNS" | \
   jq -r '.DhcpOptions.DhcpOptionsId')
 ```
@@ -248,10 +252,13 @@ aws iam add-role-to-instance-profile \
 
 ### Chosing an Image
 
-Use the [Ubuntu Amazon EC2 AMI Locator](https://cloud-images.ubuntu.com/locator/ec2/) to find the right image-id for your zone. This guide assumes the `us-west-2` zone.
+Pick the latest Ubuntu Xenial server
 
 ```
-IMAGE_ID="ami-746aba14"
+IMAGE_ID=$(aws ec2 describe-images --owners 099720109477 \
+  --region $AWS_REGION \
+  --filters Name=root-device-type,Values=ebs Name=architecture,Values=x86_64 'Name=name,Values=ubuntu/images/hvm-ssd/ubuntu-xenial-16.04-amd64-server-*' \
+  | jq -r '.Images|sort_by(.Name)[-1]|.ImageId')
 ```
 
 ### Generate A SSH Key Pair
