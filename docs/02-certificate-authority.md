@@ -236,7 +236,7 @@ for host in ${KUBERNETES_HOSTS[*]}; do
   PUBLIC_IP_ADDRESS=$(aws ec2 describe-instances \
     --filters "Name=tag:Name,Values=${host}" | \
     jq -r '.Reservations[].Instances[].PublicIpAddress')
-  scp ca.pem kubernetes-key.pem kubernetes.pem \
+  scp -o "StrictHostKeyChecking no" ca.pem kubernetes-key.pem kubernetes.pem \
     ubuntu@${PUBLIC_IP_ADDRESS}:~/
 done
 ```
