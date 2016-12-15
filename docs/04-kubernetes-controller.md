@@ -46,16 +46,16 @@ sudo cp ca.pem kubernetes-key.pem kubernetes.pem /var/lib/kubernetes/
 Download the official Kubernetes release binaries:
 
 ```
-wget https://storage.googleapis.com/kubernetes-release/release/v1.4.0/bin/linux/amd64/kube-apiserver
+wget https://storage.googleapis.com/kubernetes-release/release/v1.5.1/bin/linux/amd64/kube-apiserver
 ```
 ```
-wget https://storage.googleapis.com/kubernetes-release/release/v1.4.0/bin/linux/amd64/kube-controller-manager
+wget https://storage.googleapis.com/kubernetes-release/release/v1.5.1/bin/linux/amd64/kube-controller-manager
 ```
 ```
-wget https://storage.googleapis.com/kubernetes-release/release/v1.4.0/bin/linux/amd64/kube-scheduler
+wget https://storage.googleapis.com/kubernetes-release/release/v1.5.1/bin/linux/amd64/kube-scheduler
 ```
 ```
-wget https://storage.googleapis.com/kubernetes-release/release/v1.4.0/bin/linux/amd64/kubectl
+wget https://storage.googleapis.com/kubernetes-release/release/v1.5.1/bin/linux/amd64/kubectl
 ```
 
 Install the Kubernetes binaries:
@@ -213,7 +213,7 @@ ExecStart=/usr/bin/kube-controller-manager \
   --master=http://INTERNAL_IP:8080 \
   --root-ca-file=/var/lib/kubernetes/ca.pem \
   --service-account-private-key-file=/var/lib/kubernetes/kubernetes-key.pem \
-  --service-cluster-ip-range=10.32.0.0/24 \
+  --service-cluster-ip-range=10.32.0.0/16 \
   --v=2
 Restart=on-failure
 RestartSec=5
@@ -291,8 +291,8 @@ kubectl get componentstatuses
 NAME                 STATUS    MESSAGE              ERROR
 controller-manager   Healthy   ok                   
 scheduler            Healthy   ok                   
-etcd-1               Healthy   {"health": "true"}   
 etcd-0               Healthy   {"health": "true"}   
+etcd-1               Healthy   {"health": "true"}   
 etcd-2               Healthy   {"health": "true"}  
 ```
 

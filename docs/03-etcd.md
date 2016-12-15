@@ -39,17 +39,17 @@ sudo cp ca.pem kubernetes-key.pem kubernetes.pem /etc/etcd/
 Download the official etcd release binaries from `coreos/etcd` GitHub project:
 
 ```
-wget https://github.com/coreos/etcd/releases/download/v3.0.10/etcd-v3.0.10-linux-amd64.tar.gz
+wget https://github.com/coreos/etcd/releases/download/v3.0.15/etcd-v3.0.15-linux-amd64.tar.gz
 ```
 
 Extract and install the `etcd` server binary and the `etcdctl` command line client: 
 
 ```
-tar -xvf etcd-v3.0.10-linux-amd64.tar.gz
+tar -xvf etcd-v3.0.15-linux-amd64.tar.gz
 ```
 
 ```
-sudo mv etcd-v3.0.10-linux-amd64/etcd* /usr/bin/
+sudo mv etcd-v3.0.15-linux-amd64/etcd* /usr/bin/
 ```
 
 All etcd data is stored under the etcd data directory. In a production cluster the data directory should be backed by a persistent disk. Create the etcd data directory:
