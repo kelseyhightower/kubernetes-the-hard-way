@@ -46,6 +46,7 @@ gcloud config set compute/region us-central1
 AWS
 
 * The us-west-2 region will be used
+* ``jq`` parsing requires [AWS CLI output format](http://docs.aws.amazon.com/cli/latest/userguide/controlling-output.html) to be ``json``
 
 ## Platforms
 
