@@ -1,5 +1,7 @@
 # Configuring the Kubernetes Client - Remote Access
 
+Run the following commands from the machine which will be your Kubernetes Client
+
 ## Download and Install kubectl
 
 ### OS X
