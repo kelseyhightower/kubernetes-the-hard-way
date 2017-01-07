@@ -176,6 +176,7 @@ RestartSec=5
 WantedBy=multi-user.target
 EOF
 ```
+- Note: If you are deploying this on AWS then you should add ``--cloud-provider=aws`` in the ``kube-apiserver.service`` unit file's [service] section. If you are adding this before ``--v=2`` line, remember to add ``\`` character at the end   
 
 ```
 sed -i s/INTERNAL_IP/$INTERNAL_IP/g kube-apiserver.service
@@ -222,6 +223,8 @@ RestartSec=5
 WantedBy=multi-user.target
 EOF
 ```
+- Note: If you are deploying this on AWS then you should add ``--cloud-provider=aws`` in the ``kube-controller-manager.service`` unit file's [service] section. If you are adding this before ``--v=2`` line , remember to add ``\`` character at the end.
+
 
 ```
 sed -i s/INTERNAL_IP/$INTERNAL_IP/g kube-controller-manager.service
