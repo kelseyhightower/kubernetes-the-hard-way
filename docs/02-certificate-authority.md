@@ -38,7 +38,6 @@ chmod +x cfssljson_darwin-amd64
 sudo mv cfssljson_darwin-amd64 /usr/local/bin/cfssljson
 ```
 
-
 ### Linux
 
 ```
@@ -137,6 +136,13 @@ KUBERNETES_PUBLIC_ADDRESS=$(aws elb describe-load-balancers \
   jq -r '.LoadBalancerDescriptions[].DNSName')
 ```
 
+#### Azure
+
+```shell
+KUBERNETES_PUBLIC_ADDRESS=$(az network public-ip show -g kubernetes \
+  -n kubernetes-pip --query "ipAddress" -otsv)
+```
+
 ---
 
 Create the `kubernetes-csr.json` file:
@@ -229,7 +235,7 @@ done
 The following command will:
  * Extract the public IP address for each Kubernetes host
  * Copy the TLS certificates and keys to each Kubernetes host using `scp`
-
+ 
 ```
 for host in ${KUBERNETES_HOSTS[*]}; do
   PUBLIC_IP_ADDRESS=$(aws ec2 describe-instances \
@@ -237,5 +243,21 @@ for host in ${KUBERNETES_HOSTS[*]}; do
     jq -r '.Reservations[].Instances[].PublicIpAddress')
   scp ca.pem kubernetes-key.pem kubernetes.pem \
     ubuntu@${PUBLIC_IP_ADDRESS}:~/
+done
+```
+
+### Azure
+
+The following command will:
+ * Extract the public IP address for each Kubernetes host
+ * Copy the TLS certificates and keys to each Kubernetes host using `scp`
+
+```shell
+for host in ${KUBERNETES_HOSTS[*]}; do
+  PUBLIC_IP_ADDRESS=$(az network public-ip show -g kubernetes \
+    -n ${host}-pip --query "ipAddress" -otsv)
+
+  scp ca.pem kubernetes-key.pem kubernetes.pem \
+    $(whoami)@${PUBLIC_IP_ADDRESS}:~/
 done
 ```

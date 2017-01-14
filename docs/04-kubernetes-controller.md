@@ -138,6 +138,12 @@ INTERNAL_IP=$(curl -s -H "Metadata-Flavor: Google" \
 INTERNAL_IP=$(curl -s http://169.254.169.254/latest/meta-data/local-ipv4)
 ```
 
+#### Azure
+
+```shell
+INTERNAL_IP=$(ip addr show eth0 | grep -oP '(?<=inet\s)\d+(\.\d+){3}')
+```
+
 ---
 
 Create the systemd unit file:
@@ -339,4 +345,27 @@ gcloud compute forwarding-rules create kubernetes-rule \
 aws elb register-instances-with-load-balancer \
   --load-balancer-name kubernetes \
   --instances ${CONTROLLER_0_INSTANCE_ID} ${CONTROLLER_1_INSTANCE_ID} ${CONTROLLER_2_INSTANCE_ID}
+```
+
+### Azure
+
+```shell
+az network lb probe create -g kubernetes \
+  -n kubernetes-apiserver-check \
+  --lb-name kubernetes-lb \
+  --protocol http \
+  --port 8080 \
+  --path /healthz
+```
+
+```shell
+az network lb rule create -g kubernetes \
+  -n kubernetes-apiserver-rule \
+  --protocol tcp \
+  --lb-name kubernetes-lb \
+  --frontend-ip-name LoadBalancerFrontEnd \
+  --frontend-port 6443 \
+  --backend-pool-name kubernetes-lb-pool \
+  --backend-port 6443 \
+  --probe-name kubernetes-apiserver-check
 ```

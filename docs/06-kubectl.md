@@ -36,6 +36,14 @@ KUBERNETES_PUBLIC_ADDRESS=$(aws elb describe-load-balancers \
   --load-balancer-name kubernetes | \
   jq -r '.LoadBalancerDescriptions[].DNSName')
 ```
+
+#### Azure
+
+```shell
+KUBERNETES_PUBLIC_ADDRESS=$(az network public-ip show -g kubernetes \
+  -n kubernetes-pip --query "ipAddress" -otsv)
+```
+
 ---
 
 Recall the token we setup for the admin user:

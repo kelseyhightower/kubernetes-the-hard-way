@@ -15,7 +15,6 @@ Kubernetes worker nodes are responsible for running your containers. All Kuberne
 
 Some people would like to run workers and cluster services anywhere in the cluster. This is totally possible, and you'll have to decide what's best for your environment.
 
-
 ## Provision the Kubernetes Worker Nodes
 
 Run the following commands on `worker0`, `worker1`, `worker2`:
