@@ -58,7 +58,7 @@ This tutorial assumes you have access to one of the following:
 
 * [Google Cloud Platform](https://cloud.google.com) and the [Google Cloud SDK](https://cloud.google.com/sdk/) (125.0.0+)
 * [Amazon Web Services](https://aws.amazon.com), the [AWS CLI](https://aws.amazon.com/cli) (1.10.63+), and [jq](https://stedolan.github.io/jq) (1.5+)
-* [Microsoft Azure](https://azure.com) and the [Azure CLI](https://github.com/azure/azure-cli)
+* [Microsoft Azure](https://azure.com) and the [Azure CLI 2.0](https://github.com/azure/azure-cli)
 
 ## Labs
 
