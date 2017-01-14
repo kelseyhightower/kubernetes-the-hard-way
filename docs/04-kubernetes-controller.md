@@ -237,7 +237,6 @@ sed -i s/INTERNAL_IP/$INTERNAL_IP/g kube-controller-manager.service
 sudo mv kube-controller-manager.service /etc/systemd/system/
 ```
 
-
 ```
 sudo systemctl daemon-reload
 sudo systemctl enable kube-controller-manager

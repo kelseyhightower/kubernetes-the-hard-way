@@ -98,8 +98,8 @@ az network nsg rule create -g kubernetes \
 Grab the `EXTERNAL_IP` for one of the worker nodes:
 
 ```
-NODE_PUBLIC_IP=$(gcloud compute instances describe worker0 \
-  --format 'value(networkInterfaces[0].accessConfigs[0].natIP)')
+NODE_PUBLIC_IP=$(az network public-ip show -g kubernetes \
+  -n worker0-pip --query "ipAddress" -otsv)
 ```
 
 ---
