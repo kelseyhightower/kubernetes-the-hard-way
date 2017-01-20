@@ -1,8 +1,8 @@
 #!/usr/bin/bash
 set -x
 
-if [[ -z ${NUM_CONTROLLERS} || -z ${NUM_WORKERS} ]]; then
-    echo "Must set NUM_CONTROLLERS and NUM_WORKERS env vars"
+if [[ -z ${NUM_CONTROLLERS} || -z ${NUM_WORKERS} || -z ${KUBERNETES_VERSION} ]]; then
+    echo "Must set NUM_CONTROLLERS, NUM_WORKERS and KUBERNETES_VERSION (e.g. 'vX.Y.Z') environment variables"
     exit 1
 fi
 
@@ -24,6 +24,11 @@ gcloud compute firewall-rules create kubernetes-allow-internal \
   --allow tcp:0-65535,udp:0-65535,icmp \
   --network kubernetes \
   --source-ranges 10.240.0.0/24
+
+gcloud compute firewall-rules create kubernetes-allow-internal-podcidr \
+    --allow tcp:0-65535,udp:0-65535,icmp \
+    --network kubernetes \
+    --source-ranges 10.200.0.0/16
 
 gcloud compute firewall-rules create kubernetes-allow-rdp \
   --allow tcp:3389 \

@@ -32,8 +32,8 @@ gcloud -q compute firewall-rules delete \
   kubernetes-allow-healthz \
   kubernetes-allow-icmp \
   kubernetes-allow-internal \
+  kubernetes-allow-internal-podcidr \
   kubernetes-allow-rdp \
-  kubernetes-nginx-service \
   kubernetes-allow-ssh \
   kubernetes-nginx-service
 

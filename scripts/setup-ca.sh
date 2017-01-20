@@ -1,8 +1,8 @@
 #!/usr/bin/bash
 set -x
 
-if [[ -z ${NUM_CONTROLLERS} || -z ${NUM_WORKERS} ]]; then
-    echo "Must set NUM_CONTROLLERS and NUM_WORKERS environment variables"
+if [[ -z ${NUM_CONTROLLERS} || -z ${NUM_WORKERS} || -z ${KUBERNETES_VERSION} ]]; then
+    echo "Must set NUM_CONTROLLERS, NUM_WORKERS and KUBERNETES_VERSION (e.g. 'vX.Y.Z') environment variables"
     exit 1
 fi
 
@@ -114,4 +114,5 @@ done
 
 for host in ${kube_hosts}; do
   gcloud compute copy-files ca.pem kubernetes-key.pem kubernetes.pem ${host}:~/
+  sleep 2
 done

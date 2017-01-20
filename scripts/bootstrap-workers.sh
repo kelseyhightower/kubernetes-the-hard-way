@@ -4,7 +4,7 @@ set -x
 DOCKER_VERSION=1.12.5
 
 if [[ -z ${NUM_CONTROLLERS} || -z ${NUM_WORKERS} || -z ${KUBERNETES_VERSION} ]]; then
-    echo "Must set NUM_CONTROLLERS, NUM_WORKERS and KUBERNETES_VERSION environment variables"
+    echo "Must set NUM_CONTROLLERS, NUM_WORKERS and KUBERNETES_VERSION (e.g. 'vX.Y.Z') environment variables"
     exit 1
 fi
 
