@@ -64,6 +64,13 @@ gcloud compute firewall-rules create kubernetes-allow-internal \
 ```
 
 ```
+gcloud compute firewall-rules create kubernetes-allow-internal-podcidr \
+    --allow tcp:0-65535,udp:0-65535,icmp \
+    --network kubernetes \
+    --source-ranges 10.200.0.0/16
+```
+
+```
 gcloud compute firewall-rules create kubernetes-allow-rdp \
   --allow tcp:3389 \
   --network kubernetes \
