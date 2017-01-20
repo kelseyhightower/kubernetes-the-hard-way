@@ -19,7 +19,7 @@ done
 
 gcloud -q compute instances delete ${hosts}
 
-gcloud -q compute forwarding-rules delete kubernetes-rule --region us-west1
+gcloud -q compute forwarding-rules delete kubernetes-rule --region us-central1
 
 gcloud -q compute target-pools delete kubernetes-pool
 

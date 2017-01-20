@@ -52,7 +52,7 @@ gcloud compute firewall-rules create kubernetes-allow-api-server \
 
 gcloud compute firewall-rules list --filter "network=kubernetes"
 
-gcloud compute addresses create kubernetes --region=us-west1
+gcloud compute addresses create kubernetes --region=us-central1
 
 gcloud compute addresses list kubernetes
 

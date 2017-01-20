@@ -78,8 +78,6 @@ RestartSec=5
 [Install]
 WantedBy=multi-user.target' > kube-apiserver.service"
 
-
-    #gcloud compute ssh controller${i} --command 'INTERNAL_IP=$(curl -s -H "Metadata-Flavor: Google" http://metadata.google.internal/computeMetadata/v1/instance/network-interfaces/0/ip); sed -i s/INTERNAL_IP/${INTERNAL_IP}/g kube-apiserver.service'
     gcloud compute ssh controller${i} --command "sudo mv kube-apiserver.service /etc/systemd/system/"
     gcloud compute ssh controller${i} --command "sudo systemctl daemon-reload"
     gcloud compute ssh controller${i} --command "sudo systemctl enable kube-apiserver"
@@ -87,7 +85,6 @@ WantedBy=multi-user.target' > kube-apiserver.service"
     gcloud compute ssh controller${i} --command "sudo systemctl status kube-apiserver --no-pager"
 
     # kube-controller-manager
-    #gcloud compute copy-files kube-controller-manager.service controller${i}:~/
     gcloud compute ssh controller${i} --command "echo '[Unit]
 Description=Kubernetes Controller Manager
 Documentation=https://github.com/GoogleCloudPlatform/kubernetes
@@ -109,7 +106,6 @@ RestartSec=5
 [Install]
 WantedBy=multi-user.target' > kube-controller-manager.service"
 
-    #gcloud compute ssh controller${i} --command 'INTERNAL_IP=$(curl -s -H "Metadata-Flavor: Google" http://metadata.google.internal/computeMetadata/v1/instance/network-interfaces/0/ip); sed -i s/INTERNAL_IP/${INTERNAL_IP}/g kube-controller-manager.service'
     gcloud compute ssh controller${i} --command "sudo mv kube-controller-manager.service /etc/systemd/system/"
     gcloud compute ssh controller${i} --command "sudo systemctl daemon-reload"
     gcloud compute ssh controller${i} --command "sudo systemctl enable kube-controller-manager"
@@ -117,7 +113,6 @@ WantedBy=multi-user.target' > kube-controller-manager.service"
     gcloud compute ssh controller${i} --command "sudo systemctl status kube-controller-manager --no-pager"
 
     # kube-scheduler
-    #gcloud compute copy-files kube-scheduler.service controller${i}:~/
     gcloud compute ssh controller${i} --command "echo '[Unit]
 Description=Kubernetes Scheduler
 Documentation=https://github.com/GoogleCloudPlatform/kubernetes
@@ -133,7 +128,6 @@ RestartSec=5
 [Install]
 WantedBy=multi-user.target' > kube-scheduler.service"
 
-    #gcloud compute ssh controller${i} --command 'INTERNAL_IP=$(curl -s -H "Metadata-Flavor: Google" http://metadata.google.internal/computeMetadata/v1/instance/network-interfaces/0/ip); sed -i s/INTERNAL_IP/${INTERNAL_IP}/g kube-scheduler.service'
     gcloud compute ssh controller${i} --command "sudo mv kube-scheduler.service /etc/systemd/system/"
     gcloud compute ssh controller${i} --command "sudo systemctl daemon-reload"
     gcloud compute ssh controller${i} --command "sudo systemctl enable kube-scheduler"
@@ -168,4 +162,4 @@ gcloud compute forwarding-rules create kubernetes-rule \
   --address ${KUBERNETES_PUBLIC_ADDRESS} \
   --ports 6443 \
   --target-pool kubernetes-pool \
-  --region us-west1
+  --region us-central1
