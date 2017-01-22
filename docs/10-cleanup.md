@@ -206,7 +206,7 @@ aws ec2 delete-dhcp-options \
   --dhcp-options-id ${DHCP_OPTION_SET_ID}
 ```
 
-## GCP
+## Azure
 
 ```shell
 az group delete -n kubernetes
