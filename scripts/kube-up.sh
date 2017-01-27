@@ -21,3 +21,5 @@ fi
 ./deploy-dns.sh
 ./smoke-test.sh
 #./cleanup.sh
+
+echo "==================== ${0} COMPLETE ===================="
