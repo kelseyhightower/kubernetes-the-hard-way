@@ -1,4 +1,4 @@
-#!/usr/bin/bash
+#!/usr/bin/env bash
 set -x
 
 DOCKER_VERSION=1.12.5

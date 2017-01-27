@@ -1,4 +1,4 @@
-#!/usr/bin/bash
+#!/usr/bin/env bash
 set -x
 
 kubectl run nginx --image=nginx --port=80 --replicas=3
