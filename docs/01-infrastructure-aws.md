@@ -276,7 +276,7 @@ Once the virtual machines are created you'll be able to login into each machine 
 ```
 WORKER_0_PUBLIC_IP_ADDRESS=$(aws ec2 describe-instances \
     --filters "Name=tag:Name,Values=worker0" | \
-    jq -j '.Reservations[].Instances[].PublicIpAddress')
+    jq -r '.Reservations[].Instances[].PublicIpAddress')
 ```
 
 > The instance public IP address can also be obtained from the EC2 console. Each node will be tagged with a unique name.
@@ -453,7 +453,7 @@ aws ec2 create-tags \
 ```
 aws ec2 describe-instances \
   --filters "Name=instance-state-name,Values=running" | \
-  jq -j '.Reservations[].Instances[] | .InstanceId, "  ", .Placement.AvailabilityZone, "  ", .PrivateIpAddress, "  ", .PublicIpAddress, "\n"'
+  jq -r '.Reservations[].Instances[] | .InstanceId, "  ", .Placement.AvailabilityZone, "  ", .PrivateIpAddress, "  ", .PublicIpAddress, "\n"'
 ```
 ```
 i-ae714f73  us-west-2c  10.240.0.11  XX.XX.XX.XXX
