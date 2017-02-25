@@ -76,7 +76,7 @@ Grab the `EXTERNAL_IP` for one of the worker nodes:
 ```
 NODE_PUBLIC_IP=$(aws ec2 describe-instances \
   --filters "Name=tag:Name,Values=worker0" | \
-  jq -j '.Reservations[].Instances[].PublicIpAddress')
+  jq -r '.Reservations[].Instances[].PublicIpAddress')
 ```
 
 ---
