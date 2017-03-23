@@ -82,6 +82,21 @@ aws ec2 create-tags \
   --tags Key=Name,Value=kubernetes
 ```
 
+Create a subnet for the ELB, so its IP address doesn't collide with the VMs.
+
+```
+ELB_SUBNET_ID=$(aws ec2 create-subnet \
+  --vpc-id ${VPC_ID} \
+  --cidr-block 10.240.1.0/24 | \
+  jq -r '.Subnet.SubnetId')
+```
+
+```
+aws ec2 create-tags \
+  --resources ${ELB_SUBNET_ID} \
+  --tags Key=Name,Value=kubernetes-elb
+```
+
 ### Internet Gateways
 
 ```
@@ -119,6 +134,12 @@ aws ec2 create-tags \
 aws ec2 associate-route-table \
   --route-table-id ${ROUTE_TABLE_ID} \
   --subnet-id ${SUBNET_ID}
+```
+
+```
+aws ec2 associate-route-table \
+  --route-table-id ${ROUTE_TABLE_ID} \
+  --subnet-id ${ELB_SUBNET_ID}
 ```
 
 ```
@@ -189,7 +210,7 @@ An ELB will be used to load balance traffic across the Kubernetes control plane.
 aws elb create-load-balancer \
   --load-balancer-name kubernetes \
   --listeners "Protocol=TCP,LoadBalancerPort=6443,InstanceProtocol=TCP,InstancePort=6443" \
-  --subnets ${SUBNET_ID} \
+  --subnets ${ELB_SUBNET_ID} \
   --security-groups ${SECURITY_GROUP_ID}
 ```
 
