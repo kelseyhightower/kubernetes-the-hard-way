@@ -8,9 +8,9 @@ This lab walks you through a quick smoke test to make sure things are working.
 kubectl run nginx --image=nginx --port=80 --replicas=3
 ```
 
-```
-deployment "nginx" created
-```
+
+> deployment "nginx" created
+
 
 ```
 kubectl get pods -o wide
@@ -26,9 +26,9 @@ nginx-2032906785-u8rzc   1/1       Running   0          21s       10.200.0.2   w
 kubectl expose deployment nginx --type NodePort
 ```
 
-```
-service "nginx" exposed
-```
+
+> service "nginx" exposed
+
 
 > Note that --type=LoadBalancer will not work because we did not configure a cloud provider when bootstrapping this cluster.
 
