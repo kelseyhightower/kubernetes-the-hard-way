@@ -145,7 +145,7 @@ aws ec2 create-tags \
 ```
 
 ```
-aws ec2 authorize-security-group-ingress \
+aws ec2 authorize-security-group-egress \
   --group-id ${SECURITY_GROUP_ID} \
   --protocol all
 ```
