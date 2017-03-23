@@ -2,9 +2,9 @@
 
 In this lab you will bootstrap a 3 node etcd cluster. The following virtual machines will be used:
 
-* controller0
-* controller1
-* controller2
+* etcd0
+* etcd1
+* etcd2
 
 ## Why
 
