@@ -167,13 +167,14 @@ ExecStart=/usr/bin/kubelet \
   --tls-cert-file=/var/lib/kubernetes/kubernetes.pem \
   --tls-private-key-file=/var/lib/kubernetes/kubernetes-key.pem \
   --v=2
-  
+
 Restart=on-failure
 RestartSec=5
 
 [Install]
 WantedBy=multi-user.target" > /etc/systemd/system/kubelet.service'
 ```
+- Note: If you are deploying this on AWS then you should add ``--cloud-provider=aws`` in the ``kubelet.service`` unit file's [Service] section. If you are adding this before ``--v=2`` line , remember to add ``\`` character at the end.
 
 ```
 sudo systemctl daemon-reload
@@ -200,7 +201,7 @@ ExecStart=/usr/bin/kube-proxy \
   --kubeconfig=/var/lib/kubelet/kubeconfig \
   --proxy-mode=iptables \
   --v=2
-  
+
 Restart=on-failure
 RestartSec=5
 
