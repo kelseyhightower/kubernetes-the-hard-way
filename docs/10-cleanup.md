@@ -37,7 +37,8 @@ gcloud -q compute firewall-rules delete \
   kubernetes-allow-internal \
   kubernetes-allow-rdp \
   kubernetes-nginx-service \
-  kubernetes-allow-ssh
+  kubernetes-allow-ssh \
+  kubernetes-allow-internal-podcidr
 ```
 
 ```
