@@ -118,3 +118,44 @@ aws ec2 create-route \
   --destination-cidr-block 10.200.2.0/24 \
   --instance-id ${WORKER_2_INSTANCE_ID}
 ```
+
+### Azure
+
+```shell
+az network route-table create -g kubernetes \
+  -n kubernetes-routes
+```
+
+```shell
+az network vnet subnet update -g kubernetes \
+  -n kubernetes-subnet \
+  --vnet-name kubernetes-vnet \
+  --route-table kubernetes-routes
+```
+
+```shell
+az network route-table route create -g kubernetes \
+  -n kubernetes-route-10-200-0-0-24 \
+  --route-table-name kubernetes-routes \
+  --address-prefix 10.200.0.0/24 \
+  --next-hop-ip-address 10.240.0.20 \
+  --next-hop-type VirtualAppliance
+```
+
+```shell
+az network route-table route create -g kubernetes \
+  -n kubernetes-route-10-200-1-0-24 \
+  --route-table-name kubernetes-routes \
+  --address-prefix 10.200.1.0/24 \
+  --next-hop-ip-address 10.240.0.21 \
+  --next-hop-type VirtualAppliance
+```
+
+```shell
+az network route-table route create -g kubernetes \
+  -n kubernetes-route-10-200-2-0-24 \
+  --route-table-name kubernetes-routes \
+  --address-prefix 10.200.2.0/24 \
+  --next-hop-ip-address 10.240.0.22 \
+  --next-hop-type VirtualAppliance
+```

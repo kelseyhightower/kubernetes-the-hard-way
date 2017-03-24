@@ -79,6 +79,29 @@ NODE_PUBLIC_IP=$(aws ec2 describe-instances \
   jq -j '.Reservations[].Instances[].PublicIpAddress')
 ```
 
+#### Azure
+
+```shell
+az network nsg rule create -g kubernetes \
+  -n kubernetes-allow-nginx \
+  --access allow \
+  --destination-address-prefix '*' \
+  --destination-port-range ${NODE_PORT} \
+  --direction inbound \
+  --nsg-name kubernetes-nsg \
+  --protocol tcp \
+  --source-address-prefix '*' \
+  --source-port-range '*' \
+  --priority 1002
+```
+
+Grab the `EXTERNAL_IP` for one of the worker nodes:
+
+```
+NODE_PUBLIC_IP=$(az network public-ip show -g kubernetes \
+  -n worker0-pip --query "ipAddress" -otsv)
+```
+
 ---
 
 Test the nginx service using cURL:
