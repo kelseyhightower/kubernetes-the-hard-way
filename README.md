@@ -30,7 +30,7 @@ The target audience for this tutorial is someone planning to support a productio
 The resulting cluster will be missing the following items:
 
 * [Cluster add-ons](https://github.com/kubernetes/kubernetes/tree/master/cluster/addons)
-* [Logging](http://kubernetes.io/docs/user-guide/logging)
+* [Logging](https://kubernetes.io/docs/concepts/cluster-administration/logging/)
 * [No Cloud Provider Integration](http://kubernetes.io/docs/getting-started-guides/)
 
 ### Assumptions
