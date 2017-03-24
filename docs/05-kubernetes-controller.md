@@ -316,14 +316,14 @@ aws elb register-instances-with-load-balancer \
 
 ## RBAC
 
-Set up bootstrapping roles:
+The following command will grant the `kubelet-bootstrap` user the permissions necessary to request a client TLS certificate. 
 
-```
-gcloud compute ssh controller0
-```
+Bind the `kubelet-bootstrap` user to the `system:node-bootstrapper` cluster role:
 
 ```
 kubectl create clusterrolebinding kubelet-bootstrap \
   --clusterrole=system:node-bootstrapper \
   --user=kubelet-bootstrap
 ```
+
+At this point kubelets can now request a TLS client certificate as defined in the [kubelet TLS bootstrapping guide](https://kubernetes.io/docs/admin/kubelet-tls-bootstrapping/).
