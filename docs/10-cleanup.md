@@ -205,3 +205,11 @@ DHCP_OPTION_SET_ID=$(aws ec2 describe-dhcp-options \
 aws ec2 delete-dhcp-options \
   --dhcp-options-id ${DHCP_OPTION_SET_ID}
 ```
+
+## Azure 
+
+The following deletes all resources created.
+
+```
+azure group delete the-hard-way
+```
