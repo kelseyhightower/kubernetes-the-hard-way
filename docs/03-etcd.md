@@ -108,6 +108,12 @@ INTERNAL_IP=$(curl -s -H "Metadata-Flavor: Google" \
 INTERNAL_IP=$(curl -s http://169.254.169.254/latest/meta-data/local-ipv4)
 ```
 
+#### Azure
+
+```
+INTERNAL_IP=$(ifconfig eth0 | grep 'inet ' | cut -d: -f2 | awk '{print $1}')
+```
+
 ---
 
 Each etcd member must have a unique name within an etcd cluster. Set the etcd name:

@@ -138,6 +138,12 @@ INTERNAL_IP=$(curl -s -H "Metadata-Flavor: Google" \
 INTERNAL_IP=$(curl -s http://169.254.169.254/latest/meta-data/local-ipv4)
 ```
 
+#### Azure
+
+```
+INTERNAL_IP=$(ifconfig eth0 | grep 'inet ' | cut -d: -f2 | awk '{print $1}')
+```
+
 ---
 
 Create the systemd unit file:
@@ -342,4 +348,28 @@ gcloud compute forwarding-rules create kubernetes-rule \
 aws elb register-instances-with-load-balancer \
   --load-balancer-name kubernetes \
   --instances ${CONTROLLER_0_INSTANCE_ID} ${CONTROLLER_1_INSTANCE_ID} ${CONTROLLER_2_INSTANCE_ID}
+```
+
+
+### Azure
+
+```
+azure network lb probe create \
+  --resource-group the-hard-way \
+  --lb-name the-hard-way-clb \
+  --name controller-api-server-health \
+  --interval 5 \
+  --port 8080 \
+  --protocol http \
+  --path '/healthz'
+
+azure network lb rule create \
+  --resource-group the-hard-way \
+  --lb-name the-hard-way-clb \
+  --name controller-api-server \
+  --frontend-port 6443 \
+  --backend-port 6443 \
+  --frontend-ip-name the-hard-way-cfe \
+  --backend-address-pool-name backend-pool\
+  --probe-name controller-api-server-health
 ```

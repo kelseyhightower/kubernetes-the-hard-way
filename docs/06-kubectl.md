@@ -38,6 +38,20 @@ KUBERNETES_PUBLIC_ADDRESS=$(aws elb describe-load-balancers \
   --load-balancer-name kubernetes | \
   jq -r '.LoadBalancerDescriptions[].DNSName')
 ```
+
+### Azure 
+
+```
+# we are configuring kubectl on jumpbox
+# The controllers are exposed via internal load balancer
+# access is only allowed within the VNET 
+# (outside the vnet ssh -L ... port 6443 .. from jumpbox to internal lb) 
+KUBERNETES_PUBLIC_ADDRESS=$(azure network lb show \
+  --resource-group the-hard-way \
+  --name the-hard-way-clb \
+  --json | \
+  jq -r '.frontendIPConfigurations[0].privateIPAddress')
+```
 ---
 
 Recall the token we setup for the admin user:
