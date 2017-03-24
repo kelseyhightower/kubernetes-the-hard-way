@@ -96,6 +96,8 @@ WantedBy=multi-user.target
 EOF
 ```
 
+Start the docker service:
+
 ```
 sudo mv docker.service /etc/systemd/system/docker.service
 ```
@@ -202,21 +204,6 @@ sudo systemctl start kubelet
 sudo systemctl status kubelet --no-pager
 ```
 
-Approve the certificate:
-
-```
-gcloud compute ssh controller0
-```
-
-```
-kubectl get csr
-```
-
-```
-kubectl certificate approve <csr-name>
-```
-
-
 #### kube-proxy
 
 
@@ -255,3 +242,40 @@ sudo systemctl status kube-proxy --no-pager
 ```
 
 > Remember to run these steps on `worker0`, `worker1`, and `worker2`
+
+## Approve the TLS certificate requests
+
+Each worker node will submit a certificate signing request which must be approved before the node is allowed to join the cluster.
+
+Log into one of the controller nodes:
+
+```
+gcloud compute ssh controller0
+```
+
+List the pending certificate requests:
+
+```
+kubectl get csr
+```
+
+> Use the kubectl describe csr command to view the details of a specific signing request.
+
+Approve each certificate signing request using the `kubectl certificate approve` command:
+
+```
+kubectl certificate approve <csr-name>
+```
+
+Once all certificate signing requests have been approved all nodes should be registered with the cluster:
+
+```
+kubectl get nodes
+```
+
+```
+NAME      STATUS    AGE       VERSION
+worker0   Ready     7m        v1.6.0-beta.4
+worker1   Ready     5m        v1.6.0-beta.4
+worker2   Ready     2m        v1.6.0-beta.4
+```
