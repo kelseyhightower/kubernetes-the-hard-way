@@ -166,7 +166,6 @@ Requires=docker.service
 ExecStart=/usr/bin/kubelet \\
   --api-servers=https://${KUBERNETES_PUBLIC_ADDRESS}:6443 \\
   --allow-privileged=true \\
-  --cloud-provider=auto-detect \\
   --cluster-dns=10.32.0.10 \\
   --cluster-domain=cluster.local \\
   --container-runtime=docker \\
@@ -215,6 +214,8 @@ Documentation=https://github.com/GoogleCloudPlatform/kubernetes
 
 [Service]
 ExecStart=/usr/bin/kube-proxy \\
+  --cluster-cidr=10.200.0.0/16 \\
+  --masquerade-all=true \\
   --master=https://${KUBERNETES_PUBLIC_ADDRESS}:6443 \\
   --kubeconfig=/var/lib/kubelet/kube-proxy.kubeconfig \\
   --proxy-mode=iptables \\

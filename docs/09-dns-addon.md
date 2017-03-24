@@ -7,6 +7,12 @@ In this lab you will deploy the DNS add-on which is required for every Kubernete
 
 ## Cluster DNS Add-on
 
+```
+kubectl create clusterrolebinding serviceaccounts-cluster-admin \
+  --clusterrole=cluster-admin \
+  --group=system:serviceaccounts
+```
+
 ### Create the `kubedns` service:
 
 ```

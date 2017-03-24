@@ -13,7 +13,7 @@ This tutorial is optimized for learning, which means taking the long route to he
 
 The target audience for this tutorial is someone planning to support a production Kubernetes cluster and wants to understand how everything fits together. After completing this tutorial I encourage you to automate away the manual steps presented in this guide.
 
-* This tutorial is for educational purposes only. There is much more configuration required for a production ready cluster.
+> This tutorial is for educational purposes only. There is much more configuration required for a production ready cluster.
 
 ## Cluster Details
 
@@ -23,8 +23,10 @@ The target audience for this tutorial is someone planning to support a productio
 * [CNI Based Networking](https://github.com/containernetworking/cni)
 * Secure communication between all components (etcd, control plane, workers)
 * Default Service Account and Secrets
-* RBAC
-
+* [RBAC authorization enabled](https://kubernetes.io/docs/admin/authorization)
+* [TLS client certificate bootstrapping for kubelets](https://kubernetes.io/docs/admin/kubelet-tls-bootstrapping)
+* Cloud provider integration
+* DNS add-on
 
 ### What's Missing
 
@@ -33,27 +35,12 @@ The resulting cluster will be missing the following items:
 * [Cluster add-ons](https://github.com/kubernetes/kubernetes/tree/master/cluster/addons)
 * [Logging](http://kubernetes.io/docs/user-guide/logging)
 
-### Assumptions
-
-GCP
-
-* The us-central1 region will be used
-
-```
-gcloud config set compute/region us-central1
-```
-
-AWS
-
-* The us-west-2 region will be used
-* ``jq`` parsing requires [AWS CLI output format](http://docs.aws.amazon.com/cli/latest/userguide/controlling-output.html) to be ``json``
-
 ## Platforms
 
 This tutorial assumes you have access to one of the following:
 
-* [Google Cloud Platform](https://cloud.google.com) and the [Google Cloud SDK](https://cloud.google.com/sdk/) (125.0.0+)
-* [Amazon Web Services](https://aws.amazon.com), the [AWS CLI](https://aws.amazon.com/cli) (1.10.63+), and [jq](https://stedolan.github.io/jq) (1.5+)
+* [Google Cloud Platform](https://cloud.google.com) and the [Google Cloud SDK](https://cloud.google.com/sdk/) (148.0.0+)
+* [Amazon Web Services](https://aws.amazon.com) and the [AWS CLI](https://aws.amazon.com/cli) (1.11.66+)
 
 ## Labs
 
@@ -61,9 +48,9 @@ While GCP or AWS will be used for basic infrastructure needs, the things learned
 
 * [Cloud Infrastructure Provisioning](docs/01-infrastructure.md)
 * [Setting up a CA and TLS Cert Generation](docs/02-certificate-authority.md)
-* [Setting up authentication](docs/03-authentication.md)
-* [Bootstrapping an H/A etcd cluster](docs/04-etcd.md)
-* [Bootstrapping an H/A Kubernetes Control Plane](docs/05-kubernetes-controller.md)
+* [Setting up TLS Client Bootstrap and RBAC Authentication](docs/03-authentication.md)
+* [Bootstrapping a H/A etcd cluster](docs/04-etcd.md)
+* [Bootstrapping a H/A Kubernetes Control Plane](docs/05-kubernetes-controller.md)
 * [Bootstrapping Kubernetes Workers](docs/06-kubernetes-worker.md)
 * [Configuring the Kubernetes Client - Remote Access](docs/07-kubectl.md)
 * [Managing the Container Network Routes](docs/08-network.md)

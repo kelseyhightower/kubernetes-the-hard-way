@@ -88,17 +88,10 @@ INTERNAL_IP=$(curl -s -H "Metadata-Flavor: Google" \
   http://metadata.google.internal/computeMetadata/v1/instance/network-interfaces/0/ip)
 ```
 
-```
-CLOUD_PROVIDER=gce
-```
-
 #### AWS
 
 ```
 INTERNAL_IP=$(curl -s http://169.254.169.254/latest/meta-data/local-ipv4)
-```
-```
-CLOUD_PROVIDER=aws
 ```
 
 ---
@@ -124,7 +117,6 @@ ExecStart=/usr/bin/kube-apiserver \\
   --authorization-mode=RBAC \\
   --bind-address=0.0.0.0 \\
   --client-ca-file=/var/lib/kubernetes/ca.pem \\
-  --cloud-provider=${CLOUD_PROVIDER} \\
   --enable-swagger-ui=true \\
   --etcd-cafile=/var/lib/kubernetes/ca.pem \\
   --etcd-certfile=/var/lib/kubernetes/kubernetes.pem \\
@@ -181,7 +173,6 @@ Documentation=https://github.com/GoogleCloudPlatform/kubernetes
 ExecStart=/usr/bin/kube-controller-manager \\
   --address=0.0.0.0 \\
   --allocate-node-cidrs=true \\
-  --cloud-provider=${CLOUD_PROVIDER} \\
   --cluster-cidr=10.200.0.0/16 \\
   --cluster-name=kubernetes \\
   --cluster-signing-cert-file="/var/lib/kubernetes/ca.pem" \\
