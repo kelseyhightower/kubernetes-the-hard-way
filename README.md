@@ -17,9 +17,9 @@ The target audience for this tutorial is someone planning to support a productio
 
 ## Cluster Details
 
-* Kubernetes 1.5.1
+* Kubernetes 1.6.0
 * Docker 1.12.1
-* etcd 3.0.10
+* etcd 3.1.4
 * [CNI Based Networking](https://github.com/containernetworking/cni)
 * Secure communication between all components (etcd, control plane, workers)
 * Default Service Account and Secrets

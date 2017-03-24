@@ -139,6 +139,49 @@ KUBERNETES_PUBLIC_ADDRESS=$(aws elb describe-load-balancers \
 
 ---
 
+Create the `admin-csr.json` file:
+
+```
+cat > admin-csr.json <<EOF
+{
+  "CN": "admin",
+  "hosts": [],
+  "key": {
+    "algo": "rsa",
+    "size": 2048
+  },
+  "names": [
+    {
+      "C": "US",
+      "L": "Portland",
+      "O": "system:masters",
+      "OU": "Cluster",
+      "ST": "Oregon"
+    }
+  ]
+}
+EOF
+```
+
+Generate the admin certificate and private key:
+
+```
+cfssl gencert \
+  -ca=ca.pem \
+  -ca-key=ca-key.pem \
+  -config=ca-config.json \
+  -profile=kubernetes \
+  admin-csr.json | cfssljson -bare admin
+```
+
+Results:
+
+```
+admin-key.pem
+admin.csr
+admin.pem
+```
+
 Create the `kubernetes-csr.json` file:
 
 ```
@@ -146,19 +189,13 @@ cat > kubernetes-csr.json <<EOF
 {
   "CN": "kubernetes",
   "hosts": [
-    "worker0",
-    "worker1",
-    "worker2",
-    "ip-10-240-0-20",
-    "ip-10-240-0-21",
-    "ip-10-240-0-22",
     "10.32.0.1",
     "10.240.0.10",
     "10.240.0.11",
     "10.240.0.12",
-    "10.240.0.20",
-    "10.240.0.21",
-    "10.240.0.22",
+    "ip-10-240-0-20",
+    "ip-10-240-0-21",
+    "ip-10-240-0-22",
     "${KUBERNETES_PUBLIC_ADDRESS}",
     "127.0.0.1",
     "kubernetes.default"
@@ -213,6 +250,10 @@ Set the list of Kubernetes hosts where the certs should be copied to:
 KUBERNETES_HOSTS=(controller0 controller1 controller2 worker0 worker1 worker2)
 ```
 
+```
+KUBERNETES_CONTROLLERS=(controller0 controller1 controller2)
+```
+
 ### GCE
 
 The following command will:
@@ -221,7 +262,13 @@ The following command will:
 
 ```
 for host in ${KUBERNETES_HOSTS[*]}; do
-  gcloud compute copy-files ca.pem kubernetes-key.pem kubernetes.pem ${host}:~/
+  gcloud compute copy-files ca.pem ${host}:~/
+done
+```
+
+```
+for host in ${KUBERNETES_CONTROLLERS[*]}; do
+  gcloud compute copy-files ca.pem ca-key.pem kubernetes-key.pem kubernetes.pem ${host}:~/
 done
 ```
 
@@ -236,7 +283,17 @@ for host in ${KUBERNETES_HOSTS[*]}; do
   PUBLIC_IP_ADDRESS=$(aws ec2 describe-instances \
     --filters "Name=tag:Name,Values=${host}" | \
     jq -r '.Reservations[].Instances[].PublicIpAddress')
-  scp -o "StrictHostKeyChecking no" ca.pem kubernetes-key.pem kubernetes.pem \
+  scp -o "StrictHostKeyChecking no" ca.pem \
+    ubuntu@${PUBLIC_IP_ADDRESS}:~/
+done
+```
+
+```
+for host in ${KUBERNETES_HOSTS[*]}; do
+  PUBLIC_IP_ADDRESS=$(aws ec2 describe-instances \
+    --filters "Name=tag:Name,Values=${host}" | \
+    jq -r '.Reservations[].Instances[].PublicIpAddress')
+  scp -o "StrictHostKeyChecking no" ca.pem ca-key.pem kubernetes-key.pem kubernetes.pem \
     ubuntu@${PUBLIC_IP_ADDRESS}:~/
 done
 ```

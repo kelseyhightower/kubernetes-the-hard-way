@@ -33,6 +33,7 @@ gcloud config set compute/region us-central1
 ```
 gcloud config set compute/zone us-central1-f
 ```
+
 Create a Kubernetes network:
 
 ```
@@ -104,13 +105,14 @@ gcloud compute firewall-rules list --filter "network=kubernetes"
 ```
 
 ```
-NAME                         NETWORK     SRC_RANGES      RULES                         SRC_TAGS  TARGET_TAGS
-kubernetes-allow-api-server  kubernetes  0.0.0.0/0       tcp:6443
-kubernetes-allow-healthz     kubernetes  130.211.0.0/22  tcp:8080
-kubernetes-allow-icmp        kubernetes  0.0.0.0/0       icmp
-kubernetes-allow-internal    kubernetes  10.240.0.0/24   tcp:0-65535,udp:0-65535,icmp
-kubernetes-allow-rdp         kubernetes  0.0.0.0/0       tcp:3389
-kubernetes-allow-ssh         kubernetes  0.0.0.0/0       tcp:22
+NAME                               NETWORK     SRC_RANGES      RULES                         SRC_TAGS  TARGET_TAGS
+kubernetes-allow-api-server        kubernetes  0.0.0.0/0       tcp:6443
+kubernetes-allow-healthz           kubernetes  130.211.0.0/22  tcp:8080
+kubernetes-allow-icmp              kubernetes  0.0.0.0/0       icmp
+kubernetes-allow-internal          kubernetes  10.240.0.0/24   tcp:0-65535,udp:0-65535,icmp
+kubernetes-allow-internal-podcidr  kubernetes  10.200.0.0/16   tcp:0-65535,udp:0-65535,icmp
+kubernetes-allow-rdp               kubernetes  0.0.0.0/0       tcp:3389
+kubernetes-allow-ssh               kubernetes  0.0.0.0/0       tcp:22
 ```
 
 ### Kubernetes Public Address

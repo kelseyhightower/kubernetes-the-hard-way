@@ -7,7 +7,7 @@ Run the following commands from the machine which will be your Kubernetes Client
 ### OS X
 
 ```
-wget https://storage.googleapis.com/kubernetes-release/release/v1.5.1/bin/darwin/amd64/kubectl
+wget https://storage.googleapis.com/kubernetes-release/release/v1.6.0-beta.4/bin/darwin/amd64/kubectl
 chmod +x kubectl
 sudo mv kubectl /usr/local/bin
 ```
@@ -15,7 +15,7 @@ sudo mv kubectl /usr/local/bin
 ### Linux
 
 ```
-wget https://storage.googleapis.com/kubernetes-release/release/v1.5.1/bin/linux/amd64/kubectl
+wget https://storage.googleapis.com/kubernetes-release/release/v1.6.0-beta.4/bin/linux/amd64/kubectl
 chmod +x kubectl
 sudo mv kubectl /usr/local/bin
 ```
@@ -40,13 +40,6 @@ KUBERNETES_PUBLIC_ADDRESS=$(aws elb describe-load-balancers \
 ```
 ---
 
-Recall the token we setup for the admin user:
-
-```
-# /var/lib/kubernetes/token.csv on the controller nodes
-chAng3m3,admin,admin
-```
-
 Also be sure to locate the CA certificate [created earlier](02-certificate-authority.md). Since we are using self-signed TLS certs we need to trust the CA certificate so we can verify the remote API Servers.
 
 ### Build up the kubeconfig entry
@@ -61,7 +54,9 @@ kubectl config set-cluster kubernetes-the-hard-way \
 ```
 
 ```
-kubectl config set-credentials admin --token chAng3m3
+kubectl config set-credentials admin \
+  --client-certificate=admin.pem \
+  --client-key=admin-key.pem
 ```
 
 ```

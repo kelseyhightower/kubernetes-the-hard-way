@@ -23,9 +23,87 @@ Each component is being run on the same machines for the following reasons:
 * Running multiple copies of each component is required for H/A
 * Running each component next to the API Server eases configuration.
 
+## Setup Authentication and Authorization
+
+### Authentication
+
+[Token based authentication](http://kubernetes.io/docs/admin/authentication) will be used to bootstrap the Kubernetes cluster. The authentication token is used by the following components:
+
+* kubelet (client)
+* Kubernetes API Server (server)
+
+The other components, mainly the `scheduler` and `controller manager`, access the Kubernetes API server locally over the insecure API port which does not require authentication. The insecure port is only enabled for local access.
+
+Generate a token:
+
+BOOTSTRAP_TOKEN=$(head -c 16 /dev/urandom | od -An -t x | tr -d ' ')
+
+Generate a token file:
+
+```
+cat > token.csv <<EOF
+${BOOTSTRAP_TOKEN},kubelet-bootstrap,10001,"system:kubelet-bootstrap"
+EOF
+```
+
+Copy the `token.csv` file to each controller node:
+
+```
+KUBERNETES_CONTROLLERS=(controller0 controller1 controller2)
+```
+```
+for host in ${KUBERNETES_CONTROLLERS[*]}; do
+  gcloud compute copy-files token.csv ${host}:~/
+done
+```
+
+Generate a bootstrap kubeconfig file:
+
+KUBERNETES_PUBLIC_ADDRESS=$(gcloud compute addresses describe kubernetes \
+  --format 'value(address)')
+
+```
+cat > bootstrap.kubeconfig <<EOF
+apiVersion: v1
+kind: Config
+clusters:
+  - name: kubernetes
+    cluster:
+      certificate-authority: /var/lib/kubernetes/ca.pem
+      server: https://${KUBERNETES_PUBLIC_ADDRESS}:6443
+contexts:
+  - name: kubelet-bootstrap
+    context:
+      cluster: kubernetes
+      user: kubelet-bootstrap
+current-context: kubelet-bootstrap
+users:
+  - name: kubelet-bootstrap
+    user:
+      token: ${BOOTSTRAP_TOKEN}
+EOF
+```
+
+Copy the bootstrap kubeconfig file to each worker node:
+
+```
+KUBERNETES_WORKER_NODES=(worker0 worker1 worker2)
+```
+```
+for host in ${KUBERNETES_WORKER_NODES[*]}; do
+  gcloud compute copy-files bootstrap.kubeconfig ${host}:~/
+done
+```
+
 ## Provision the Kubernetes Controller Cluster
 
 Run the following commands on `controller0`, `controller1`, `controller2`:
+
+Copy the bootstrap token into place:
+
+```
+sudo mv token.csv /var/lib/kubernetes/
+```
 
 ### TLS Certificates
 
@@ -38,7 +116,7 @@ sudo mkdir -p /var/lib/kubernetes
 ```
 
 ```
-sudo cp ca.pem kubernetes-key.pem kubernetes.pem /var/lib/kubernetes/
+sudo mv ca.pem ca-key.pem kubernetes-key.pem kubernetes.pem /var/lib/kubernetes/
 ```
 
 ### Download and install the Kubernetes controller binaries
@@ -46,16 +124,16 @@ sudo cp ca.pem kubernetes-key.pem kubernetes.pem /var/lib/kubernetes/
 Download the official Kubernetes release binaries:
 
 ```
-wget https://storage.googleapis.com/kubernetes-release/release/v1.5.1/bin/linux/amd64/kube-apiserver
+wget https://storage.googleapis.com/kubernetes-release/release/v1.6.0-beta.4/bin/linux/amd64/kube-apiserver
 ```
 ```
-wget https://storage.googleapis.com/kubernetes-release/release/v1.5.1/bin/linux/amd64/kube-controller-manager
+wget https://storage.googleapis.com/kubernetes-release/release/v1.6.0-beta.4/bin/linux/amd64/kube-controller-manager
 ```
 ```
-wget https://storage.googleapis.com/kubernetes-release/release/v1.5.1/bin/linux/amd64/kube-scheduler
+wget https://storage.googleapis.com/kubernetes-release/release/v1.6.0-beta.4/bin/linux/amd64/kube-scheduler
 ```
 ```
-wget https://storage.googleapis.com/kubernetes-release/release/v1.5.1/bin/linux/amd64/kubectl
+wget https://storage.googleapis.com/kubernetes-release/release/v1.6.0-beta.4/bin/linux/amd64/kubectl
 ```
 
 Install the Kubernetes binaries:
@@ -70,56 +148,6 @@ sudo mv kube-apiserver kube-controller-manager kube-scheduler kubectl /usr/bin/
 
 ### Kubernetes API Server
 
-#### Setup Authentication and Authorization
-
-##### Authentication
-
-[Token based authentication](http://kubernetes.io/docs/admin/authentication) will be used to limit access to the Kubernetes API. The authentication token is used by the following components:
-
-* kubelet (client)
-* Kubernetes API Server (server)
-
-The other components, mainly the `scheduler` and `controller manager`, access the Kubernetes API server locally over the insecure API port which does not require authentication. The insecure port is only enabled for local access.
-
-Download the example token file:
-
-```
-wget https://raw.githubusercontent.com/kelseyhightower/kubernetes-the-hard-way/master/token.csv
-```
-
-Review the example token file and replace the default token.
-
-```
-cat token.csv
-```
-
-Move the token file into the Kubernetes configuration directory so it can be read by the Kubernetes API server.
-
-```
-sudo mv token.csv /var/lib/kubernetes/
-```
-
-##### Authorization
-
-Attribute-Based Access Control (ABAC) will be used to authorize access to the Kubernetes API. In this lab ABAC will be setup using the Kubernetes policy file backend as documented in the [Kubernetes authorization guide](http://kubernetes.io/docs/admin/authorization).
-
-Download the example authorization policy file:
-
-```
-wget https://raw.githubusercontent.com/kelseyhightower/kubernetes-the-hard-way/master/authorization-policy.jsonl
-```
-
-Review the example authorization policy file. No changes are required.
-
-```
-cat authorization-policy.jsonl
-```
-
-Move the authorization policy file into the Kubernetes configuration directory so it can be read by the Kubernetes API server.
-
-```
-sudo mv authorization-policy.jsonl /var/lib/kubernetes/
-```
 
 ### Create the systemd unit file 
 
@@ -132,10 +160,17 @@ INTERNAL_IP=$(curl -s -H "Metadata-Flavor: Google" \
   http://metadata.google.internal/computeMetadata/v1/instance/network-interfaces/0/ip)
 ```
 
+```
+CLOUD_PROVIDER=gcp
+```
+
 #### AWS
 
 ```
 INTERNAL_IP=$(curl -s http://169.254.169.254/latest/meta-data/local-ipv4)
+```
+```
+CLOUD_PROVIDER=aws
 ```
 
 ---
@@ -143,31 +178,44 @@ INTERNAL_IP=$(curl -s http://169.254.169.254/latest/meta-data/local-ipv4)
 Create the systemd unit file:
 
 ```
-cat > kube-apiserver.service <<"EOF"
+cat > kube-apiserver.service <<EOF
 [Unit]
 Description=Kubernetes API Server
 Documentation=https://github.com/GoogleCloudPlatform/kubernetes
 
 [Service]
-ExecStart=/usr/bin/kube-apiserver \
-  --admission-control=NamespaceLifecycle,LimitRanger,SecurityContextDeny,ServiceAccount,ResourceQuota \
-  --advertise-address=INTERNAL_IP \
-  --allow-privileged=true \
-  --apiserver-count=3 \
-  --authorization-mode=ABAC \
-  --authorization-policy-file=/var/lib/kubernetes/authorization-policy.jsonl \
-  --bind-address=0.0.0.0 \
-  --enable-swagger-ui=true \
-  --etcd-cafile=/var/lib/kubernetes/ca.pem \
-  --insecure-bind-address=0.0.0.0 \
-  --kubelet-certificate-authority=/var/lib/kubernetes/ca.pem \
-  --etcd-servers=https://10.240.0.10:2379,https://10.240.0.11:2379,https://10.240.0.12:2379 \
-  --service-account-key-file=/var/lib/kubernetes/kubernetes-key.pem \
-  --service-cluster-ip-range=10.32.0.0/24 \
-  --service-node-port-range=30000-32767 \
-  --tls-cert-file=/var/lib/kubernetes/kubernetes.pem \
-  --tls-private-key-file=/var/lib/kubernetes/kubernetes-key.pem \
-  --token-auth-file=/var/lib/kubernetes/token.csv \
+ExecStart=/usr/bin/kube-apiserver \\
+  --admission-control=NamespaceLifecycle,LimitRanger,ServiceAccount,DefaultStorageClass,ResourceQuota \\
+  --advertise-address=${INTERNAL_IP} \\
+  --allow-privileged=true \\
+  --apiserver-count=3 \\
+  --audit-log-maxage=30 \\
+  --audit-log-maxbackup=3 \\
+  --audit-log-maxsize=100 \\
+  --audit-log-path="/var/lib/audit.log" \\
+  --authorization-mode=RBAC \\
+  --bind-address=0.0.0.0 \\
+  --client-ca-file=/var/lib/kubernetes/ca.pem \\
+  --cloud-provider=${CLOUD_PROVIDER} \\
+  --enable-swagger-ui=true \\
+  --etcd-cafile=/var/lib/kubernetes/ca.pem \\
+  --etcd-certfile=/var/lib/kubernetes/kubernetes.pem \\
+  --etcd-keyfile=/var/lib/kubernetes/kubernetes-key.pem \\
+  --etcd-servers=https://10.240.0.10:2379,https://10.240.0.11:2379,https://10.240.0.12:2379 \\
+  --event-ttl=1h \\
+  --experimental-bootstrap-token-auth \\
+  --insecure-bind-address=0.0.0.0 \\
+  --kubelet-certificate-authority=/var/lib/kubernetes/ca.pem \\
+  --kubelet-client-certificate=/var/lib/kubernetes/kubernetes.pem \\
+  --kubelet-client-key=/var/lib/kubernetes/kubernetes-key.pem \\
+  --kubelet-https=true \\
+  --runtime-config=rbac.authorization.k8s.io/v1alpha1 \\
+  --service-account-key-file=/var/lib/kubernetes/kubernetes-key.pem \\
+  --service-cluster-ip-range=10.32.0.0/24 \\
+  --service-node-port-range=30000-32767 \\
+  --tls-cert-file=/var/lib/kubernetes/kubernetes.pem \\
+  --tls-private-key-file=/var/lib/kubernetes/kubernetes-key.pem \\
+  --token-auth-file=/var/lib/kubernetes/token.csv \\
   --v=2
 Restart=on-failure
 RestartSec=5
@@ -176,16 +224,12 @@ RestartSec=5
 WantedBy=multi-user.target
 EOF
 ```
-- Note: If you are deploying this on AWS then you should add ``--cloud-provider=aws`` in the ``kube-apiserver.service`` unit file's [service] section. If you are adding this before ``--v=2`` line, remember to add ``\`` character at the end   
 
-```
-sed -i s/INTERNAL_IP/$INTERNAL_IP/g kube-apiserver.service
-```
+Start the `kube-apiserver` service:
 
 ```
 sudo mv kube-apiserver.service /etc/systemd/system/
 ```
-
 
 ```
 sudo systemctl daemon-reload
@@ -200,21 +244,25 @@ sudo systemctl status kube-apiserver --no-pager
 ### Kubernetes Controller Manager
 
 ```
-cat > kube-controller-manager.service <<"EOF"
+cat > kube-controller-manager.service <<EOF
 [Unit]
 Description=Kubernetes Controller Manager
 Documentation=https://github.com/GoogleCloudPlatform/kubernetes
 
 [Service]
-ExecStart=/usr/bin/kube-controller-manager \
-  --allocate-node-cidrs=true \
-  --cluster-cidr=10.200.0.0/16 \
-  --cluster-name=kubernetes \
-  --leader-elect=true \
-  --master=http://INTERNAL_IP:8080 \
-  --root-ca-file=/var/lib/kubernetes/ca.pem \
-  --service-account-private-key-file=/var/lib/kubernetes/kubernetes-key.pem \
-  --service-cluster-ip-range=10.32.0.0/16 \
+ExecStart=/usr/bin/kube-controller-manager \\
+  --address=0.0.0.0 \\
+  --allocate-node-cidrs=true \\
+  --cloud-provider=${CLOUD_PROVIDER} \\
+  --cluster-cidr=10.200.0.0/16 \\
+  --cluster-name=kubernetes \\
+  --cluster-signing-cert-file="/var/lib/kubernetes/ca.pem" \\
+  --cluster-signing-key-file="/var/lib/kubernetes/ca-key.pem" \\
+  --leader-elect=true \\
+  --master=http://${INTERNAL_IP}:8080 \\
+  --root-ca-file=/var/lib/kubernetes/ca.pem \\
+  --service-account-private-key-file=/var/lib/kubernetes/ca-key.pem \\
+  --service-cluster-ip-range=10.32.0.0/16 \\
   --v=2
 Restart=on-failure
 RestartSec=5
@@ -223,17 +271,12 @@ RestartSec=5
 WantedBy=multi-user.target
 EOF
 ```
-- Note: If you are deploying this on AWS then you should add ``--cloud-provider=aws`` in the ``kube-controller-manager.service`` unit file's [service] section. If you are adding this before ``--v=2`` line , remember to add ``\`` character at the end.
 
-
-```
-sed -i s/INTERNAL_IP/$INTERNAL_IP/g kube-controller-manager.service
-```
+Start the `kube-controller-manager` service:
 
 ```
 sudo mv kube-controller-manager.service /etc/systemd/system/
 ```
-
 
 ```
 sudo systemctl daemon-reload
@@ -248,15 +291,15 @@ sudo systemctl status kube-controller-manager --no-pager
 ### Kubernetes Scheduler
 
 ```
-cat > kube-scheduler.service <<"EOF"
+cat > kube-scheduler.service <<EOF
 [Unit]
 Description=Kubernetes Scheduler
 Documentation=https://github.com/GoogleCloudPlatform/kubernetes
 
 [Service]
-ExecStart=/usr/bin/kube-scheduler \
-  --leader-elect=true \
-  --master=http://INTERNAL_IP:8080 \
+ExecStart=/usr/bin/kube-scheduler \\
+  --leader-elect=true \\
+  --master=http://${INTERNAL_IP}:8080 \\
   --v=2
 Restart=on-failure
 RestartSec=5
@@ -266,9 +309,7 @@ WantedBy=multi-user.target
 EOF
 ```
 
-```
-sed -i s/INTERNAL_IP/$INTERNAL_IP/g kube-scheduler.service
-```
+Start the `kube-scheduler` service:
 
 ```
 sudo mv kube-scheduler.service /etc/systemd/system/
@@ -342,4 +383,14 @@ gcloud compute forwarding-rules create kubernetes-rule \
 aws elb register-instances-with-load-balancer \
   --load-balancer-name kubernetes \
   --instances ${CONTROLLER_0_INSTANCE_ID} ${CONTROLLER_1_INSTANCE_ID} ${CONTROLLER_2_INSTANCE_ID}
+```
+
+## RBAC
+
+Set up bootstrapping roles:
+
+```
+kubectl create clusterrolebinding kubelet-bootstrap \
+  --clusterrole=system:node-bootstrapper \
+  --user=kubelet-bootstrap
 ```

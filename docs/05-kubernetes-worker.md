@@ -20,6 +20,33 @@ Some people would like to run workers and cluster services anywhere in the clust
 
 Run the following commands on `worker0`, `worker1`, `worker2`:
 
+### Set the Kubernetes Public Address
+
+#### GCE
+
+```
+KUBERNETES_PUBLIC_ADDRESS=$(gcloud compute addresses describe kubernetes \
+  --format 'value(address)')
+```
+
+#### AWS
+
+```
+KUBERNETES_PUBLIC_ADDRESS=$(aws elb describe-load-balancers \
+  --load-balancer-name kubernetes | \
+  jq -r '.LoadBalancerDescriptions[].DNSName')
+```
+
+---
+
+```
+sudo mkdir -p /var/lib/kubelet
+```
+
+```
+sudo mv bootstrap.kubeconfig /var/lib/kubelet
+```
+
 #### Move the TLS certificates in place
 
 ```
@@ -27,19 +54,17 @@ sudo mkdir -p /var/lib/kubernetes
 ```
 
 ```
-sudo cp ca.pem kubernetes-key.pem kubernetes.pem /var/lib/kubernetes/
+sudo mv ca.pem /var/lib/kubernetes/
 ```
 
 #### Docker
 
-Kubernetes should be compatible with the Docker 1.9.x - 1.12.x:
-
 ```
-wget https://get.docker.com/builds/Linux/x86_64/docker-1.12.1.tgz
+wget https://get.docker.com/builds/Linux/x86_64/docker-1.12.6.tgz
 ```
 
 ```
-tar -xvf docker-1.12.1.tgz
+tar -xvf docker-1.12.6.tgz
 ```
 
 ```
@@ -50,22 +75,28 @@ Create the Docker systemd unit file:
 
 
 ```
-sudo sh -c 'echo "[Unit]
+cat > docker.service <<EOF
+[Unit]
 Description=Docker Application Container Engine
 Documentation=http://docs.docker.io
 
 [Service]
-ExecStart=/usr/bin/docker daemon \
-  --iptables=false \
-  --ip-masq=false \
-  --host=unix:///var/run/docker.sock \
-  --log-level=error \
+ExecStart=/usr/bin/docker daemon \\
+  --iptables=false \\
+  --ip-masq=false \\
+  --host=unix:///var/run/docker.sock \\
+  --log-level=error \\
   --storage-driver=overlay
 Restart=on-failure
 RestartSec=5
 
 [Install]
-WantedBy=multi-user.target" > /etc/systemd/system/docker.service'
+WantedBy=multi-user.target
+EOF
+```
+
+```
+sudo mv docker.service /etc/systemd/system/docker.service
 ```
 
 ```
@@ -90,24 +121,24 @@ sudo mkdir -p /opt/cni
 ```
 
 ```
-wget https://storage.googleapis.com/kubernetes-release/network-plugins/cni-07a8a28637e97b22eb8dfe710eeae1344f69d16e.tar.gz
+wget https://storage.googleapis.com/kubernetes-release/network-plugins/cni-amd64-0799f5732f2a11b329d9e3d51b9c8f2e3759f2ff.tar.gz
 ```
 
 ```
-sudo tar -xvf cni-07a8a28637e97b22eb8dfe710eeae1344f69d16e.tar.gz -C /opt/cni
+sudo tar -xvf cni-amd64-0799f5732f2a11b329d9e3d51b9c8f2e3759f2ff.tar.gz -C /opt/cni
 ```
 
 
 Download and install the Kubernetes worker binaries:
 
 ```
-wget https://storage.googleapis.com/kubernetes-release/release/v1.5.1/bin/linux/amd64/kubectl
+wget https://storage.googleapis.com/kubernetes-release/release/v1.6.0-beta.4/bin/linux/amd64/kubectl
 ```
 ```
-wget https://storage.googleapis.com/kubernetes-release/release/v1.5.1/bin/linux/amd64/kube-proxy
+wget https://storage.googleapis.com/kubernetes-release/release/v1.6.0-beta.4/bin/linux/amd64/kube-proxy
 ```
 ```
-wget https://storage.googleapis.com/kubernetes-release/release/v1.5.1/bin/linux/amd64/kubelet
+wget https://storage.googleapis.com/kubernetes-release/release/v1.6.0-beta.4/bin/linux/amd64/kubelet
 ```
 
 ```
@@ -118,61 +149,42 @@ chmod +x kubectl kube-proxy kubelet
 sudo mv kubectl kube-proxy kubelet /usr/bin/
 ```
 
-```
-sudo mkdir -p /var/lib/kubelet/
-```
-
-```
-sudo sh -c 'echo "apiVersion: v1
-kind: Config
-clusters:
-- cluster:
-    certificate-authority: /var/lib/kubernetes/ca.pem
-    server: https://10.240.0.10:6443
-  name: kubernetes
-contexts:
-- context:
-    cluster: kubernetes
-    user: kubelet
-  name: kubelet
-current-context: kubelet
-users:
-- name: kubelet
-  user:
-    token: chAng3m3" > /var/lib/kubelet/kubeconfig'
-```
-
 Create the kubelet systemd unit file:
 
 ```
-sudo sh -c 'echo "[Unit]
+cat > kubelet.service <<EOF
+[Unit]
 Description=Kubernetes Kubelet
 Documentation=https://github.com/GoogleCloudPlatform/kubernetes
 After=docker.service
 Requires=docker.service
 
 [Service]
-ExecStart=/usr/bin/kubelet \
-  --allow-privileged=true \
-  --api-servers=https://10.240.0.10:6443,https://10.240.0.11:6443,https://10.240.0.12:6443 \
-  --cloud-provider= \
-  --cluster-dns=10.32.0.10 \
-  --cluster-domain=cluster.local \
-  --container-runtime=docker \
-  --docker=unix:///var/run/docker.sock \
-  --network-plugin=kubenet \
-  --kubeconfig=/var/lib/kubelet/kubeconfig \
-  --reconcile-cidr=true \
-  --serialize-image-pulls=false \
-  --tls-cert-file=/var/lib/kubernetes/kubernetes.pem \
-  --tls-private-key-file=/var/lib/kubernetes/kubernetes-key.pem \
+ExecStart=/usr/bin/kubelet \\
+  --api-servers=https://${KUBERNETES_PUBLIC_ADDRESS}:6443 \\
+  --allow-privileged=true \\
+  --cloud-provider=auto-detect \\
+  --cluster-dns=10.32.0.10 \\
+  --cluster-domain=cluster.local \\
+  --container-runtime=docker \\
+  --experimental-bootstrap-kubeconfig=/var/lib/kubelet/bootstrap.kubeconfig \\
+  --network-plugin=kubenet \\
+  --kubeconfig=/var/lib/kubelet/kubeconfig \\
+  --serialize-image-pulls=false \\
+  --register-node=true \\
+  --tls-cert-file=/var/run/kubernetes/kubelet-client.crt \\
+  --tls-private-key-file=/var/run/kubernetes/kubelet-client.key \\
   --v=2
-  
 Restart=on-failure
 RestartSec=5
 
 [Install]
-WantedBy=multi-user.target" > /etc/systemd/system/kubelet.service'
+WantedBy=multi-user.target
+EOF
+```
+
+```
+sudo mv kubelet.service /etc/systemd/system/kubelet.service
 ```
 
 ```
@@ -190,22 +202,26 @@ sudo systemctl status kubelet --no-pager
 
 
 ```
-sudo sh -c 'echo "[Unit]
+cat > kube-proxy.service <<EOF
+[Unit]
 Description=Kubernetes Kube Proxy
 Documentation=https://github.com/GoogleCloudPlatform/kubernetes
 
 [Service]
-ExecStart=/usr/bin/kube-proxy \
-  --master=https://10.240.0.10:6443 \
-  --kubeconfig=/var/lib/kubelet/kubeconfig \
-  --proxy-mode=iptables \
+ExecStart=/usr/bin/kube-proxy \\
+  --master=https://${KUBERNETES_PUBLIC_ADDRESS}:6443 \\
+  --kubeconfig=/var/lib/kubelet/kubeconfig \\
+  --proxy-mode=iptables \\
   --v=2
-  
 Restart=on-failure
 RestartSec=5
 
 [Install]
-WantedBy=multi-user.target" > /etc/systemd/system/kube-proxy.service'
+WantedBy=multi-user.target
+```
+
+```
+sudo mv kube-proxy.service /etc/systemd/system/kube-proxy.service
 ```
 
 ```
