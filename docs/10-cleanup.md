@@ -205,3 +205,32 @@ DHCP_OPTION_SET_ID=$(aws ec2 describe-dhcp-options \
 aws ec2 delete-dhcp-options \
   --dhcp-options-id ${DHCP_OPTION_SET_ID}
 ```
+
+## OpenStack
+
+### Virtual Machines
+
+```
+openstack server delete \
+  controller0 controller1 controller2 \
+  worker0 worker1 worker2
+```
+
+### Networking
+
+```
+ openstack security group delete kubernetes
+```
+
+```
+openstack subnet delete kubernetes
+```
+
+```
+openstack network delete kubernetes
+```
+
+```
+openstack router delete kubernetes
+```
+

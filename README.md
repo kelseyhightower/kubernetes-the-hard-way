@@ -6,6 +6,7 @@ This tutorial is optimized for learning, which means taking the long route to he
 
 * [Google Compute Engine](https://cloud.google.com/compute)
 * [Amazon EC2](https://aws.amazon.com/ec2)
+* [OpenStack](https://openstack.org)
 
 > The results of this tutorial should not be viewed as production ready, and may receive limited support from the community, but don't let that prevent you from learning!
 
@@ -48,12 +49,15 @@ AWS
 * The us-west-2 region will be used
 * ``jq`` parsing requires [AWS CLI output format](http://docs.aws.amazon.com/cli/latest/userguide/controlling-output.html) to be ``json``
 
+
+
 ## Platforms
 
 This tutorial assumes you have access to one of the following:
 
 * [Google Cloud Platform](https://cloud.google.com) and the [Google Cloud SDK](https://cloud.google.com/sdk/) (125.0.0+)
 * [Amazon Web Services](https://aws.amazon.com), the [AWS CLI](https://aws.amazon.com/cli) (1.10.63+), and [jq](https://stedolan.github.io/jq) (1.5+)
+* [OpenStack](https://openstack.org) and the [Python OpenStack Client](https://github.com/openstack/python-openstackclient)
 
 ## Labs
 
