@@ -60,13 +60,13 @@ kubectl config set-credentials admin \
 ```
 
 ```
-kubectl config set-context default-context \
+kubectl config set-context default \
   --cluster=kubernetes-the-hard-way \
   --user=admin
 ```
 
 ```
-kubectl config use-context default-context
+kubectl config use-context default
 ```
 
 At this point you should be able to connect securly to the remote API server:
@@ -88,8 +88,8 @@ etcd-1               Healthy   {"health": "true"}
 kubectl get nodes
 ```
 ```
-NAME      STATUS    AGE
-worker0   Ready     7m
-worker1   Ready     5m
-worker2   Ready     2m
+NAME      STATUS    AGE       VERSION
+worker0   Ready     7m        v1.6.0-beta.4
+worker1   Ready     5m        v1.6.0-beta.4
+worker2   Ready     2m        v1.6.0-beta.4
 ```
