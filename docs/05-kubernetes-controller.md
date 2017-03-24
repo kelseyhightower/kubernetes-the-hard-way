@@ -23,83 +23,15 @@ Each component is being run on the same machines for the following reasons:
 * Running multiple copies of each component is required for H/A
 * Running each component next to the API Server eases configuration.
 
-## Setup Authentication and Authorization
-
-### Authentication
-
-[Token based authentication](http://kubernetes.io/docs/admin/authentication) will be used to bootstrap the Kubernetes cluster. The authentication token is used by the following components:
-
-* kubelet (client)
-* Kubernetes API Server (server)
-
-The other components, mainly the `scheduler` and `controller manager`, access the Kubernetes API server locally over the insecure API port which does not require authentication. The insecure port is only enabled for local access.
-
-Generate a token:
-
-BOOTSTRAP_TOKEN=$(head -c 16 /dev/urandom | od -An -t x | tr -d ' ')
-
-Generate a token file:
-
-```
-cat > token.csv <<EOF
-${BOOTSTRAP_TOKEN},kubelet-bootstrap,10001,"system:kubelet-bootstrap"
-EOF
-```
-
-Copy the `token.csv` file to each controller node:
-
-```
-KUBERNETES_CONTROLLERS=(controller0 controller1 controller2)
-```
-```
-for host in ${KUBERNETES_CONTROLLERS[*]}; do
-  gcloud compute copy-files token.csv ${host}:~/
-done
-```
-
-Generate a bootstrap kubeconfig file:
-
-KUBERNETES_PUBLIC_ADDRESS=$(gcloud compute addresses describe kubernetes \
-  --format 'value(address)')
-
-```
-cat > bootstrap.kubeconfig <<EOF
-apiVersion: v1
-kind: Config
-clusters:
-  - name: kubernetes
-    cluster:
-      certificate-authority: /var/lib/kubernetes/ca.pem
-      server: https://${KUBERNETES_PUBLIC_ADDRESS}:6443
-contexts:
-  - name: kubelet-bootstrap
-    context:
-      cluster: kubernetes
-      user: kubelet-bootstrap
-current-context: kubelet-bootstrap
-users:
-  - name: kubelet-bootstrap
-    user:
-      token: ${BOOTSTRAP_TOKEN}
-EOF
-```
-
-Copy the bootstrap kubeconfig file to each worker node:
-
-```
-KUBERNETES_WORKER_NODES=(worker0 worker1 worker2)
-```
-```
-for host in ${KUBERNETES_WORKER_NODES[*]}; do
-  gcloud compute copy-files bootstrap.kubeconfig ${host}:~/
-done
-```
-
 ## Provision the Kubernetes Controller Cluster
 
 Run the following commands on `controller0`, `controller1`, `controller2`:
 
 Copy the bootstrap token into place:
+
+```
+sudo mkdir -p /var/lib/kubernetes/
+```
 
 ```
 sudo mv token.csv /var/lib/kubernetes/
@@ -110,10 +42,6 @@ sudo mv token.csv /var/lib/kubernetes/
 The TLS certificates created in the [Setting up a CA and TLS Cert Generation](02-certificate-authority.md) lab will be used to secure communication between the Kubernetes API server and Kubernetes clients such as `kubectl` and the `kubelet` agent. The TLS certificates will also be used to authenticate the Kubernetes API server to etcd via TLS client auth.
 
 Copy the TLS certificates to the Kubernetes configuration directory:
-
-```
-sudo mkdir -p /var/lib/kubernetes
-```
 
 ```
 sudo mv ca.pem ca-key.pem kubernetes-key.pem kubernetes.pem /var/lib/kubernetes/
@@ -161,7 +89,7 @@ INTERNAL_IP=$(curl -s -H "Metadata-Flavor: Google" \
 ```
 
 ```
-CLOUD_PROVIDER=gcp
+CLOUD_PROVIDER=gce
 ```
 
 #### AWS
@@ -374,7 +302,8 @@ KUBERNETES_PUBLIC_ADDRESS=$(gcloud compute addresses describe kubernetes \
 gcloud compute forwarding-rules create kubernetes-rule \
   --address ${KUBERNETES_PUBLIC_ADDRESS} \
   --ports 6443 \
-  --target-pool kubernetes-pool
+  --target-pool kubernetes-pool \
+  --region us-central1
 ```
 
 ### AWS
@@ -388,6 +317,10 @@ aws elb register-instances-with-load-balancer \
 ## RBAC
 
 Set up bootstrapping roles:
+
+```
+gcloud compute ssh controller0
+```
 
 ```
 kubectl create clusterrolebinding kubelet-bootstrap \

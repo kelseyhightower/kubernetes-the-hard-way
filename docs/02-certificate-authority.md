@@ -13,10 +13,14 @@ In this lab you will generate a single set of TLS certificates that can be used 
 After completing this lab you should have the following TLS keys and certificates:
 
 ```
+admin.pem
+admin-key.pem
 ca-key.pem
 ca.pem
 kubernetes-key.pem
 kubernetes.pem
+kube-proxy.pem
+kube-proxy-key.pem
 ```
 
 
@@ -181,6 +185,50 @@ admin-key.pem
 admin.csr
 admin.pem
 ```
+
+Create the `kube-proxy-csr.json` file:
+
+```
+cat > kube-proxy-csr.json <<EOF
+{
+  "CN": "system:kube-proxy",
+  "hosts": [],
+  "key": {
+    "algo": "rsa",
+    "size": 2048
+  },
+  "names": [
+    {
+      "C": "US",
+      "L": "Portland",
+      "O": "system:node-proxier",
+      "OU": "Cluster",
+      "ST": "Oregon"
+    }
+  ]
+}
+EOF
+```
+
+Generate the node-proxier certificate and private key:
+
+```
+cfssl gencert \
+  -ca=ca.pem \
+  -ca-key=ca-key.pem \
+  -config=ca-config.json \
+  -profile=kubernetes \
+  kube-proxy-csr.json | cfssljson -bare kube-proxy
+```
+
+Results:
+
+```
+kube-proxy-key.pem
+kube-proxy.csr
+kube-proxy.pem
+```
+
 
 Create the `kubernetes-csr.json` file:
 

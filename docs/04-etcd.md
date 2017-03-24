@@ -151,7 +151,7 @@ Once all 3 etcd nodes have been bootstrapped verify the etcd cluster is healthy:
 * On one of the controller nodes run the following command:
 
 ```
-etcdctl \
+sudo etcdctl \
   --ca-file=/etc/etcd/ca.pem \
   --cert-file=/etc/etcd/kubernetes.pem \
   --key-file=/etc/etcd/kubernetes-key.pem \

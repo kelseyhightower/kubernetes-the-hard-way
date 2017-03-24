@@ -26,6 +26,7 @@ Run the following commands on `worker0`, `worker1`, `worker2`:
 
 ```
 KUBERNETES_PUBLIC_ADDRESS=$(gcloud compute addresses describe kubernetes \
+  --region=us-central1 \
   --format 'value(address)')
 ```
 
@@ -44,7 +45,7 @@ sudo mkdir -p /var/lib/kubelet
 ```
 
 ```
-sudo mv bootstrap.kubeconfig /var/lib/kubelet
+sudo mv bootstrap.kubeconfig kube-proxy.kubeconfig /var/lib/kubelet
 ```
 
 #### Move the TLS certificates in place
@@ -188,6 +189,10 @@ sudo mv kubelet.service /etc/systemd/system/kubelet.service
 ```
 
 ```
+sudo chmod +w /var/run/kubernetes
+```
+
+```
 sudo systemctl daemon-reload
 sudo systemctl enable kubelet
 sudo systemctl start kubelet
@@ -195,6 +200,20 @@ sudo systemctl start kubelet
 
 ```
 sudo systemctl status kubelet --no-pager
+```
+
+Approve the certificate:
+
+```
+gcloud compute ssh controller0
+```
+
+```
+kubectl get csr
+```
+
+```
+kubectl certificate approve <csr-name>
 ```
 
 
@@ -210,7 +229,7 @@ Documentation=https://github.com/GoogleCloudPlatform/kubernetes
 [Service]
 ExecStart=/usr/bin/kube-proxy \\
   --master=https://${KUBERNETES_PUBLIC_ADDRESS}:6443 \\
-  --kubeconfig=/var/lib/kubelet/kubeconfig \\
+  --kubeconfig=/var/lib/kubelet/kube-proxy.kubeconfig \\
   --proxy-mode=iptables \\
   --v=2
 Restart=on-failure
@@ -218,6 +237,7 @@ RestartSec=5
 
 [Install]
 WantedBy=multi-user.target
+EOF
 ```
 
 ```

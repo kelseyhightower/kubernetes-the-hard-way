@@ -18,11 +18,12 @@ The target audience for this tutorial is someone planning to support a productio
 ## Cluster Details
 
 * Kubernetes 1.6.0
-* Docker 1.12.1
+* Docker 1.12.6
 * etcd 3.1.4
 * [CNI Based Networking](https://github.com/containernetworking/cni)
 * Secure communication between all components (etcd, control plane, workers)
 * Default Service Account and Secrets
+* RBAC
 
 
 ### What's Missing
@@ -31,7 +32,6 @@ The resulting cluster will be missing the following items:
 
 * [Cluster add-ons](https://github.com/kubernetes/kubernetes/tree/master/cluster/addons)
 * [Logging](http://kubernetes.io/docs/user-guide/logging)
-* [No Cloud Provider Integration](http://kubernetes.io/docs/getting-started-guides/)
 
 ### Assumptions
 
@@ -61,11 +61,12 @@ While GCP or AWS will be used for basic infrastructure needs, the things learned
 
 * [Cloud Infrastructure Provisioning](docs/01-infrastructure.md)
 * [Setting up a CA and TLS Cert Generation](docs/02-certificate-authority.md)
-* [Bootstrapping an H/A etcd cluster](docs/03-etcd.md)
-* [Bootstrapping an H/A Kubernetes Control Plane](docs/04-kubernetes-controller.md)
-* [Bootstrapping Kubernetes Workers](docs/05-kubernetes-worker.md)
-* [Configuring the Kubernetes Client - Remote Access](docs/06-kubectl.md)
-* [Managing the Container Network Routes](docs/07-network.md)
-* [Deploying the Cluster DNS Add-on](docs/08-dns-addon.md)
-* [Smoke Test](docs/09-smoke-test.md)
-* [Cleaning Up](docs/10-cleanup.md)
+* [Setting up authentication](docs/03-authentication.md)
+* [Bootstrapping an H/A etcd cluster](docs/04-etcd.md)
+* [Bootstrapping an H/A Kubernetes Control Plane](docs/05-kubernetes-controller.md)
+* [Bootstrapping Kubernetes Workers](docs/06-kubernetes-worker.md)
+* [Configuring the Kubernetes Client - Remote Access](docs/07-kubectl.md)
+* [Managing the Container Network Routes](docs/08-network.md)
+* [Deploying the Cluster DNS Add-on](docs/09-dns-addon.md)
+* [Smoke Test](docs/10-smoke-test.md)
+* [Cleaning Up](docs/11-cleanup.md)
