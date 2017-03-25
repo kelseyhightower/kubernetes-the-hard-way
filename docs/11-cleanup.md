@@ -13,7 +13,7 @@ gcloud -q compute instances delete \
 ### Networking
 
 ```
-gcloud -q compute forwarding-rules delete kubernetes-rule
+gcloud -q compute forwarding-rules delete kubernetes-rule --region us-central1
 ```
 
 ```

@@ -2,13 +2,12 @@
 
 In this lab you will setup the necessary PKI infrastructure to secure the Kubernetes components. This lab will leverage CloudFlare's PKI toolkit, [cfssl](https://github.com/cloudflare/cfssl), to bootstrap a Certificate Authority and generate TLS certificates.
 
-In this lab you will generate a single set of TLS certificates that can be used to secure the following Kubernetes components:
+In this lab you will generate a set of TLS certificates that can be used to secure the following Kubernetes components:
 
 * etcd
-* Kubernetes API Server
-* Kubernetes Kubelet
-
-> In production you should strongly consider generating individual TLS certificates for each component.
+* kube-apiserver
+* kubelet
+* kube-proxy
 
 After completing this lab you should have the following TLS keys and certificates:
 
@@ -42,7 +41,6 @@ chmod +x cfssljson_darwin-amd64
 sudo mv cfssljson_darwin-amd64 /usr/local/bin/cfssljson
 ```
 
-
 ### Linux
 
 ```
@@ -57,12 +55,13 @@ chmod +x cfssljson_linux-amd64
 sudo mv cfssljson_linux-amd64 /usr/local/bin/cfssljson
 ```
 
-## Setting up a Certificate Authority
+## Set up a Certificate Authority
 
-### Create the CA configuration file
+Create a CA configuration file:
 
 ```
-echo '{
+cat > ca-config.json <<EOF
+{
   "signing": {
     "default": {
       "expiry": "8760h"
@@ -74,15 +73,16 @@ echo '{
       }
     }
   }
-}' > ca-config.json
+}
+EOF
 ```
 
-### Generate the CA certificate and private key
+Create a CA certificate signing request:
 
-Create the CA CSR:
 
 ```
-echo '{
+cat > ca-csr.json <<EOF
+{
   "CN": "Kubernetes",
   "key": {
     "algo": "rsa",
@@ -97,7 +97,8 @@ echo '{
       "ST": "Oregon"
     }
   ]
-}' > ca-csr.json
+}
+EOF
 ```
 
 Generate the CA certificate and private key:
@@ -110,40 +111,17 @@ Results:
 
 ```
 ca-key.pem
-ca.csr
 ca.pem
 ```
 
-### Verification
+## Generate client and server TLS certificates
 
-```
-openssl x509 -in ca.pem -text -noout
-```
+In this section we will generate TLS certificates for all each Kubernetes component and a client certificate for an admin client.
 
-## Generate the single Kubernetes TLS Cert
 
-In this section we will generate a TLS certificate that will be valid for all Kubernetes components. This is being done for ease of use. In production you should strongly consider generating individual TLS certificates for each component. (But all replicas of a given component must share the same certificate.)
+### Create the Admin client certificate
 
-### Set the Kubernetes Public Address
-
-#### GCE
-
-```
-KUBERNETES_PUBLIC_ADDRESS=$(gcloud compute addresses describe kubernetes \
-  --format 'value(address)')
-```
-
-#### AWS
-
-```
-KUBERNETES_PUBLIC_ADDRESS=$(aws elb describe-load-balancers \
-  --load-balancer-name kubernetes | \
-  jq -r '.LoadBalancerDescriptions[].DNSName')
-```
-
----
-
-Create the `admin-csr.json` file:
+Create the admin client certificate signing request:
 
 ```
 cat > admin-csr.json <<EOF
@@ -167,7 +145,7 @@ cat > admin-csr.json <<EOF
 EOF
 ```
 
-Generate the admin certificate and private key:
+Generate the admin client certificate and private key:
 
 ```
 cfssl gencert \
@@ -182,11 +160,12 @@ Results:
 
 ```
 admin-key.pem
-admin.csr
 admin.pem
 ```
 
-Create the `kube-proxy-csr.json` file:
+### Create the kube-proxy client certificate
+
+Create the kube-proxy client certificate signing request:
 
 ```
 cat > kube-proxy-csr.json <<EOF
@@ -210,7 +189,7 @@ cat > kube-proxy-csr.json <<EOF
 EOF
 ```
 
-Generate the node-proxier certificate and private key:
+Generate the kube-proxy client certificate and private key:
 
 ```
 cfssl gencert \
@@ -225,12 +204,34 @@ Results:
 
 ```
 kube-proxy-key.pem
-kube-proxy.csr
 kube-proxy.pem
 ```
 
+### Create the kubernetes server certificate
 
-Create the `kubernetes-csr.json` file:
+Set the Kubernetes Public IP Address
+
+The Kubernetes public IP address will be included in the list of subject alternative names for the Kubernetes server certificate. This will ensure the TLS certificate is valid for remote client access.
+
+#### GCE
+
+```
+KUBERNETES_PUBLIC_ADDRESS=$(gcloud compute addresses describe kubernetes-the-hard-way \
+  --region us-central1 \
+  --format 'value(address)')
+```
+
+#### AWS
+
+```
+KUBERNETES_PUBLIC_ADDRESS=$(aws elb describe-load-balancers \
+  --load-balancer-name kubernetes | \
+  jq -r '.LoadBalancerDescriptions[].DNSName')
+```
+
+---
+
+Create the kubernetes server certificate signing request:
 
 ```
 cat > kubernetes-csr.json <<EOF
@@ -241,9 +242,9 @@ cat > kubernetes-csr.json <<EOF
     "10.240.0.10",
     "10.240.0.11",
     "10.240.0.12",
-    "ip-10-240-0-20",
-    "ip-10-240-0-21",
-    "ip-10-240-0-22",
+    "ip-10-240-0-10",
+    "ip-10-240-0-11",
+    "ip-10-240-0-12",
     "${KUBERNETES_PUBLIC_ADDRESS}",
     "127.0.0.1",
     "kubernetes.default"
@@ -280,22 +281,15 @@ Results:
 
 ```
 kubernetes-key.pem
-kubernetes.csr
 kubernetes.pem
 ```
 
-### Verification
-
-```
-openssl x509 -in kubernetes.pem -text -noout
-```
-
-## Copy TLS Certs
+## Distribute the TLS certificates
 
 Set the list of Kubernetes hosts where the certs should be copied to:
 
 ```
-KUBERNETES_HOSTS=(controller0 controller1 controller2 worker0 worker1 worker2)
+KUBERNETES_WORKERS=(worker0 worker1 worker2)
 ```
 
 ```
@@ -309,8 +303,8 @@ The following command will:
 * Copy the TLS certificates and keys to each Kubernetes host using the `gcloud compute copy-files` command.
 
 ```
-for host in ${KUBERNETES_HOSTS[*]}; do
-  gcloud compute copy-files ca.pem ${host}:~/
+for host in ${KUBERNETES_WORKERS[*]}; do
+  gcloud compute copy-files ca.pem kube-proxy.pem kube-proxy-key.pem ${host}:~/
 done
 ```
 
@@ -327,17 +321,17 @@ The following command will:
  * Copy the TLS certificates and keys to each Kubernetes host using `scp`
 
 ```
-for host in ${KUBERNETES_HOSTS[*]}; do
+for host in ${KUBERNETES_WORKERS[*]}; do
   PUBLIC_IP_ADDRESS=$(aws ec2 describe-instances \
     --filters "Name=tag:Name,Values=${host}" | \
     jq -r '.Reservations[].Instances[].PublicIpAddress')
-  scp -o "StrictHostKeyChecking no" ca.pem \
+  scp -o "StrictHostKeyChecking no" ca.pem kube-proxy.pem kube-proxy-key.pem \
     ubuntu@${PUBLIC_IP_ADDRESS}:~/
 done
 ```
 
 ```
-for host in ${KUBERNETES_HOSTS[*]}; do
+for host in ${KUBERNETES_CONTROLLERS[*]}; do
   PUBLIC_IP_ADDRESS=$(aws ec2 describe-instances \
     --filters "Name=tag:Name,Values=${host}" | \
     jq -r '.Reservations[].Instances[].PublicIpAddress')
