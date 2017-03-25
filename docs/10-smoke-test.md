@@ -16,10 +16,10 @@ deployment "nginx" created
 kubectl get pods -o wide
 ```
 ```
-NAME                     READY     STATUS    RESTARTS   AGE       IP           NODE
-nginx-2032906785-ms8hw   1/1       Running   0          21s       10.200.2.2   worker2
-nginx-2032906785-sokxz   1/1       Running   0          21s       10.200.1.2   worker1
-nginx-2032906785-u8rzc   1/1       Running   0          21s       10.200.0.2   worker0
+NAME                    READY     STATUS    RESTARTS   AGE       IP           NODE
+nginx-158599303-7k8p9   1/1       Running   0          13s       10.200.2.3   worker2
+nginx-158599303-h0zcs   1/1       Running   0          13s       10.200.1.2   worker1
+nginx-158599303-rfhm3   1/1       Running   0          13s       10.200.0.2   worker0
 ```
 
 ```
@@ -45,7 +45,7 @@ NODE_PORT=$(kubectl get svc nginx --output=jsonpath='{range .spec.ports[0]}{.nod
 ```
 gcloud compute firewall-rules create kubernetes-nginx-service \
   --allow=tcp:${NODE_PORT} \
-  --network kubernetes
+  --network kubernetes-the-hard-way
 ```
 
 Grab the `EXTERNAL_IP` for one of the worker nodes:
