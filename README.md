@@ -37,11 +37,10 @@ The resulting cluster will be missing the following items:
 This tutorial assumes you have access to one of the following:
 
 * [Google Cloud Platform](https://cloud.google.com) and the [Google Cloud SDK](https://cloud.google.com/sdk/) (148.0.0+)
-* [Amazon Web Services](https://aws.amazon.com) and the [AWS CLI](https://aws.amazon.com/cli) (1.11.66+)
 
 ## Labs
 
-While GCP or AWS will be used for basic infrastructure needs, the things learned in this tutorial apply to every platform.
+While GCP be used for basic infrastructure needs, the things learned in this tutorial apply to every platform.
 
 * [Cloud Infrastructure Provisioning](docs/01-infrastructure.md)
 * [Setting up a CA and TLS Cert Generation](docs/02-certificate-authority.md)
