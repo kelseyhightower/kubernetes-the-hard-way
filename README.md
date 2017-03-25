@@ -25,13 +25,13 @@ The target audience for this tutorial is someone planning to support a productio
 * Default Service Account and Secrets
 * [RBAC authorization enabled](https://kubernetes.io/docs/admin/authorization)
 * [TLS client certificate bootstrapping for kubelets](https://kubernetes.io/docs/admin/kubelet-tls-bootstrapping)
-* Cloud provider integration
 * DNS add-on
 
 ### What's Missing
 
 The resulting cluster will be missing the following items:
 
+* Cloud Provider Integration
 * [Cluster add-ons](https://github.com/kubernetes/kubernetes/tree/master/cluster/addons)
 * [Logging](http://kubernetes.io/docs/user-guide/logging)
 
