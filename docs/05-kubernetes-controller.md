@@ -84,17 +84,9 @@ sudo mv kube-apiserver kube-controller-manager kube-scheduler kubectl /usr/bin/
 
 Capture the internal IP address:
 
-#### GCE
-
 ```
 INTERNAL_IP=$(curl -s -H "Metadata-Flavor: Google" \
   http://metadata.google.internal/computeMetadata/v1/instance/network-interfaces/0/ip)
-```
-
-#### AWS
-
-```
-INTERNAL_IP=$(curl -s http://169.254.169.254/latest/meta-data/local-ipv4)
 ```
 
 ---
@@ -284,9 +276,7 @@ etcd-2               Healthy   {"health": "true"}
 
 ## Setup Kubernetes API Server Frontend Load Balancer
 
-The virtual machines created in this tutorial will not have permission to complete this section. Run the following commands from the same place used to create the virtual machines for this tutorial. 
-
-### GCE
+The virtual machines created in this tutorial will not have permission to complete this section. Run the following commands from the same place used to create the virtual machines for this tutorial.
 
 ```
 gcloud compute http-health-checks create kube-apiserver-health-check \
@@ -317,12 +307,4 @@ gcloud compute forwarding-rules create kubernetes-forwarding-rule \
   --ports 6443 \
   --target-pool kubernetes-target-pool \
   --region us-central1
-```
-
-### AWS
-
-```
-aws elb register-instances-with-load-balancer \
-  --load-balancer-name kubernetes \
-  --instances ${CONTROLLER_0_INSTANCE_ID} ${CONTROLLER_1_INSTANCE_ID} ${CONTROLLER_2_INSTANCE_ID}
 ```

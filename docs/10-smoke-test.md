@@ -40,8 +40,6 @@ NODE_PORT=$(kubectl get svc nginx --output=jsonpath='{range .spec.ports[0]}{.nod
 
 ### Create the Node Port Firewall Rule
 
-#### GCP
-
 ```
 gcloud compute firewall-rules create kubernetes-nginx-service \
   --allow=tcp:${NODE_PORT} \
@@ -54,32 +52,6 @@ Grab the `EXTERNAL_IP` for one of the worker nodes:
 NODE_PUBLIC_IP=$(gcloud compute instances describe worker0 \
   --format 'value(networkInterfaces[0].accessConfigs[0].natIP)')
 ```
-
-#### AWS
-
-```
-SECURITY_GROUP_ID=$(aws ec2 describe-security-groups \
-  --filters "Name=tag:Name,Values=kubernetes" | \
-  jq -r '.SecurityGroups[].GroupId')
-```
-
-```
-aws ec2 authorize-security-group-ingress \
-  --group-id ${SECURITY_GROUP_ID} \
-  --protocol tcp \
-  --port ${NODE_PORT} \
-  --cidr 0.0.0.0/0
-```
-
-Grab the `EXTERNAL_IP` for one of the worker nodes:
-
-```
-NODE_PUBLIC_IP=$(aws ec2 describe-instances \
-  --filters "Name=tag:Name,Values=worker0" | \
-  jq -j '.Reservations[].Instances[].PublicIpAddress')
-```
-
----
 
 Test the nginx service using cURL:
 

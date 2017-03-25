@@ -63,20 +63,10 @@ sudo mkdir -p /var/lib/etcd
 
 The internal IP address will be used by etcd to serve client requests and communicate with other etcd peers.
 
-#### GCE
-
 ```
 INTERNAL_IP=$(curl -s -H "Metadata-Flavor: Google" \
   http://metadata.google.internal/computeMetadata/v1/instance/network-interfaces/0/ip)
 ```
-
-#### AWS
-
-```
-INTERNAL_IP=$(curl -s http://169.254.169.254/latest/meta-data/local-ipv4)
-```
-
----
 
 Each etcd member must have a unique name within an etcd cluster. Set the etcd name:
 

@@ -40,8 +40,6 @@ Output:
 
 ## Create Routes
 
-### GCP
-
 ```
 gcloud compute routes create kubernetes-route-10-200-0-0-24 \
   --network kubernetes-the-hard-way \
@@ -61,51 +59,4 @@ gcloud compute routes create kubernetes-route-10-200-2-0-24 \
   --network kubernetes-the-hard-way \
   --next-hop-address 10.240.0.22 \
   --destination-range 10.200.2.0/24
-```
-
-### AWS
-
-```
-ROUTE_TABLE_ID=$(aws ec2 describe-route-tables \
-  --filters "Name=tag:Name,Values=kubernetes" | \
-  jq -r '.RouteTables[].RouteTableId')
-```
-
-```
-WORKER_0_INSTANCE_ID=$(aws ec2 describe-instances \
-  --filters "Name=tag:Name,Values=worker0" | \
-  jq -j '.Reservations[].Instances[].InstanceId')
-```
-
-```
-aws ec2 create-route \
-  --route-table-id ${ROUTE_TABLE_ID} \
-  --destination-cidr-block 10.200.0.0/24 \
-  --instance-id ${WORKER_0_INSTANCE_ID}
-```
-
-```
-WORKER_1_INSTANCE_ID=$(aws ec2 describe-instances \
-  --filters "Name=tag:Name,Values=worker1" | \
-  jq -j '.Reservations[].Instances[].InstanceId')
-```
-
-```
-aws ec2 create-route \
-  --route-table-id ${ROUTE_TABLE_ID} \
-  --destination-cidr-block 10.200.1.0/24 \
-  --instance-id ${WORKER_1_INSTANCE_ID}
-```
-
-```
-WORKER_2_INSTANCE_ID=$(aws ec2 describe-instances \
-  --filters "Name=tag:Name,Values=worker2" | \
-  jq -j '.Reservations[].Instances[].InstanceId')
-```
-
-```
-aws ec2 create-route \
-  --route-table-id ${ROUTE_TABLE_ID} \
-  --destination-cidr-block 10.200.2.0/24 \
-  --instance-id ${WORKER_2_INSTANCE_ID}
 ```

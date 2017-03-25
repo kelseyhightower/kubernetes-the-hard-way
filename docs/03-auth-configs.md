@@ -54,23 +54,9 @@ Distribute the bootstrap token file to each controller node:
 KUBERNETES_CONTROLLERS=(controller0 controller1 controller2)
 ```
 
-#### GCE
-
 ```
 for host in ${KUBERNETES_CONTROLLERS[*]}; do
   gcloud compute copy-files token.csv ${host}:~/
-done
-```
-
-#### AWS
-
-```
-for host in ${KUBERNETES_CONTROLLERS[*]}; do
-  PUBLIC_IP_ADDRESS=$(aws ec2 describe-instances \
-    --filters "Name=tag:Name,Values=${host}" | \
-    jq -r '.Reservations[].Instances[].PublicIpAddress')
-  scp -o "StrictHostKeyChecking no" token.csv \
-    ubuntu@${PUBLIC_IP_ADDRESS}:~/
 done
 ```
 
@@ -82,23 +68,11 @@ Each kubeconfig requires a Kubernetes master to connect to. To support H/A the I
 
 ### Set the Kubernetes Public Address
 
-#### GCE
-
 ```
 KUBERNETES_PUBLIC_ADDRESS=$(gcloud compute addresses describe kubernetes-the-hard-way \
   --region us-central1 \
   --format 'value(address)')
 ```
-
-#### AWS
-
-```
-KUBERNETES_PUBLIC_ADDRESS=$(aws elb describe-load-balancers \
-  --load-balancer-name kubernetes-the-hard-way | \
-  jq -r '.LoadBalancerDescriptions[].DNSName')
-```
-
----
 
 ## Create client kubeconfig files
 
@@ -165,22 +139,8 @@ kubectl config use-context default --kubeconfig=kube-proxy.kubeconfig
 KUBERNETES_WORKERS=(worker0 worker1 worker2)
 ```
 
-##### GCE
-
 ```
 for host in ${KUBERNETES_WORKERS[*]}; do
   gcloud compute copy-files bootstrap.kubeconfig kube-proxy.kubeconfig ${host}:~/
-done
-```
-
-##### AWS
-
-```
-for host in ${KUBERNETES_WORKERS[*]}; do
-  PUBLIC_IP_ADDRESS=$(aws ec2 describe-instances \
-    --filters "Name=tag:Name,Values=${host}" | \
-    jq -r '.Reservations[].Instances[].PublicIpAddress')
-  scp -o "StrictHostKeyChecking no" bootstrap.kubeconfig kube-proxy.kubeconfig \
-    ubuntu@${PUBLIC_IP_ADDRESS}:~/
 done
 ```

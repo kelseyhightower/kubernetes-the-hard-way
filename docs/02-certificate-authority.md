@@ -213,20 +213,10 @@ Set the Kubernetes Public IP Address
 
 The Kubernetes public IP address will be included in the list of subject alternative names for the Kubernetes server certificate. This will ensure the TLS certificate is valid for remote client access.
 
-#### GCE
-
 ```
 KUBERNETES_PUBLIC_ADDRESS=$(gcloud compute addresses describe kubernetes-the-hard-way \
   --region us-central1 \
   --format 'value(address)')
-```
-
-#### AWS
-
-```
-KUBERNETES_PUBLIC_ADDRESS=$(aws elb describe-load-balancers \
-  --load-balancer-name kubernetes | \
-  jq -r '.LoadBalancerDescriptions[].DNSName')
 ```
 
 ---
@@ -296,8 +286,6 @@ KUBERNETES_WORKERS=(worker0 worker1 worker2)
 KUBERNETES_CONTROLLERS=(controller0 controller1 controller2)
 ```
 
-### GCE
-
 The following command will:
 
 * Copy the TLS certificates and keys to each Kubernetes host using the `gcloud compute copy-files` command.
@@ -311,31 +299,5 @@ done
 ```
 for host in ${KUBERNETES_CONTROLLERS[*]}; do
   gcloud compute copy-files ca.pem ca-key.pem kubernetes-key.pem kubernetes.pem ${host}:~/
-done
-```
-
-### AWS
-
-The following command will:
- * Extract the public IP address for each Kubernetes host
- * Copy the TLS certificates and keys to each Kubernetes host using `scp`
-
-```
-for host in ${KUBERNETES_WORKERS[*]}; do
-  PUBLIC_IP_ADDRESS=$(aws ec2 describe-instances \
-    --filters "Name=tag:Name,Values=${host}" | \
-    jq -r '.Reservations[].Instances[].PublicIpAddress')
-  scp -o "StrictHostKeyChecking no" ca.pem kube-proxy.pem kube-proxy-key.pem \
-    ubuntu@${PUBLIC_IP_ADDRESS}:~/
-done
-```
-
-```
-for host in ${KUBERNETES_CONTROLLERS[*]}; do
-  PUBLIC_IP_ADDRESS=$(aws ec2 describe-instances \
-    --filters "Name=tag:Name,Values=${host}" | \
-    jq -r '.Reservations[].Instances[].PublicIpAddress')
-  scp -o "StrictHostKeyChecking no" ca.pem ca-key.pem kubernetes-key.pem kubernetes.pem \
-    ubuntu@${PUBLIC_IP_ADDRESS}:~/
 done
 ```
