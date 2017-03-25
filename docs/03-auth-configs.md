@@ -9,7 +9,7 @@ The kubectl client will be used to generate kubeconfig files which will be consu
 ### OS X
 
 ```
-wget https://storage.googleapis.com/kubernetes-release/release/v1.6.0-beta.4/bin/darwin/amd64/kubectl
+wget https://storage.googleapis.com/kubernetes-release/release/v1.6.0-rc.1/bin/darwin/amd64/kubectl
 chmod +x kubectl
 sudo mv kubectl /usr/local/bin
 ```
@@ -17,7 +17,7 @@ sudo mv kubectl /usr/local/bin
 ### Linux
 
 ```
-wget https://storage.googleapis.com/kubernetes-release/release/v1.6.0-beta.4/bin/linux/amd64/kubectl
+wget https://storage.googleapis.com/kubernetes-release/release/v1.6.0-rc.1/bin/linux/amd64/kubectl
 chmod +x kubectl
 sudo mv kubectl /usr/local/bin
 ```
@@ -27,11 +27,12 @@ sudo mv kubectl /usr/local/bin
 The following components will leverge Kubernetes RBAC:
 
 * kubelet (client)
-* Kubernetes API Server (server)
+* kube-proxy (client)
+* kubectl (client)
 
 The other components, mainly the `scheduler` and `controller manager`, access the Kubernetes API server locally over the insecure API port which does not require authentication. The insecure port is only enabled for local access.
 
-### TLS Bootstrap Token
+### Create the TLS Bootstrap Token
 
 This section will walk you through the creation of a TLS bootstrap token that will be used to [bootstrap TLS client certificates for kubelets](https://kubernetes.io/docs/admin/kubelet-tls-bootstrapping/). 
 
@@ -47,46 +48,61 @@ ${BOOTSTRAP_TOKEN},kubelet-bootstrap,10001,"system:kubelet-bootstrap"
 EOF
 ```
 
-#### Distribute the bootstrap token file
-
-Copy the `token.csv` file to each controller node:
+Distribute the bootstrap token file to each controller node:
 
 ```
 KUBERNETES_CONTROLLERS=(controller0 controller1 controller2)
 ```
+
+#### GCE
+
 ```
 for host in ${KUBERNETES_CONTROLLERS[*]}; do
   gcloud compute copy-files token.csv ${host}:~/
 done
 ```
 
-### Client Authentication Configs
+#### AWS
+
+```
+for host in ${KUBERNETES_CONTROLLERS[*]}; do
+  PUBLIC_IP_ADDRESS=$(aws ec2 describe-instances \
+    --filters "Name=tag:Name,Values=${host}" | \
+    jq -r '.Reservations[].Instances[].PublicIpAddress')
+  scp -o "StrictHostKeyChecking no" token.csv \
+    ubuntu@${PUBLIC_IP_ADDRESS}:~/
+done
+```
+
+## Client Authentication Configs
 
 This section will walk you through creating kubeconfig files that will be used to bootstrap kubelets, which will then generate their own kubeconfigs based on dynamically generated certificates, and a kubeconfig for authenticating kube-proxy clients.
 
 Each kubeconfig requires a Kubernetes master to connect to. To support H/A the IP address assigned to the load balancer sitting in front of the Kubernetes API servers will be used.
 
-#### Set the Kubernetes Public Address
+### Set the Kubernetes Public Address
 
-##### GCE
+#### GCE
 
 ```
-KUBERNETES_PUBLIC_ADDRESS=$(gcloud compute addresses describe kubernetes \
+KUBERNETES_PUBLIC_ADDRESS=$(gcloud compute addresses describe kubernetes-the-hard-way \
   --region us-central1 \
   --format 'value(address)')
 ```
 
-##### AWS
+#### AWS
 
 ```
 KUBERNETES_PUBLIC_ADDRESS=$(aws elb describe-load-balancers \
-  --load-balancer-name kubernetes | \
+  --load-balancer-name kubernetes-the-hard-way | \
   jq -r '.LoadBalancerDescriptions[].DNSName')
 ```
 
 ---
 
-Generate a bootstrap kubeconfig file:
+## Create client kubeconfig files
+
+### Create the bootstrap kubeconfig file
 
 ```
 kubectl config set-cluster kubernetes-the-hard-way \
@@ -113,9 +129,8 @@ kubectl config set-context default \
 kubectl config use-context default --kubeconfig=bootstrap.kubeconfig
 ```
 
-### kube-proxy kubeconfig
+### Create the kube-proxy kubeconfig
 
-Generate the `kube-proxy` kubeconfig file:
 
 ```
 kubectl config set-cluster kubernetes-the-hard-way \
@@ -144,18 +159,16 @@ kubectl config set-context default \
 kubectl config use-context default --kubeconfig=kube-proxy.kubeconfig
 ```
 
-#### Distribute client kubeconfig files
-
-Copy the bootstrap and kube-proxy kubeconfig files to each worker node:
+## Distribute the client kubeconfig files
 
 ```
-KUBERNETES_WORKER_NODES=(worker0 worker1 worker2)
+KUBERNETES_WORKERS=(worker0 worker1 worker2)
 ```
 
 ##### GCE
 
 ```
-for host in ${KUBERNETES_WORKER_NODES[*]}; do
+for host in ${KUBERNETES_WORKERS[*]}; do
   gcloud compute copy-files bootstrap.kubeconfig kube-proxy.kubeconfig ${host}:~/
 done
 ```
@@ -163,7 +176,7 @@ done
 ##### AWS
 
 ```
-for host in ${KUBERNETES_WORKER_NODES[*]}; do
+for host in ${KUBERNETES_WORKERS[*]}; do
   PUBLIC_IP_ADDRESS=$(aws ec2 describe-instances \
     --filters "Name=tag:Name,Values=${host}" | \
     jq -r '.Reservations[].Instances[].PublicIpAddress')
