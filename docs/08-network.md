@@ -4,16 +4,7 @@ Now that each worker node is online we need to add routes to make sure that Pods
 
 ## Container Subnets
 
-The IP addresses for each pod will be allocated from the `podCIDR` range assigned to each Kubernetes worker through the node registration process.
-
-During the worker setup process the following flags were set on the Kubelet to ensure each node obtained a `podCIDR` from the API server:
-
-```
---configure-cbr0=true
---reconcile-cidr=true
-```
-
-The `podCIDR` will be allocated from the cluster cidr range as configured on the Kubernetes Controller Manager with the following flag:
+The IP addresses for each pod will be allocated from the `podCIDR` range assigned to each Kubernetes worker through the node registration process. The `podCIDR` will be allocated from the cluster cidr range as configured on the Kubernetes Controller Manager with the following flag:
 
 ```
 --cluster-cidr=10.200.0.0/16
@@ -53,21 +44,21 @@ Output:
 
 ```
 gcloud compute routes create kubernetes-route-10-200-0-0-24 \
-  --network kubernetes \
+  --network kubernetes-the-hard-way \
   --next-hop-address 10.240.0.20 \
   --destination-range 10.200.0.0/24
 ```
 
 ```
 gcloud compute routes create kubernetes-route-10-200-1-0-24 \
-  --network kubernetes \
+  --network kubernetes-the-hard-way \
   --next-hop-address 10.240.0.21 \
   --destination-range 10.200.1.0/24
 ```
 
 ```
 gcloud compute routes create kubernetes-route-10-200-2-0-24 \
-  --network kubernetes \
+  --network kubernetes-the-hard-way \
   --next-hop-address 10.240.0.22 \
   --destination-range 10.200.2.0/24
 ```

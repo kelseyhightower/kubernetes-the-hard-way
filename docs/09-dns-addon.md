@@ -24,6 +24,7 @@ kubectl create -f https://raw.githubusercontent.com/kelseyhightower/kubernetes-t
 ```
 kubectl --namespace=kube-system get svc
 ```
+
 ```
 NAME       CLUSTER-IP   EXTERNAL-IP   PORT(S)         AGE
 kube-dns   10.32.0.10   <none>        53/UDP,53/TCP   5s
@@ -40,8 +41,8 @@ kubectl create -f https://raw.githubusercontent.com/kelseyhightower/kubernetes-t
 ```
 kubectl --namespace=kube-system get pods
 ```
+
 ```
-NAME                           READY     STATUS    RESTARTS   AGE
-kube-dns-v19-965658604-c8g5d   3/3       Running   0          49s
-kube-dns-v19-965658604-zwl3g   3/3       Running   0          49s
+NAME                       READY     STATUS    RESTARTS   AGE
+kube-dns-321336704-6749s   4/4       Running   0          10s
 ```
