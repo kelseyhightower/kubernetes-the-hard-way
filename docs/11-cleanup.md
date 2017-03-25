@@ -13,32 +13,28 @@ gcloud -q compute instances delete \
 ### Networking
 
 ```
-gcloud -q compute forwarding-rules delete kubernetes-rule --region us-central1
+gcloud -q compute forwarding-rules delete kubernetes-forwarding-rule --region us-central1
 ```
 
 ```
-gcloud -q compute target-pools delete kubernetes-pool
+gcloud -q compute target-pools delete kubernetes-target-pool
 ```
 
 ```
-gcloud -q compute http-health-checks delete kube-apiserver-check
+gcloud -q compute http-health-checks delete kube-apiserver-health-check
 ```
 
 ```
-gcloud -q compute addresses delete kubernetes
+gcloud -q compute addresses delete kubernetes-the-hard-way
 ```
 
 
 ```
 gcloud -q compute firewall-rules delete \
-  kubernetes-allow-api-server \
-  kubernetes-allow-healthz \
-  kubernetes-allow-icmp \
-  kubernetes-allow-internal \
-  kubernetes-allow-rdp \
   kubernetes-nginx-service \
-  kubernetes-allow-ssh \
-  kubernetes-allow-internal-podcidr
+  allow-internal \
+  allow-external \
+  allow-healthz
 ```
 
 ```
@@ -53,7 +49,7 @@ gcloud -q compute networks subnets delete kubernetes
 ```
 
 ```
-gcloud -q compute networks delete kubernetes
+gcloud -q compute networks delete kubernetes-the-hard-way
 ```
 
 
