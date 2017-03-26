@@ -17,7 +17,7 @@ Some people would like to run workers and cluster services anywhere in the clust
 
 ## Prerequisites
 
-Each worker node will provision a unqiue TLS client certificate as defined in the [kubelet TLS bootstrapping guide](https://kubernetes.io/docs/admin/kubelet-tls-bootstrapping/). The `kubelet-bootstrap` user must be granted permission to request a client TLS certificate. 
+Each worker node will provision a unique TLS client certificate as defined in the [kubelet TLS bootstrapping guide](https://kubernetes.io/docs/admin/kubelet-tls-bootstrapping/). The `kubelet-bootstrap` user must be granted permission to request a client TLS certificate. 
 
 ```
 gcloud compute ssh controller0
