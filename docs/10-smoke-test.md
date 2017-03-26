@@ -9,10 +9,6 @@ kubectl run nginx --image=nginx --port=80 --replicas=3
 ```
 
 ```
-deployment "nginx" created
-```
-
-```
 kubectl get pods -o wide
 ```
 ```
@@ -24,10 +20,6 @@ nginx-158599303-rfhm3   1/1       Running   0          13s       10.200.0.2   wo
 
 ```
 kubectl expose deployment nginx --type NodePort
-```
-
-```
-service "nginx" exposed
 ```
 
 > Note that --type=LoadBalancer will not work because we did not configure a cloud provider when bootstrapping this cluster.
