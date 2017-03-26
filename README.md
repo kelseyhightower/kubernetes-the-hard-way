@@ -2,15 +2,13 @@
 
 This tutorial will walk you through setting up Kubernetes the hard way. This guide is not for people looking for a fully automated command to bring up a Kubernetes cluster. If that's you then check out [Google Container Engine](https://cloud.google.com/container-engine), or the [Getting Started Guides](http://kubernetes.io/docs/getting-started-guides/).
 
-This tutorial is optimized for learning, which means taking the long route to help people understand each task required to bootstrap a Kubernetes cluster. This tutorial can be completed on [Google Compute Engine](https://cloud.google.com/compute).
+This tutorial is optimized for learning, which means taking the long route to help people understand each task required to bootstrap a Kubernetes cluster. This tutorial requires access to [Google Compute Engine](https://cloud.google.com/compute).
 
 > The results of this tutorial should not be viewed as production ready, and may receive limited support from the community, but don't let that prevent you from learning!
 
 ## Target Audience
 
 The target audience for this tutorial is someone planning to support a production Kubernetes cluster and wants to understand how everything fits together. After completing this tutorial I encourage you to automate away the manual steps presented in this guide.
-
-> This tutorial is for educational purposes only. There is much more configuration required for a production ready cluster.
 
 ## Cluster Details
 
@@ -26,23 +24,16 @@ The target audience for this tutorial is someone planning to support a productio
 
 ### What's Missing
 
-The resulting cluster will be missing the following items:
+The resulting cluster will be missing the following features:
 
 * Cloud Provider Integration
 * [Cluster add-ons](https://github.com/kubernetes/kubernetes/tree/master/cluster/addons)
-* [Logging](http://kubernetes.io/docs/user-guide/logging)
-
-## Platforms
-
-This tutorial assumes you have access to one of the following:
-
-* [Google Cloud Platform](https://cloud.google.com) and the [Google Cloud SDK](https://cloud.google.com/sdk/) (148.0.0+)
 
 ## Labs
 
-While GCP be used for basic infrastructure needs, the things learned in this tutorial apply to every platform.
+This tutorial assumes you have access to [Google Cloud Platform](https://cloud.google.com) and the [Google Cloud SDK](https://cloud.google.com/sdk/)(148.0.0+). While GCP is used for basic infrastructure needs the things learned in this tutorial can be applied to every platform.
 
-* [Cloud Infrastructure Provisioning](docs/01-infrastructure.md)
+* [Cloud Infrastructure Provisioning](docs/01-infrastructure-gcp.md)
 * [Setting up a CA and TLS Cert Generation](docs/02-certificate-authority.md)
 * [Setting up TLS Client Bootstrap and RBAC Authentication](docs/03-authentication.md)
 * [Bootstrapping a H/A etcd cluster](docs/04-etcd.md)
