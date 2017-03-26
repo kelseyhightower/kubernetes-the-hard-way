@@ -19,8 +19,6 @@ kubectl create clusterrolebinding serviceaccounts-cluster-admin \
 kubectl create -f https://raw.githubusercontent.com/kelseyhightower/kubernetes-the-hard-way/master/services/kubedns.yaml
 ```
 
-#### Verification
-
 ```
 kubectl --namespace=kube-system get svc
 ```
@@ -35,8 +33,6 @@ kube-dns   10.32.0.10   <none>        53/UDP,53/TCP   5s
 ```
 kubectl create -f https://raw.githubusercontent.com/kelseyhightower/kubernetes-the-hard-way/master/deployments/kubedns.yaml
 ```
-
-#### Verification
 
 ```
 kubectl --namespace=kube-system get pods

@@ -17,9 +17,13 @@ Some people would like to run workers and cluster services anywhere in the clust
 
 ## Prerequisites
 
-Each worker node will provision a unqiue TLS client certificate as defined in the [kubelet TLS bootstrapping guide](https://kubernetes.io/docs/admin/kubelet-tls-bootstrapping/). The `kubelet-bootstrap` user must be granted permission to request a client TLS certificate. Run the following command on a controller node to enable TLS bootstrapping:
+Each worker node will provision a unqiue TLS client certificate as defined in the [kubelet TLS bootstrapping guide](https://kubernetes.io/docs/admin/kubelet-tls-bootstrapping/). The `kubelet-bootstrap` user must be granted permission to request a client TLS certificate. 
 
-Bind the `kubelet-bootstrap` user to the `system:node-bootstrapper` cluster role:
+```
+gcloud compute ssh controller0
+```
+
+Enable TLS bootstrapping by binding the `kubelet-bootstrap` user to the `system:node-bootstrapper` cluster role:
 
 ```
 kubectl create clusterrolebinding kubelet-bootstrap \
@@ -32,19 +36,11 @@ kubectl create clusterrolebinding kubelet-bootstrap \
 Run the following commands on `worker0`, `worker1`, `worker2`:
 
 ```
-sudo mkdir -p /var/lib/kubelet
-```
-
-```
-sudo mkdir -p /var/lib/kube-proxy
+sudo mkdir -p /var/lib/{kubelet,kube-proxy,kubernetes}
 ```
 
 ```
 sudo mkdir -p /var/run/kubernetes
-```
-
-```
-sudo mkdir -p /var/lib/kubernetes
 ```
 
 ```

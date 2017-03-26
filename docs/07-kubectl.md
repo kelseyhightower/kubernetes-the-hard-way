@@ -74,7 +74,6 @@ etcd-0               Healthy   {"health": "true"}
 etcd-1               Healthy   {"health": "true"}  
 ```
 
-
 ```
 kubectl get nodes
 ```

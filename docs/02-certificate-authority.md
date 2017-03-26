@@ -1,8 +1,6 @@
-# Setting up a Certificate Authority and TLS Cert Generation
+# Setting up a Certificate Authority and Creating TLS Certificates
 
-In this lab you will setup the necessary PKI infrastructure to secure the Kubernetes components. This lab will leverage CloudFlare's PKI toolkit, [cfssl](https://github.com/cloudflare/cfssl), to bootstrap a Certificate Authority and generate TLS certificates.
-
-In this lab you will generate a set of TLS certificates that can be used to secure the following Kubernetes components:
+In this lab you will setup the necessary PKI infrastructure to secure the Kubernetes components. This lab will leverage CloudFlare's PKI toolkit, [cfssl](https://github.com/cloudflare/cfssl), to bootstrap a Certificate Authority and generate TLS certificates to secure the following Kubernetes components:
 
 * etcd
 * kube-apiserver
@@ -21,7 +19,6 @@ kubernetes.pem
 kube-proxy.pem
 kube-proxy-key.pem
 ```
-
 
 ## Install CFSSL
 
@@ -101,7 +98,7 @@ cat > ca-csr.json <<EOF
 EOF
 ```
 
-Generate the CA certificate and private key:
+Generate a CA certificate and private key:
 
 ```
 cfssl gencert -initca ca-csr.json | cfssljson -bare ca
@@ -116,8 +113,7 @@ ca.pem
 
 ## Generate client and server TLS certificates
 
-In this section we will generate TLS certificates for all each Kubernetes component and a client certificate for an admin client.
-
+In this section we will generate TLS certificates for each Kubernetes component and a client certificate for the admin user.
 
 ### Create the Admin client certificate
 
@@ -209,8 +205,6 @@ kube-proxy.pem
 
 ### Create the kubernetes server certificate
 
-Set the Kubernetes Public IP Address
-
 The Kubernetes public IP address will be included in the list of subject alternative names for the Kubernetes server certificate. This will ensure the TLS certificate is valid for remote client access.
 
 ```
@@ -219,9 +213,7 @@ KUBERNETES_PUBLIC_ADDRESS=$(gcloud compute addresses describe kubernetes-the-har
   --format 'value(address)')
 ```
 
----
-
-Create the kubernetes server certificate signing request:
+Create the Kubernetes server certificate signing request:
 
 ```
 cat > kubernetes-csr.json <<EOF
@@ -232,9 +224,6 @@ cat > kubernetes-csr.json <<EOF
     "10.240.0.10",
     "10.240.0.11",
     "10.240.0.12",
-    "ip-10-240-0-10",
-    "ip-10-240-0-11",
-    "ip-10-240-0-12",
     "${KUBERNETES_PUBLIC_ADDRESS}",
     "127.0.0.1",
     "kubernetes.default"
@@ -278,26 +267,16 @@ kubernetes.pem
 
 Set the list of Kubernetes hosts where the certs should be copied to:
 
-```
-KUBERNETES_WORKERS=(worker0 worker1 worker2)
-```
+The following commands will copy the TLS certificates and keys to each Kubernetes host using the `gcloud compute copy-files` command.
 
 ```
-KUBERNETES_CONTROLLERS=(controller0 controller1 controller2)
-```
-
-The following command will:
-
-* Copy the TLS certificates and keys to each Kubernetes host using the `gcloud compute copy-files` command.
-
-```
-for host in ${KUBERNETES_WORKERS[*]}; do
+for host in worker0 worker1 worker2; do
   gcloud compute copy-files ca.pem kube-proxy.pem kube-proxy-key.pem ${host}:~/
 done
 ```
 
 ```
-for host in ${KUBERNETES_CONTROLLERS[*]}; do
+for host in controller0 controller1 controller2; do
   gcloud compute copy-files ca.pem ca-key.pem kubernetes-key.pem kubernetes.pem ${host}:~/
 done
 ```

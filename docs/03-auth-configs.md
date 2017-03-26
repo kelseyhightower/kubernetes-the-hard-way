@@ -51,11 +51,7 @@ EOF
 Distribute the bootstrap token file to each controller node:
 
 ```
-KUBERNETES_CONTROLLERS=(controller0 controller1 controller2)
-```
-
-```
-for host in ${KUBERNETES_CONTROLLERS[*]}; do
+for host in controller0 controller1 controller2; do
   gcloud compute copy-files token.csv ${host}:~/
 done
 ```
@@ -136,11 +132,7 @@ kubectl config use-context default --kubeconfig=kube-proxy.kubeconfig
 ## Distribute the client kubeconfig files
 
 ```
-KUBERNETES_WORKERS=(worker0 worker1 worker2)
-```
-
-```
-for host in ${KUBERNETES_WORKERS[*]}; do
+for host in worker0 worker1 worker2; do
   gcloud compute copy-files bootstrap.kubeconfig kube-proxy.kubeconfig ${host}:~/
 done
 ```

@@ -27,6 +27,10 @@ Each component is being run on the same machine for the following reasons:
 
 Run the following commands on `controller0`, `controller1`, `controller2`:
 
+> Login to each machine using the gcloud compute ssh command
+
+---
+
 Copy the bootstrap token into place:
 
 ```
@@ -79,17 +83,12 @@ sudo mv kube-apiserver kube-controller-manager kube-scheduler kubectl /usr/bin/
 
 ### Kubernetes API Server
 
-
-#### Create the systemd unit file 
-
-Capture the internal IP address:
+Capture the internal IP address of the machine:
 
 ```
 INTERNAL_IP=$(curl -s -H "Metadata-Flavor: Google" \
   http://metadata.google.internal/computeMetadata/v1/instance/network-interfaces/0/ip)
 ```
-
----
 
 Create the systemd unit file:
 
