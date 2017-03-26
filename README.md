@@ -35,7 +35,7 @@ This tutorial assumes you have access to [Google Cloud Platform](https://cloud.g
 
 * [Cloud Infrastructure Provisioning](docs/01-infrastructure-gcp.md)
 * [Setting up a CA and TLS Cert Generation](docs/02-certificate-authority.md)
-* [Setting up TLS Client Bootstrap and RBAC Authentication](docs/03-authentication.md)
+* [Setting up TLS Client Bootstrap and RBAC Authentication](docs/03-auth-configs.md)
 * [Bootstrapping a H/A etcd cluster](docs/04-etcd.md)
 * [Bootstrapping a H/A Kubernetes Control Plane](docs/05-kubernetes-controller.md)
 * [Bootstrapping Kubernetes Workers](docs/06-kubernetes-worker.md)
