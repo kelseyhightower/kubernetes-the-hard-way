@@ -38,7 +38,9 @@ This section will walk you through the creation of a TLS bootstrap token that wi
 
 Generate a token:
 
+```
 BOOTSTRAP_TOKEN=$(head -c 16 /dev/urandom | od -An -t x | tr -d ' ')
+```
 
 Generate a token file:
 
