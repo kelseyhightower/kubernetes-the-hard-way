@@ -24,7 +24,7 @@ sudo mv kubectl /usr/local/bin
 
 ## Authentication
 
-The following components will leverge Kubernetes RBAC:
+The following components will leverage Kubernetes RBAC:
 
 * kubelet (client)
 * kube-proxy (client)
