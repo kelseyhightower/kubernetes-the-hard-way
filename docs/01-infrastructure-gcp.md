@@ -72,7 +72,7 @@ gcloud compute firewall-rules create allow-external \
 gcloud compute firewall-rules create allow-healthz \
   --allow tcp:8080 \
   --network kubernetes-the-hard-way \
-  --source-ranges 130.211.0.0/22
+  --source-ranges 130.211.0.0/22,35.191.0.0/16
 ```
 
 
