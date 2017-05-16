@@ -253,6 +253,7 @@ cfssl gencert \
   -ca-key=ca-key.pem \
   -config=ca-config.json \
   -profile=kubernetes \
+  -hostname=hosts \
   kubernetes-csr.json | cfssljson -bare kubernetes
 ```
 
