@@ -267,16 +267,16 @@ kubernetes.pem
 
 Set the list of Kubernetes hosts where the certs should be copied to:
 
-The following commands will copy the TLS certificates and keys to each Kubernetes host using the `gcloud compute copy-files` command.
+The following commands will copy the TLS certificates and keys to each Kubernetes host using the `gcloud compute scp` command.
 
 ```
 for host in worker0 worker1 worker2; do
-  gcloud compute copy-files ca.pem kube-proxy.pem kube-proxy-key.pem ${host}:~/
+  gcloud compute scp ca.pem kube-proxy.pem kube-proxy-key.pem ${host}:~/
 done
 ```
 
 ```
 for host in controller0 controller1 controller2; do
-  gcloud compute copy-files ca.pem ca-key.pem kubernetes-key.pem kubernetes.pem ${host}:~/
+  gcloud compute scp ca.pem ca-key.pem kubernetes-key.pem kubernetes.pem ${host}:~/
 done
 ```

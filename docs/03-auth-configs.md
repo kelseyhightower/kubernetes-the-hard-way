@@ -34,7 +34,7 @@ The other components, mainly the `scheduler` and `controller manager`, access th
 
 ### Create the TLS Bootstrap Token
 
-This section will walk you through the creation of a TLS bootstrap token that will be used to [bootstrap TLS client certificates for kubelets](https://kubernetes.io/docs/admin/kubelet-tls-bootstrapping/). 
+This section will walk you through the creation of a TLS bootstrap token that will be used to [bootstrap TLS client certificates for kubelets](https://kubernetes.io/docs/admin/kubelet-tls-bootstrapping/).
 
 Generate a token:
 
@@ -54,7 +54,7 @@ Distribute the bootstrap token file to each controller node:
 
 ```
 for host in controller0 controller1 controller2; do
-  gcloud compute copy-files token.csv ${host}:~/
+  gcloud compute scp token.csv ${host}:~/
 done
 ```
 
@@ -135,6 +135,6 @@ kubectl config use-context default --kubeconfig=kube-proxy.kubeconfig
 
 ```
 for host in worker0 worker1 worker2; do
-  gcloud compute copy-files bootstrap.kubeconfig kube-proxy.kubeconfig ${host}:~/
+  gcloud compute scp bootstrap.kubeconfig kube-proxy.kubeconfig ${host}:~/
 done
 ```
