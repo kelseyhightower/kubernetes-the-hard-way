@@ -12,7 +12,7 @@ The target audience for this tutorial is someone planning to support a productio
 
 ## Cluster Details
 
-* Kubernetes 1.6.0
+* Kubernetes 1.6.1
 * Docker 1.12.6
 * etcd 3.1.4
 * [CNI Based Networking](https://github.com/containernetworking/cni)
