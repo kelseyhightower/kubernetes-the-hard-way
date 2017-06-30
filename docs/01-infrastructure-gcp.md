@@ -83,7 +83,7 @@ gcloud compute firewall-rules list --filter "network=kubernetes-the-hard-way"
 ```
 NAME            NETWORK                  SRC_RANGES                   RULES                          SRC_TAGS  TARGET_TAGS
 allow-external  kubernetes-the-hard-way  0.0.0.0/0                    tcp:22,tcp:3389,tcp:6443,icmp
-allow-healthz   kubernetes-the-hard-way  130.211.0.0/22               tcp:8080
+allow-healthz   kubernetes-the-hard-way  130.211.0.0/22,35.191.0.0/16 tcp:8080
 allow-internal  kubernetes-the-hard-way  10.240.0.0/24,10.200.0.0/16  tcp,udp,icmp
 ```
 
