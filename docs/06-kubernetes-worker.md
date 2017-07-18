@@ -77,7 +77,7 @@ Create the Docker systemd unit file:
 cat > docker.service <<EOF
 [Unit]
 Description=Docker Application Container Engine
-Documentation=http://docs.docker.io
+Documentation=http://docs.docker.com
 
 [Service]
 ExecStart=/usr/bin/docker daemon \\
