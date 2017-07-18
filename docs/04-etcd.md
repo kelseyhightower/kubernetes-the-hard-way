@@ -21,7 +21,7 @@ However, all the e2e tested configurations currently run etcd on the master node
 
 Run the following commands on `controller0`, `controller1`, `controller2`:
 
-You connect to each controller wit `gcloud compute ssh` command.
+You connect to each controller with `gcloud compute ssh` command.
 
 ### TLS Certificates
 
