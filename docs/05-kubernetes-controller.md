@@ -298,7 +298,7 @@ gcloud compute target-pools add-instances kubernetes-target-pool \
 ```
 KUBERNETES_PUBLIC_ADDRESS=$(gcloud compute addresses describe kubernetes-the-hard-way \
   --region us-central1 \
-  --format 'value(address)')
+  --format 'value(name)')
 ```
 
 ```
