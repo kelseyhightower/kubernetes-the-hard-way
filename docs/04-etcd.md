@@ -21,6 +21,8 @@ However, all the e2e tested configurations currently run etcd on the master node
 
 Run the following commands on `controller0`, `controller1`, `controller2`:
 
+You connect to each controller with `gcloud compute ssh` command.
+
 ### TLS Certificates
 
 The TLS certificates created in the [Setting up a CA and TLS Cert Generation](02-certificate-authority.md) lab will be used to secure communication between the Kubernetes API server and the etcd cluster. The TLS certificates will also be used to limit access to the etcd cluster using TLS client authentication. Only clients with a TLS certificate signed by a trusted CA will be able to access the etcd cluster.
