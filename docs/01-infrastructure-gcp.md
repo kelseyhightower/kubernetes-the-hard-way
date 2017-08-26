@@ -78,7 +78,7 @@ gcloud compute firewall-rules create allow-internal \
 
 This rule (called `allow-external`) allows traffic on TCP port 22 (SSH), 3389 (unsure why, see [#160](https://github.com/kelseyhightower/kubernetes-the-hard-way/issues/160)) and port 6443 (kubernetes). It also allows ICMP traffic.
 
-`0.0.0.0/0` means "apply to all ranges", hence this rule allows gives access to external traffic from outside the network.
+`0.0.0.0/0` means "apply to all ranges", hence this rule allows access to external traffic from outside our network.
 
 ```
 gcloud compute firewall-rules create allow-external \
