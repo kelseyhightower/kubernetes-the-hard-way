@@ -67,7 +67,7 @@ https://cloud.google.com/compute/docs/vpc/firewalls
 
 A GCP network also acts as a firewall. By default no connections are allowed from the outside world, and connections between instances are also forbidden. We can add firewall rules to allow our instances to talk to each other within the network.
 
-This creates a rule called `allow-internal` which allows TCP, UDP and ICMP connections between all machines in your `10.240.0.0/24` subnet, and also enables those machines to talk to the CIDR range `0.200.0.0/16`:
+This creates a rule called `allow-internal` which allows TCP, UDP and ICMP connections between all machines in your `10.240.0.0/24` subnet, and also enables those machines to talk to the CIDR range `10.200.0.0/16`:
 
 ```
 gcloud compute firewall-rules create allow-internal \
