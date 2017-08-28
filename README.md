@@ -1,47 +1,39 @@
 # Kubernetes The Hard Way
 
-This tutorial will walk you through setting up Kubernetes the hard way. This guide is not for people looking for a fully automated command to bring up a Kubernetes cluster. If that's you then check out [Google Container Engine](https://cloud.google.com/container-engine), or the [Getting Started Guides](http://kubernetes.io/docs/getting-started-guides/).
+This tutorial walks you through setting up Kubernetes the hard way. This guide is not for people looking for a fully automated command to bring up a Kubernetes cluster. If that's you then check out [Google Container Engine](https://cloud.google.com/container-engine), or the [Getting Started Guides](http://kubernetes.io/docs/getting-started-guides/).
 
-This tutorial is optimized for learning, which means taking the long route to help people understand each task required to bootstrap a Kubernetes cluster. This tutorial requires access to [Google Compute Engine](https://cloud.google.com/compute).
+Kubernetes The Hard Way is optimized for learning, which means taking the long route to ensure you understand each task required to bootstrap a Kubernetes cluster.
 
-> The results of this tutorial should not be viewed as production ready, and may receive limited support from the community, but don't let that prevent you from learning!
+> The results of this tutorial should not be viewed as production ready, and may receive limited support from the community, but don't let that stop you from learning!
 
 ## Target Audience
 
-The target audience for this tutorial is someone planning to support a production Kubernetes cluster and wants to understand how everything fits together. After completing this tutorial I encourage you to automate away the manual steps presented in this guide.
+The target audience for this tutorial is someone planning to support a production Kubernetes cluster and wants to understand how everything fits together.
 
 ## Cluster Details
 
-* Kubernetes 1.7.0
-* Docker 1.12.6
-* etcd 3.1.4
-* [CNI Based Networking](https://github.com/containernetworking/cni)
-* Secure communication between all components (etcd, control plane, workers)
-* Default Service Account and Secrets
-* [RBAC authorization enabled](https://kubernetes.io/docs/admin/authorization)
-* [TLS client certificate bootstrapping for kubelets](https://kubernetes.io/docs/admin/kubelet-tls-bootstrapping)
-* DNS add-on
+Kubernetes The Hard Way guides you through bootstrapping a highly available Kubernetes cluster with end-to-end encryption between components and RBAC authentication.
 
-### What's Missing
-
-The resulting cluster will be missing the following features:
-
-* Cloud Provider Integration
-* [Logging](https://kubernetes.io/docs/concepts/cluster-administration/logging/)
-* [Cluster add-ons](https://github.com/kubernetes/kubernetes/tree/master/cluster/addons)
+* [Kubernetes](https://github.com/kubernetes/kubernetes) 1.7.4
+* [CRI-O Container Runtime](https://github.com/kubernetes-incubator/cri-o) v1.0.0-beta.0
+* [CNI Container Networking](https://github.com/containernetworking/cni) v0.6.0
+* [etcd](https://github.com/coreos/etcd) 3.2.6
 
 ## Labs
 
-This tutorial assumes you have access to [Google Cloud Platform](https://cloud.google.com) and the [Google Cloud SDK](https://cloud.google.com/sdk/)(148.0.0+). While GCP is used for basic infrastructure needs the things learned in this tutorial can be applied to every platform.
+This tutorial assumes you have access to the [Google Cloud Platform](https://cloud.google.com). While GCP is used for basic infrastructure requirements the lessons learned in this tutorial can be applied to other platforms.
 
-* [Cloud Infrastructure Provisioning](docs/01-infrastructure-gcp.md)
-* [Setting up a CA and TLS Cert Generation](docs/02-certificate-authority.md)
-* [Setting up TLS Client Bootstrap and RBAC Authentication](docs/03-auth-configs.md)
-* [Bootstrapping a H/A etcd cluster](docs/04-etcd.md)
-* [Bootstrapping a H/A Kubernetes Control Plane](docs/05-kubernetes-controller.md)
-* [Bootstrapping Kubernetes Workers](docs/06-kubernetes-worker.md)
-* [Configuring the Kubernetes Client - Remote Access](docs/07-kubectl.md)
-* [Managing the Container Network Routes](docs/08-network.md)
-* [Deploying the Cluster DNS Add-on](docs/09-dns-addon.md)
-* [Smoke Test](docs/10-smoke-test.md)
-* [Cleaning Up](docs/11-cleanup.md)
+* [Prerequisites](docs/01-prerequisites.md)
+* [Installing the Client Tools](docs/02-client-tools.md)
+* [Provisioning Compute Resources](docs/03-compute-resources.md)
+* [Provisioning the CA and Generating TLS Certificates](docs/04-certificate-authority.md)
+* [Generating Kubernetes Configuration Files for Authentication](docs/05-kubernetes-configuration-files.md)
+* [Generating the Data Encryption Config and Key](docs/06-data-encryption-keys.md)
+* [Bootstrapping the etcd Cluster](docs/07-bootstrapping-etcd.md)
+* [Bootstrapping the Kubernetes Control Plane](docs/08-bootstrapping-kubernetes-controllers.md)
+* [Bootstrapping the Kubernetes Worker Nodes](docs/09-bootstrapping-kubernetes-workers.md)
+* [Configuring kubectl for Remote Access](docs/10-configuring-kubectl.md)
+* [Provisioning Pod Network Routes](docs/11-pod-network-routes.md)
+* [Deploying the DNS Cluster Add-on](docs/12-dns-addon.md)
+* [Smoke Test](docs/13-smoke-test.md)
+* [Cleaning Up](docs/14-cleanup.md)
