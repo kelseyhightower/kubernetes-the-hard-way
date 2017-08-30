@@ -67,7 +67,7 @@ https://cloud.google.com/compute/docs/vpc/firewalls
 
 A GCP network also acts as a firewall. By default no connections are allowed from the outside world, and connections between instances are also forbidden. We can add firewall rules to allow our instances to talk to each other within the network.
 
-Kubernetes pods are assigned their own IP addresses independent of the instances ther are running on. We will be using the CIDR subnet `10.200.0.0/16` for this, configured in chapter 5 as the `--cluster-cidr` argument to `kube-controller-manager`.
+Kubernetes pods are assigned their own IP addresses independent of the instances they are running on. We will be using the CIDR subnet `10.200.0.0/16` for this, configured in chapter 5 as the `--cluster-cidr` argument to `kube-controller-manager`.
 
 Here we create a firewall rule called `allow-internal` which allows TCP, UDP and ICMP connections between the instances in your `10.240.0.0/24` subnet, and the Kubernetes pods that will live in the `10.200.0.0/16` range.
 
