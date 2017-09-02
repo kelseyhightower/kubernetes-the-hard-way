@@ -185,6 +185,7 @@ Requires=crio.service
 
 [Service]
 ExecStart=/usr/local/bin/kubelet \\
+  --authorization-mode=Webhook \\
   --allow-privileged=true \\
   --cluster-dns=10.32.0.10 \\
   --cluster-domain=cluster.local \\
