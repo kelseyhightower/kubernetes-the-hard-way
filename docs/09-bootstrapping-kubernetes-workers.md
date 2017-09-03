@@ -37,7 +37,7 @@ For RHEL, run:
 sudo yum install -y socat device-mapper-libs ostree
 ```
 
-Also for RHEL, the specific library version used to build crio has not yet been released yet.  For now, symlink like so:
+Also for RHEL, the specific library version used to build crio has not yet been released.  For now, symlink like so:
 ```
 sudo ln -s /usr/lib64/libdevmapper.so.1.02 /usr/lib64/libdevmapper.so.1.02.1
 ```
