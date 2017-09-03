@@ -66,7 +66,7 @@ gcloud compute firewall-rules create kubernetes-the-hard-way-allow-health-checks
 List the firewall rules in the `kubernetes-the-hard-way` VPC network:
 
 ```
-gcloud compute firewall-rules list --filter "network kubernetes-the-hard-way"
+gcloud compute firewall-rules list --filter "network: kubernetes-the-hard-way"
 ```
 
 > output
