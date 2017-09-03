@@ -16,6 +16,8 @@ gcloud compute ssh worker-0
 
 Add the `alexlarsson/flatpak` [PPA](https://launchpad.net/ubuntu/+ppas) which hosts the `libostree` package:
 
+`libostree` is provided by the `ostree` RPM on RHEL7.
+
 ```
 sudo add-apt-repository -y ppa:alexlarsson/flatpak
 ```
@@ -30,16 +32,21 @@ Install the OS dependencies required by the cri-o container runtime:
 sudo apt-get install -y socat libgpgme11 libostree-1-1
 ```
 
+For RHEL, run:
+```
+sudo yum install -y socat device-mapper-libs ostree
+```
+
 ### Download and Install Worker Binaries
 
 ```
-wget -q --show-progress --https-only --timestamping \
-  https://github.com/containernetworking/plugins/releases/download/v0.6.0/cni-plugins-amd64-v0.6.0.tgz \
-  https://github.com/opencontainers/runc/releases/download/v1.0.0-rc4/runc.amd64 \
-  https://storage.googleapis.com/kubernetes-the-hard-way/crio-amd64-v1.0.0-beta.0.tar.gz \
-  https://storage.googleapis.com/kubernetes-release/release/v1.7.4/bin/linux/amd64/kubectl \
-  https://storage.googleapis.com/kubernetes-release/release/v1.7.4/bin/linux/amd64/kube-proxy \
-  https://storage.googleapis.com/kubernetes-release/release/v1.7.4/bin/linux/amd64/kubelet
+curl \
+  -O https://github.com/containernetworking/plugins/releases/download/v0.6.0/cni-plugins-amd64-v0.6.0.tgz \
+  -O https://github.com/opencontainers/runc/releases/download/v1.0.0-rc4/runc.amd64 \
+  -O https://storage.googleapis.com/kubernetes-the-hard-way/crio-amd64-v1.0.0-beta.0.tar.gz \
+  -O https://storage.googleapis.com/kubernetes-release/release/v1.7.4/bin/linux/amd64/kubectl \
+  -O https://storage.googleapis.com/kubernetes-release/release/v1.7.4/bin/linux/amd64/kube-proxy \
+  -O https://storage.googleapis.com/kubernetes-release/release/v1.7.4/bin/linux/amd64/kubelet
 ```
 
 Create the installation directories:
