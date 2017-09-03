@@ -46,8 +46,8 @@ sudo ln -s /usr/lib64/libdevmapper.so.1.02 /usr/lib64/libdevmapper.so.1.02.1
 
 ```
 curl \
-  -O https://github.com/containernetworking/plugins/releases/download/v0.6.0/cni-plugins-amd64-v0.6.0.tgz \
-  -O https://github.com/opencontainers/runc/releases/download/v1.0.0-rc4/runc.amd64 \
+  -L -O https://github.com/containernetworking/plugins/releases/download/v0.6.0/cni-plugins-amd64-v0.6.0.tgz \
+  -L -O https://github.com/opencontainers/runc/releases/download/v1.0.0-rc4/runc.amd64 \
   -O https://storage.googleapis.com/kubernetes-the-hard-way/crio-amd64-v1.0.0-beta.0.tar.gz \
   -O https://storage.googleapis.com/kubernetes-release/release/v1.7.4/bin/linux/amd64/kubectl \
   -O https://storage.googleapis.com/kubernetes-release/release/v1.7.4/bin/linux/amd64/kube-proxy \
