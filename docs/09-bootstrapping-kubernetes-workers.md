@@ -83,7 +83,6 @@ sudo mv crio crioctl kpod kubectl kube-proxy kubelet /usr/local/bin/
 sudo mv conmon pause /usr/local/libexec/crio/
 ```
 
-
 ### Configure CNI Networking
 
 Retrieve the Pod CIDR range for the current compute instance:
@@ -131,7 +130,6 @@ Move the network configuration files to the CNI configuration directory:
 ```
 sudo mv 10-bridge.conf 99-loopback.conf /etc/cni/net.d/
 ```
-
 
 ### Configure the CRI-O Container Runtime
 

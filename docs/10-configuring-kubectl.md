@@ -53,11 +53,11 @@ kubectl get componentstatuses
 
 ```
 NAME                 STATUS    MESSAGE              ERROR
-controller-manager   Healthy   ok                   
-scheduler            Healthy   ok                   
-etcd-2               Healthy   {"health": "true"}   
-etcd-0               Healthy   {"health": "true"}   
-etcd-1               Healthy   {"health": "true"}  
+controller-manager   Healthy   ok
+scheduler            Healthy   ok
+etcd-2               Healthy   {"health": "true"}
+etcd-0               Healthy   {"health": "true"}
+etcd-1               Healthy   {"health": "true"}
 ```
 
 List the nodes in the remote Kubernetes cluster:
