@@ -17,11 +17,11 @@ gcloud compute ssh controller-0
 Download the official Kubernetes release binaries:
 
 ```
-wget -q --show-progress --https-only --timestamping \
-  "https://storage.googleapis.com/kubernetes-release/release/v1.7.4/bin/linux/amd64/kube-apiserver" \
-  "https://storage.googleapis.com/kubernetes-release/release/v1.7.4/bin/linux/amd64/kube-controller-manager" \
-  "https://storage.googleapis.com/kubernetes-release/release/v1.7.4/bin/linux/amd64/kube-scheduler" \
-  "https://storage.googleapis.com/kubernetes-release/release/v1.7.4/bin/linux/amd64/kubectl"
+curl \
+  -O "https://storage.googleapis.com/kubernetes-release/release/v1.7.4/bin/linux/amd64/kube-apiserver" \
+  -O "https://storage.googleapis.com/kubernetes-release/release/v1.7.4/bin/linux/amd64/kube-controller-manager" \
+  -O "https://storage.googleapis.com/kubernetes-release/release/v1.7.4/bin/linux/amd64/kube-scheduler" \
+  -O "https://storage.googleapis.com/kubernetes-release/release/v1.7.4/bin/linux/amd64/kubectl"
 ```
 
 Install the Kubernetes binaries:

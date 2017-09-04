@@ -104,6 +104,8 @@ kubernetes-the-hard-way  us-west1  XX.XXX.XXX.XX  RESERVED
 
 The compute instances in this lab will be provisioned using [Ubuntu Server](https://www.ubuntu.com/server) 16.04, which has good support for the [CRI-O container runtime](https://github.com/kubernetes-incubator/cri-o). Each compute instance will be provisioned with a fixed private IP address to simplify the Kubernetes bootstrapping process.
 
+Kubernetes the Hard Way also works well on Red Hat Enterprise Linux 7.4 (modulo a few tweaks to prerequisite package names).
+
 ### Kubernetes Controllers
 
 Create three compute instances which will host the Kubernetes control plane:
@@ -148,6 +150,7 @@ for i in 0 1 2; do
     --tags kubernetes-the-hard-way,worker
  done
 ```
+To use RHEL7.4, change --image-family to ```rhel-7``` and --image-project to ```rhel-cloud```.
 
 ### Verification
 
