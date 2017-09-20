@@ -135,6 +135,7 @@ cat > ${instance}-csr.json <<EOF
   ]
 }
 EOF
+done
 
 EXTERNAL_IP=$(gcloud compute instances describe ${instance} \
   --format 'value(networkInterfaces[0].accessConfigs[0].natIP)')
