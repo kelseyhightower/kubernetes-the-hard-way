@@ -24,7 +24,13 @@ gcloud version
 
 This tutorial assumes a default compute region and zone have been configured.
 
-Set a default compute region:
+If you are using the `gcloud` command-line tool for the first time `init` is the easiest way to do this:
+
+```
+gcloud init
+```
+
+Otherwise set a default compute region:
 
 ```
 gcloud config set compute/region us-west1
