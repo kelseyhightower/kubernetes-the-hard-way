@@ -12,21 +12,16 @@ Download and install `cfssl` and `cfssljson` from the [cfssl repository](https:/
 ### OS X
 
 ```
-wget -q --show-progress --https-only --timestamping \
-  https://pkg.cfssl.org/R1.2/cfssl_darwin-amd64 \
-  https://pkg.cfssl.org/R1.2/cfssljson_darwin-amd64
+curl -o cfssl https://pkg.cfssl.org/R1.2/cfssl_darwin-amd64
+curl -o cfssljson https://pkg.cfssl.org/R1.2/cfssljson_darwin-amd64
 ```
 
 ```
-chmod +x cfssl_darwin-amd64 cfssljson_darwin-amd64
+chmod +x cfssl cfssljson
 ```
 
 ```
-sudo mv cfssl_darwin-amd64 /usr/local/bin/cfssl
-```
-
-```
-sudo mv cfssljson_darwin-amd64 /usr/local/bin/cfssljson
+sudo mv cfssl cfssljson /usr/local/bin/
 ```
 
 ### Linux
@@ -74,7 +69,7 @@ The `kubectl` command line utility is used to interact with the Kubernetes API S
 ### OS X
 
 ```
-wget https://storage.googleapis.com/kubernetes-release/release/v1.7.4/bin/darwin/amd64/kubectl
+curl -o kubectl https://storage.googleapis.com/kubernetes-release/release/v1.7.4/bin/darwin/amd64/kubectl
 ```
 
 ```
