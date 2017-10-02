@@ -52,15 +52,6 @@ gcloud compute firewall-rules create kubernetes-the-hard-way-allow-external \
   --source-ranges 0.0.0.0/0
 ```
 
-Create a firewall rule that allows health check probes from the GCP [network load balancer IP ranges](https://cloud.google.com/compute/docs/load-balancing/network/#firewall_rules_and_network_load_balancing):
-
-```
-gcloud compute firewall-rules create kubernetes-the-hard-way-allow-health-checks \
-  --allow tcp:8080 \
-  --network kubernetes-the-hard-way \
-  --source-ranges 209.85.204.0/22,209.85.152.0/22,35.191.0.0/16
-```
-
 > An [external load balancer](https://cloud.google.com/compute/docs/load-balancing/network/) will be used to expose the Kubernetes API Servers to remote clients.
 
 List the firewall rules in the `kubernetes-the-hard-way` VPC network:
@@ -74,7 +65,6 @@ gcloud compute firewall-rules list --filter "network: kubernetes-the-hard-way"
 ```
 NAME                                         NETWORK                  DIRECTION  PRIORITY  ALLOW                 DENY
 kubernetes-the-hard-way-allow-external       kubernetes-the-hard-way  INGRESS    1000      tcp:22,tcp:6443,icmp
-kubernetes-the-hard-way-allow-health-checks  kubernetes-the-hard-way  INGRESS    1000      tcp:8080
 kubernetes-the-hard-way-allow-internal       kubernetes-the-hard-way  INGRESS    1000      tcp,udp,icmp
 ```
 

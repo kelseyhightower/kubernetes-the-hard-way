@@ -37,8 +37,7 @@ Delete the `kubernetes-the-hard-way` firewall rules:
 gcloud -q compute firewall-rules delete \
   kubernetes-the-hard-way-allow-nginx-service \
   kubernetes-the-hard-way-allow-internal \
-  kubernetes-the-hard-way-allow-external \
-  kubernetes-the-hard-way-allow-health-checks
+  kubernetes-the-hard-way-allow-external
 ```
 
 Delete the Pod network routes:
