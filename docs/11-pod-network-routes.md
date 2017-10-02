@@ -43,7 +43,7 @@ done
 List the routes in the `kubernetes-the-hard-way` VPC network:
 
 ```
-gcloud compute routes list --filter "network kubernetes-the-hard-way"
+gcloud compute routes list --filter "network: kubernetes-the-hard-way"
 ```
 
 > output

@@ -1,6 +1,6 @@
 # Bootstrapping the Kubernetes Worker Nodes
 
-In this lab you will bootstrap three Kubernetes worker nodes. The following components will be installed on each node: [runc](https://github.com/opencontainers/runc), [container networking plugins](https://github.com/containernetworking/cni), [cri-o](https://github.com/kubernetes-incubator/cri-o), [kubelet](https://kubernetes.io/docs/admin/kubelet), and [kube-proxy](https://kubernetes.io/docs/concepts/cluster-administration/proxies).
+In this lab you will bootstrap three Kubernetes worker nodes. The following components will be installed on each node: [runc](https://github.com/opencontainers/runc), [container networking plugins](https://github.com/containernetworking/cni), [cri-containerd](https://github.com/kubernetes-incubator/cri-containerd), [kubelet](https://kubernetes.io/docs/admin/kubelet), and [kube-proxy](https://kubernetes.io/docs/concepts/cluster-administration/proxies).
 
 ## Prerequisites
 
@@ -12,45 +12,31 @@ gcloud compute ssh worker-0
 
 ## Provisioning a Kubernetes Worker Node
 
-### Install the cri-o OS Dependencies
-
-Add the `alexlarsson/flatpak` [PPA](https://launchpad.net/ubuntu/+ppas) which hosts the `libostree` package:
+Install the OS dependencies:
 
 ```
-sudo add-apt-repository -y ppa:alexlarsson/flatpak
+sudo apt-get -y install socat
 ```
 
-```
-sudo apt-get update
-```
-
-Install the OS dependencies required by the cri-o container runtime:
-
-```
-sudo apt-get install -y socat libgpgme11 libostree-1-1
-```
+> The socat binary enables support for the `kubectl port-forward` command.
 
 ### Download and Install Worker Binaries
 
 ```
 wget -q --show-progress --https-only --timestamping \
   https://github.com/containernetworking/plugins/releases/download/v0.6.0/cni-plugins-amd64-v0.6.0.tgz \
-  https://github.com/opencontainers/runc/releases/download/v1.0.0-rc4/runc.amd64 \
-  https://storage.googleapis.com/kubernetes-the-hard-way/crio-amd64-v1.0.0-beta.0.tar.gz \
-  https://storage.googleapis.com/kubernetes-release/release/v1.7.4/bin/linux/amd64/kubectl \
-  https://storage.googleapis.com/kubernetes-release/release/v1.7.4/bin/linux/amd64/kube-proxy \
-  https://storage.googleapis.com/kubernetes-release/release/v1.7.4/bin/linux/amd64/kubelet
+  https://github.com/kubernetes-incubator/cri-containerd/releases/download/v1.0.0-alpha.0/cri-containerd-1.0.0-alpha.0.tar.gz \
+  https://storage.googleapis.com/kubernetes-release/release/v1.8.0/bin/linux/amd64/kubectl \
+  https://storage.googleapis.com/kubernetes-release/release/v1.8.0/bin/linux/amd64/kube-proxy \
+  https://storage.googleapis.com/kubernetes-release/release/v1.8.0/bin/linux/amd64/kubelet
 ```
 
 Create the installation directories:
 
 ```
 sudo mkdir -p \
-  /etc/containers \
   /etc/cni/net.d \
-  /etc/crio \
   /opt/cni/bin \
-  /usr/local/libexec/crio \
   /var/lib/kubelet \
   /var/lib/kube-proxy \
   /var/lib/kubernetes \
@@ -64,23 +50,15 @@ sudo tar -xvf cni-plugins-amd64-v0.6.0.tgz -C /opt/cni/bin/
 ```
 
 ```
-tar -xvf crio-amd64-v1.0.0-beta.0.tar.gz
+sudo tar -xvf cri-containerd-1.0.0-alpha.0.tar.gz -C /
 ```
 
 ```
-chmod +x kubectl kube-proxy kubelet runc.amd64
+chmod +x kubectl kube-proxy kubelet
 ```
 
 ```
-sudo mv runc.amd64 /usr/local/bin/runc
-```
-
-```
-sudo mv crio crioctl kpod kubectl kube-proxy kubelet /usr/local/bin/
-```
-
-```
-sudo mv conmon pause /usr/local/libexec/crio/
+sudo mv kubectl kube-proxy kubelet /usr/local/bin/
 ```
 
 ### Configure CNI Networking
@@ -131,32 +109,6 @@ Move the network configuration files to the CNI configuration directory:
 sudo mv 10-bridge.conf 99-loopback.conf /etc/cni/net.d/
 ```
 
-### Configure the CRI-O Container Runtime
-
-```
-sudo mv crio.conf seccomp.json /etc/crio/
-```
-
-```
-sudo mv policy.json /etc/containers/
-```
-
-```
-cat > crio.service <<EOF
-[Unit]
-Description=CRI-O daemon
-Documentation=https://github.com/kubernetes-incubator/cri-o
-
-[Service]
-ExecStart=/usr/local/bin/crio
-Restart=always
-RestartSec=10s
-
-[Install]
-WantedBy=multi-user.target
-EOF
-```
-
 ### Configure the Kubelet
 
 ```
@@ -178,25 +130,26 @@ cat > kubelet.service <<EOF
 [Unit]
 Description=Kubernetes Kubelet
 Documentation=https://github.com/GoogleCloudPlatform/kubernetes
-After=crio.service
-Requires=crio.service
+After=cri-containerd.service
+Requires=cri-containerd.service
 
 [Service]
 ExecStart=/usr/local/bin/kubelet \\
   --allow-privileged=true \\
+  --anonymous-auth=false \\
+  --authorization-mode=Webhook \\
+  --client-ca-file=/var/lib/kubernetes/ca.pem \\
   --cluster-dns=10.32.0.10 \\
   --cluster-domain=cluster.local \\
   --container-runtime=remote \\
-  --container-runtime-endpoint=unix:///var/run/crio.sock \\
-  --enable-custom-metrics \\
+  --container-runtime-endpoint=unix:///var/run/cri-containerd.sock \\
   --image-pull-progress-deadline=2m \\
-  --image-service-endpoint=unix:///var/run/crio.sock \\
   --kubeconfig=/var/lib/kubelet/kubeconfig \\
   --network-plugin=cni \\
   --pod-cidr=${POD_CIDR} \\
   --register-node=true \\
   --require-kubeconfig \\
-  --runtime-request-timeout=10m \\
+  --runtime-request-timeout=15m \\
   --tls-cert-file=/var/lib/kubelet/${HOSTNAME}.pem \\
   --tls-private-key-file=/var/lib/kubelet/${HOSTNAME}-key.pem \\
   --v=2
@@ -239,7 +192,7 @@ EOF
 ### Start the Worker Services
 
 ```
-sudo mv crio.service kubelet.service kube-proxy.service /etc/systemd/system/
+sudo mv kubelet.service kube-proxy.service /etc/systemd/system/
 ```
 
 ```
@@ -247,11 +200,11 @@ sudo systemctl daemon-reload
 ```
 
 ```
-sudo systemctl enable crio kubelet kube-proxy
+sudo systemctl enable containerd cri-containerd kubelet kube-proxy
 ```
 
 ```
-sudo systemctl start crio kubelet kube-proxy
+sudo systemctl start containerd cri-containerd kubelet kube-proxy
 ```
 
 > Remember to run the above commands on each worker node: `worker-0`, `worker-1`, and `worker-2`.
@@ -273,10 +226,10 @@ kubectl get nodes
 > output
 
 ```
-NAME       STATUS    AGE       VERSION
-worker-0   Ready     5m        v1.7.4
-worker-1   Ready     3m        v1.7.4
-worker-2   Ready     7s        v1.7.4
+NAME       STATUS    ROLES     AGE       VERSION
+worker-0   Ready     <none>    1m        v1.8.0
+worker-1   Ready     <none>    1m        v1.8.0
+worker-2   Ready     <none>    1m        v1.8.0
 ```
 
 Next: [Configuring kubectl for Remote Access](10-configuring-kubectl.md)

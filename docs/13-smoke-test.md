@@ -100,13 +100,13 @@ curl --head http://127.0.0.1:8080
 
 ```
 HTTP/1.1 200 OK
-Server: nginx/1.13.3
-Date: Thu, 31 Aug 2017 01:58:15 GMT
+Server: nginx/1.13.5
+Date: Mon, 02 Oct 2017 01:04:20 GMT
 Content-Type: text/html
 Content-Length: 612
-Last-Modified: Tue, 11 Jul 2017 13:06:07 GMT
+Last-Modified: Tue, 08 Aug 2017 15:25:00 GMT
 Connection: keep-alive
-ETag: "5964cd3f-264"
+ETag: "5989d7cc-264"
 Accept-Ranges: bytes
 ```
 
@@ -132,7 +132,7 @@ kubectl logs $POD_NAME
 > output
 
 ```
-127.0.0.1 - - [31/Aug/2017:01:58:15 +0000] "HEAD / HTTP/1.1" 200 0 "-" "curl/7.54.0" "-"
+127.0.0.1 - - [02/Oct/2017:01:04:20 +0000] "HEAD / HTTP/1.1" 200 0 "-" "curl/7.54.0" "-"
 ```
 
 ### Exec
@@ -148,7 +148,7 @@ kubectl exec -ti $POD_NAME -- nginx -v
 > output
 
 ```
-nginx version: nginx/1.13.3
+nginx version: nginx/1.13.5
 ```
 
 ## Services
@@ -195,13 +195,13 @@ curl -I http://${EXTERNAL_IP}:${NODE_PORT}
 
 ```
 HTTP/1.1 200 OK
-Server: nginx/1.13.3
-Date: Thu, 31 Aug 2017 02:00:21 GMT
+Server: nginx/1.13.5
+Date: Mon, 02 Oct 2017 01:06:11 GMT
 Content-Type: text/html
 Content-Length: 612
-Last-Modified: Tue, 11 Jul 2017 13:06:07 GMT
+Last-Modified: Tue, 08 Aug 2017 15:25:00 GMT
 Connection: keep-alive
-ETag: "5964cd3f-264"
+ETag: "5989d7cc-264"
 Accept-Ranges: bytes
 ```
 

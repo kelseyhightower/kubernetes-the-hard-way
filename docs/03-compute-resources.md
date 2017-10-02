@@ -66,7 +66,7 @@ gcloud compute firewall-rules create kubernetes-the-hard-way-allow-health-checks
 List the firewall rules in the `kubernetes-the-hard-way` VPC network:
 
 ```
-gcloud compute firewall-rules list --filter "network kubernetes-the-hard-way"
+gcloud compute firewall-rules list --filter "network: kubernetes-the-hard-way"
 ```
 
 > output
@@ -102,7 +102,7 @@ kubernetes-the-hard-way  us-west1  XX.XXX.XXX.XX  RESERVED
 
 ## Compute Instances
 
-The compute instances in this lab will be provisioned using [Ubuntu Server](https://www.ubuntu.com/server) 16.04, which has good support for the [CRI-O container runtime](https://github.com/kubernetes-incubator/cri-o). Each compute instance will be provisioned with a fixed private IP address to simplify the Kubernetes bootstrapping process.
+The compute instances in this lab will be provisioned using [Ubuntu Server](https://www.ubuntu.com/server) 16.04, which has good support for the [cri-containerd container runtime](https://github.com/kubernetes-incubator/cri-containerd). Each compute instance will be provisioned with a fixed private IP address to simplify the Kubernetes bootstrapping process.
 
 ### Kubernetes Controllers
 
@@ -146,7 +146,7 @@ for i in 0 1 2; do
     --scopes compute-rw,storage-ro,service-management,service-control,logging-write,monitoring \
     --subnet kubernetes \
     --tags kubernetes-the-hard-way,worker
- done
+done
 ```
 
 ### Verification
