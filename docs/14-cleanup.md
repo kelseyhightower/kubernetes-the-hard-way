@@ -25,10 +25,6 @@ gcloud -q compute forwarding-rules delete kubernetes-forwarding-rule \
 gcloud -q compute target-pools delete kubernetes-target-pool
 ```
 
-```
-gcloud -q compute http-health-checks delete kube-apiserver-health-check
-```
-
 Delete the `kubernetes-the-hard-way` static IP address:
 
 ```
