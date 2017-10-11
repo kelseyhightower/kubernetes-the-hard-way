@@ -14,9 +14,17 @@ Each kubeconfig requires a Kubernetes API Server to connect to. To support high 
 
 Retrieve the `kubernetes-the-hard-way` static IP address:
 
+#### Linux & OS X
 ```
 KUBERNETES_PUBLIC_ADDRESS=$(gcloud compute addresses describe kubernetes-the-hard-way \
   --region $(gcloud config get-value compute/region) \
+  --format 'value(address)')
+```
+
+#### Windows
+```
+$KUBERNETES_PUBLIC_ADDRESS=$(gcloud compute addresses describe kubernetes-the-hard-way `
+  --region $(gcloud config get-value compute/region) `
   --format 'value(address)')
 ```
 
@@ -26,6 +34,7 @@ When generating kubeconfig files for Kubelets the client certificate matching th
 
 Generate a kubeconfig file for each worker node:
 
+#### Linux & OS X
 ```
 for instance in worker-0 worker-1 worker-2; do
   kubectl config set-cluster kubernetes-the-hard-way \
@@ -49,6 +58,30 @@ for instance in worker-0 worker-1 worker-2; do
 done
 ```
 
+#### Windows
+```
+@('worker-0','worker-1','worker-2') | ForEach-Object {
+  kubectl config set-cluster kubernetes-the-hard-way `
+    --certificate-authority=ca.pem `
+    --embed-certs=true `
+    --server=https://${KUBERNETES_PUBLIC_ADDRESS}:6443 `
+    --kubeconfig=$_.kubeconfig
+
+  kubectl config set-credentials system:node:$_ `
+    --client-certificate=$_.pem `
+    --client-key=$_-key.pem `
+    --embed-certs=true `
+    --kubeconfig=$_.kubeconfig
+
+  kubectl config set-context default `
+    --cluster=kubernetes-the-hard-way `
+    --user=system:node:$_ `
+    --kubeconfig=$_.kubeconfig
+
+  kubectl config use-context default --kubeconfig=$_.kubeconfig
+}
+```
+
 Results:
 
 ```
@@ -61,6 +94,7 @@ worker-2.kubeconfig
 
 Generate a kubeconfig file for the `kube-proxy` service:
 
+#### Linux & OS X
 ```
 kubectl config set-cluster kubernetes-the-hard-way \
   --certificate-authority=ca.pem \
@@ -88,14 +122,50 @@ kubectl config set-context default \
 kubectl config use-context default --kubeconfig=kube-proxy.kubeconfig
 ```
 
+#### Windows
+```
+kubectl config set-cluster kubernetes-the-hard-way `
+  --certificate-authority=ca.pem `
+  --embed-certs=true `
+  --server=https://${KUBERNETES_PUBLIC_ADDRESS}:6443 `
+  --kubeconfig=kube-proxy.kubeconfig
+```
+
+```
+kubectl config set-credentials kube-proxy `
+  --client-certificate=kube-proxy.pem `
+  --client-key=kube-proxy-key.pem `
+  --embed-certs=true `
+  --kubeconfig=kube-proxy.kubeconfig
+```
+
+```
+kubectl config set-context default `
+  --cluster=kubernetes-the-hard-way `
+  --user=kube-proxy `
+  --kubeconfig=kube-proxy.kubeconfig
+```
+
+```
+kubectl config use-context default --kubeconfig=kube-proxy.kubeconfig
+```
+
 ## Distribute the Kubernetes Configuration Files
 
 Copy the appropriate `kubelet` and `kube-proxy` kubeconfig files to each worker instance:
 
+#### Linux & OS X
 ```
 for instance in worker-0 worker-1 worker-2; do
   gcloud compute scp ${instance}.kubeconfig kube-proxy.kubeconfig ${instance}:~/
 done
+```
+
+#### Windows
+```
+@('worker-0','worker-1','worker-2') | ForEach-Object {
+  gcloud compute scp $_.kubeconfig kube-proxy.kubeconfig $_:/home/$env:USERNAME/
+}
 ```
 
 Next: [Generating the Data Encryption Config and Key](06-data-encryption-keys.md)
