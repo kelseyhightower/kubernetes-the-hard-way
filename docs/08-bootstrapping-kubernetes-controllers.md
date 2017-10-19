@@ -248,6 +248,8 @@ subjects:
     name: kubernetes
 EOF
 ```
+> Remember to run the above commands on each worker node: `controller-0`, `controller-1`, and `controller-2`.
+
 
 ## The Kubernetes Frontend Load Balancer
 
