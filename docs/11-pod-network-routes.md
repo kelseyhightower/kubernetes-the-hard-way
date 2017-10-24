@@ -12,6 +12,7 @@ In this section you will gather the information required to create routes in the
 
 Print the internal IP address and Pod CIDR range for each worker instance:
 
+#### Linux & OS X
 ```
 for instance in worker-0 worker-1 worker-2; do
   gcloud compute instances describe ${instance} \
@@ -19,6 +20,13 @@ for instance in worker-0 worker-1 worker-2; do
 done
 ```
 
+#### Windows
+```
+@('worker-0','worker-1','worker-2') | ForEach-Object {
+  gcloud compute instances describe $_ `
+  --format 'value[separator=" "](networkInterfaces[0].networkIP,metadata.items[0].value)'
+}
+```
 > output
 
 ```
@@ -31,6 +39,7 @@ done
 
 Create network routes for each worker instance:
 
+#### Linux & OS X
 ```
 for i in 0 1 2; do
   gcloud compute routes create kubernetes-route-10-200-${i}-0-24 \
@@ -38,6 +47,16 @@ for i in 0 1 2; do
     --next-hop-address 10.240.0.2${i} \
     --destination-range 10.200.${i}.0/24
 done
+```
+
+#### Windows
+```
+@(0, 1, 2) | ForEach-Object {
+  gcloud compute routes create kubernetes-route-10-200-${_}-0-24 `
+    --network kubernetes-the-hard-way `
+    --next-hop-address 10.240.0.2${_} `
+    --destination-range 10.200.${_}.0/24
+}
 ```
 
 List the routes in the `kubernetes-the-hard-way` VPC network:
