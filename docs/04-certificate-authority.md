@@ -172,10 +172,10 @@ cfssl gencert \
 #### Windows
 ```
 cfssl gencert `
-  -ca=ca.pem `
-  -ca-key=ca-key.pem `
-  -config=ca-config.json `
-  -profile=kubernetes `
+  -ca ca.pem `
+  -ca-key ca-key.pem `
+  -config ca-config.json `
+  -profile kubernetes `
   admin-csr.json | cfssljson -bare admin
 ```
 
@@ -233,40 +233,40 @@ done
 #### Windows
 
 ```
-  @('worker-0', 'worker-1', 'worker-2') | ForEach-Object {
-  New-Item $_-csr.json -Value @"
-  {
-    "CN": "system:node:$_",
-    "key": {
-      "algo": "rsa",
-      "size": 2048
-    },
-    "names": [
-      {
-        "C": "US",
-        "L": "Portland",
-        "O": "system:nodes",
-        "OU": "Kubernetes The Hard Way",
-        "ST": "Oregon"
-      }
-    ]
-  }
-  "@
+@('worker-0', 'worker-1', 'worker-2') | ForEach-Object {
+New-Item $_-csr.json -Value @"
+{
+  "CN": "system:node:$_",
+  "key": {
+    "algo": "rsa",
+    "size": 2048
+  },
+  "names": [
+    {
+      "C": "US",
+      "L": "Portland",
+      "O": "system:nodes",
+      "OU": "Kubernetes The Hard Way",
+      "ST": "Oregon"
+    }
+  ]
+}
+"@
 
-  $EXTERNAL_IP=$(gcloud compute instances describe $_ `
-    --format 'value(networkInterfaces[0].accessConfigs[0].natIP)')
+$EXTERNAL_IP=$(gcloud compute instances describe $_ `
+  --format 'value(networkInterfaces[0].accessConfigs[0].natIP)')
 
-  $INTERNAL_IP=$(gcloud compute instances describe $_ `
-    --format 'value(networkInterfaces[0].networkIP)')
+$INTERNAL_IP=$(gcloud compute instances describe $_ `
+  --format 'value(networkInterfaces[0].networkIP)')
 
-  cfssl gencert `
-    -ca ca.pem `
-    -ca-key ca-key.pem `
-    -config ca-config.json `
-    -hostname $_,$EXTERNAL_IP,$INTERNAL_IP `
-    -profile kubernetes `
-    $_-csr.json | cfssljson -bare $_
-  }
+cfssl gencert `
+  -ca ca.pem `
+  -ca-key ca-key.pem `
+  -config ca-config.json `
+  -hostname $_,$EXTERNAL_IP,$INTERNAL_IP `
+  -profile kubernetes `
+  $_-csr.json | cfssljson -bare $_
+}
 ```
 
 Results:
