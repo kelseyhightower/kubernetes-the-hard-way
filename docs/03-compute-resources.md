@@ -205,17 +205,17 @@ done
 
 ```
 @(0,1,2) | ForEach-Object {
-  gcloud compute instances create worker-$_ \
-    --async \
-    --boot-disk-size 200GB \
-    --can-ip-forward \
-    --image-family ubuntu-1604-lts \
-    --image-project ubuntu-os-cloud \
-    --machine-type n1-standard-1 \
-    --metadata pod-cidr=10.200.$_.0/24 \
-    --private-network-ip 10.240.0.2$_ \
-    --scopes compute-rw,storage-ro,service-management,service-control,logging-write,monitoring \
-    --subnet kubernetes \
+  gcloud compute instances create worker-$_ `
+    --async `
+    --boot-disk-size 200GB `
+    --can-ip-forward `
+    --image-family ubuntu-1604-lts `
+    --image-project ubuntu-os-cloud `
+    --machine-type n1-standard-1 `
+    --metadata pod-cidr=10.200.$_.0/24 `
+    --private-network-ip 10.240.0.2$_ `
+    --scopes compute-rw,storage-ro,service-management,service-control,logging-write,monitoring `
+    --subnet kubernetes `
     --tags kubernetes-the-hard-way,worker
 }
 ```
