@@ -164,7 +164,7 @@ done
 #### Windows
 ```
 @('worker-0','worker-1','worker-2') | ForEach-Object {
-  gcloud compute scp $_.kubeconfig kube-proxy.kubeconfig $_:/home/$env:USERNAME/
+  gcloud compute scp "$_.kubeconfig" kube-proxy.kubeconfig ${_}:/home/$env:USERNAME/
 }
 ```
 
