@@ -16,7 +16,7 @@ Print the internal IP address and Pod CIDR range for each worker instance:
 ```
 for instance in worker-0 worker-1 worker-2; do
   gcloud compute instances describe ${instance} \
-    --format 'value[separator=" "](networkInterfaces[0].networkIP,metadata.items[0].value)'
+    --format '(networkInterfaces[0].networkIP,metadata.items[0].value)'
 done
 ```
 
@@ -24,15 +24,15 @@ done
 ```
 @('worker-0','worker-1','worker-2') | ForEach-Object {
   gcloud compute instances describe $_ `
-  --format 'value[separator=" "](networkInterfaces[0].networkIP,metadata.items[0].value)'
+  --format '(networkInterfaces[0].networkIP,metadata.items[0].value)'
 }
 ```
 > output
 
 ```
-10.240.0.20 10.200.0.0/24
-10.240.0.21 10.200.1.0/24
-10.240.0.22 10.200.2.0/24
+10.240.0.20	10.200.0.0/24
+10.240.0.21	10.200.1.0/24
+10.240.0.22	10.200.2.0/24
 ```
 
 ## Routes
