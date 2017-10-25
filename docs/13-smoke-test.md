@@ -8,16 +8,30 @@ In this section you will verify the ability to [encrypt secret data at rest](htt
 
 Create a generic secret:
 
+### Linux & OS X
 ```
 kubectl create secret generic kubernetes-the-hard-way \
   --from-literal="mykey=mydata"
 ```
 
+#### Windows
+```
+kubectl create secret generic kubernetes-the-hard-way `
+  --from-literal="mykey=mydata"
+```
+
 Print a hexdump of the `kubernetes-the-hard-way` secret stored in etcd:
 
+#### Linux & OS X
 ```
 gcloud compute ssh controller-0 \
   --command "ETCDCTL_API=3 etcdctl get /registry/secrets/default/kubernetes-the-hard-way | hexdump -C"
+```
+
+#### Windows
+```
+gcloud compute ssh controller-0 `
+  --command "ETCDCTL_API=3 etcdctl get /registry/secrets/default/kubernetes-the-hard-way" | Format-Hex
 ```
 
 > output
@@ -73,8 +87,14 @@ In this section you will verify the ability to access applications remotely usin
 
 Retrieve the full name of the `nginx` pod:
 
+#### Linux & OS X
 ```
 POD_NAME=$(kubectl get pods -l run=nginx -o jsonpath="{.items[0].metadata.name}")
+```
+
+#### Windows
+```
+$POD_NAME=$(kubectl get pods -l run=nginx -o jsonpath="{.items[0].metadata.name}")
 ```
 
 Forward port `8080` on your local machine to port `80` of the `nginx` pod:
@@ -92,8 +112,14 @@ Forwarding from [::1]:8080 -> 80
 
 In a new terminal make an HTTP request using the forwarding address:
 
+#### Linux & OS X
 ```
 curl --head http://127.0.0.1:8080
+```
+
+#### Windows
+```
+(Invoke-WebRequest -Method HEAD http://127.0.0.1:8080).RawContent
 ```
 
 > output
@@ -165,30 +191,59 @@ kubectl expose deployment nginx --port 80 --type NodePort
 
 Retrieve the node port assigned to the `nginx` service:
 
+#### Linux & OS X
 ```
 NODE_PORT=$(kubectl get svc nginx \
   --output=jsonpath='{range .spec.ports[0]}{.nodePort}')
 ```
 
+#### Windows
+```
+$NODE_PORT=$(kubectl get svc nginx `
+  --output=jsonpath='{range .spec.ports[0]}{.nodePort}')
+```
+
 Create a firewall rule that allows remote access to the `nginx` node port:
 
+#### Linux & OS X
 ```
 gcloud compute firewall-rules create kubernetes-the-hard-way-allow-nginx-service \
   --allow=tcp:${NODE_PORT} \
   --network kubernetes-the-hard-way
 ```
 
+#### Windows
+```
+gcloud compute firewall-rules create kubernetes-the-hard-way-allow-nginx-service `
+  --allow=tcp:${NODE_PORT} `
+  --network kubernetes-the-hard-way
+```
+
 Retrieve the external IP address of a worker instance:
 
+#### Linux & OS X
 ```
 EXTERNAL_IP=$(gcloud compute instances describe worker-0 \
   --format 'value(networkInterfaces[0].accessConfigs[0].natIP)')
 ```
 
+#### Windows
+```
+$EXTERNAL_IP=$(gcloud compute instances describe worker-0 `
+  --format 'value(networkInterfaces[0].accessConfigs[0].natIP)')
+```
+
+
 Make an HTTP request using the external IP address and the `nginx` node port:
 
+#### Linux & OS X
 ```
 curl -I http://${EXTERNAL_IP}:${NODE_PORT}
+```
+
+#### Windows
+```
+(Invoke-WebRequest -Method HEAD http://${EXTERNAL_IP}:${NODE_PORT}).RawContent
 ```
 
 > output
