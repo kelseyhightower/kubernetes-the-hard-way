@@ -6,9 +6,17 @@ In this labs you will delete the compute resources created during this tutorial.
 
 Delete the controller and worker compute instances:
 
+#### Linux & OS X
 ```
 gcloud -q compute instances delete \
   controller-0 controller-1 controller-2 \
+  worker-0 worker-1 worker-2
+```
+
+#### Windows
+```
+gcloud -q compute instances delete `
+  controller-0 controller-1 controller-2 `
   worker-0 worker-1 worker-2
 ```
 
@@ -16,8 +24,19 @@ gcloud -q compute instances delete \
 
 Delete the external load balancer network resources:
 
+#### Linux & OS X
 ```
 gcloud -q compute forwarding-rules delete kubernetes-forwarding-rule \
+  --region $(gcloud config get-value compute/region)
+```
+
+```
+gcloud -q compute target-pools delete kubernetes-target-pool
+```
+
+#### Windows
+```
+gcloud -q compute forwarding-rules delete kubernetes-forwarding-rule `
   --region $(gcloud config get-value compute/region)
 ```
 
@@ -33,6 +52,7 @@ gcloud -q compute addresses delete kubernetes-the-hard-way
 
 Delete the `kubernetes-the-hard-way` firewall rules:
 
+#### Linux & OS X
 ```
 gcloud -q compute firewall-rules delete \
   kubernetes-the-hard-way-allow-nginx-service \
@@ -40,12 +60,29 @@ gcloud -q compute firewall-rules delete \
   kubernetes-the-hard-way-allow-external
 ```
 
+#### Windows
+```
+gcloud -q compute firewall-rules delete `
+  kubernetes-the-hard-way-allow-nginx-service `
+  kubernetes-the-hard-way-allow-internal `
+  kubernetes-the-hard-way-allow-external
+```
+
 Delete the Pod network routes:
 
+#### Linux & OS X
 ```
 gcloud -q compute routes delete \
   kubernetes-route-10-200-0-0-24 \
   kubernetes-route-10-200-1-0-24 \
+  kubernetes-route-10-200-2-0-24
+```
+
+#### Windows
+```
+gcloud -q compute routes delete `
+  kubernetes-route-10-200-0-0-24 `
+  kubernetes-route-10-200-1-0-24 `
   kubernetes-route-10-200-2-0-24
 ```
 
@@ -60,3 +97,15 @@ Delete the `kubernetes-the-hard-way` network VPC:
 ```
 gcloud -q compute networks delete kubernetes-the-hard-way
 ```
+
+## CA Certificate
+
+#### Windows
+
+Remove the CA certificate from the Root Certificates keystore:
+
+```
+Get-ChildTtem -Path Cert:\CurrentUser\Root\ | Where-Object {
+  $_.Thumbprint -eq (Get-PfxCertificate .\ca.pem).Thumbprint } | Remove-Item
+```
+Confirm the certificate details in the confirmation dialog box, and click Yes to continue. 
