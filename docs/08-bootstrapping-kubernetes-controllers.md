@@ -334,7 +334,7 @@ curl --cacert ca.pem https://${KUBERNETES_PUBLIC_ADDRESS}:6443/version
 ```
 Import-Certificate -CertStoreLocation Cert:\CurrentUser\Root -FilePath ca.pem
 ```
-This command will generate a warning making sure you want to install this certificate.  Click Yes to install.
+This command will generate a warning making sure you want to install this certificate.  Verify the information, and click Yes to install.
 ```
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 ```
