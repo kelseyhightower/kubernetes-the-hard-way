@@ -105,7 +105,7 @@ gcloud -q compute networks delete kubernetes-the-hard-way
 Remove the CA certificate from the Root Certificates keystore:
 
 ```
-Get-ChildTtem -Path Cert:\CurrentUser\Root\ | Where-Object {
+Get-ChildItem -Path Cert:\CurrentUser\Root\ | Where-Object {
   $_.Thumbprint -eq (Get-PfxCertificate .\ca.pem).Thumbprint } | Remove-Item
 ```
-Confirm the certificate details in the confirmation dialog box, and click Yes to continue. 
+Confirm the certificate details in the confirmation dialog box, and click Yes to continue.
