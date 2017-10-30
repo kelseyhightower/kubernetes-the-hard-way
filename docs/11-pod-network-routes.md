@@ -24,15 +24,15 @@ done
 ```
 @('worker-0','worker-1','worker-2') | ForEach-Object {
   gcloud compute instances describe $_ `
-  --format '(networkInterfaces[0].networkIP,metadata.items[0].value)'
+  --format "value[separator=' '](networkInterfaces[0].networkIP,metadata.items[0].value)"
 }
 ```
 > output
 
 ```
-10.240.0.20	10.200.0.0/24
-10.240.0.21	10.200.1.0/24
-10.240.0.22	10.200.2.0/24
+10.240.0.20 10.200.0.0/24
+10.240.0.21 10.200.1.0/24
+10.240.0.22 10.200.2.0/24
 ```
 
 ## Routes
