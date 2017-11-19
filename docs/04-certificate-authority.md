@@ -60,7 +60,10 @@ Results:
 ```
 ca-key.pem
 ca.pem
+ca.csr
 ```
+
+Note: `ca.csr` is a certificate signing request. It is created as an interim file and has not much use any more. It was used to generate `ca-key.pem` the private key and `ca.pem` the certificate which are two things you would use.
 
 ## Client and Server Certificates
 
