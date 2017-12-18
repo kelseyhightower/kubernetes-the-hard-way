@@ -24,6 +24,15 @@ chmod +x cfssl cfssljson
 sudo mv cfssl cfssljson /usr/local/bin/
 ```
 
+alternatively, if you have homebrew setup, just run 
+
+```
+brew install cfssl
+```
+
+This will get you both `cfssl` and `cfssljson`.
+
+
 ### Linux
 
 ```
