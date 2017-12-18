@@ -44,6 +44,21 @@ sudo mv cfssl_linux-amd64 /usr/local/bin/cfssl
 sudo mv cfssljson_linux-amd64 /usr/local/bin/cfssljson
 ```
 
+### Windows
+
+```
+Invoke-WebRequest -Uri https://pkg.cfssl.org/R1.2/cfssl_windows-amd64.exe -OutFile cfssl.exe
+```
+
+```
+Invoke-WebRequest -Uri https://pkg.cfssl.org/R1.2/cfssljson_windows-amd64.exe -OutFile cfssljson.exe
+```
+
+Add the current directory to the path (this will not persist between sessions):
+```
+$env:Path += ";$(Get-Location)"
+```
+
 ### Verification
 
 Verify `cfssl` version 1.2.0 or higher is installed:
@@ -92,6 +107,12 @@ chmod +x kubectl
 
 ```
 sudo mv kubectl /usr/local/bin/
+```
+
+### Windows
+
+```
+Invoke-WebRequest -Uri https://storage.googleapis.com/kubernetes-release/release/v1.8.0/bin/windows/amd64/kubectl.exe -OutFile kubectl.exe
 ```
 
 ### Verification

@@ -8,6 +8,7 @@ In this section you will provision a Certificate Authority that can be used to g
 
 Create the CA configuration file:
 
+#### Linux & OS X
 ```
 cat > ca-config.json <<EOF
 {
@@ -26,8 +27,28 @@ cat > ca-config.json <<EOF
 EOF
 ```
 
+#### Windows
+```
+New-Item ca-config.json -Value @"
+{
+  "signing": {
+    "default": {
+      "expiry": "8760h"
+    },
+    "profiles": {
+      "kubernetes": {
+        "usages": ["signing", "key encipherment", "server auth", "client auth"],
+        "expiry": "8760h"
+      }
+    }
+  }
+}
+"@
+```
+
 Create the CA certificate signing request:
 
+#### Linux & OS X
 ```
 cat > ca-csr.json <<EOF
 {
@@ -47,6 +68,28 @@ cat > ca-csr.json <<EOF
   ]
 }
 EOF
+```
+
+#### Windows
+```
+New-Item ca-csr.json -Value @"
+{
+  "CN": "Kubernetes",
+  "key": {
+    "algo": "rsa",
+    "size": 2048
+  },
+  "names": [
+    {
+      "C": "US",
+      "L": "Portland",
+      "O": "Kubernetes",
+      "OU": "CA",
+      "ST": "Oregon"
+    }
+  ]
+}
+"@
 ```
 
 Generate the CA certificate and private key:
@@ -70,6 +113,7 @@ In this section you will generate client and server certificates for each Kubern
 
 Create the `admin` client certificate signing request:
 
+#### Linux & OS X
 ```
 cat > admin-csr.json <<EOF
 {
@@ -91,14 +135,47 @@ cat > admin-csr.json <<EOF
 EOF
 ```
 
+#### Windows
+```
+New-Item admin-csr.json -Value @"
+{
+  "CN": "admin",
+  "key": {
+    "algo": "rsa",
+    "size": 2048
+  },
+  "names": [
+    {
+      "C": "US",
+      "L": "Portland",
+      "O": "system:masters",
+      "OU": "Kubernetes The Hard Way",
+      "ST": "Oregon"
+    }
+  ]
+}
+"@
+```
+
 Generate the `admin` client certificate and private key:
 
+#### Linux & OS X
 ```
 cfssl gencert \
   -ca=ca.pem \
   -ca-key=ca-key.pem \
   -config=ca-config.json \
   -profile=kubernetes \
+  admin-csr.json | cfssljson -bare admin
+```
+
+#### Windows
+```
+cfssl gencert `
+  -ca ca.pem `
+  -ca-key ca-key.pem `
+  -config ca-config.json `
+  -profile kubernetes `
   admin-csr.json | cfssljson -bare admin
 ```
 
@@ -115,6 +192,7 @@ Kubernetes uses a [special-purpose authorization mode](https://kubernetes.io/doc
 
 Generate a certificate and private key for each Kubernetes worker node:
 
+#### Linux & OS X
 ```
 for instance in worker-0 worker-1 worker-2; do
 cat > ${instance}-csr.json <<EOF
@@ -152,6 +230,45 @@ cfssl gencert \
 done
 ```
 
+#### Windows
+
+```
+@('worker-0', 'worker-1', 'worker-2') | ForEach-Object {
+New-Item $_-csr.json -Value @"
+{
+  "CN": "system:node:$_",
+  "key": {
+    "algo": "rsa",
+    "size": 2048
+  },
+  "names": [
+    {
+      "C": "US",
+      "L": "Portland",
+      "O": "system:nodes",
+      "OU": "Kubernetes The Hard Way",
+      "ST": "Oregon"
+    }
+  ]
+}
+"@
+
+$EXTERNAL_IP=$(gcloud compute instances describe $_ `
+  --format 'value(networkInterfaces[0].accessConfigs[0].natIP)')
+
+$INTERNAL_IP=$(gcloud compute instances describe $_ `
+  --format 'value(networkInterfaces[0].networkIP)')
+
+cfssl gencert `
+  -ca ca.pem `
+  -ca-key ca-key.pem `
+  -config ca-config.json `
+  -hostname $_,$EXTERNAL_IP,$INTERNAL_IP `
+  -profile kubernetes `
+  $_-csr.json | cfssljson -bare $_
+}
+```
+
 Results:
 
 ```
@@ -167,6 +284,7 @@ worker-2.pem
 
 Create the `kube-proxy` client certificate signing request:
 
+#### Linux & OS X
 ```
 cat > kube-proxy-csr.json <<EOF
 {
@@ -188,14 +306,47 @@ cat > kube-proxy-csr.json <<EOF
 EOF
 ```
 
+#### Windows
+```
+New-Item kube-proxy-csr.json -Value @"
+{
+  "CN": "system:kube-proxy",
+  "key": {
+    "algo": "rsa",
+    "size": 2048
+  },
+  "names": [
+    {
+      "C": "US",
+      "L": "Portland",
+      "O": "system:node-proxier",
+      "OU": "Kubernetes The Hard Way",
+      "ST": "Oregon"
+    }
+  ]
+}
+"@
+```
+
 Generate the `kube-proxy` client certificate and private key:
 
+#### Linux & OS X
 ```
 cfssl gencert \
   -ca=ca.pem \
   -ca-key=ca-key.pem \
   -config=ca-config.json \
   -profile=kubernetes \
+  kube-proxy-csr.json | cfssljson -bare kube-proxy
+```
+
+#### Windows
+```
+cfssl gencert `
+  -ca ca.pem `
+  -ca-key ca-key.pem `
+  -config ca-config.json `
+  -profile kubernetes `
   kube-proxy-csr.json | cfssljson -bare kube-proxy
 ```
 
@@ -212,14 +363,23 @@ The `kubernetes-the-hard-way` static IP address will be included in the list of 
 
 Retrieve the `kubernetes-the-hard-way` static IP address:
 
+#### Linux & OS X
 ```
 KUBERNETES_PUBLIC_ADDRESS=$(gcloud compute addresses describe kubernetes-the-hard-way \
   --region $(gcloud config get-value compute/region) \
   --format 'value(address)')
 ```
 
+#### Windows
+```
+$KUBERNETES_PUBLIC_ADDRESS=$(gcloud compute addresses describe kubernetes-the-hard-way `
+  --region $(gcloud config get-value compute/region) `
+  --format 'value(address)')
+```
+
 Create the Kubernetes API Server certificate signing request:
 
+#### Linux & OS X
 ```
 cat > kubernetes-csr.json <<EOF
 {
@@ -241,8 +401,31 @@ cat > kubernetes-csr.json <<EOF
 EOF
 ```
 
+#### Windows
+```
+New-Item kubernetes-csr.json -Value @"
+{
+  "CN": "kubernetes",
+  "key": {
+    "algo": "rsa",
+    "size": 2048
+  },
+  "names": [
+    {
+      "C": "US",
+      "L": "Portland",
+      "O": "Kubernetes",
+      "OU": "Kubernetes The Hard Way",
+      "ST": "Oregon"
+    }
+  ]
+}
+"@
+```
+
 Generate the Kubernetes API Server certificate and private key:
 
+#### Linux & OS X
 ```
 cfssl gencert \
   -ca=ca.pem \
@@ -250,6 +433,17 @@ cfssl gencert \
   -config=ca-config.json \
   -hostname=10.32.0.1,10.240.0.10,10.240.0.11,10.240.0.12,${KUBERNETES_PUBLIC_ADDRESS},127.0.0.1,kubernetes.default \
   -profile=kubernetes \
+  kubernetes-csr.json | cfssljson -bare kubernetes
+```
+
+#### Windows
+```
+cfssl gencert `
+  -ca ca.pem `
+  -ca-key ca-key.pem `
+  -config ca-config.json `
+  -hostname 10.32.0.1,10.240.0.10,10.240.0.11,10.240.0.12,$KUBERNETES_PUBLIC_ADDRESS,127.0.0.1,kubernetes.default `
+  -profile kubernetes `
   kubernetes-csr.json | cfssljson -bare kubernetes
 ```
 
@@ -264,20 +458,35 @@ kubernetes.pem
 
 Copy the appropriate certificates and private keys to each worker instance:
 
+#### Linux & OS X
 ```
 for instance in worker-0 worker-1 worker-2; do
   gcloud compute scp ca.pem ${instance}-key.pem ${instance}.pem ${instance}:~/
 done
 ```
 
+#### Windows
+```
+@('worker-0','worker-1','worker-2') | ForEach-Object {
+  gcloud compute scp ca.pem "$_-key.pem" "$_.pem" ${_}:/home/$env:USERNAME/
+}
+```
+
 Copy the appropriate certificates and private keys to each controller instance:
 
+#### Linux & OS X
 ```
 for instance in controller-0 controller-1 controller-2; do
   gcloud compute scp ca.pem ca-key.pem kubernetes-key.pem kubernetes.pem ${instance}:~/
 done
 ```
 
+#### Windows
+```
+@('controller-0', 'controller-1', 'controller-2') | ForEach-Object {
+  gcloud compute scp ca.pem ca-key.pem kubernetes-key.pem kubernetes.pem ${_}:/home/$env:USERNAME/
+}
+```
 > The `kube-proxy` and `kubelet` client certificates will be used to generate client authentication configuration files in the next lab.
 
 Next: [Generating Kubernetes Configuration Files for Authentication](05-kubernetes-configuration-files.md)

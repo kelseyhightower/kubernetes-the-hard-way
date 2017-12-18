@@ -44,4 +44,14 @@ gcloud config set compute/zone us-west1-c
 
 > Use the `gcloud compute zones list` command to view additional regions and zones.
 
+## Important note for Windows users
+
+The commands for Windows in this tutorial are intended to be run using PowerShell and will
+not work as intended using cmd.  If you are at all unsure about what shell you're using
+execute the following command:
+```
+(dir 2>&1 *`|echo CMD);&<# rem #>echo PowerShell
+```
+If it outputs `CMD` then execute `powershell.exe` before continuing.
+
 Next: [Installing the Client Tools](02-client-tools.md)

@@ -257,6 +257,7 @@ In this section you will provision an external load balancer to front the Kubern
 
 Create the external load balancer network resources:
 
+#### Linux & OS X
 ```
 gcloud compute target-pools create kubernetes-target-pool
 ```
@@ -280,20 +281,66 @@ gcloud compute forwarding-rules create kubernetes-forwarding-rule \
   --target-pool kubernetes-target-pool
 ```
 
+#### Windows
+```
+gcloud compute target-pools create kubernetes-target-pool
+```
+
+```
+gcloud compute target-pools add-instances kubernetes-target-pool `
+  --instances controller-0,controller-1,controller-2
+```
+
+```
+$KUBERNETES_PUBLIC_ADDRESS=$(gcloud compute addresses describe kubernetes-the-hard-way `
+  --region $(gcloud config get-value compute/region) `
+  --format 'value(address)')
+```
+
+```
+gcloud compute forwarding-rules create kubernetes-forwarding-rule `
+  --address ${KUBERNETES_PUBLIC_ADDRESS} `
+  --ports 6443 `
+  --region $(gcloud config get-value compute/region) `
+  --target-pool kubernetes-target-pool
+```
+
 ### Verification
 
 Retrieve the `kubernetes-the-hard-way` static IP address:
 
+#### Linux & OS X
 ```
 KUBERNETES_PUBLIC_ADDRESS=$(gcloud compute addresses describe kubernetes-the-hard-way \
   --region $(gcloud config get-value compute/region) \
   --format 'value(address)')
 ```
 
+#### Windows
+```
+$KUBERNETES_PUBLIC_ADDRESS=$(gcloud compute addresses describe kubernetes-the-hard-way `
+  --region $(gcloud config get-value compute/region) `
+  --format 'value(address)')
+```
+
 Make a HTTP request for the Kubernetes version info:
 
+#### Linux & OS X
 ```
 curl --cacert ca.pem https://${KUBERNETES_PUBLIC_ADDRESS}:6443/version
+```
+
+#### Windows
+```
+Import-Certificate -CertStoreLocation Cert:\CurrentUser\Root -FilePath ca.pem
+```
+This command will generate a warning making sure you want to install this certificate.  Verify the information, and click Yes to install.
+```
+[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+```
+
+```
+(Invoke-WebRequest https://${KUBERNETES_PUBLIC_ADDRESS}:6443/version).Content
 ```
 
 > output
