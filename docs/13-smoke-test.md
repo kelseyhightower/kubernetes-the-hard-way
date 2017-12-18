@@ -204,4 +204,73 @@ ETag: "5a1437f4-264"
 Accept-Ranges: bytes
 ```
 
+## Services on Nodes
+
+In this section, you will see which nodes are running which services.
+
+For each worker, `worker-0`, `worker-1`, and `worker-2`, find out which service
+it is using. It will list `busy-box`, `nginx`, or `kube-dns` or a combination
+of those under `Non-terminated Pod` list:
+
+```
+kubectl describe nodes worker-0
+```
+
+> output
+
+```
+Name:               worker-0
+Roles:              <none>
+Labels:             beta.kubernetes.io/arch=amd64
+                    beta.kubernetes.io/os=linux
+                    kubernetes.io/hostname=worker-0
+Annotations:        node.alpha.kubernetes.io/ttl=0
+                    volumes.kubernetes.io/controller-managed-attach-detach=true
+Taints:             <none>
+CreationTimestamp:  Thu, 02 Nov 2017 15:37:27 -0700
+Conditions:
+  Type             Status  LastHeartbeatTime                 LastTransitionTime                Reason                       Message
+  ----             ------  -----------------                 ------------------                ------                       -------
+  OutOfDisk        False   Fri, 03 Nov 2017 11:59:09 -0700   Thu, 02 Nov 2017 15:37:27 -0700   KubeletHasSufficientDisk     kubelet has sufficient disk space available
+  MemoryPressure   False   Fri, 03 Nov 2017 11:59:09 -0700   Thu, 02 Nov 2017 15:37:27 -0700   KubeletHasSufficientMemory   kubelet has sufficient memory available
+  DiskPressure     False   Fri, 03 Nov 2017 11:59:09 -0700   Thu, 02 Nov 2017 15:37:27 -0700   KubeletHasNoDiskPressure     kubelet has no disk pressure
+  Ready            True    Fri, 03 Nov 2017 11:59:09 -0700   Thu, 02 Nov 2017 15:37:27 -0700   KubeletReady                 kubelet is posting ready status. AppArmor enabled
+Addresses:
+  InternalIP:  10.240.0.20
+  Hostname:    worker-0
+Capacity:
+ cpu:     1
+ memory:  3786380Ki
+ pods:    110
+Allocatable:
+ cpu:     1
+ memory:  3683980Ki
+ pods:    110
+System Info:
+ Machine ID:                 27126afd4ffdb57f89c363838c184621
+ System UUID:                27126AFD-4FFD-B57F-89C3-63838C184621
+ Boot ID:                    e5609a56-b7a5-48b4-9caa-5795358a0b9e
+ Kernel Version:             4.10.0-37-generic
+ OS Image:                   Ubuntu 16.04.3 LTS
+ Operating System:           linux
+ Architecture:               amd64
+ Container Runtime Version:  containerd://1.0.0-beta.1
+ Kubelet Version:            v1.8.0
+ Kube-Proxy Version:         v1.8.0
+ExternalID:                  worker-0
+Non-terminated Pods:         (1 in total)
+  Namespace                  Name                         CPU Requests  CPU Limits  Memory Requests  Memory Limits
+  ---------                  ----                         ------------  ----------  ---------------  -------------
+  kube-system                kube-dns-7797cb8758-5bfbk    260m (26%)    0 (0%)      110Mi (3%)       170Mi (4%)
+Allocated resources:
+  (Total limits may be over 100 percent, i.e., overcommitted.)
+  CPU Requests  CPU Limits  Memory Requests  Memory Limits
+  ------------  ----------  ---------------  -------------
+  260m (26%)    0 (0%)      110Mi (3%)       170Mi (4%)
+Events:
+  Type     Reason         Age                 From               Message
+  ----     ------         ----                ----               -------
+  Warning  ImageGCFailed  1m (x244 over 20h)  kubelet, worker-0  no imagefs label for configured runtime
+  ```
+
 Next: [Cleaning Up](14-cleanup.md)
