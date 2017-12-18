@@ -129,7 +129,7 @@ Create the `kubelet.service` systemd unit file:
 cat > kubelet.service <<EOF
 [Unit]
 Description=Kubernetes Kubelet
-Documentation=https://github.com/GoogleCloudPlatform/kubernetes
+Documentation=https://github.com/kubernetes/kubernetes
 After=cri-containerd.service
 Requires=cri-containerd.service
 
@@ -173,7 +173,7 @@ Create the `kube-proxy.service` systemd unit file:
 cat > kube-proxy.service <<EOF
 [Unit]
 Description=Kubernetes Kube Proxy
-Documentation=https://github.com/GoogleCloudPlatform/kubernetes
+Documentation=https://github.com/kubernetes/kubernetes
 
 [Service]
 ExecStart=/usr/local/bin/kube-proxy \\
