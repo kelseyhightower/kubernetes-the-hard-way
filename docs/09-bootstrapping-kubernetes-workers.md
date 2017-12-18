@@ -148,7 +148,7 @@ ExecStart=/usr/local/bin/kubelet \\
   --network-plugin=cni \\
   --pod-cidr=${POD_CIDR} \\
   --register-node=true \\
-  --require-kubeconfig \\
+  --cloud-provider= \\
   --runtime-request-timeout=15m \\
   --tls-cert-file=/var/lib/kubelet/${HOSTNAME}.pem \\
   --tls-private-key-file=/var/lib/kubelet/${HOSTNAME}-key.pem \\
