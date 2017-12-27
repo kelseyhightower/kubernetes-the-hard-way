@@ -57,10 +57,22 @@ cfssl version
 ```
 Version: 1.2.0
 Revision: dev
-Runtime: go1.6
+Runtime: go1.9.2
 ```
 
-> The cfssljson command line utility does not provide a way to print its version.
+Verify `cfssljson` version 1.2.0 or higher is installed:
+
+```
+cfssljson -version
+```
+
+> output
+
+```
+Version: 1.2.0
+Revision: dev
+Runtime: go1.9.2
+```
 
 ## Install kubectl
 
