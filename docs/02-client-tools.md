@@ -57,7 +57,7 @@ cfssl version
 ```
 Version: 1.2.0
 Revision: dev
-Runtime: go1.6
+Runtime: go1.9.2
 ```
 
 Verify `cfssljson` version 1.2.0 or higher is installed:
