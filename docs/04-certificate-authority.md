@@ -62,7 +62,7 @@ ca-key.pem
 ca.pem
 ```
 
-(A third file, `ca.csr`, is also generated, but can be ignored.)
+(The commands also generate a `.csr` file, which can be ignored.)
 
 ## Client and Server Certificates
 
