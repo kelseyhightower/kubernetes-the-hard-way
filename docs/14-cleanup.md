@@ -1,6 +1,6 @@
 # Cleaning Up
 
-In this labs you will delete the compute resources created during this tutorial.
+In this lab you will delete the compute resources created during this tutorial.
 
 ## Compute Instances
 
