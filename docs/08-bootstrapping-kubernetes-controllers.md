@@ -267,14 +267,8 @@ gcloud compute target-pools add-instances kubernetes-target-pool \
 ```
 
 ```
-KUBERNETES_PUBLIC_ADDRESS=$(gcloud compute addresses describe kubernetes-the-hard-way \
-  --region $(gcloud config get-value compute/region) \
-  --format 'value(name)')
-```
-
-```
 gcloud compute forwarding-rules create kubernetes-forwarding-rule \
-  --address ${KUBERNETES_PUBLIC_ADDRESS} \
+  --address kubernetes-the-hard-way \
   --ports 6443 \
   --region $(gcloud config get-value compute/region) \
   --target-pool kubernetes-target-pool
