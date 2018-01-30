@@ -62,6 +62,8 @@ ca-key.pem
 ca.pem
 ```
 
+(The commands also generate a `.csr` file, which can be ignored.)
+
 ## Client and Server Certificates
 
 In this section you will generate client and server certificates for each Kubernetes component and a client certificate for the Kubernetes `admin` user.
