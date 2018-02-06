@@ -24,6 +24,12 @@ chmod +x cfssl cfssljson
 sudo mv cfssl cfssljson /usr/local/bin/
 ```
 
+Or install with Homebrew:
+
+```
+brew install cfssl
+```
+
 ### Linux
 
 ```
@@ -78,6 +84,12 @@ chmod +x kubectl
 
 ```
 sudo mv kubectl /usr/local/bin/
+```
+
+Or install via Homebrew:
+
+```
+brew install kubectl
 ```
 
 ### Linux
