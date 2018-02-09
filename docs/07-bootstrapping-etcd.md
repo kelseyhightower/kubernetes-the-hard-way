@@ -109,6 +109,9 @@ sudo systemctl start etcd
 
 > Remember to run the above commands on each controller node: `controller-0`, `controller-1`, and `controller-2`.
 
+> To see if etcd started correctly use the command `sudo journalctl -f -u etcd.service` 
+
+
 ## Verification
 
 List the etcd cluster members:
