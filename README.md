@@ -6,6 +6,10 @@ Kubernetes The Hard Way is optimized for learning, which means taking the long r
 
 > The results of this tutorial should not be viewed as production ready, and may receive limited support from the community, but don't let that stop you from learning!
 
+Translations:
+
+* [Chinese](https://github.com/feiskyer/kubernetes-handbook/blob/master/deploy/kubernetes-the-hard-way/index.md)
+
 ## Target Audience
 
 The target audience for this tutorial is someone planning to support a production Kubernetes cluster and wants to understand how everything fits together.
