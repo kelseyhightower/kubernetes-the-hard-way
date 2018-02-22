@@ -65,6 +65,13 @@ Verify `cfssljson` version 1.2.0 or higher is installed:
 ```
 cfssljson -version
 ```
+> output
+
+```
+Version: 1.2.0
+Revision: dev
+Runtime: go1.6
+```
 
 ## Install kubectl
 
