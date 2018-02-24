@@ -111,6 +111,7 @@ sudo systemctl start etcd
 
 ## Verification
 
+[Source](https://github.com/kelseyhightower/kubernetes-the-hard-way/issues/220)
 In order to list the members of the etcd cluster from any of the controller hosts, add the following to the logged in user's `.bashrc` file:
 
 ```
