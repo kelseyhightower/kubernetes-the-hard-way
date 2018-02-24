@@ -111,10 +111,20 @@ sudo systemctl start etcd
 
 ## Verification
 
-List the etcd cluster members:
+In order to list the members of the etcd cluster from any of the controller hosts, add the following to the logged in user's `.bashrc` file:
 
 ```
-ETCDCTL_API=3 etcdctl member list
+export ETCDCTL_API=3
+export ETCDCTL_ENDPOINTS="https://127.0.0.1:2379"
+export ETCDCTL_CACERT="/etc/etcd/ca.pem"
+export ETCDCTL_CERT="/etc/etcd/kubernetes.pem"
+export ETCDCTL_KEY="/etc/etcd/kubernetes-key.pem"
+```
+
+You might have to change file permissions (or ownership) of the PEM files to make sure that there are no permission issues while running the following command:
+
+```
+etcdctl member list
 ```
 
 > output
