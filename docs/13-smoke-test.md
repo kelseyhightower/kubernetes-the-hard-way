@@ -16,7 +16,7 @@ kubectl create secret generic kubernetes-the-hard-way \
 Print a hexdump of the `kubernetes-the-hard-way` secret stored in etcd from `controller-0`:
 
 ```
-gcloud compute ssh controller-0 -C
+gcloud compute ssh controller-0
 ```
 
 Once you have logged in, run the following command:
