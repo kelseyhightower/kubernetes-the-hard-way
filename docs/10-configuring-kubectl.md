@@ -25,9 +25,12 @@ kubectl config set-cluster kubernetes-the-hard-way \
   --server=https://${KUBERNETES_PUBLIC_ADDRESS}:6443
 ```
 
+Choose the `--embed-certs=true` below if that's convenient for your setup.
+
 ```
 kubectl config set-credentials admin \
   --client-certificate=admin.pem \
+  --embed-certs=true \
   --client-key=admin-key.pem
 ```
 
