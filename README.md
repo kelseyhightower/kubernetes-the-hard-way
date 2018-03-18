@@ -8,7 +8,7 @@ Kubernetes The Hard Way is optimized for learning, which means taking the long r
 
 Translations:
 
-* [Chinese](https://github.com/feiskyer/kubernetes-handbook/blob/master/deploy/kubernetes-the-hard-way/index.md)
+* [Chinese](https://github.com/feiskyer/kubernetes-handbook/blob/master/zh/deploy/kubernetes-the-hard-way/index.md)
 
 ## Target Audience
 
