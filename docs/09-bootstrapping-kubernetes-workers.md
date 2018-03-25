@@ -26,9 +26,9 @@ sudo apt-get -y install socat
 wget -q --show-progress --https-only --timestamping \
   https://github.com/containernetworking/plugins/releases/download/v0.6.0/cni-plugins-amd64-v0.6.0.tgz \
   https://github.com/containerd/cri-containerd/releases/download/v1.0.0-beta.1/cri-containerd-1.0.0-beta.1.linux-amd64.tar.gz \
-  https://storage.googleapis.com/kubernetes-release/release/v1.9.3/bin/linux/amd64/kubectl \
-  https://storage.googleapis.com/kubernetes-release/release/v1.9.3/bin/linux/amd64/kube-proxy \
-  https://storage.googleapis.com/kubernetes-release/release/v1.9.3/bin/linux/amd64/kubelet
+  https://storage.googleapis.com/kubernetes-release/release/v1.9.6/bin/linux/amd64/kubectl \
+  https://storage.googleapis.com/kubernetes-release/release/v1.9.6/bin/linux/amd64/kube-proxy \
+  https://storage.googleapis.com/kubernetes-release/release/v1.9.6/bin/linux/amd64/kubelet
 ```
 
 Create the installation directories:
