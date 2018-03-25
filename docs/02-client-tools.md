@@ -55,12 +55,23 @@ cfssl version
 > output
 
 ```
-Version: 1.2.0
+Version: 1.3.0
 Revision: dev
-Runtime: go1.6
+Runtime: go1.9.4
 ```
 
-> The cfssljson command line utility does not provide a way to print its version.
+Verify `cfssljson` version 1.2.0 or higher is installed:
+
+```
+cfssljson -version
+```
+> output
+
+```
+Version: 1.3.0
+Revision: dev
+Runtime: go1.9.4
+```
 
 ## Install kubectl
 
@@ -83,7 +94,7 @@ sudo mv kubectl /usr/local/bin/
 ### Linux
 
 ```
-wget https://storage.googleapis.com/kubernetes-release/release/v1.9.0/bin/linux/amd64/kubectl
+wget https://storage.googleapis.com/kubernetes-release/release/v1.9.3/bin/linux/amd64/kubectl
 ```
 
 ```
@@ -105,7 +116,7 @@ kubectl version --client
 > output
 
 ```
-Client Version: version.Info{Major:"1", Minor:"9", GitVersion:"v1.9.0", GitCommit:"925c127ec6b946659ad0fd596fa959be43f0cc05", GitTreeState:"clean", BuildDate:"2017-12-15T21:07:38Z", GoVersion:"go1.9.2", Compiler:"gc", Platform:"darwin/amd64"}
+Client Version: version.Info{Major:"1", Minor:"9", GitVersion:"v1.9.3", GitCommit:"d2835416544f298c919e2ead3be3d0864b52323b", GitTreeState:"clean", BuildDate:"2018-02-09T21:51:06Z", GoVersion:"go1.9.4", Compiler:"gc", Platform:"darwin/amd64"}
 ```
 
 Next: [Provisioning Compute Resources](03-compute-resources.md)

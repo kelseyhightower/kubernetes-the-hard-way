@@ -13,11 +13,16 @@ kubectl create secret generic kubernetes-the-hard-way \
   --from-literal="mykey=mydata"
 ```
 
-Print a hexdump of the `kubernetes-the-hard-way` secret stored in etcd:
+Print a hexdump of the `kubernetes-the-hard-way` secret stored in etcd from `controller-0`:
 
 ```
-gcloud compute ssh controller-0 \
-  --command "ETCDCTL_API=3 etcdctl get /registry/secrets/default/kubernetes-the-hard-way | hexdump -C"
+gcloud compute ssh controller-0
+```
+
+Once you have logged in, run the following command:
+
+```
+etcdctl get /registry/secrets/default/kubernetes-the-hard-way | hexdump -C
 ```
 
 > output
