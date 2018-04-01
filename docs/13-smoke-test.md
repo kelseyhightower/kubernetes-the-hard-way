@@ -187,7 +187,7 @@ EXTERNAL_IP=$(gcloud compute instances describe worker-0 \
 Make an HTTP request using the external IP address and the `nginx` node port:
 
 ```
-curl -I http://${EXTERNAL_IP}:${NODE_PORT}
+curl -I http://$EXTERNAL_IP:$NODE_PORT
 ```
 
 > output
