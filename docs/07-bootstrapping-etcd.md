@@ -4,7 +4,13 @@ Kubernetes components are stateless and store cluster state in [etcd](https://gi
 
 ## Prerequisites
 
-The commands in this lab must be run on each controller instance: `controller-0`, `controller-1`, and `controller-2`. Login to each controller instance using the `gcloud` command. Example:
+First, we need to add an extra firewall rule to allow the `etcd` nodes on the controller instances to talk to each other:
+
+```
+gcloud compute firewall-rules create kubernetes-the-hard-way-allow-etcd --allow tcp:2379,tcp:2380 --network kubernetes-the-hard-way --source-ranges 10.240.0.0/24
+```
+
+The remaining commands in this lab must be run on each controller instance: `controller-0`, `controller-1`, and `controller-2`. Login to each controller instance using the `gcloud` command. Example:
 
 ```
 gcloud compute ssh controller-0
