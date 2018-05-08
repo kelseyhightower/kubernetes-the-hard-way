@@ -4,6 +4,12 @@ In this lab you will deploy the [DNS add-on](https://kubernetes.io/docs/concepts
 
 ## The DNS Cluster Add-on
 
+SSH onto one of the controller nodes:
+
+```
+gcloud compute ssh controller-0
+```
+
 Deploy the `kube-dns` cluster add-on:
 
 ```
