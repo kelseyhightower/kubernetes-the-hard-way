@@ -15,7 +15,7 @@ gcloud compute ssh worker-0
 Install the OS dependencies:
 
 ```
-sudo apt-get -y install socat
+sudo apt-get -y install socat conntrack
 ```
 
 > The socat binary enables support for the `kubectl port-forward` command.
@@ -24,11 +24,12 @@ sudo apt-get -y install socat
 
 ```
 wget -q --show-progress --https-only --timestamping \
+  https://github.com/opencontainers/runc/releases/download/v1.0.0-rc5/runc.amd64 \
   https://github.com/containernetworking/plugins/releases/download/v0.6.0/cni-plugins-amd64-v0.6.0.tgz \
-  https://github.com/containerd/cri-containerd/releases/download/v1.0.0-beta.1/cri-containerd-1.0.0-beta.1.linux-amd64.tar.gz \
-  https://storage.googleapis.com/kubernetes-release/release/v1.9.0/bin/linux/amd64/kubectl \
-  https://storage.googleapis.com/kubernetes-release/release/v1.9.0/bin/linux/amd64/kube-proxy \
-  https://storage.googleapis.com/kubernetes-release/release/v1.9.0/bin/linux/amd64/kubelet
+  https://github.com/containerd/containerd/releases/download/v1.1.0/containerd-1.1.0.linux-amd64.tar.gz \
+  https://storage.googleapis.com/kubernetes-release/release/v1.10.2/bin/linux/amd64/kubectl \
+  https://storage.googleapis.com/kubernetes-release/release/v1.10.2/bin/linux/amd64/kube-proxy \
+  https://storage.googleapis.com/kubernetes-release/release/v1.10.2/bin/linux/amd64/kubelet
 ```
 
 Create the installation directories:
@@ -46,11 +47,19 @@ sudo mkdir -p \
 Install the worker binaries:
 
 ```
+chmod +x runc.amd64
+```
+
+```
+sudo mv runc.amd64 /usr/local/bin/runc
+```
+
+```
 sudo tar -xvf cni-plugins-amd64-v0.6.0.tgz -C /opt/cni/bin/
 ```
 
 ```
-sudo tar -xvf cri-containerd-1.0.0-beta.1.linux-amd64.tar.gz -C /
+sudo tar -xvf containerd-1.1.0.linux-amd64.tar.gz -C /
 ```
 
 ```
@@ -109,6 +118,32 @@ Move the network configuration files to the CNI configuration directory:
 sudo mv 10-bridge.conf 99-loopback.conf /etc/cni/net.d/
 ```
 
+### Configure containerd
+
+```
+cat > containerd.service <<EOF
+[Unit]
+Description=containerd container runtime
+Documentation=https://containerd.io
+After=network.target
+
+[Service]
+ExecStartPre=/sbin/modprobe overlay
+ExecStart=/bin/containerd
+Restart=always
+RestartSec=5
+Delegate=yes
+KillMode=process
+OOMScoreAdjust=-999
+LimitNOFILE=1048576
+LimitNPROC=infinity
+LimitCORE=infinity
+
+[Install]
+WantedBy=multi-user.target
+EOF
+```
+
 ### Configure the Kubelet
 
 ```
@@ -130,8 +165,8 @@ cat > kubelet.service <<EOF
 [Unit]
 Description=Kubernetes Kubelet
 Documentation=https://github.com/kubernetes/kubernetes
-After=cri-containerd.service
-Requires=cri-containerd.service
+After=containerd.service
+Requires=containerd.service
 
 [Service]
 ExecStart=/usr/local/bin/kubelet \\
@@ -143,7 +178,7 @@ ExecStart=/usr/local/bin/kubelet \\
   --cluster-dns=10.32.0.10 \\
   --cluster-domain=cluster.local \\
   --container-runtime=remote \\
-  --container-runtime-endpoint=unix:///var/run/cri-containerd.sock \\
+  --container-runtime-endpoint=unix:///var/run/containerd/containerd.sock \\
   --image-pull-progress-deadline=2m \\
   --kubeconfig=/var/lib/kubelet/kubeconfig \\
   --network-plugin=cni \\
@@ -192,7 +227,7 @@ EOF
 ### Start the Worker Services
 
 ```
-sudo mv kubelet.service kube-proxy.service /etc/systemd/system/
+sudo mv containerd.service kubelet.service kube-proxy.service /etc/systemd/system/
 ```
 
 ```
@@ -200,11 +235,11 @@ sudo systemctl daemon-reload
 ```
 
 ```
-sudo systemctl enable containerd cri-containerd kubelet kube-proxy
+sudo systemctl enable containerd kubelet kube-proxy
 ```
 
 ```
-sudo systemctl start containerd cri-containerd kubelet kube-proxy
+sudo systemctl start containerd kubelet kube-proxy
 ```
 
 > Remember to run the above commands on each worker node: `worker-0`, `worker-1`, and `worker-2`.
@@ -227,9 +262,9 @@ kubectl get nodes
 
 ```
 NAME       STATUS    ROLES     AGE       VERSION
-worker-0   Ready     <none>    18s       v1.9.0
-worker-1   Ready     <none>    18s       v1.9.0
-worker-2   Ready     <none>    18s       v1.9.0
+worker-0   Ready     <none>    20s       v1.10.2
+worker-1   Ready     <none>    20s       v1.10.2
+worker-2   Ready     <none>    20s       v1.10.2
 ```
 
 Next: [Configuring kubectl for Remote Access](10-configuring-kubectl.md)

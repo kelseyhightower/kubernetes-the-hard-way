@@ -27,17 +27,17 @@ gcloud compute ssh controller-0 \
 00000010  73 2f 64 65 66 61 75 6c  74 2f 6b 75 62 65 72 6e  |s/default/kubern|
 00000020  65 74 65 73 2d 74 68 65  2d 68 61 72 64 2d 77 61  |etes-the-hard-wa|
 00000030  79 0a 6b 38 73 3a 65 6e  63 3a 61 65 73 63 62 63  |y.k8s:enc:aescbc|
-00000040  3a 76 31 3a 6b 65 79 31  3a ea 7c 76 32 43 62 6f  |:v1:key1:.|v2Cbo|
-00000050  44 02 02 8c b7 ca fe 95  a5 33 f6 a1 18 6c 3d 53  |D........3...l=S|
-00000060  e7 9c 51 ee 32 f6 e4 17  ea bb 11 d5 2f e2 40 00  |..Q.2......./.@.|
-00000070  ae cf d9 e7 ba 7f 68 18  d3 c1 10 10 93 43 35 bd  |......h......C5.|
-00000080  24 dd 66 b4 f8 f9 82 77  4a d5 78 03 19 41 1e bc  |$.f....wJ.x..A..|
-00000090  94 3f 17 41 ad cc 8c ba  9f 8f 8e 56 97 7e 96 fb  |.?.A.......V.~..|
-000000a0  8f 2e 6a a5 bf 08 1f 0b  c3 4b 2b 93 d1 ec f8 70  |..j......K+....p|
-000000b0  c1 e4 1d 1a d2 0d f8 74  3a a1 4f 3c e0 c9 6d 3f  |.......t:.O<..m?|
-000000c0  de a3 f5 fd 76 aa 5e bc  27 d9 3c 6b 8f 54 97 45  |....v.^.'.<k.T.E|
-000000d0  31 25 ff 23 90 a4 2a f2  db 78 b1 3b ca 21 f3 6b  |1%.#..*..x.;.!.k|
-000000e0  dd fb 8e 53 c6 23 0d 35  c8 0a                    |...S.#.5..|
+00000040  3a 76 31 3a 6b 65 79 31  3a 7b 8e 59 78 0f 59 09  |:v1:key1:{.Yx.Y.|
+00000050  e2 6a ce cd f4 b6 4e ec  bc 91 aa 87 06 29 39 8d  |.j....N......)9.|
+00000060  70 e8 5d c4 b1 66 69 49  60 8f c0 cc 55 d3 69 2b  |p.]..fiI`...U.i+|
+00000070  49 bb 0e 7b 90 10 b0 85  5b b1 e2 c6 33 b6 b7 31  |I..{....[...3..1|
+00000080  25 99 a1 60 8f 40 a9 e5  55 8c 0f 26 ae 76 dc 5b  |%..`.@..U..&.v.[|
+00000090  78 35 f5 3e c1 1e bc 21  bb 30 e2 0c e3 80 1e 33  |x5.>...!.0.....3|
+000000a0  90 79 46 6d 23 d8 f9 a2  d7 5d ed 4d 82 2e 9a 5e  |.yFm#....].M...^|
+000000b0  5d b6 3c 34 37 51 4b 83  de 99 1a ea 0f 2f 7c 9b  |].<47QK....../|.|
+000000c0  46 15 93 aa ba 72 ba b9  bd e1 a3 c0 45 90 b1 de  |F....r......E...|
+000000d0  c4 2e c8 d0 94 ec 25 69  7b af 08 34 93 12 3d 1c  |......%i{..4..=.|
+000000e0  fd 23 9b ba e8 d1 25 56  f4 0a                    |.#....%V..|
 000000ea
 ```
 
@@ -99,13 +99,13 @@ curl --head http://127.0.0.1:8080
 
 ```
 HTTP/1.1 200 OK
-Server: nginx/1.13.7
-Date: Mon, 18 Dec 2017 14:50:36 GMT
+Server: nginx/1.13.12
+Date: Sat, 12 May 2018 16:50:33 GMT
 Content-Type: text/html
 Content-Length: 612
-Last-Modified: Tue, 21 Nov 2017 14:28:04 GMT
+Last-Modified: Mon, 09 Apr 2018 16:01:09 GMT
 Connection: keep-alive
-ETag: "5a1437f4-264"
+ETag: "5acb8e45-264"
 Accept-Ranges: bytes
 ```
 
@@ -131,7 +131,7 @@ kubectl logs $POD_NAME
 > output
 
 ```
-127.0.0.1 - - [18/Dec/2017:14:50:36 +0000] "HEAD / HTTP/1.1" 200 0 "-" "curl/7.54.0" "-"
+127.0.0.1 - - [12/May/2018:16:50:33 +0000] "HEAD / HTTP/1.1" 200 0 "-" "curl/7.52.1" "-"
 ```
 
 ### Exec
@@ -147,7 +147,7 @@ kubectl exec -ti $POD_NAME -- nginx -v
 > output
 
 ```
-nginx version: nginx/1.13.7
+nginx version: nginx/1.13.12
 ```
 
 ## Services
@@ -194,13 +194,13 @@ curl -I http://${EXTERNAL_IP}:${NODE_PORT}
 
 ```
 HTTP/1.1 200 OK
-Server: nginx/1.13.7
-Date: Mon, 18 Dec 2017 14:52:09 GMT
+Server: nginx/1.13.12
+Date: Sat, 12 May 2018 16:52:34 GMT
 Content-Type: text/html
 Content-Length: 612
-Last-Modified: Tue, 21 Nov 2017 14:28:04 GMT
+Last-Modified: Mon, 09 Apr 2018 16:01:09 GMT
 Connection: keep-alive
-ETag: "5a1437f4-264"
+ETag: "5acb8e45-264"
 Accept-Ranges: bytes
 ```
 

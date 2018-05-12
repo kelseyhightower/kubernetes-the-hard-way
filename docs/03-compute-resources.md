@@ -104,7 +104,7 @@ for i in 0 1 2; do
     --async \
     --boot-disk-size 200GB \
     --can-ip-forward \
-    --image-family ubuntu-1604-lts \
+    --image-family ubuntu-1804-lts \
     --image-project ubuntu-os-cloud \
     --machine-type n1-standard-1 \
     --private-network-ip 10.240.0.1${i} \
@@ -128,7 +128,7 @@ for i in 0 1 2; do
     --async \
     --boot-disk-size 200GB \
     --can-ip-forward \
-    --image-family ubuntu-1604-lts \
+    --image-family ubuntu-1804-lts \
     --image-project ubuntu-os-cloud \
     --machine-type n1-standard-1 \
     --metadata pod-cidr=10.200.${i}.0/24 \
