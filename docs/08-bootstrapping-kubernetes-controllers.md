@@ -143,6 +143,11 @@ EOF
 
 ### Configure the Kubernetes Scheduler
 
+Move the `kube-scheduler` kubeconfig into place:
+
+```
+sudo mv kube-scheduler.kubeconfig /var/lib/kubernetes/
+```
 
 Create the `kube-scheduler.yaml` configuration file:
 
@@ -150,6 +155,8 @@ Create the `kube-scheduler.yaml` configuration file:
 cat > kube-scheduler.yaml <<EOF
 apiVersion: componentconfig/v1alpha1
 kind: KubeSchedulerConfiguration
+clientConnection:
+  kubeconfig: "/var/lib/kubernetes/kube-scheduler.kubeconfig"
 leaderElection:
   leaderElect: true
 EOF
@@ -170,7 +177,6 @@ Documentation=https://github.com/kubernetes/kubernetes
 [Service]
 ExecStart=/usr/local/bin/kube-scheduler \\
   --config=/etc/kubernetes/config/kube-scheduler.yaml \\
-  --master=http://127.0.0.1:8080 \\
   --v=2
 Restart=on-failure
 RestartSec=5
