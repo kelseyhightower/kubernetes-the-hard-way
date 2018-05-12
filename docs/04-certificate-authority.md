@@ -163,6 +163,50 @@ worker-2-key.pem
 worker-2.pem
 ```
 
+### The kube-controller-manager Client Certificate
+
+Create the `kube-controller-manager` client certificate signing request:
+
+```
+cat > kube-controller-manager-csr.json <<EOF
+{
+  "CN": "system:kube-controller-manager",
+  "key": {
+    "algo": "rsa",
+    "size": 2048
+  },
+  "names": [
+    {
+      "C": "US",
+      "L": "Portland",
+      "O": "system:kube-controller-manager",
+      "OU": "Kubernetes The Hard Way",
+      "ST": "Oregon"
+    }
+  ]
+}
+EOF
+```
+
+Generate the `kube-controller-manager` client certificate and private key:
+
+```
+cfssl gencert \
+  -ca=ca.pem \
+  -ca-key=ca-key.pem \
+  -config=ca-config.json \
+  -profile=kubernetes \
+  kube-controller-manager-csr.json | cfssljson -bare kube-controller-manager
+```
+
+Results:
+
+```
+kube-controller-manager-key.pem
+kube-controller-manager.pem
+```
+
+
 ### The kube-proxy Client Certificate
 
 Create the `kube-proxy` client certificate signing request:
@@ -205,6 +249,50 @@ Results:
 kube-proxy-key.pem
 kube-proxy.pem
 ```
+
+### The kube-scheduler Client Certificate
+
+Create the `kube-scheduler` client certificate signing request:
+
+```
+cat > kube-scheduler-csr.json <<EOF
+{
+  "CN": "system:kube-scheduler",
+  "key": {
+    "algo": "rsa",
+    "size": 2048
+  },
+  "names": [
+    {
+      "C": "US",
+      "L": "Portland",
+      "O": "system:kube-scheduler",
+      "OU": "Kubernetes The Hard Way",
+      "ST": "Oregon"
+    }
+  ]
+}
+EOF
+```
+
+Generate the `kube-scheduler` client certificate and private key:
+
+```
+cfssl gencert \
+  -ca=ca.pem \
+  -ca-key=ca-key.pem \
+  -config=ca-config.json \
+  -profile=kubernetes \
+  kube-scheduler-csr.json | cfssljson -bare kube-scheduler
+```
+
+Results:
+
+```
+kube-scheduler-key.pem
+kube-scheduler.pem
+```
+
 
 ### The Kubernetes API Server Certificate
 
@@ -278,6 +366,6 @@ for instance in controller-0 controller-1 controller-2; do
 done
 ```
 
-> The `kube-proxy` and `kubelet` client certificates will be used to generate client authentication configuration files in the next lab.
+> The `kube-proxy`, `kube-controller-manager`, `kube-scheduler`, and `kubelet` client certificates will be used to generate client authentication configuration files in the next lab.
 
 Next: [Generating Kubernetes Configuration Files for Authentication](05-kubernetes-configuration-files.md)

@@ -8,6 +8,16 @@ ca-key.pem
 ca.csr                     
 ca.pem                     
 encryption-config.yaml     
+kube-controller-manager-csr.json
+kube-controller-manager-key.pem
+kube-controller-manager.csr
+kube-controller-manager.kubeconfig
+kube-controller-manager.pem
+kube-scheduler-csr.json
+kube-scheduler-key.pem
+kube-scheduler.csr
+kube-scheduler.kubeconfig
+kube-scheduler.pem
 kube-proxy-csr.json        
 kube-proxy-key.pem         
 kube-proxy.csr             

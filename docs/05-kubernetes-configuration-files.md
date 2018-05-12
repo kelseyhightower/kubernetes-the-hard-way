@@ -94,6 +94,82 @@ Results:
 kube-proxy.kubeconfig
 ```
 
+### The kube-controller-manager Kubernetes Configuration File
+
+Generate a kubeconfig file for the `kube-controller-manager` service:
+
+```
+kubectl config set-cluster kubernetes-the-hard-way \
+  --certificate-authority=ca.pem \
+  --embed-certs=true \
+  --server=https://${KUBERNETES_PUBLIC_ADDRESS}:6443 \
+  --kubeconfig=kube-controller-manager.kubeconfig
+```
+
+```
+kubectl config set-credentials kube-controller-manager \
+  --client-certificate=kube-controller-manager.pem \
+  --client-key=kube-controller-manager-key.pem \
+  --embed-certs=true \
+  --kubeconfig=kube-controller-manager.kubeconfig
+```
+
+```
+kubectl config set-context default \
+  --cluster=kubernetes-the-hard-way \
+  --user=kube-controller-manager \
+  --kubeconfig=kube-controller-manager.kubeconfig
+```
+
+```
+kubectl config use-context default --kubeconfig=kube-controller-manager.kubeconfig
+```
+
+Results:
+
+```
+kube-controller-manager.kubeconfig
+```
+
+
+### The kube-scheduler Kubernetes Configuration File
+
+Generate a kubeconfig file for the `kube-scheduler` service:
+
+```
+kubectl config set-cluster kubernetes-the-hard-way \
+  --certificate-authority=ca.pem \
+  --embed-certs=true \
+  --server=https://${KUBERNETES_PUBLIC_ADDRESS}:6443 \
+  --kubeconfig=kube-scheduler.kubeconfig
+```
+
+```
+kubectl config set-credentials kube-scheduler \
+  --client-certificate=kube-scheduler.pem \
+  --client-key=kube-scheduler-key.pem \
+  --embed-certs=true \
+  --kubeconfig=kube-scheduler.kubeconfig
+```
+
+```
+kubectl config set-context default \
+  --cluster=kubernetes-the-hard-way \
+  --user=kube-scheduler \
+  --kubeconfig=kube-scheduler.kubeconfig
+```
+
+```
+kubectl config use-context default --kubeconfig=kube-scheduler.kubeconfig
+```
+
+Results:
+
+```
+kube-scheduler.kubeconfig
+```
+
+
 ## Distribute the Kubernetes Configuration Files
 
 Copy the appropriate `kubelet` and `kube-proxy` kubeconfig files to each worker instance:
@@ -101,6 +177,14 @@ Copy the appropriate `kubelet` and `kube-proxy` kubeconfig files to each worker 
 ```
 for instance in worker-0 worker-1 worker-2; do
   gcloud compute scp ${instance}.kubeconfig kube-proxy.kubeconfig ${instance}:~/
+done
+```
+
+Copy the appropriate `kube-controller-manager` and `kube-scheduler` kubeconfig files to each controller instance:
+
+```
+for instance in controller-0 controller-1 controller-2; do
+  gcloud compute scp kube-controller-manager.kubeconfig kube-scheduler.kubeconfig ${instance}:~/
 done
 ```
 

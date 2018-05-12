@@ -106,6 +106,12 @@ EOF
 
 ### Configure the Kubernetes Controller Manager
 
+Move the `kube-controller-manager` kubeconfig into place:
+
+```
+sudo mv kube-controller-manager.kubeconfig /var/lib/kubernetes/
+```
+
 Create the `kube-controller-manager.service` systemd unit file:
 
 ```
@@ -121,8 +127,8 @@ ExecStart=/usr/local/bin/kube-controller-manager \\
   --cluster-name=kubernetes \\
   --cluster-signing-cert-file=/var/lib/kubernetes/ca.pem \\
   --cluster-signing-key-file=/var/lib/kubernetes/ca-key.pem \\
+  --kubeconfig=/var/lib/kubernetes/kube-controller-manager.kubeconfig \\
   --leader-elect=true \\
-  --master=http://127.0.0.1:8080 \\
   --root-ca-file=/var/lib/kubernetes/ca.pem \\
   --service-account-private-key-file=/var/lib/kubernetes/ca-key.pem \\
   --service-cluster-ip-range=10.32.0.0/24 \\
@@ -137,6 +143,8 @@ EOF
 
 ### Configure the Kubernetes Scheduler
 
+
+Create the `kube-scheduler.yaml` configuration file:
 
 ```
 cat > kube-scheduler.yaml <<EOF
