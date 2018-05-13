@@ -13,10 +13,10 @@ kubectl create -f https://storage.googleapis.com/kubernetes-the-hard-way/kube-dn
 > output
 
 ```
+service "kube-dns" created
 serviceaccount "kube-dns" created
 configmap "kube-dns" created
-service "kube-dns" created
-deployment "kube-dns" created
+deployment.extensions "kube-dns" created
 ```
 
 List the pods created by the `kube-dns` deployment:
