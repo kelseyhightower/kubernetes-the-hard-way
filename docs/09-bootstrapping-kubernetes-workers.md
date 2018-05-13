@@ -15,6 +15,10 @@ gcloud compute ssh worker-0
 Install the OS dependencies:
 
 ```
+sudo apt-get update
+```
+
+```
 sudo apt-get -y install socat conntrack ipset
 ```
 
