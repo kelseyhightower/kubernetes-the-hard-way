@@ -44,4 +44,14 @@ gcloud config set compute/zone us-west1-c
 
 > Use the `gcloud compute zones list` command to view additional regions and zones.
 
+## Running commands in parallel with tmux
+
+[tmux](https://github.com/tmux/tmux/wiki) can be used to run commands on multiple compute instances at the same time. Consider splitting a tmux window into multiple panes and enabling `synchronize-panes` to speed up the provisioning process.
+
+> The use of tmux is optional and not required to complete this tutorial.
+
+![tmux screenshot](images/tmux-screenshot.png)
+
+> Enable `synchronize-panes`: `ctrl+b` then `shift :`. Then type `set synchronize-panes on` at the prompt. To disable synchronization: `set synchronize-panes off`.
+
 Next: [Installing the Client Tools](02-client-tools.md)
