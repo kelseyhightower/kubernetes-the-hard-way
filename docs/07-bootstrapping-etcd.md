@@ -10,6 +10,14 @@ The commands in this lab must be run on each controller instance: `controller-0`
 gcloud compute ssh controller-0
 ```
 
+### Tmux
+
+[tmux](https://github.com/tmux/tmux/wiki) can be used to run commands on multiple compute instances at the same time. Consider splitting a tmux window into multiple panes and enabling `synchronize-panes` to speed up the provisioning process.
+
+![tmux screenshot](images/tmux-controller.png)
+
+> Enable `synchronize-panes`: ctrl+b then `shift :`. Then type `set synchronize-panes on` at the prompt. To disable synchronization: `set synchronize-panes off`.
+
 ## Bootstrapping an etcd Cluster Member
 
 ### Download and Install the etcd Binaries
