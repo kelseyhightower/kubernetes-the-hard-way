@@ -4,9 +4,7 @@ In this lab you will generate [Kubernetes configuration files](https://kubernete
 
 ## Client Authentication Configs
 
-In this section you will generate kubeconfig files for the `kubelet` and `kube-proxy` clients.
-
-> The `scheduler` and `controller manager` access the Kubernetes API Server locally over an insecure API port which does not require authentication. The Kubernetes API Server's insecure port is only enabled for local access.
+In this section you will generate kubeconfig files for the `controller manager`, `kubelet`, `kube-proxy`, and `scheduler` clients.
 
 ### Kubernetes Public IP Address
 
