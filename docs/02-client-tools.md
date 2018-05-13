@@ -24,6 +24,12 @@ chmod +x cfssl cfssljson
 sudo mv cfssl cfssljson /usr/local/bin/
 ```
 
+Some OS X users may experience problems using the pre-built binaries in which case [Homebrew](https://brew.sh) might be a better option:
+
+```
+brew install cfssl
+```
+
 ### Linux
 
 ```
