@@ -212,7 +212,8 @@ sudo systemctl start kube-apiserver kube-controller-manager kube-scheduler
 ### Verification
 
 ```
-kubectl get componentstatuses
+kubectl get componentstatuses \
+  --kubeconfig /var/lib/kubernetes/kube-controller-manager.kubeconfig
 ```
 
 ```
