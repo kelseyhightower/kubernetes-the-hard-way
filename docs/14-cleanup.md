@@ -25,6 +25,10 @@ gcloud -q compute forwarding-rules delete kubernetes-forwarding-rule \
 gcloud -q compute target-pools delete kubernetes-target-pool
 ```
 
+```
+gcloud -q compute http-health-checks delete kubernetes
+```
+
 Delete the `kubernetes-the-hard-way` static IP address:
 
 ```
@@ -37,7 +41,8 @@ Delete the `kubernetes-the-hard-way` firewall rules:
 gcloud -q compute firewall-rules delete \
   kubernetes-the-hard-way-allow-nginx-service \
   kubernetes-the-hard-way-allow-internal \
-  kubernetes-the-hard-way-allow-external
+  kubernetes-the-hard-way-allow-external \
+  kubernetes-the-hard-way-allow-health-check
 ```
 
 Delete the Pod network routes:

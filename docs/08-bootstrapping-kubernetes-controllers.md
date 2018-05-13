@@ -368,7 +368,7 @@ gcloud compute http-health-checks create kubernetes \
 ```
 
 ```
-gcloud compute firewall-rules create allow-health-check \
+gcloud compute firewall-rules create kubernetes-the-hard-way-allow-health-check \
   --network kubernetes-the-hard-way \
   --source-ranges 209.85.152.0/22,209.85.204.0/22,35.191.0.0/16 \
   --allow tcp
