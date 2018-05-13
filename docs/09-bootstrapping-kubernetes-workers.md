@@ -287,10 +287,14 @@ sudo systemctl start containerd kubelet kube-proxy
 
 ## Verification
 
-Login to one of the controller nodes:
+> The compute instances created in this tutorial will not have permission to complete this section. Run the following commands from the same machine used to create the compute instances.
+
+Print the Kubernetes nodes:
 
 ```
-gcloud compute ssh controller-0
+gcloud compute ssh controller-0 \
+  --command="kubectl get nodes \
+  --kubeconfig /var/lib/kubernetes/kube-controller-manager.kubeconfig"
 ```
 
 List the registered Kubernetes nodes:
