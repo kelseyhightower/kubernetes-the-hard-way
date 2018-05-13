@@ -47,7 +47,9 @@ sudo mkdir -p /var/lib/kubernetes/
 ```
 
 ```
-sudo mv ca.pem ca-key.pem kubernetes-key.pem kubernetes.pem encryption-config.yaml /var/lib/kubernetes/
+sudo mv ca.pem ca-key.pem kubernetes-key.pem kubernetes.pem \
+  service-account-key.pem service-account.pem \
+  encryption-config.yaml /var/lib/kubernetes/
 ```
 
 The instance internal IP address will be used to advertise the API Server to members of the cluster. Retrieve the internal IP address for the current compute instance:
@@ -90,7 +92,7 @@ ExecStart=/usr/local/bin/kube-apiserver \\
   --kubelet-client-key=/var/lib/kubernetes/kubernetes-key.pem \\
   --kubelet-https=true \\
   --runtime-config=api/all \\
-  --service-account-key-file=/var/lib/kubernetes/ca-key.pem \\
+  --service-account-key-file=/var/lib/kubernetes/service-account.pem \\
   --service-cluster-ip-range=10.32.0.0/24 \\
   --service-node-port-range=30000-32767 \\
   --tls-cert-file=/var/lib/kubernetes/kubernetes.pem \\
@@ -130,7 +132,7 @@ ExecStart=/usr/local/bin/kube-controller-manager \\
   --kubeconfig=/var/lib/kubernetes/kube-controller-manager.kubeconfig \\
   --leader-elect=true \\
   --root-ca-file=/var/lib/kubernetes/ca.pem \\
-  --service-account-private-key-file=/var/lib/kubernetes/ca-key.pem \\
+  --service-account-private-key-file=/var/lib/kubernetes/service-account-key.pem \\
   --service-cluster-ip-range=10.32.0.0/24 \\
   --use-service-account-credentials=true \\
   --v=2

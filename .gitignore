@@ -42,3 +42,7 @@ worker-2-key.pem
 worker-2.csr
 worker-2.kubeconfig
 worker-2.pem
+service-account-key.pem
+service-account.csr
+service-account.pem
+service-account-csr.json

@@ -163,7 +163,7 @@ worker-2-key.pem
 worker-2.pem
 ```
 
-### The kube-controller-manager Client Certificate
+### The Controller Manager Client Certificate
 
 Create the `kube-controller-manager` client certificate signing request:
 
@@ -207,7 +207,7 @@ kube-controller-manager.pem
 ```
 
 
-### The kube-proxy Client Certificate
+### The Kube Proxy Client Certificate
 
 Create the `kube-proxy` client certificate signing request:
 
@@ -250,7 +250,7 @@ kube-proxy-key.pem
 kube-proxy.pem
 ```
 
-### The kube-scheduler Client Certificate
+### The Scheduler Client Certificate
 
 Create the `kube-scheduler` client certificate signing request:
 
@@ -348,6 +348,51 @@ kubernetes-key.pem
 kubernetes.pem
 ```
 
+## The Service Account Key Pair
+
+Create the `service-account` certificate signing request:
+
+```
+cat > service-account-csr.json <<EOF
+{
+  "CN": "service-accounts",
+  "key": {
+    "algo": "rsa",
+    "size": 2048
+  },
+  "names": [
+    {
+      "C": "US",
+      "L": "Portland",
+      "O": "Kubernetes",
+      "OU": "Kubernetes The Hard Way",
+      "ST": "Oregon"
+    }
+  ]
+}
+EOF
+```
+
+Generate the `service-account` certificate and private key:
+
+```
+cfssl gencert \
+  -ca=ca.pem \
+  -ca-key=ca-key.pem \
+  -config=ca-config.json \
+  -profile=kubernetes \
+  service-account-csr.json | cfssljson -bare service-account
+```
+
+Results:
+
+```
+service-account-key.pem
+service-account.pem
+```
+
+
+
 ## Distribute the Client and Server Certificates
 
 Copy the appropriate certificates and private keys to each worker instance:
@@ -362,7 +407,8 @@ Copy the appropriate certificates and private keys to each controller instance:
 
 ```
 for instance in controller-0 controller-1 controller-2; do
-  gcloud compute scp ca.pem ca-key.pem kubernetes-key.pem kubernetes.pem ${instance}:~/
+  gcloud compute scp ca.pem ca-key.pem kubernetes-key.pem kubernetes.pem \
+    service-account-key.pem service-account.pem ${instance}:~/
 done
 ```
 
