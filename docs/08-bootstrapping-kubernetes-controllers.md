@@ -10,6 +10,10 @@ The commands in this lab must be run on each controller instance: `controller-0`
 gcloud compute ssh controller-0
 ```
 
+### Running commands in parallel with tmux
+
+[tmux](https://github.com/tmux/tmux/wiki) can be used to run commands on multiple compute instances at the same time. See the [Running commands in parallel with tmux](01-prerequisites.md#running-commands-in-parallel-with-tmux) section in the Prerequisites lab.
+
 ## Provision the Kubernetes Control Plane
 
 Create the Kubernetes configuration directory:
