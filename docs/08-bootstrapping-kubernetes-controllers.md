@@ -132,6 +132,7 @@ ExecStart=/usr/local/bin/kube-controller-manager \\
   --root-ca-file=/var/lib/kubernetes/ca.pem \\
   --service-account-private-key-file=/var/lib/kubernetes/ca-key.pem \\
   --service-cluster-ip-range=10.32.0.0/24 \\
+  --use-service-account-credentials=true \\
   --v=2
 Restart=on-failure
 RestartSec=5
