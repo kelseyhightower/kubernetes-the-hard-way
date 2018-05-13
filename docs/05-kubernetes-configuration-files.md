@@ -70,7 +70,7 @@ kubectl config set-cluster kubernetes-the-hard-way \
 ```
 
 ```
-kubectl config set-credentials kube-proxy \
+kubectl config set-credentials system:kube-proxy \
   --client-certificate=kube-proxy.pem \
   --client-key=kube-proxy-key.pem \
   --embed-certs=true \
@@ -80,7 +80,7 @@ kubectl config set-credentials kube-proxy \
 ```
 kubectl config set-context default \
   --cluster=kubernetes-the-hard-way \
-  --user=kube-proxy \
+  --user=system:kube-proxy \
   --kubeconfig=kube-proxy.kubeconfig
 ```
 
@@ -107,7 +107,7 @@ kubectl config set-cluster kubernetes-the-hard-way \
 ```
 
 ```
-kubectl config set-credentials kube-controller-manager \
+kubectl config set-credentials system:kube-controller-manager \
   --client-certificate=kube-controller-manager.pem \
   --client-key=kube-controller-manager-key.pem \
   --embed-certs=true \
@@ -117,7 +117,7 @@ kubectl config set-credentials kube-controller-manager \
 ```
 kubectl config set-context default \
   --cluster=kubernetes-the-hard-way \
-  --user=kube-controller-manager \
+  --user=system:kube-controller-manager \
   --kubeconfig=kube-controller-manager.kubeconfig
 ```
 
@@ -145,7 +145,7 @@ kubectl config set-cluster kubernetes-the-hard-way \
 ```
 
 ```
-kubectl config set-credentials kube-scheduler \
+kubectl config set-credentials system:kube-scheduler \
   --client-certificate=kube-scheduler.pem \
   --client-key=kube-scheduler-key.pem \
   --embed-certs=true \
@@ -155,7 +155,7 @@ kubectl config set-credentials kube-scheduler \
 ```
 kubectl config set-context default \
   --cluster=kubernetes-the-hard-way \
-  --user=kube-scheduler \
+  --user=system:kube-scheduler \
   --kubeconfig=kube-scheduler.kubeconfig
 ```
 
