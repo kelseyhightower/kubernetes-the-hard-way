@@ -288,23 +288,100 @@ EOF
 
 In this section you will provision an external load balancer to front the Kubernetes API Servers. The `kubernetes-the-hard-way` static IP address will be attached to the resulting load balancer.
 
+```
+KUBERNETES_PUBLIC_ADDRESS=$(gcloud compute addresses describe kubernetes-the-hard-way \
+  --region $(gcloud config get-value compute/region) \
+  --format 'value(address)')
+```
+
+### Enable HTTP Health Checks
+
+The following commands must be run on each controller instance. Example:
+
+```
+gcloud compute ssh controller-0
+```
+
+Install a basic web server to handle HTTP health checks:
+
+```
+sudo apt-get install -y nginx
+```
+
+```
+cat > kubernetes.default.svc.cluster.local <<EOF
+server {
+  listen      80;
+  server_name kubernetes.default.svc.cluster.local;
+
+  location /healthz {
+     proxy_pass                    https://127.0.0.1:6443/healthz;
+     proxy_ssl_trusted_certificate /var/lib/kubernetes/ca.pem;
+  }
+}
+EOF
+```
+
+```
+sudo mv kubernetes.default.svc.cluster.local /etc/nginx/sites-available/kubernetes.default.svc.cluster.local
+```
+
+```
+sudo ln -s /etc/nginx/sites-available/kubernetes.default.svc.cluster.local /etc/nginx/sites-enabled/
+```
+
+```
+sudo systemctl restart nginx
+```
+
+Test the nginx proxy:
+
+```
+curl -H "Host: kubernetes.default.svc.cluster.local" -i http://127.0.0.1/healthz
+```
+
+```
+HTTP/1.1 200 OK
+Server: nginx/1.14.0 (Ubuntu)
+Date: Sun, 13 May 2018 15:03:03 GMT
+Content-Type: text/plain; charset=utf-8
+Content-Length: 2
+Connection: keep-alive
+
+ok
+```
+
+> Remember to run the above commands on each controller node: controller-0, controller-1, and controller-2.
+
+
+### Provision a Network Load Balancer
+
 > The compute instances created in this tutorial will not have permission to complete this section. Run the following commands from the same machine used to create the compute instances.
 
 Create the external load balancer network resources:
 
 ```
-gcloud compute target-pools create kubernetes-target-pool
+gcloud compute http-health-checks create kubernetes \
+  --description "Kubernetes Health Check" \
+  --host "kubernetes.default.svc.cluster.local" \
+  --request-path "/healthz"
+```
+
+```
+gcloud compute firewall-rules create allow-health-check \
+  --network kubernetes-the-hard-way \
+  --source-ranges 209.85.152.0/22,209.85.204.0/22,35.191.0.0/16 \
+  --allow tcp
+```
+
+```
+gcloud compute target-pools create kubernetes-target-pool \
+  --http-health-check kubernetes
 ```
 
 ```
 gcloud compute target-pools add-instances kubernetes-target-pool \
   --instances controller-0,controller-1,controller-2
-```
-
-```
-KUBERNETES_PUBLIC_ADDRESS=$(gcloud compute addresses describe kubernetes-the-hard-way \
-  --region $(gcloud config get-value compute/region) \
-  --format 'value(address)')
 ```
 
 ```
