@@ -15,7 +15,7 @@ gcloud compute ssh worker-0
 Install the OS dependencies:
 
 ```
-sudo apt-get -y install socat conntrack
+sudo apt-get -y install socat conntrack ipset
 ```
 
 > The socat binary enables support for the `kubectl port-forward` command.
@@ -158,6 +158,35 @@ sudo mv ${HOSTNAME}.kubeconfig /var/lib/kubelet/kubeconfig
 sudo mv ca.pem /var/lib/kubernetes/
 ```
 
+Create the `kubelet-config.yaml` configuration file:
+
+```
+cat > kubelet-config.yaml <<EOF
+kind: KubeletConfiguration
+apiVersion: kubelet.config.k8s.io/v1beta1
+authentication:
+  anonymous:
+    enabled: false
+  webhook:
+    enabled: true
+  x509:
+    clientCAFile: "/var/lib/kubernetes/ca.pem"
+authorization:
+  mode: Webhook
+clusterDomain: "cluster.local"
+clusterDNS:
+  - "10.32.0.10"
+podCIDR: "${POD_CIDR}"
+runtimeRequestTimeout: "15m"
+tlsCertFile: "/var/lib/kubelet/${HOSTNAME}.pem"
+tlsPrivateKeyFile: "/var/lib/kubelet/${HOSTNAME}-key.pem"
+EOF
+```
+
+```
+sudo mv kubelet-config.yaml /var/lib/kubelet/kubelet-config.yaml
+```
+
 Create the `kubelet.service` systemd unit file:
 
 ```
@@ -170,23 +199,13 @@ Requires=containerd.service
 
 [Service]
 ExecStart=/usr/local/bin/kubelet \\
-  --allow-privileged=true \\
-  --anonymous-auth=false \\
-  --authorization-mode=Webhook \\
-  --client-ca-file=/var/lib/kubernetes/ca.pem \\
-  --cloud-provider= \\
-  --cluster-dns=10.32.0.10 \\
-  --cluster-domain=cluster.local \\
+  --config=/var/lib/kubelet/kubelet-config.yaml \\
   --container-runtime=remote \\
   --container-runtime-endpoint=unix:///var/run/containerd/containerd.sock \\
   --image-pull-progress-deadline=2m \\
   --kubeconfig=/var/lib/kubelet/kubeconfig \\
   --network-plugin=cni \\
-  --pod-cidr=${POD_CIDR} \\
   --register-node=true \\
-  --runtime-request-timeout=15m \\
-  --tls-cert-file=/var/lib/kubelet/${HOSTNAME}.pem \\
-  --tls-private-key-file=/var/lib/kubelet/${HOSTNAME}-key.pem \\
   --v=2
 Restart=on-failure
 RestartSec=5
@@ -202,6 +221,23 @@ EOF
 sudo mv kube-proxy.kubeconfig /var/lib/kube-proxy/kubeconfig
 ```
 
+Create the `kube-proxy-config.yaml` configuration file:
+
+```
+cat > kube-proxy-config.yaml <<EOF
+kind: KubeProxyConfiguration
+apiVersion: kubeproxy.config.k8s.io/v1alpha1
+clientConnection:
+  kubeconfig: "/var/lib/kube-proxy/kubeconfig"
+mode: "iptables"
+clusterCIDR: "10.200.0.0/16"
+EOF
+```
+
+```
+sudo mv kube-proxy-config.yaml /var/lib/kube-proxy/kube-proxy-config.yaml
+```
+
 Create the `kube-proxy.service` systemd unit file:
 
 ```
@@ -212,10 +248,7 @@ Documentation=https://github.com/kubernetes/kubernetes
 
 [Service]
 ExecStart=/usr/local/bin/kube-proxy \\
-  --cluster-cidr=10.200.0.0/16 \\
-  --kubeconfig=/var/lib/kube-proxy/kubeconfig \\
-  --proxy-mode=iptables \\
-  --v=2
+  --config=/var/lib/kube-proxy/kube-proxy-config.yaml
 Restart=on-failure
 RestartSec=5
 
