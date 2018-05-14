@@ -1,6 +1,6 @@
 # Bootstrapping the Kubernetes Worker Nodes
 
-In this lab you will bootstrap three Kubernetes worker nodes. The following components will be installed on each node: [runc](https://github.com/opencontainers/runc), [container networking plugins](https://github.com/containernetworking/cni), [cri-containerd](https://github.com/containerd/cri-containerd), [kubelet](https://kubernetes.io/docs/admin/kubelet), and [kube-proxy](https://kubernetes.io/docs/concepts/cluster-administration/proxies).
+In this lab you will bootstrap three Kubernetes worker nodes. The following components will be installed on each node: [runc](https://github.com/opencontainers/runc), [gVisor](https://github.com/google/gvisor), [container networking plugins](https://github.com/containernetworking/cni), [containerd](https://github.com/containerd/containerd), [kubelet](https://kubernetes.io/docs/admin/kubelet), and [kube-proxy](https://kubernetes.io/docs/concepts/cluster-administration/proxies).
 
 ## Prerequisites
 
@@ -32,6 +32,8 @@ sudo apt-get -y install socat conntrack ipset
 
 ```
 wget -q --show-progress --https-only --timestamping \
+  https://github.com/kubernetes-incubator/cri-tools/releases/download/v1.0.0-beta.0/crictl-v1.0.0-beta.0-linux-amd64.tar.gz \
+  https://storage.googleapis.com/kubernetes-the-hard-way/runsc \
   https://github.com/opencontainers/runc/releases/download/v1.0.0-rc5/runc.amd64 \
   https://github.com/containernetworking/plugins/releases/download/v0.6.0/cni-plugins-amd64-v0.6.0.tgz \
   https://github.com/containerd/containerd/releases/download/v1.1.0/containerd-1.1.0.linux-amd64.tar.gz \
@@ -55,11 +57,19 @@ sudo mkdir -p \
 Install the worker binaries:
 
 ```
-chmod +x runc.amd64
+chmod +x kubectl kube-proxy kubelet runc.amd64 runsc
 ```
 
 ```
-sudo mv runc.amd64 /usr/local/bin/runc
+sudo mv runc.amd64 runc
+```
+
+```
+sudo mv kubectl kube-proxy kubelet runc runsc /usr/local/bin/
+```
+
+```
+tar -xvf crictl-v1.0.0-beta.0-linux-amd64.tar.gz -C /usr/local/bin/
 ```
 
 ```
@@ -68,14 +78,6 @@ sudo tar -xvf cni-plugins-amd64-v0.6.0.tgz -C /opt/cni/bin/
 
 ```
 sudo tar -xvf containerd-1.1.0.linux-amd64.tar.gz -C /
-```
-
-```
-chmod +x kubectl kube-proxy kubelet
-```
-
-```
-sudo mv kubectl kube-proxy kubelet /usr/local/bin/
 ```
 
 ### Configure CNI Networking
@@ -127,6 +129,32 @@ sudo mv 10-bridge.conf 99-loopback.conf /etc/cni/net.d/
 ```
 
 ### Configure containerd
+
+Create the `containerd` configuration file:
+
+```
+sudo mkdir -p /etc/containerd/
+```
+
+```
+cat << EOF | sudo tee /etc/containerd/config.toml
+[plugins]
+  [plugins.cri.containerd]
+    snapshotter = "overlayfs"
+    [plugins.cri.containerd.default_runtime]
+      runtime_type = "io.containerd.runtime.v1.linux"
+      runtime_engine = "/usr/local/bin/runc"
+      runtime_root = ""
+    [plugins.cri.containerd.untrusted_workload_runtime]
+      runtime_type = "io.containerd.runtime.v1.linux"
+      runtime_engine = "/usr/local/bin/runsc"
+      runtime_root = ""
+EOF
+```
+
+> Untrusted workloads will be run using the gVisor runtime.
+
+Create the `containerd.service` systemd unit file:
 
 ```
 cat > containerd.service <<EOF
