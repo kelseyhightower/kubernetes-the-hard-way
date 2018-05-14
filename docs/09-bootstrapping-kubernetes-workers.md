@@ -19,11 +19,10 @@ gcloud compute ssh worker-0
 Install the OS dependencies:
 
 ```
-sudo apt-get update
-```
-
-```
-sudo apt-get -y install socat conntrack ipset
+{
+  sudo apt-get update
+  sudo apt-get -y install socat conntrack ipset
+}
 ```
 
 > The socat binary enables support for the `kubectl port-forward` command.
@@ -57,27 +56,14 @@ sudo mkdir -p \
 Install the worker binaries:
 
 ```
-chmod +x kubectl kube-proxy kubelet runc.amd64 runsc
-```
-
-```
-sudo mv runc.amd64 runc
-```
-
-```
-sudo mv kubectl kube-proxy kubelet runc runsc /usr/local/bin/
-```
-
-```
-tar -xvf crictl-v1.0.0-beta.0-linux-amd64.tar.gz -C /usr/local/bin/
-```
-
-```
-sudo tar -xvf cni-plugins-amd64-v0.6.0.tgz -C /opt/cni/bin/
-```
-
-```
-sudo tar -xvf containerd-1.1.0.linux-amd64.tar.gz -C /
+{
+  chmod +x kubectl kube-proxy kubelet runc.amd64 runsc
+  sudo mv runc.amd64 runc
+  sudo mv kubectl kube-proxy kubelet runc runsc /usr/local/bin/
+  sudo tar -xvf crictl-v1.0.0-beta.0-linux-amd64.tar.gz -C /usr/local/bin/
+  sudo tar -xvf cni-plugins-amd64-v0.6.0.tgz -C /opt/cni/bin/
+  sudo tar -xvf containerd-1.1.0.linux-amd64.tar.gz -C /
+}
 ```
 
 ### Configure CNI Networking
@@ -92,7 +78,7 @@ POD_CIDR=$(curl -s -H "Metadata-Flavor: Google" \
 Create the `bridge` network configuration file:
 
 ```
-cat > 10-bridge.conf <<EOF
+cat <<EOF | sudo tee /etc/cni/net.d/10-bridge.conf
 {
     "cniVersion": "0.3.1",
     "name": "bridge",
@@ -114,18 +100,12 @@ EOF
 Create the `loopback` network configuration file:
 
 ```
-cat > 99-loopback.conf <<EOF
+cat <<EOF | sudo tee /etc/cni/net.d/99-loopback.conf
 {
     "cniVersion": "0.3.1",
     "type": "loopback"
 }
 EOF
-```
-
-Move the network configuration files to the CNI configuration directory:
-
-```
-sudo mv 10-bridge.conf 99-loopback.conf /etc/cni/net.d/
 ```
 
 ### Configure containerd
@@ -148,16 +128,16 @@ cat << EOF | sudo tee /etc/containerd/config.toml
     [plugins.cri.containerd.untrusted_workload_runtime]
       runtime_type = "io.containerd.runtime.v1.linux"
       runtime_engine = "/usr/local/bin/runsc"
-      runtime_root = ""
+      runtime_root = "/run/containerd/runsc"
 EOF
 ```
 
-> Untrusted workloads will be run using the gVisor runtime.
+> Untrusted workloads will be run using the gVisor (runsc) runtime.
 
 Create the `containerd.service` systemd unit file:
 
 ```
-cat > containerd.service <<EOF
+cat <<EOF | sudo tee /etc/systemd/system/containerd.service
 [Unit]
 Description=containerd container runtime
 Documentation=https://containerd.io
@@ -183,21 +163,17 @@ EOF
 ### Configure the Kubelet
 
 ```
-sudo mv ${HOSTNAME}-key.pem ${HOSTNAME}.pem /var/lib/kubelet/
-```
-
-```
-sudo mv ${HOSTNAME}.kubeconfig /var/lib/kubelet/kubeconfig
-```
-
-```
-sudo mv ca.pem /var/lib/kubernetes/
+{
+  sudo mv ${HOSTNAME}-key.pem ${HOSTNAME}.pem /var/lib/kubelet/
+  sudo mv ${HOSTNAME}.kubeconfig /var/lib/kubelet/kubeconfig
+  sudo mv ca.pem /var/lib/kubernetes/
+}
 ```
 
 Create the `kubelet-config.yaml` configuration file:
 
 ```
-cat > kubelet-config.yaml <<EOF
+cat <<EOF | sudo tee /var/lib/kubelet/kubelet-config.yaml
 kind: KubeletConfiguration
 apiVersion: kubelet.config.k8s.io/v1beta1
 authentication:
@@ -219,14 +195,10 @@ tlsPrivateKeyFile: "/var/lib/kubelet/${HOSTNAME}-key.pem"
 EOF
 ```
 
-```
-sudo mv kubelet-config.yaml /var/lib/kubelet/kubelet-config.yaml
-```
-
 Create the `kubelet.service` systemd unit file:
 
 ```
-cat > kubelet.service <<EOF
+cat <<EOF | sudo tee /etc/systemd/system/kubelet.service
 [Unit]
 Description=Kubernetes Kubelet
 Documentation=https://github.com/kubernetes/kubernetes
@@ -260,7 +232,7 @@ sudo mv kube-proxy.kubeconfig /var/lib/kube-proxy/kubeconfig
 Create the `kube-proxy-config.yaml` configuration file:
 
 ```
-cat > kube-proxy-config.yaml <<EOF
+cat <<EOF | sudo tee /var/lib/kube-proxy/kube-proxy-config.yaml
 kind: KubeProxyConfiguration
 apiVersion: kubeproxy.config.k8s.io/v1alpha1
 clientConnection:
@@ -270,14 +242,10 @@ clusterCIDR: "10.200.0.0/16"
 EOF
 ```
 
-```
-sudo mv kube-proxy-config.yaml /var/lib/kube-proxy/kube-proxy-config.yaml
-```
-
 Create the `kube-proxy.service` systemd unit file:
 
 ```
-cat > kube-proxy.service <<EOF
+cat <<EOF | sudo tee /etc/systemd/system/kube-proxy.service
 [Unit]
 Description=Kubernetes Kube Proxy
 Documentation=https://github.com/kubernetes/kubernetes
@@ -296,19 +264,11 @@ EOF
 ### Start the Worker Services
 
 ```
-sudo mv containerd.service kubelet.service kube-proxy.service /etc/systemd/system/
-```
-
-```
-sudo systemctl daemon-reload
-```
-
-```
-sudo systemctl enable containerd kubelet kube-proxy
-```
-
-```
-sudo systemctl start containerd kubelet kube-proxy
+{
+  sudo systemctl daemon-reload
+  sudo systemctl enable containerd kubelet kube-proxy
+  sudo systemctl start containerd kubelet kube-proxy
+}
 ```
 
 > Remember to run the above commands on each worker node: `worker-0`, `worker-1`, and `worker-2`.
@@ -317,18 +277,11 @@ sudo systemctl start containerd kubelet kube-proxy
 
 > The compute instances created in this tutorial will not have permission to complete this section. Run the following commands from the same machine used to create the compute instances.
 
-Print the Kubernetes nodes:
-
-```
-gcloud compute ssh controller-0 \
-  --command="kubectl get nodes \
-  --kubeconfig /var/lib/kubernetes/kube-controller-manager.kubeconfig"
-```
-
 List the registered Kubernetes nodes:
 
 ```
-kubectl get nodes
+gcloud compute ssh controller-0 \
+  --command "kubectl get nodes --kubeconfig admin.kubeconfig"
 ```
 
 > output

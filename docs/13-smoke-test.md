@@ -209,4 +209,118 @@ ETag: "5acb8e45-264"
 Accept-Ranges: bytes
 ```
 
+## Untrusted Workloads
+
+This section will verify the ability to run untrusted workloads using [gVisor](https://github.com/google/gvisor).
+
+Create the `untrusted` pod:
+
+```
+cat <<EOF | kubectl apply -f -
+apiVersion: v1
+kind: Pod
+metadata:
+  name: untrusted
+  annotations:
+    io.kubernetes.cri.untrusted-workload: "true"
+spec:
+  containers:
+    - name: webserver
+      image: gcr.io/hightowerlabs/helloworld:2.0.0
+EOF
+```
+
+### Verification
+
+In this section you will verify the `untrusted` pod is running under gVisor (runsc) by inspecting the assigned worker node.
+
+Verify the `untrusted` pod is running:
+
+```
+kubectl get pods -o wide
+```
+```
+NAME                       READY     STATUS    RESTARTS   AGE       IP           NODE
+busybox-68654f944b-brmrj   1/1       Running   0          7m        10.200.0.2   worker-0
+nginx-65899c769f-4lpzz     1/1       Running   0          6m        10.200.1.2   worker-1
+untrusted                  1/1       Running   0          2m        10.200.0.3   worker-0
+```
+
+
+Get the node name where the `untrusted` pod is running:
+
+```
+INSTANCE_NAME=$(kubectl get pod untrusted --output=jsonpath='{.spec.nodeName}')
+```
+
+SSH into the worker node:
+
+```
+gcloud compute ssh ${INSTANCE_NAME}
+```
+
+List the containers running under gVisor:
+
+```
+sudo runsc --root  /run/containerd/runsc/k8s.io list
+```
+```
+I0514 12:57:57.906145   18629 x:0] ***************************
+I0514 12:57:57.906472   18629 x:0] Args: [runsc --root /run/containerd/runsc/k8s.io list]
+I0514 12:57:57.906537   18629 x:0] Git Revision: 08879266fef3a67fac1a77f1ea133c3ac75759dd
+I0514 12:57:57.906584   18629 x:0] PID: 18629
+I0514 12:57:57.906632   18629 x:0] UID: 0, GID: 0
+I0514 12:57:57.906680   18629 x:0] Configuration:
+I0514 12:57:57.906723   18629 x:0]              RootDir: /run/containerd/runsc/k8s.io
+I0514 12:57:57.906814   18629 x:0]              Platform: ptrace
+I0514 12:57:57.906918   18629 x:0]              FileAccess: proxy, overlay: false
+I0514 12:57:57.907005   18629 x:0]              Network: sandbox, logging: false
+I0514 12:57:57.907084   18629 x:0]              Strace: false, max size: 1024, syscalls: []
+I0514 12:57:57.907161   18629 x:0] ***************************
+ID                                                                 PID         STATUS      BUNDLE             CREATED                          OWNER
+5a25ef793aaa302edc5407c34723287de36609e0fc189a6c0621c65bb10eea58   18068       running     /run/containerd/io.containerd.runtime.v1.linux/k8s.io/5a25ef793aaa302edc5407c34723287de36609e0fc189a6c0621c65bb10eea58   2018-05-14T12:56:53.588006482Z
+5cd21d56570a6134ea6975b6e4f7df6e79d26a3deebc6558b0feb6b06d7ed819   18017       running     /run/containerd/io.containerd.runtime.v1.linux/k8s.io/5cd21d56570a6134ea6975b6e4f7df6e79d26a3deebc6558b0feb6b06d7ed819   2018-05-14T12:56:53.480795974Z
+I0514 12:57:57.909120   18629 x:0] Exiting with status: 0
+```
+
+Get the ID of the `untrusted` pod:
+
+```
+POD_ID=$(sudo crictl -r unix:///var/run/containerd/containerd.sock \
+  pods --name untrusted -q)
+```
+
+Get the ID of the `webserver` container running in the `untrusted` pod:
+
+```
+CONTAINER_ID=$(sudo crictl -r unix:///var/run/containerd/containerd.sock \
+  ps -p ${POD_ID} -q)
+```
+
+Use the gVisor `runsc` command to display the processes running inside the `webserver` container:
+
+```
+sudo runsc --root /run/containerd/runsc/k8s.io ps ${CONTAINER_ID}
+```
+
+> output
+
+```
+I0514 06:48:48.154040   18401 x:0] ***************************
+I0514 06:48:48.154263   18401 x:0] Args: [runsc --root /run/containerd/runsc/k8s.io ps 5a25ef793aaa302edc5407c34723287de36609e0fc189a6c0621c65bb10eea58]
+I0514 06:48:48.154332   18401 x:0] Git Revision: 08879266fef3a67fac1a77f1ea133c3ac75759dd
+I0514 06:48:48.154380   18401 x:0] PID: 18401
+I0514 06:48:48.154431   18401 x:0] UID: 0, GID: 0
+I0514 06:48:48.154474   18401 x:0] Configuration:
+I0514 06:48:48.154508   18401 x:0]              RootDir: /run/containerd/runc/k8s.io
+I0514 06:48:48.154585   18401 x:0]              Platform: ptrace
+I0514 06:48:48.154681   18401 x:0]              FileAccess: proxy, overlay: false
+I0514 06:48:48.154764   18401 x:0]              Network: sandbox, logging: false
+I0514 06:48:48.154844   18401 x:0]              Strace: false, max size: 1024, syscalls: []
+I0514 06:48:48.155015   18401 x:0] ***************************
+UID       PID       PPID      C         STIME     TIME      CMD
+0         1         0         0         06:34     10ms      app
+I0514 06:48:48.156130   18401 x:0] Exiting with status: 0
+```
+
 Next: [Cleaning Up](14-cleanup.md)

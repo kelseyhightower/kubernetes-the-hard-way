@@ -2,6 +2,7 @@ admin-csr.json
 admin-key.pem              
 admin.csr                  
 admin.pem                  
+admin.kubeconfig
 ca-config.json             
 ca-csr.json                
 ca-key.pem                 

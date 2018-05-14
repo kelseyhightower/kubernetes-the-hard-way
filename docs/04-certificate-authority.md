@@ -6,9 +6,11 @@ In this lab you will provision a [PKI Infrastructure](https://en.wikipedia.org/w
 
 In this section you will provision a Certificate Authority that can be used to generate additional TLS certificates.
 
-Create the CA configuration file:
+Generate the CA configuration file, certificate, and private key:
 
 ```
+{
+
 cat > ca-config.json <<EOF
 {
   "signing": {
@@ -24,11 +26,7 @@ cat > ca-config.json <<EOF
   }
 }
 EOF
-```
 
-Create the CA certificate signing request:
-
-```
 cat > ca-csr.json <<EOF
 {
   "CN": "Kubernetes",
@@ -47,12 +45,10 @@ cat > ca-csr.json <<EOF
   ]
 }
 EOF
-```
 
-Generate the CA certificate and private key:
-
-```
 cfssl gencert -initca ca-csr.json | cfssljson -bare ca
+
+}
 ```
 
 Results:
@@ -68,9 +64,11 @@ In this section you will generate client and server certificates for each Kubern
 
 ### The Admin Client Certificate
 
-Create the `admin` client certificate signing request:
+Generate the `admin` client certificate and private key:
 
 ```
+{
+
 cat > admin-csr.json <<EOF
 {
   "CN": "admin",
@@ -89,17 +87,15 @@ cat > admin-csr.json <<EOF
   ]
 }
 EOF
-```
 
-Generate the `admin` client certificate and private key:
-
-```
 cfssl gencert \
   -ca=ca.pem \
   -ca-key=ca-key.pem \
   -config=ca-config.json \
   -profile=kubernetes \
   admin-csr.json | cfssljson -bare admin
+
+}
 ```
 
 Results:
@@ -165,9 +161,11 @@ worker-2.pem
 
 ### The Controller Manager Client Certificate
 
-Create the `kube-controller-manager` client certificate signing request:
+Generate the `kube-controller-manager` client certificate and private key:
 
 ```
+{
+
 cat > kube-controller-manager-csr.json <<EOF
 {
   "CN": "system:kube-controller-manager",
@@ -186,17 +184,15 @@ cat > kube-controller-manager-csr.json <<EOF
   ]
 }
 EOF
-```
 
-Generate the `kube-controller-manager` client certificate and private key:
-
-```
 cfssl gencert \
   -ca=ca.pem \
   -ca-key=ca-key.pem \
   -config=ca-config.json \
   -profile=kubernetes \
   kube-controller-manager-csr.json | cfssljson -bare kube-controller-manager
+
+}
 ```
 
 Results:
@@ -209,9 +205,11 @@ kube-controller-manager.pem
 
 ### The Kube Proxy Client Certificate
 
-Create the `kube-proxy` client certificate signing request:
+Generate the `kube-proxy` client certificate and private key:
 
 ```
+{
+
 cat > kube-proxy-csr.json <<EOF
 {
   "CN": "system:kube-proxy",
@@ -230,17 +228,15 @@ cat > kube-proxy-csr.json <<EOF
   ]
 }
 EOF
-```
 
-Generate the `kube-proxy` client certificate and private key:
-
-```
 cfssl gencert \
   -ca=ca.pem \
   -ca-key=ca-key.pem \
   -config=ca-config.json \
   -profile=kubernetes \
   kube-proxy-csr.json | cfssljson -bare kube-proxy
+
+}
 ```
 
 Results:
@@ -252,9 +248,11 @@ kube-proxy.pem
 
 ### The Scheduler Client Certificate
 
-Create the `kube-scheduler` client certificate signing request:
+Generate the `kube-scheduler` client certificate and private key:
 
 ```
+{
+
 cat > kube-scheduler-csr.json <<EOF
 {
   "CN": "system:kube-scheduler",
@@ -273,17 +271,15 @@ cat > kube-scheduler-csr.json <<EOF
   ]
 }
 EOF
-```
 
-Generate the `kube-scheduler` client certificate and private key:
-
-```
 cfssl gencert \
   -ca=ca.pem \
   -ca-key=ca-key.pem \
   -config=ca-config.json \
   -profile=kubernetes \
   kube-scheduler-csr.json | cfssljson -bare kube-scheduler
+
+}
 ```
 
 Results:
@@ -298,17 +294,15 @@ kube-scheduler.pem
 
 The `kubernetes-the-hard-way` static IP address will be included in the list of subject alternative names for the Kubernetes API Server certificate. This will ensure the certificate can be validated by remote clients.
 
-Retrieve the `kubernetes-the-hard-way` static IP address:
+Generate the Kubernetes API Server certificate and private key:
 
 ```
+{
+
 KUBERNETES_PUBLIC_ADDRESS=$(gcloud compute addresses describe kubernetes-the-hard-way \
   --region $(gcloud config get-value compute/region) \
   --format 'value(address)')
-```
 
-Create the Kubernetes API Server certificate signing request:
-
-```
 cat > kubernetes-csr.json <<EOF
 {
   "CN": "kubernetes",
@@ -327,11 +321,7 @@ cat > kubernetes-csr.json <<EOF
   ]
 }
 EOF
-```
 
-Generate the Kubernetes API Server certificate and private key:
-
-```
 cfssl gencert \
   -ca=ca.pem \
   -ca-key=ca-key.pem \
@@ -339,6 +329,8 @@ cfssl gencert \
   -hostname=10.32.0.1,10.240.0.10,10.240.0.11,10.240.0.12,${KUBERNETES_PUBLIC_ADDRESS},127.0.0.1,kubernetes.default \
   -profile=kubernetes \
   kubernetes-csr.json | cfssljson -bare kubernetes
+
+}
 ```
 
 Results:
@@ -352,9 +344,11 @@ kubernetes.pem
 
 The Kubernetes Controller Manager leverages a key pair to generate and sign service account tokens as describe in the [managing service accounts](https://kubernetes.io/docs/admin/service-accounts-admin/) documentation.
 
-Create the `service-account` certificate signing request:
+Generate the `service-account` certificate and private key:
 
 ```
+{
+
 cat > service-account-csr.json <<EOF
 {
   "CN": "service-accounts",
@@ -373,17 +367,15 @@ cat > service-account-csr.json <<EOF
   ]
 }
 EOF
-```
 
-Generate the `service-account` certificate and private key:
-
-```
 cfssl gencert \
   -ca=ca.pem \
   -ca-key=ca-key.pem \
   -config=ca-config.json \
   -profile=kubernetes \
   service-account-csr.json | cfssljson -bare service-account
+
+}
 ```
 
 Results:
@@ -392,7 +384,6 @@ Results:
 service-account-key.pem
 service-account.pem
 ```
-
 
 
 ## Distribute the Client and Server Certificates
