@@ -104,8 +104,9 @@ The following steps will enable shell tab completion on kubectl while using bash
 ```
 echo "source <(kubectl completion bash)" >> ~/.bashrc && . ~/.bashrc
 ```
->You can also omit the "&& bash" and reload the shell later. 
->This will only enable tab completion for your current user.
+> This will only enable tab completion for your current user.
+> You can also run `echo "source <(kubectl completion bash)" >> /etc/profile.d/kubectl_completion.sh . /etc/profile` to get tab completion for all users.
+
 
 ### Verification
 
