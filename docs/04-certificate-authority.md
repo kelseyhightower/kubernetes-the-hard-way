@@ -327,11 +327,13 @@ for i in 0 1 2; do
     --format 'value(networkInterfaces[0].networkIP)');
 done
 
+API_SERVER_SERVICE_IP=10.32.0.1
+
 cfssl gencert \
   -ca=ca.pem \
   -ca-key=ca-key.pem \
   -config=ca-config.json \
-  -hostname=10.32.0.1,${CONTROLLER_0},${CONTROLLER_1},${CONTROLLER_2},${KUBERNETES_PUBLIC_ADDRESS},127.0.0.1,kubernetes.default \
+  -hostname=${API_SERVER_SERVICE_IP},${CONTROLLER_0},${CONTROLLER_1},${CONTROLLER_2},${KUBERNETES_PUBLIC_ADDRESS},127.0.0.1,kubernetes.default \
   -profile=kubernetes \
   kubernetes-csr.json | cfssljson -bare kubernetes
 
