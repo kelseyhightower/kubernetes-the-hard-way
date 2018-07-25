@@ -111,6 +111,9 @@ Kubernetes uses a [special-purpose authorization mode](https://kubernetes.io/doc
 
 Generate a certificate and private key for each Kubernetes worker node:
 
+<details open>
+<summary>GCP</summary>
+
 ```
 for instance in worker-0 worker-1 worker-2; do
 cat > ${instance}-csr.json <<EOF
@@ -147,6 +150,65 @@ cfssl gencert \
   ${instance}-csr.json | cfssljson -bare ${instance}
 done
 ```
+
+</details>
+
+<details>
+<summary>AWS</summary>
+
+```
+VPC_ID="$(aws ec2 describe-vpcs \
+  --filters Name=tag-key,Values=kubernetes.io/cluster/kubernetes-the-hard-way \
+  --profile kubernetes-the-hard-way \
+  --query 'Vpcs[0].VpcId' \
+  --output text)"
+```
+```
+for i in 0 1 2; do
+  instance="worker-$i"
+  hostname="ip-10-240-0-2$i"
+
+  cut -c3- >"$instance-csr.json" <<EOF
+  {
+    "CN": "system:node:$hostname",
+    "key": {
+      "algo": "rsa",
+      "size": 2048
+    },
+    "names": [
+      {
+        "C": "US",
+        "L": "Portland",
+        "O": "system:nodes",
+        "OU": "Kubernetes The Hard Way",
+        "ST": "Oregon"
+      }
+    ]
+  }
+EOF
+
+  INT_EXT_IP="$(aws ec2 describe-instances \
+    --filters \
+      Name=vpc-id,Values="$VPC_ID" \
+      Name=tag:Name,Values="$instance" \
+    --profile kubernetes-the-hard-way \
+    --query 'Reservations[0].Instances[0].[PrivateIpAddress,PublicIpAddress]' \
+    --output text)"
+  INTERNAL_IP="$(echo "$INT_EXT_IP"|cut -f1)"
+  EXTERNAL_IP="$(echo "$INT_EXT_IP"|cut -f2)"
+
+  cfssl gencert \
+    -ca=ca.pem \
+    -ca-key=ca-key.pem \
+    -config=ca-config.json \
+    -hostname="$hostname,$EXTERNAL_IP,$INTERNAL_IP" \
+    -profile=kubernetes \
+    "$instance-csr.json"|cfssljson -bare "$instance"
+done
+```
+
+</details>
+<p></p>
 
 Results:
 
@@ -296,6 +358,9 @@ The `kubernetes-the-hard-way` static IP address will be included in the list of 
 
 Generate the Kubernetes API Server certificate and private key:
 
+<details open>
+<summary>GCP</summary>
+
 ```
 {
 
@@ -332,6 +397,49 @@ cfssl gencert \
 
 }
 ```
+
+</details>
+
+<details>
+<summary>AWS</summary>
+
+```
+KUBERNETES_PUBLIC_ADDRESS="$(aws elb describe-load-balancers \
+  --load-balancer-name kubernetes-the-hard-way \
+  --profile kubernetes-the-hard-way \
+  --query 'LoadBalancerDescriptions[0].DNSName' \
+  --output text)"
+
+cat >kubernetes-csr.json <<EOF
+{
+  "CN": "kubernetes",
+  "key": {
+    "algo": "rsa",
+    "size": 2048
+  },
+  "names": [
+    {
+      "C": "US",
+      "L": "Portland",
+      "O": "Kubernetes",
+      "OU": "Kubernetes The Hard Way",
+      "ST": "Oregon"
+    }
+  ]
+}
+EOF
+
+cfssl gencert \
+  -ca=ca.pem \
+  -ca-key=ca-key.pem \
+  -config=ca-config.json \
+  -hostname=10.32.0.1,10.240.0.10,10.240.0.11,10.240.0.12,ip-10-240-0-10,ip-10-240-0-11,ip-10-240-0-12,$KUBERNETES_PUBLIC_ADDRESS,127.0.0.1,kubernetes.default \
+  -profile=kubernetes \
+  kubernetes-csr.json|cfssljson -bare kubernetes
+```
+
+</details>
+<p></p>
 
 Results:
 
@@ -390,13 +498,45 @@ service-account.pem
 
 Copy the appropriate certificates and private keys to each worker instance:
 
+<details open>
+<summary>GCP</summary>
+
 ```
 for instance in worker-0 worker-1 worker-2; do
   gcloud compute scp ca.pem ${instance}-key.pem ${instance}.pem ${instance}:~/
 done
 ```
 
+</details>
+
+<details>
+<summary>AWS</summary>
+
+```
+get_ip() {
+  aws ec2 describe-instances \
+    --filters \
+      Name=vpc-id,Values="$VPC_ID" \
+      Name=tag:Name,Values="$1" \
+    --profile kubernetes-the-hard-way \
+    --query 'Reservations[0].Instances[0].PublicIpAddress' \
+    --output text
+}
+```
+```
+for instance in worker-0 worker-1 worker-2; do
+  scp -i ~/.ssh/kubernetes-the-hard-way -o StrictHostKeyChecking=no \
+    ca.pem "$instance-key.pem" "$instance.pem" "ubuntu@$(get_ip "$instance"):~/"
+done
+```
+
+</details>
+<p></p>
+
 Copy the appropriate certificates and private keys to each controller instance:
+
+<details open>
+<summary>GCP</summary>
 
 ```
 for instance in controller-0 controller-1 controller-2; do
@@ -404,6 +544,22 @@ for instance in controller-0 controller-1 controller-2; do
     service-account-key.pem service-account.pem ${instance}:~/
 done
 ```
+
+</details>
+
+<details>
+<summary>AWS</summary>
+
+```
+for instance in controller-0 controller-1 controller-2; do
+  scp -i ~/.ssh/kubernetes-the-hard-way -o StrictHostKeyChecking=no \
+    ca.pem ca-key.pem kubernetes-key.pem kubernetes.pem service-account-key.pem service-account.pem \
+    "ubuntu@$(get_ip "$instance"):~/"
+done
+```
+
+</details>
+<p></p>
 
 > The `kube-proxy`, `kube-controller-manager`, `kube-scheduler`, and `kubelet` client certificates will be used to generate client authentication configuration files in the next lab.
 

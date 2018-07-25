@@ -6,9 +6,40 @@ In this lab you will bootstrap three Kubernetes worker nodes. The following comp
 
 The commands in this lab must be run on each worker instance: `worker-0`, `worker-1`, and `worker-2`. Login to each worker instance using the `gcloud` command. Example:
 
+<details open>
+<summary>GCP</summary>
+
 ```
 gcloud compute ssh worker-0
 ```
+
+</details>
+
+<details>
+<summary>AWS</summary>
+
+```
+VPC_ID="$(aws ec2 describe-vpcs \
+  --filters Name=tag-key,Values=kubernetes.io/cluster/kubernetes-the-hard-way \
+  --profile kubernetes-the-hard-way \
+  --query 'Vpcs[0].VpcId' \
+  --output text)"
+
+get_ip() {
+  aws ec2 describe-instances \
+    --filters \
+      Name=vpc-id,Values="$VPC_ID" \
+      Name=tag:Name,Values="$1" \
+    --profile kubernetes-the-hard-way \
+    --query 'Reservations[0].Instances[0].PublicIpAddress' \
+    --output text
+}
+```
+```
+ssh -i ~/.ssh/kubernetes-the-hard-way "ubuntu@$(get_ip worker-0)"
+```
+
+</details>
 
 ### Running commands in parallel with tmux
 
@@ -70,10 +101,25 @@ Install the worker binaries:
 
 Retrieve the Pod CIDR range for the current compute instance:
 
+<details open>
+<summary>GCP</summary>
+
 ```
 POD_CIDR=$(curl -s -H "Metadata-Flavor: Google" \
   http://metadata.google.internal/computeMetadata/v1/instance/attributes/pod-cidr)
 ```
+
+</details>
+
+<details>
+<summary>AWS</summary>
+
+```
+POD_CIDR="$(curl -s http://169.254.169.254/latest/user-data/|tr '|' '\n'|grep '^pod-cidr='|cut -d= -f2)"
+```
+
+</details>
+<p></p>
 
 Create the `bridge` network configuration file:
 
@@ -162,6 +208,9 @@ EOF
 
 ### Configure the Kubelet
 
+<details open>
+<summary>GCP</summary>
+
 ```
 {
   sudo mv ${HOSTNAME}-key.pem ${HOSTNAME}.pem /var/lib/kubelet/
@@ -170,7 +219,25 @@ EOF
 }
 ```
 
+</details>
+
+<details>
+<summary>AWS</summary>
+
+```
+WORKER_NAME="$(curl -s http://169.254.169.254/latest/user-data/|tr '|' '\n'|grep '^name='|cut -d= -f2)"
+sudo mv "$WORKER_NAME-key.pem" "$WORKER_NAME.pem" /var/lib/kubelet/
+sudo mv "$WORKER_NAME.kubeconfig" /var/lib/kubelet/kubeconfig
+sudo mv ca.pem /var/lib/kubernetes/
+```
+
+</details>
+<p></p>
+
 Create the `kubelet-config.yaml` configuration file:
+
+<details open>
+<summary>GCP</summary>
 
 ```
 cat <<EOF | sudo tee /var/lib/kubelet/kubelet-config.yaml
@@ -194,6 +261,37 @@ tlsCertFile: "/var/lib/kubelet/${HOSTNAME}.pem"
 tlsPrivateKeyFile: "/var/lib/kubelet/${HOSTNAME}-key.pem"
 EOF
 ```
+
+</details>
+
+<details>
+<summary>AWS</summary>
+
+```
+cat <<EOF | sudo tee /var/lib/kubelet/kubelet-config.yaml
+kind: KubeletConfiguration
+apiVersion: kubelet.config.k8s.io/v1beta1
+authentication:
+  anonymous:
+    enabled: false
+  webhook:
+    enabled: true
+  x509:
+    clientCAFile: "/var/lib/kubernetes/ca.pem"
+authorization:
+  mode: Webhook
+clusterDomain: "cluster.local"
+clusterDNS:
+  - "10.32.0.10"
+podCIDR: "$POD_CIDR"
+runtimeRequestTimeout: "15m"
+tlsCertFile: "/var/lib/kubelet/$WORKER_NAME.pem"
+tlsPrivateKeyFile: "/var/lib/kubelet/$WORKER_NAME-key.pem"
+EOF
+```
+
+</details>
+<p></p>
 
 Create the `kubelet.service` systemd unit file:
 
@@ -279,10 +377,26 @@ EOF
 
 List the registered Kubernetes nodes:
 
+<details open>
+<summary>GCP</summary>
+
 ```
 gcloud compute ssh controller-0 \
   --command "kubectl get nodes --kubeconfig admin.kubeconfig"
 ```
+
+</details>
+
+<details>
+<summary>AWS</summary>
+
+```
+ssh -i ~/.ssh/kubernetes-the-hard-way "ubuntu@$(get_ip controller-0)" \
+  "kubectl get nodes --kubeconfig admin.kubeconfig"
+```
+
+</details>
+<p></p>
 
 > output
 

@@ -1,5 +1,10 @@
 # Prerequisites
 
+This tutorial uses Google Cloud Platform (`GCP`) to provision instrastructure required by the Kubernetes cluster, however code is also provided for users who prefer to use Amazon Web Services, in expandable sections marked `AWS`.
+
+<details open>
+<summary>GCP</summary>
+
 ## Google Cloud Platform
 
 This tutorial leverages the [Google Cloud Platform](https://cloud.google.com/) to streamline provisioning of the compute infrastructure required to bootstrap a Kubernetes cluster from the ground up. [Sign up](https://cloud.google.com/free/) for $300 in free credits.
@@ -43,6 +48,44 @@ gcloud config set compute/zone us-west1-c
 ```
 
 > Use the `gcloud compute zones list` command to view additional regions and zones.
+</details>
+
+<details>
+<summary>AWS</summary>
+
+## Amazon Web Services
+
+This tutorial leverages the [Amazon Web Services](https://aws.amazon.com/) to streamline provisioning of the compute infrastructure required to bootstrap a Kubernetes cluster from the ground up. [Sign up](https://portal.aws.amazon.com/billing/signup) for [12 months of free services](https://aws.amazon.com/free/).
+
+> The compute resources required for this tutorial exceed the Amazon Web Services free tier.
+
+## Amazon Web Services CLI
+
+### Install the Amazon Web Services CLI
+
+Follow the Amazon Web Services CLI [documentation](https://aws.amazon.com/cli/) to install and configure the `aws` command line utility.
+
+### Configure the kubernetes-the-hard-way profile
+
+Throughout this tutorial, an aws profile named `kubernetes-the-hard-way` will be used.
+
+Create the profile and set its default region (us-west-2 in this example):
+
+```
+aws configure set region us-west-2 \
+  --profile kubernetes-the-hard-way
+```
+
+Set the credentials for the profile to the same set as in the default profile:
+
+```
+aws configure set aws_access_key_id "$(aws configure get aws_access_key_id)" \
+  --profile kubernetes-the-hard-way
+
+aws configure set aws_secret_access_key "$(aws configure get aws_secret_access_key)" \
+  --profile kubernetes-the-hard-way
+```
+</details>
 
 ## Running Commands in Parallel with tmux
 
