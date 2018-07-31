@@ -15,6 +15,9 @@ kubectl create secret generic kubernetes-the-hard-way \
 
 Print a hexdump of the `kubernetes-the-hard-way` secret stored in etcd:
 
+<details open>
+<summary>GCP</summary>
+
 ```
 gcloud compute ssh controller-0 \
   --command "sudo ETCDCTL_API=3 etcdctl get \
@@ -24,6 +27,41 @@ gcloud compute ssh controller-0 \
   --key=/etc/etcd/kubernetes-key.pem\
   /registry/secrets/default/kubernetes-the-hard-way | hexdump -C"
 ```
+
+</details>
+
+<details>
+<summary>AWS</summary>
+
+```
+VPC_ID="$(aws ec2 describe-vpcs \
+  --filters Name=tag-key,Values=kubernetes.io/cluster/kubernetes-the-hard-way \
+  --profile kubernetes-the-hard-way \
+  --query 'Vpcs[0].VpcId' \
+  --output text)"
+
+get_ip() {
+  aws ec2 describe-instances \
+    --filters \
+      Name=vpc-id,Values="$VPC_ID" \
+      Name=tag:Name,Values="$1" \
+    --profile kubernetes-the-hard-way \
+    --query 'Reservations[0].Instances[0].PublicIpAddress' \
+    --output text
+}
+```
+```
+ssh -i ~/.ssh/kubernetes-the-hard-way "ubuntu@$(get_ip controller-0)" \
+  sudo ETCDCTL_API=3 etcdctl get \
+    --endpoints=https://127.0.0.1:2379 \
+    --cacert=/etc/etcd/ca.pem \
+    --cert=/etc/etcd/kubernetes.pem \
+    --key=/etc/etcd/kubernetes-key.pem \
+    /registry/secrets/default/kubernetes-the-hard-way|hexdump -C
+```
+
+</details>
+<p></p>
 
 > output
 
@@ -176,18 +214,61 @@ NODE_PORT=$(kubectl get svc nginx \
 
 Create a firewall rule that allows remote access to the `nginx` node port:
 
+<details open>
+<summary>GCP</summary>
+
 ```
 gcloud compute firewall-rules create kubernetes-the-hard-way-allow-nginx-service \
   --allow=tcp:${NODE_PORT} \
   --network kubernetes-the-hard-way
 ```
 
+</details>
+
+<details>
+<summary>AWS</summary>
+
+```
+SECURITY_GROUP_ID="$(aws ec2 describe-security-groups \
+  --filters \
+    Name=vpc-id,Values="$VPC_ID" \
+    Name=tag-key,Values=kubernetes.io/cluster/kubernetes-the-hard-way \
+  --profile kubernetes-the-hard-way \
+  --query 'SecurityGroups[0].GroupId' \
+  --output text)"
+
+aws ec2 authorize-security-group-ingress \
+  --group-id "$SECURITY_GROUP_ID" \
+  --protocol tcp \
+  --port "$NODE_PORT" \
+  --cidr 0.0.0.0/0 \
+  --profile kubernetes-the-hard-way
+```
+
+</details>
+<p></p>
+
 Retrieve the external IP address of a worker instance:
+
+<details open>
+<summary>GCP</summary>
 
 ```
 EXTERNAL_IP=$(gcloud compute instances describe worker-0 \
   --format 'value(networkInterfaces[0].accessConfigs[0].natIP)')
 ```
+
+</details>
+
+<details>
+<summary>AWS</summary>
+
+```
+EXTERNAL_IP="$(get_ip worker-0)"
+```
+
+</details>
+<p></p>
 
 Make an HTTP request using the external IP address and the `nginx` node port:
 
@@ -249,15 +330,53 @@ untrusted                  1/1       Running   0          10s       10.200.0.3  
 
 Get the node name where the `untrusted` pod is running:
 
+<details open>
+<summary>GCP</summary>
+
 ```
 INSTANCE_NAME=$(kubectl get pod untrusted --output=jsonpath='{.spec.nodeName}')
 ```
 
+</details>
+
+<details>
+<summary>AWS</summary>
+
+```
+INSTANCE_PRIVATE_IP="$(kubectl get pod untrusted --output=jsonpath='{.status.hostIP}')"
+```
+
+</details>
+<p></p>
+
 SSH into the worker node:
+
+<details open>
+<summary>GCP</summary>
 
 ```
 gcloud compute ssh ${INSTANCE_NAME}
 ```
+
+</details>
+
+<details>
+<summary>AWS</summary>
+
+```
+INSTANCE_PUBLIC_IP="$(aws ec2 describe-instances \
+  --filters \
+    Name=vpc-id,Values="$VPC_ID" \
+    Name=private-ip-address,Values="$INSTANCE_PRIVATE_IP" \
+  --profile kubernetes-the-hard-way \
+  --query 'Reservations[].Instances[].PublicIpAddress' \
+  --output text)"
+
+ssh -i ~/.ssh/kubernetes-the-hard-way "ubuntu@$INSTANCE_PUBLIC_IP"
+```
+
+</details>
+<p></p>
 
 List the containers running under gVisor:
 

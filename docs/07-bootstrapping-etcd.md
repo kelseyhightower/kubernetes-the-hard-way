@@ -6,9 +6,40 @@ Kubernetes components are stateless and store cluster state in [etcd](https://gi
 
 The commands in this lab must be run on each controller instance: `controller-0`, `controller-1`, and `controller-2`. Login to each controller instance using the `gcloud` command. Example:
 
+<details open>
+<summary>GCP</summary>
+
 ```
 gcloud compute ssh controller-0
 ```
+
+</details>
+
+<details>
+<summary>AWS</summary>
+
+```
+VPC_ID="$(aws ec2 describe-vpcs \
+  --filters Name=tag-key,Values=kubernetes.io/cluster/kubernetes-the-hard-way \
+  --profile kubernetes-the-hard-way \
+  --query 'Vpcs[0].VpcId' \
+  --output text)"
+
+get_ip() {
+  aws ec2 describe-instances \
+    --filters \
+      Name=vpc-id,Values="$VPC_ID" \
+      Name=tag:Name,Values="$1" \
+    --profile kubernetes-the-hard-way \
+    --query 'Reservations[0].Instances[0].PublicIpAddress' \
+    --output text
+}
+```
+```
+ssh -i ~/.ssh/kubernetes-the-hard-way "ubuntu@$(get_ip controller-0)"
+```
+
+</details>
 
 ### Running commands in parallel with tmux
 
@@ -45,16 +76,46 @@ Extract and install the `etcd` server and the `etcdctl` command line utility:
 
 The instance internal IP address will be used to serve client requests and communicate with etcd cluster peers. Retrieve the internal IP address for the current compute instance:
 
+<details open>
+<summary>GCP</summary>
+
 ```
 INTERNAL_IP=$(curl -s -H "Metadata-Flavor: Google" \
   http://metadata.google.internal/computeMetadata/v1/instance/network-interfaces/0/ip)
 ```
 
+</details>
+
+<details>
+<summary>AWS</summary>
+
+```
+INTERNAL_IP="$(curl -s http://169.254.169.254/latest/meta-data/local-ipv4)"
+```
+
+</details>
+<p></p>
+
 Each etcd member must have a unique name within an etcd cluster. Set the etcd name to match the hostname of the current compute instance:
+
+<details open>
+<summary>GCP</summary>
 
 ```
 ETCD_NAME=$(hostname -s)
 ```
+
+</details>
+
+<details>
+<summary>AWS</summary>
+
+```
+ETCD_NAME="$(curl -s http://169.254.169.254/latest/user-data/|tr '|' '\n'|grep '^name='|cut -d= -f2)"
+```
+
+</details>
+<p></p>
 
 Create the `etcd.service` systemd unit file:
 

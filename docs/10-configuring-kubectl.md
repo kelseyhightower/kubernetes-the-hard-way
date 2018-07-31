@@ -10,6 +10,9 @@ Each kubeconfig requires a Kubernetes API Server to connect to. To support high 
 
 Generate a kubeconfig file suitable for authenticating as the `admin` user:
 
+<details open>
+<summary>GCP</summary>
+
 ```
 {
   KUBERNETES_PUBLIC_ADDRESS=$(gcloud compute addresses describe kubernetes-the-hard-way \
@@ -32,6 +35,36 @@ Generate a kubeconfig file suitable for authenticating as the `admin` user:
   kubectl config use-context kubernetes-the-hard-way
 }
 ```
+
+</details>
+
+<details>
+<summary>AWS</summary>
+
+```
+KUBERNETES_PUBLIC_ADDRESS="$(aws elb describe-load-balancers \
+  --load-balancer-name kubernetes-the-hard-way \
+  --profile kubernetes-the-hard-way \
+  --query 'LoadBalancerDescriptions[0].DNSName' \
+  --output text)"
+
+kubectl config set-cluster kubernetes-the-hard-way \
+  --certificate-authority=ca.pem \
+  --embed-certs=true \
+  --server="https://$KUBERNETES_PUBLIC_ADDRESS:6443"
+
+kubectl config set-credentials admin \
+  --client-certificate=admin.pem \
+  --client-key=admin-key.pem
+
+kubectl config set-context kubernetes-the-hard-way \
+  --cluster=kubernetes-the-hard-way \
+  --user=admin
+
+kubectl config use-context kubernetes-the-hard-way
+```
+
+</details>
 
 ## Verification
 
