@@ -333,6 +333,8 @@ cfssl gencert \
 }
 ```
 
+> The `kubernetes` service will get the first address of the `10.32.0.0/24` IP range reserved for cluster services, i.e. `10.32.0.1`. This range is specified later in this tutorial during the control plane bootstrapping.
+
 Results:
 
 ```
