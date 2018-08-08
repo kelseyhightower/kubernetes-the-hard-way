@@ -40,6 +40,7 @@ Install the Kubernetes binaries:
 {
   chmod +x kube-apiserver kube-controller-manager kube-scheduler kubectl
   sudo mv kube-apiserver kube-controller-manager kube-scheduler kubectl /usr/local/bin/
+  sudo chown root:root /usr/local/bin/kube*
 }
 ```
 
@@ -52,6 +53,8 @@ Install the Kubernetes binaries:
   sudo mv ca.pem ca-key.pem kubernetes-key.pem kubernetes.pem \
     service-account-key.pem service-account.pem \
     encryption-config.yaml /var/lib/kubernetes/
+
+  sudo chown root:root /var/lib/kubernetes/*
 }
 ```
 
