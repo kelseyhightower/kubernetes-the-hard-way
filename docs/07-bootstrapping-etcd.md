@@ -31,6 +31,7 @@ Extract and install the `etcd` server and the `etcdctl` command line utility:
 {
   tar -xvf etcd-v3.3.5-linux-amd64.tar.gz
   sudo mv etcd-v3.3.5-linux-amd64/etcd* /usr/local/bin/
+  sudo chown root:root /usr/local/bin/etcd*
 }
 ```
 
