@@ -37,7 +37,7 @@ kube-dns-3097350089-gq015   3/3       Running   0          20s
 Create a `busybox` deployment:
 
 ```
-kubectl run busybox --image=busybox --command -- sleep 3600
+kubectl run busybox --image=busybox:1.28 --command -- sleep 3600
 ```
 
 List the pod created by the `busybox` deployment:
