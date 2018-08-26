@@ -37,22 +37,19 @@ wget -q --show-progress --https-only --timestamping \
 Install the Kubernetes binaries:
 
 ```
-{
-  chmod +x kube-apiserver kube-controller-manager kube-scheduler kubectl
-  sudo mv kube-apiserver kube-controller-manager kube-scheduler kubectl /usr/local/bin/
-}
+chmod +x kube-apiserver kube-controller-manager kube-scheduler kubectl
+
+sudo mv kube-apiserver kube-controller-manager kube-scheduler kubectl /usr/local/bin/
 ```
 
 ### Configure the Kubernetes API Server
 
 ```
-{
-  sudo mkdir -p /var/lib/kubernetes/
+sudo mkdir -p /var/lib/kubernetes/
 
-  sudo mv ca.pem ca-key.pem kubernetes-key.pem kubernetes.pem \
-    service-account-key.pem service-account.pem \
-    encryption-config.yaml /var/lib/kubernetes/
-}
+sudo mv ca.pem ca-key.pem kubernetes-key.pem kubernetes.pem \
+  service-account-key.pem service-account.pem \
+  encryption-config.yaml /var/lib/kubernetes/
 ```
 
 The instance internal IP address will be used to advertise the API Server to members of the cluster. Retrieve the internal IP address for the current compute instance:
@@ -191,11 +188,11 @@ EOF
 ### Start the Controller Services
 
 ```
-{
-  sudo systemctl daemon-reload
-  sudo systemctl enable kube-apiserver kube-controller-manager kube-scheduler
-  sudo systemctl start kube-apiserver kube-controller-manager kube-scheduler
-}
+sudo systemctl daemon-reload
+
+sudo systemctl enable kube-apiserver kube-controller-manager kube-scheduler
+
+sudo systemctl start kube-apiserver kube-controller-manager kube-scheduler
 ```
 
 > Allow up to 10 seconds for the Kubernetes API Server to fully initialize.
@@ -227,12 +224,10 @@ EOF
 ```
 
 ```
-{
-  sudo mv kubernetes.default.svc.cluster.local \
-    /etc/nginx/sites-available/kubernetes.default.svc.cluster.local
+sudo mv kubernetes.default.svc.cluster.local \
+  /etc/nginx/sites-available/kubernetes.default.svc.cluster.local
 
-  sudo ln -s /etc/nginx/sites-available/kubernetes.default.svc.cluster.local /etc/nginx/sites-enabled/
-}
+sudo ln -s /etc/nginx/sites-available/kubernetes.default.svc.cluster.local /etc/nginx/sites-enabled/
 ```
 
 ```
@@ -347,33 +342,31 @@ In this section you will provision an external load balancer to front the Kubern
 Create the external load balancer network resources:
 
 ```
-{
-  KUBERNETES_PUBLIC_ADDRESS=$(gcloud compute addresses describe kubernetes-the-hard-way \
-    --region $(gcloud config get-value compute/region) \
-    --format 'value(address)')
+KUBERNETES_PUBLIC_ADDRESS=$(gcloud compute addresses describe kubernetes-the-hard-way \
+  --region $(gcloud config get-value compute/region) \
+  --format 'value(address)')
 
-  gcloud compute http-health-checks create kubernetes \
-    --description "Kubernetes Health Check" \
-    --host "kubernetes.default.svc.cluster.local" \
-    --request-path "/healthz"
+gcloud compute http-health-checks create kubernetes \
+  --description "Kubernetes Health Check" \
+  --host "kubernetes.default.svc.cluster.local" \
+  --request-path "/healthz"
 
-  gcloud compute firewall-rules create kubernetes-the-hard-way-allow-health-check \
-    --network kubernetes-the-hard-way \
-    --source-ranges 209.85.152.0/22,209.85.204.0/22,35.191.0.0/16 \
-    --allow tcp
+gcloud compute firewall-rules create kubernetes-the-hard-way-allow-health-check \
+  --network kubernetes-the-hard-way \
+  --source-ranges 209.85.152.0/22,209.85.204.0/22,35.191.0.0/16 \
+  --allow tcp
 
-  gcloud compute target-pools create kubernetes-target-pool \
-    --http-health-check kubernetes
+gcloud compute target-pools create kubernetes-target-pool \
+  --http-health-check kubernetes
 
-  gcloud compute target-pools add-instances kubernetes-target-pool \
-   --instances controller-0,controller-1,controller-2
+gcloud compute target-pools add-instances kubernetes-target-pool \
+ --instances controller-0,controller-1,controller-2
 
-  gcloud compute forwarding-rules create kubernetes-forwarding-rule \
-    --address ${KUBERNETES_PUBLIC_ADDRESS} \
-    --ports 6443 \
-    --region $(gcloud config get-value compute/region) \
-    --target-pool kubernetes-target-pool
-}
+gcloud compute forwarding-rules create kubernetes-forwarding-rule \
+  --address ${KUBERNETES_PUBLIC_ADDRESS} \
+  --ports 6443 \
+  --region $(gcloud config get-value compute/region) \
+  --target-pool kubernetes-target-pool
 ```
 
 ### Verification
