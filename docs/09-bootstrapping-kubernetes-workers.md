@@ -19,10 +19,9 @@ gcloud compute ssh worker-0
 Install the OS dependencies:
 
 ```
-{
-  sudo apt-get update
-  sudo apt-get -y install socat conntrack ipset
-}
+sudo apt-get update
+
+sudo apt-get -y install socat conntrack ipset
 ```
 
 > The socat binary enables support for the `kubectl port-forward` command.
@@ -56,14 +55,17 @@ sudo mkdir -p \
 Install the worker binaries:
 
 ```
-{
-  chmod +x kubectl kube-proxy kubelet runc.amd64 runsc
-  sudo mv runc.amd64 runc
-  sudo mv kubectl kube-proxy kubelet runc runsc /usr/local/bin/
-  sudo tar -xvf crictl-v1.0.0-beta.0-linux-amd64.tar.gz -C /usr/local/bin/
-  sudo tar -xvf cni-plugins-amd64-v0.6.0.tgz -C /opt/cni/bin/
-  sudo tar -xvf containerd-1.1.0.linux-amd64.tar.gz -C /
-}
+chmod +x kubectl kube-proxy kubelet runc.amd64 runsc
+
+sudo mv runc.amd64 runc
+
+sudo mv kubectl kube-proxy kubelet runc runsc /usr/local/bin/
+
+sudo tar -xvf crictl-v1.0.0-beta.0-linux-amd64.tar.gz -C /usr/local/bin/
+
+sudo tar -xvf cni-plugins-amd64-v0.6.0.tgz -C /opt/cni/bin/
+
+sudo tar -xvf containerd-1.1.0.linux-amd64.tar.gz -C /
 ```
 
 ### Configure CNI Networking
@@ -163,11 +165,11 @@ EOF
 ### Configure the Kubelet
 
 ```
-{
-  sudo mv ${HOSTNAME}-key.pem ${HOSTNAME}.pem /var/lib/kubelet/
-  sudo mv ${HOSTNAME}.kubeconfig /var/lib/kubelet/kubeconfig
-  sudo mv ca.pem /var/lib/kubernetes/
-}
+sudo mv ${HOSTNAME}-key.pem ${HOSTNAME}.pem /var/lib/kubelet/
+
+sudo mv ${HOSTNAME}.kubeconfig /var/lib/kubelet/kubeconfig
+
+sudo mv ca.pem /var/lib/kubernetes/
 ```
 
 Create the `kubelet-config.yaml` configuration file:
@@ -264,11 +266,11 @@ EOF
 ### Start the Worker Services
 
 ```
-{
-  sudo systemctl daemon-reload
-  sudo systemctl enable containerd kubelet kube-proxy
-  sudo systemctl start containerd kubelet kube-proxy
-}
+sudo systemctl daemon-reload
+
+sudo systemctl enable containerd kubelet kube-proxy
+
+sudo systemctl start containerd kubelet kube-proxy
 ```
 
 > Remember to run the above commands on each worker node: `worker-0`, `worker-1`, and `worker-2`.
