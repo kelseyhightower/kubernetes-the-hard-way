@@ -8,7 +8,7 @@ In this section you will provision a Certificate Authority that can be used to g
 
 Generate the CA configuration file, certificate, and private key:
 
-    Have in mind all of the following commands this should be done on your terminal. 
+    Have in mind all of the following commands must be done on your terminal. Not on any google cloud compute instance yet.
 
 ```
 cat > ca-config.json <<EOF
