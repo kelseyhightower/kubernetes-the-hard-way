@@ -31,14 +31,14 @@ Install the OS dependencies:
 
 ```
 wget -q --show-progress --https-only --timestamping \
-  https://github.com/kubernetes-incubator/cri-tools/releases/download/v1.0.0-beta.0/crictl-v1.0.0-beta.0-linux-amd64.tar.gz \
-  https://storage.googleapis.com/kubernetes-the-hard-way/runsc \
+  https://github.com/kubernetes-sigs/cri-tools/releases/download/v1.12.0/crictl-v1.12.0-linux-amd64.tar.gz \
+  https://storage.googleapis.com/kubernetes-the-hard-way/runsc-50c283b9f56bb7200938d9e207355f05f79f0d17 \
   https://github.com/opencontainers/runc/releases/download/v1.0.0-rc5/runc.amd64 \
   https://github.com/containernetworking/plugins/releases/download/v0.6.0/cni-plugins-amd64-v0.6.0.tgz \
-  https://github.com/containerd/containerd/releases/download/v1.1.0/containerd-1.1.0.linux-amd64.tar.gz \
-  https://storage.googleapis.com/kubernetes-release/release/v1.10.2/bin/linux/amd64/kubectl \
-  https://storage.googleapis.com/kubernetes-release/release/v1.10.2/bin/linux/amd64/kube-proxy \
-  https://storage.googleapis.com/kubernetes-release/release/v1.10.2/bin/linux/amd64/kubelet
+  https://github.com/containerd/containerd/releases/download/v1.2.0-rc.0/containerd-1.2.0-rc.0.linux-amd64.tar.gz \
+  https://storage.googleapis.com/kubernetes-release/release/v1.12.0/bin/linux/amd64/kubectl \
+  https://storage.googleapis.com/kubernetes-release/release/v1.12.0/bin/linux/amd64/kube-proxy \
+  https://storage.googleapis.com/kubernetes-release/release/v1.12.0/bin/linux/amd64/kubelet
 ```
 
 Create the installation directories:
@@ -57,12 +57,13 @@ Install the worker binaries:
 
 ```
 {
-  chmod +x kubectl kube-proxy kubelet runc.amd64 runsc
+  sudo mv runsc-50c283b9f56bb7200938d9e207355f05f79f0d17 runsc
   sudo mv runc.amd64 runc
+  chmod +x kubectl kube-proxy kubelet runc runsc
   sudo mv kubectl kube-proxy kubelet runc runsc /usr/local/bin/
-  sudo tar -xvf crictl-v1.0.0-beta.0-linux-amd64.tar.gz -C /usr/local/bin/
+  sudo tar -xvf crictl-v1.12.0-linux-amd64.tar.gz -C /usr/local/bin/
   sudo tar -xvf cni-plugins-amd64-v0.6.0.tgz -C /opt/cni/bin/
-  sudo tar -xvf containerd-1.1.0.linux-amd64.tar.gz -C /
+  sudo tar -xvf containerd-1.2.0-rc.0.linux-amd64.tar.gz -C /
 }
 ```
 
@@ -129,6 +130,10 @@ cat << EOF | sudo tee /etc/containerd/config.toml
       runtime_type = "io.containerd.runtime.v1.linux"
       runtime_engine = "/usr/local/bin/runsc"
       runtime_root = "/run/containerd/runsc"
+    [plugins.cri.containerd.gvisor]
+      runtime_type = "io.containerd.runtime.v1.linux"
+      runtime_engine = "/usr/local/bin/runsc"
+      runtime_root = "/run/containerd/runsc"
 EOF
 ```
 
@@ -189,11 +194,14 @@ clusterDomain: "cluster.local"
 clusterDNS:
   - "10.32.0.10"
 podCIDR: "${POD_CIDR}"
+resolvConf: "/run/systemd/resolve/resolv.conf"
 runtimeRequestTimeout: "15m"
 tlsCertFile: "/var/lib/kubelet/${HOSTNAME}.pem"
 tlsPrivateKeyFile: "/var/lib/kubelet/${HOSTNAME}-key.pem"
 EOF
 ```
+
+> The `resolvConf` configuration is used to avoid loops when using CoreDNS for service discovery on systems running `systemd-resolved`. 
 
 Create the `kubelet.service` systemd unit file:
 
@@ -287,10 +295,10 @@ gcloud compute ssh controller-0 \
 > output
 
 ```
-NAME       STATUS    ROLES     AGE       VERSION
-worker-0   Ready     <none>    20s       v1.10.2
-worker-1   Ready     <none>    20s       v1.10.2
-worker-2   Ready     <none>    20s       v1.10.2
+NAME       STATUS   ROLES    AGE   VERSION
+worker-0   Ready    <none>   35s   v1.12.0
+worker-1   Ready    <none>   36s   v1.12.0
+worker-2   Ready    <none>   36s   v1.12.0
 ```
 
 Next: [Configuring kubectl for Remote Access](10-configuring-kubectl.md)
