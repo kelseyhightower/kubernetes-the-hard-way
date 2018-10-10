@@ -283,6 +283,9 @@ In this section you will configure RBAC permissions to allow the Kubernetes API 
 
 > This tutorial sets the Kubelet `--authorization-mode` flag to `Webhook`. Webhook mode uses the [SubjectAccessReview](https://kubernetes.io/docs/admin/authorization/#checking-api-access) API to determine authorization.
 
+In this section you are interacting with your cluster as a whole, so the following 2 role creation commands only need to be run from a single controller
+
+
 ```
 gcloud compute ssh controller-0
 ```
