@@ -100,6 +100,7 @@ ExecStart=/usr/local/bin/kube-apiserver \\
   --service-node-port-range=30000-32767 \\
   --tls-cert-file=/var/lib/kubernetes/kubernetes.pem \\
   --tls-private-key-file=/var/lib/kubernetes/kubernetes-key.pem \\
+  --feature-gates=RuntimeClass=true \\
   --v=2
 Restart=on-failure
 RestartSec=5
@@ -332,6 +333,35 @@ subjects:
   - apiGroup: rbac.authorization.k8s.io
     kind: User
     name: kubernetes
+EOF
+```
+
+## Configure the RuntimeClass Custom Resource for gVisor
+
+The [RuntimeClass](https://kubernetes.io/docs/concepts/containers/runtime-class/)
+custom resource allows you to discover supported runtimes in your cluster and
+specify a specific runtime per pod. In this lab you will use it to create pods
+that can be run using gVisor.
+
+The runtime class API is in *Alpha* so it is not a built-in resource yet. You will
+need a custom resource definition to use it.  First create the custom resource
+definition.
+
+```
+kubectl apply --kubeconfig admin.kubeconfig \
+    -f https://raw.githubusercontent.com/kubernetes/kubernetes/v1.12.0/cluster/addons/runtimeclass/runtimeclass_crd.yaml
+```
+
+Create the runtime class for gVisor.
+
+```
+cat <<EOF | kubectl apply --kubeconfig admin.kubeconfig -f -
+apiVersion: node.k8s.io/v1alpha1
+kind: RuntimeClass
+metadata:
+  name: gvisor
+spec:
+  runtimeHandler: runsc
 EOF
 ```
 

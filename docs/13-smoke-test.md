@@ -221,9 +221,8 @@ apiVersion: v1
 kind: Pod
 metadata:
   name: untrusted
-  annotations:
-    io.kubernetes.cri.untrusted-workload: "true"
 spec:
+  runtimeClassName: gvisor
   containers:
     - name: webserver
       image: gcr.io/hightowerlabs/helloworld:2.0.0
