@@ -222,6 +222,7 @@ ExecStart=/usr/local/bin/kubelet \\
   --kubeconfig=/var/lib/kubelet/kubeconfig \\
   --network-plugin=cni \\
   --register-node=true \\
+  --fail-swap-on=false \\
   --v=2
 Restart=on-failure
 RestartSec=5
