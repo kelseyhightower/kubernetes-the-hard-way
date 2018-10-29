@@ -66,7 +66,19 @@ Revision: dev
 Runtime: go1.6
 ```
 
-> The cfssljson command line utility does not provide a way to print its version.
+Verify `cfssljson` is installed:
+
+```
+cfssljson --version
+```
+
+> output 
+
+```
+Version: 1.3.2
+Revision: dev
+Runtime: go1.10.3
+```
 
 ## Install kubectl
 
