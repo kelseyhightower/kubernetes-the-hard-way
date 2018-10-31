@@ -8,15 +8,15 @@ In this lab you will generate an encryption key and an [encryption config](https
 
 Generate an encryption key:
 
-```
+~~~sh
 ENCRYPTION_KEY=$(head -c 32 /dev/urandom | base64)
-```
+~~~
 
 ## The Encryption Config File
 
 Create the `encryption-config.yaml` encryption config file:
 
-```
+~~~sh
 cat > encryption-config.yaml <<EOF
 kind: EncryptionConfig
 apiVersion: v1
@@ -30,14 +30,14 @@ resources:
               secret: ${ENCRYPTION_KEY}
       - identity: {}
 EOF
-```
+~~~
 
 Copy the `encryption-config.yaml` encryption config file to each controller instance:
 
-```
+~~~sh
 for instance in controller-0 controller-1 controller-2; do
   gcloud compute scp encryption-config.yaml ${instance}:~/
 done
-```
+~~~
 
 Next: [Bootstrapping the etcd Cluster](07-bootstrapping-etcd.md)

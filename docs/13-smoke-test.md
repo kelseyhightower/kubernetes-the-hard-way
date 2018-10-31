@@ -8,14 +8,14 @@ In this section you will verify the ability to [encrypt secret data at rest](htt
 
 Create a generic secret:
 
-```
+~~~sh
 kubectl create secret generic kubernetes-the-hard-way \
   --from-literal="mykey=mydata"
-```
+~~~
 
 Print a hexdump of the `kubernetes-the-hard-way` secret stored in etcd:
 
-```
+~~~sh
 gcloud compute ssh controller-0 \
   --command "sudo ETCDCTL_API=3 etcdctl get \
   --endpoints=https://127.0.0.1:2379 \
@@ -23,11 +23,11 @@ gcloud compute ssh controller-0 \
   --cert=/etc/etcd/kubernetes.pem \
   --key=/etc/etcd/kubernetes-key.pem\
   /registry/secrets/default/kubernetes-the-hard-way | hexdump -C"
-```
+~~~
 
 > output
 
-```
+~~~
 00000000  2f 72 65 67 69 73 74 72  79 2f 73 65 63 72 65 74  |/registry/secret|
 00000010  73 2f 64 65 66 61 75 6c  74 2f 6b 75 62 65 72 6e  |s/default/kubern|
 00000020  65 74 65 73 2d 74 68 65  2d 68 61 72 64 2d 77 61  |etes-the-hard-wa|
@@ -44,7 +44,7 @@ gcloud compute ssh controller-0 \
 000000d0  18 28 f4 33 42 d9 57 d9  e3 e9 1c 38 e3 bc 1e c3  |.(.3B.W....8....|
 000000e0  d2 47 f3 20 60 be b8 57  a7 0a                    |.G. `..W..|
 000000ea
-```
+~~~
 
 The etcd key should be prefixed with `k8s:enc:aescbc:v1:key1`, which indicates the `aescbc` provider was used to encrypt the data with the `key1` encryption key.
 
@@ -54,22 +54,22 @@ In this section you will verify the ability to create and manage [Deployments](h
 
 Create a deployment for the [nginx](https://nginx.org/en/) web server:
 
-```
+~~~sh
 kubectl run nginx --image=nginx
-```
+~~~
 
 List the pod created by the `nginx` deployment:
 
-```
+~~~sh
 kubectl get pods -l run=nginx
-```
+~~~
 
 > output
 
-```
+~~~
 NAME                    READY   STATUS    RESTARTS   AGE
 nginx-dbddb74b8-6lxg2   1/1     Running   0          10s
-```
+~~~
 
 ### Port Forwarding
 
@@ -77,32 +77,32 @@ In this section you will verify the ability to access applications remotely usin
 
 Retrieve the full name of the `nginx` pod:
 
-```
+~~~sh
 POD_NAME=$(kubectl get pods -l run=nginx -o jsonpath="{.items[0].metadata.name}")
-```
+~~~
 
 Forward port `8080` on your local machine to port `80` of the `nginx` pod:
 
-```
+~~~sh
 kubectl port-forward $POD_NAME 8080:80
-```
+~~~
 
 > output
 
-```
+~~~
 Forwarding from 127.0.0.1:8080 -> 80
 Forwarding from [::1]:8080 -> 80
-```
+~~~
 
 In a new terminal make an HTTP request using the forwarding address:
 
-```
+~~~sh
 curl --head http://127.0.0.1:8080
-```
+~~~
 
 > output
 
-```
+~~~
 HTTP/1.1 200 OK
 Server: nginx/1.15.4
 Date: Sun, 30 Sep 2018 19:23:10 GMT
@@ -112,16 +112,16 @@ Last-Modified: Tue, 25 Sep 2018 15:04:03 GMT
 Connection: keep-alive
 ETag: "5baa4e63-264"
 Accept-Ranges: bytes
-```
+~~~
 
 Switch back to the previous terminal and stop the port forwarding to the `nginx` pod:
 
-```
+~~~sh
 Forwarding from 127.0.0.1:8080 -> 80
 Forwarding from [::1]:8080 -> 80
 Handling connection for 8080
 ^C
-```
+~~~
 
 ### Logs
 
@@ -129,15 +129,15 @@ In this section you will verify the ability to [retrieve container logs](https:/
 
 Print the `nginx` pod logs:
 
-```
+~~~sh
 kubectl logs $POD_NAME
-```
+~~~
 
 > output
 
-```
+~~~
 127.0.0.1 - - [30/Sep/2018:19:23:10 +0000] "HEAD / HTTP/1.1" 200 0 "-" "curl/7.58.0" "-"
-```
+~~~
 
 ### Exec
 
@@ -145,15 +145,15 @@ In this section you will verify the ability to [execute commands in a container]
 
 Print the nginx version by executing the `nginx -v` command in the `nginx` container:
 
-```
+~~~sh
 kubectl exec -ti $POD_NAME -- nginx -v
-```
+~~~
 
 > output
 
-```
+~~~
 nginx version: nginx/1.15.4
-```
+~~~
 
 ## Services
 
@@ -161,43 +161,43 @@ In this section you will verify the ability to expose applications using a [Serv
 
 Expose the `nginx` deployment using a [NodePort](https://kubernetes.io/docs/concepts/services-networking/service/#type-nodeport) service:
 
-```
+~~~sh
 kubectl expose deployment nginx --port 80 --type NodePort
-```
+~~~
 
 > The LoadBalancer service type can not be used because your cluster is not configured with [cloud provider integration](https://kubernetes.io/docs/getting-started-guides/scratch/#cloud-provider). Setting up cloud provider integration is out of scope for this tutorial.
 
 Retrieve the node port assigned to the `nginx` service:
 
-```
+~~~sh
 NODE_PORT=$(kubectl get svc nginx \
   --output=jsonpath='{range .spec.ports[0]}{.nodePort}')
-```
+~~~
 
 Create a firewall rule that allows remote access to the `nginx` node port:
 
-```
+~~~sh
 gcloud compute firewall-rules create kubernetes-the-hard-way-allow-nginx-service \
   --allow=tcp:${NODE_PORT} \
   --network kubernetes-the-hard-way
-```
+~~~
 
 Retrieve the external IP address of a worker instance:
 
-```
+~~~sh
 EXTERNAL_IP=$(gcloud compute instances describe worker-0 \
   --format 'value(networkInterfaces[0].accessConfigs[0].natIP)')
-```
+~~~
 
 Make an HTTP request using the external IP address and the `nginx` node port:
 
-```
+~~~sh
 curl -I http://${EXTERNAL_IP}:${NODE_PORT}
-```
+~~~
 
 > output
 
-```
+~~~
 HTTP/1.1 200 OK
 Server: nginx/1.15.4
 Date: Sun, 30 Sep 2018 19:25:40 GMT
@@ -207,7 +207,7 @@ Last-Modified: Tue, 25 Sep 2018 15:04:03 GMT
 Connection: keep-alive
 ETag: "5baa4e63-264"
 Accept-Ranges: bytes
-```
+~~~
 
 ## Untrusted Workloads
 
@@ -215,7 +215,7 @@ This section will verify the ability to run untrusted workloads using [gVisor](h
 
 Create the `untrusted` pod:
 
-```
+~~~sh
 cat <<EOF | kubectl apply -f -
 apiVersion: v1
 kind: Pod
@@ -228,7 +228,7 @@ spec:
     - name: webserver
       image: gcr.io/hightowerlabs/helloworld:2.0.0
 EOF
-```
+~~~
 
 ### Verification
 
@@ -236,35 +236,35 @@ In this section you will verify the `untrusted` pod is running under gVisor (run
 
 Verify the `untrusted` pod is running:
 
-```
+~~~sh
 kubectl get pods -o wide
-```
-```
+~~~
+~~~
 NAME                       READY     STATUS    RESTARTS   AGE       IP           NODE
 busybox-68654f944b-djjjb   1/1       Running   0          5m        10.200.0.2   worker-0
 nginx-65899c769f-xkfcn     1/1       Running   0          4m        10.200.1.2   worker-1
 untrusted                  1/1       Running   0          10s       10.200.0.3   worker-0
-```
+~~~
 
 
 Get the node name where the `untrusted` pod is running:
 
-```
+~~~sh
 INSTANCE_NAME=$(kubectl get pod untrusted --output=jsonpath='{.spec.nodeName}')
-```
+~~~
 
 SSH into the worker node:
 
-```
+~~~sh
 gcloud compute ssh ${INSTANCE_NAME}
-```
+~~~
 
 List the containers running under gVisor:
 
-```
+~~~sh
 sudo runsc --root  /run/containerd/runsc/k8s.io list
-```
-```
+~~~
+~~~
 I0930 19:27:13.255142   20832 x:0] ***************************
 I0930 19:27:13.255326   20832 x:0] Args: [runsc --root /run/containerd/runsc/k8s.io list]
 I0930 19:27:13.255386   20832 x:0] Git Revision: 50c283b9f56bb7200938d9e207355f05f79f0d17
@@ -281,31 +281,31 @@ ID                                                                 PID         S
 79e74d0cec52a1ff4bc2c9b0bb9662f73ea918959c08bca5bcf07ddb6cb0e1fd   20449       running     /run/containerd/io.containerd.runtime.v1.linux/k8s.io/79e74d0cec52a1ff4bc2c9b0bb9662f73ea918959c08bca5bcf07ddb6cb0e1fd   0001-01-01T00:00:00Z
 af7470029008a4520b5db9fb5b358c65d64c9f748fae050afb6eaf014a59fea5   20510       running     /run/containerd/io.containerd.runtime.v1.linux/k8s.io/af7470029008a4520b5db9fb5b358c65d64c9f748fae050afb6eaf014a59fea5   0001-01-01T00:00:00Z
 I0930 19:27:13.259733   20832 x:0] Exiting with status: 0
-```
+~~~
 
 Get the ID of the `untrusted` pod:
 
-```
+~~~sh
 POD_ID=$(sudo crictl -r unix:///var/run/containerd/containerd.sock \
   pods --name untrusted -q)
-```
+~~~
 
 Get the ID of the `webserver` container running in the `untrusted` pod:
 
-```
+~~~sh
 CONTAINER_ID=$(sudo crictl -r unix:///var/run/containerd/containerd.sock \
   ps -p ${POD_ID} -q)
-```
+~~~
 
 Use the gVisor `runsc` command to display the processes running inside the `webserver` container:
 
-```
+~~~sh
 sudo runsc --root /run/containerd/runsc/k8s.io ps ${CONTAINER_ID}
-```
+~~~
 
 > output
 
-```
+~~~
 I0930 19:31:31.419765   21217 x:0] ***************************
 I0930 19:31:31.419907   21217 x:0] Args: [runsc --root /run/containerd/runsc/k8s.io ps af7470029008a4520b5db9fb5b358c65d64c9f748fae050afb6eaf014a59fea5]
 I0930 19:31:31.419959   21217 x:0] Git Revision: 50c283b9f56bb7200938d9e207355f05f79f0d17
@@ -321,6 +321,6 @@ I0930 19:31:31.420676   21217 x:0] ***************************
 UID       PID       PPID      C         STIME     TIME      CMD
 0         1         0         0         19:26     10ms      app
 I0930 19:31:31.422022   21217 x:0] Exiting with status: 0
-```
+~~~
 
 Next: [Cleaning Up](14-cleanup.md)

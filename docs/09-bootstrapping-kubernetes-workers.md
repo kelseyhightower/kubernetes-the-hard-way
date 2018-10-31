@@ -6,9 +6,9 @@ In this lab you will bootstrap three Kubernetes worker nodes. The following comp
 
 The commands in this lab must be run on each worker instance: `worker-0`, `worker-1`, and `worker-2`. Login to each worker instance using the `gcloud` command. Example:
 
-```
+~~~sh
 gcloud compute ssh worker-0
-```
+~~~
 
 ### Running commands in parallel with tmux
 
@@ -18,18 +18,16 @@ gcloud compute ssh worker-0
 
 Install the OS dependencies:
 
-```
-{
+~~~sh
   sudo apt-get update
   sudo apt-get -y install socat conntrack ipset
-}
-```
+~~~
 
 > The socat binary enables support for the `kubectl port-forward` command.
 
 ### Download and Install Worker Binaries
 
-```
+~~~sh
 wget -q --show-progress --https-only --timestamping \
   https://github.com/kubernetes-sigs/cri-tools/releases/download/v1.12.0/crictl-v1.12.0-linux-amd64.tar.gz \
   https://storage.googleapis.com/kubernetes-the-hard-way/runsc-50c283b9f56bb7200938d9e207355f05f79f0d17 \
@@ -39,11 +37,11 @@ wget -q --show-progress --https-only --timestamping \
   https://storage.googleapis.com/kubernetes-release/release/v1.12.0/bin/linux/amd64/kubectl \
   https://storage.googleapis.com/kubernetes-release/release/v1.12.0/bin/linux/amd64/kube-proxy \
   https://storage.googleapis.com/kubernetes-release/release/v1.12.0/bin/linux/amd64/kubelet
-```
+~~~
 
 Create the installation directories:
 
-```
+~~~sh
 sudo mkdir -p \
   /etc/cni/net.d \
   /opt/cni/bin \
@@ -51,12 +49,11 @@ sudo mkdir -p \
   /var/lib/kube-proxy \
   /var/lib/kubernetes \
   /var/run/kubernetes
-```
+~~~
 
 Install the worker binaries:
 
-```
-{
+~~~sh
   sudo mv runsc-50c283b9f56bb7200938d9e207355f05f79f0d17 runsc
   sudo mv runc.amd64 runc
   chmod +x kubectl kube-proxy kubelet runc runsc
@@ -64,21 +61,20 @@ Install the worker binaries:
   sudo tar -xvf crictl-v1.12.0-linux-amd64.tar.gz -C /usr/local/bin/
   sudo tar -xvf cni-plugins-amd64-v0.6.0.tgz -C /opt/cni/bin/
   sudo tar -xvf containerd-1.2.0-rc.0.linux-amd64.tar.gz -C /
-}
-```
+~~~
 
 ### Configure CNI Networking
 
 Retrieve the Pod CIDR range for the current compute instance:
 
-```
+~~~sh
 POD_CIDR=$(curl -s -H "Metadata-Flavor: Google" \
   http://metadata.google.internal/computeMetadata/v1/instance/attributes/pod-cidr)
-```
+~~~
 
 Create the `bridge` network configuration file:
 
-```
+~~~sh
 cat <<EOF | sudo tee /etc/cni/net.d/10-bridge.conf
 {
     "cniVersion": "0.3.1",
@@ -96,28 +92,28 @@ cat <<EOF | sudo tee /etc/cni/net.d/10-bridge.conf
     }
 }
 EOF
-```
+~~~
 
 Create the `loopback` network configuration file:
 
-```
+~~~sh
 cat <<EOF | sudo tee /etc/cni/net.d/99-loopback.conf
 {
     "cniVersion": "0.3.1",
     "type": "loopback"
 }
 EOF
-```
+~~~
 
 ### Configure containerd
 
 Create the `containerd` configuration file:
 
-```
+~~~sh
 sudo mkdir -p /etc/containerd/
-```
+~~~
 
-```
+~~~sh
 cat << EOF | sudo tee /etc/containerd/config.toml
 [plugins]
   [plugins.cri.containerd]
@@ -135,13 +131,13 @@ cat << EOF | sudo tee /etc/containerd/config.toml
       runtime_engine = "/usr/local/bin/runsc"
       runtime_root = "/run/containerd/runsc"
 EOF
-```
+~~~
 
 > Untrusted workloads will be run using the gVisor (runsc) runtime.
 
 Create the `containerd.service` systemd unit file:
 
-```
+~~~sh
 cat <<EOF | sudo tee /etc/systemd/system/containerd.service
 [Unit]
 Description=containerd container runtime
@@ -163,21 +159,19 @@ LimitCORE=infinity
 [Install]
 WantedBy=multi-user.target
 EOF
-```
+~~~
 
 ### Configure the Kubelet
 
-```
-{
+~~~sh
   sudo mv ${HOSTNAME}-key.pem ${HOSTNAME}.pem /var/lib/kubelet/
   sudo mv ${HOSTNAME}.kubeconfig /var/lib/kubelet/kubeconfig
   sudo mv ca.pem /var/lib/kubernetes/
-}
-```
+~~~
 
 Create the `kubelet-config.yaml` configuration file:
 
-```
+~~~sh
 cat <<EOF | sudo tee /var/lib/kubelet/kubelet-config.yaml
 kind: KubeletConfiguration
 apiVersion: kubelet.config.k8s.io/v1beta1
@@ -199,13 +193,13 @@ runtimeRequestTimeout: "15m"
 tlsCertFile: "/var/lib/kubelet/${HOSTNAME}.pem"
 tlsPrivateKeyFile: "/var/lib/kubelet/${HOSTNAME}-key.pem"
 EOF
-```
+~~~
 
 > The `resolvConf` configuration is used to avoid loops when using CoreDNS for service discovery on systems running `systemd-resolved`. 
 
 Create the `kubelet.service` systemd unit file:
 
-```
+~~~sh
 cat <<EOF | sudo tee /etc/systemd/system/kubelet.service
 [Unit]
 Description=Kubernetes Kubelet
@@ -229,17 +223,17 @@ RestartSec=5
 [Install]
 WantedBy=multi-user.target
 EOF
-```
+~~~
 
 ### Configure the Kubernetes Proxy
 
-```
+~~~sh
 sudo mv kube-proxy.kubeconfig /var/lib/kube-proxy/kubeconfig
-```
+~~~
 
 Create the `kube-proxy-config.yaml` configuration file:
 
-```
+~~~sh
 cat <<EOF | sudo tee /var/lib/kube-proxy/kube-proxy-config.yaml
 kind: KubeProxyConfiguration
 apiVersion: kubeproxy.config.k8s.io/v1alpha1
@@ -248,11 +242,11 @@ clientConnection:
 mode: "iptables"
 clusterCIDR: "10.200.0.0/16"
 EOF
-```
+~~~
 
 Create the `kube-proxy.service` systemd unit file:
 
-```
+~~~sh
 cat <<EOF | sudo tee /etc/systemd/system/kube-proxy.service
 [Unit]
 Description=Kubernetes Kube Proxy
@@ -267,17 +261,15 @@ RestartSec=5
 [Install]
 WantedBy=multi-user.target
 EOF
-```
+~~~
 
 ### Start the Worker Services
 
-```
-{
+~~~sh
   sudo systemctl daemon-reload
   sudo systemctl enable containerd kubelet kube-proxy
   sudo systemctl start containerd kubelet kube-proxy
-}
-```
+~~~
 
 > Remember to run the above commands on each worker node: `worker-0`, `worker-1`, and `worker-2`.
 
@@ -287,18 +279,18 @@ EOF
 
 List the registered Kubernetes nodes:
 
-```
+~~~sh
 gcloud compute ssh controller-0 \
   --command "kubectl get nodes --kubeconfig admin.kubeconfig"
-```
+~~~
 
 > output
 
-```
+~~~
 NAME       STATUS   ROLES    AGE   VERSION
 worker-0   Ready    <none>   35s   v1.12.0
 worker-1   Ready    <none>   36s   v1.12.0
 worker-2   Ready    <none>   36s   v1.12.0
-```
+~~~
 
 Next: [Configuring kubectl for Remote Access](10-configuring-kubectl.md)
