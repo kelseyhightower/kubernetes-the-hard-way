@@ -50,7 +50,7 @@ INTERNAL_IP=$(curl -s -H "Metadata-Flavor: Google" \
   http://metadata.google.internal/computeMetadata/v1/instance/network-interfaces/0/ip)
 ```
 
-Each etcd member must have a unique name within an etcd cluster. Set the etcd name to match the hostname of the current compute instance:
+Each etcd member must have a unique name within an etcd cluster. Set the etcd name to match the hostname of the current controller instance:
 
 ```
 ETCD_NAME=$(hostname -s)
