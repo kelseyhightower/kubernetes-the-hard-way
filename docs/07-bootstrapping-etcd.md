@@ -12,7 +12,7 @@ gcloud compute ssh controller-0
 
 ### Running commands in parallel with tmux
 
-[tmux](https://github.com/tmux/tmux/wiki) can be used to run commands on multiple compute instances at the same time. See the [Running commands in parallel with tmux](01-prerequisites.md#running-commands-in-parallel-with-tmux) section in the Prerequisites lab.
+[tmux](https://github.com/tmux/tmux/wiki) or [iTerm2](https://www.iterm2.com/) can be used to run commands on multiple compute instances at the same time. See the [Running commands in parallel with tmux](01-prerequisites.md#running-commands-in-parallel-with-tmux) or [Running commands in parallel with iTerm2](01-prerequisites.md#running-commands-in-parallel-with-iterm2) section in the Prerequisites lab.
 
 ## Bootstrapping an etcd Cluster Member
 
