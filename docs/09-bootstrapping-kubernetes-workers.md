@@ -79,21 +79,30 @@ POD_CIDR=$(curl -s -H "Metadata-Flavor: Google" \
 Create the `bridge` network configuration file:
 
 ```
-cat <<EOF | sudo tee /etc/cni/net.d/10-bridge.conf
+cat <<EOF | sudo tee /etc/cni/net.d/10-bridge.conflist
 {
-    "cniVersion": "0.3.1",
-    "name": "bridge",
-    "type": "bridge",
-    "bridge": "cnio0",
-    "isGateway": true,
-    "ipMasq": true,
-    "ipam": {
+  "cniVersion": "0.3.1",
+  "name": "bridge",
+  "plugins": [
+    {
+      "type": "bridge",
+      "bridge": "cnio0",
+      "isGateway": true,
+      "ipMasq": true,
+      "ipam": {
         "type": "host-local",
         "ranges": [
           [{"subnet": "${POD_CIDR}"}]
         ],
         "routes": [{"dst": "0.0.0.0/0"}]
+      }
+    },
+    {
+      "type": "portmap",
+      "capabilities": {"portMappings": true},
+      "snat": true
     }
+  ]
 }
 EOF
 ```
