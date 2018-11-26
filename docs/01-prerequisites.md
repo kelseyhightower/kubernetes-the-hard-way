@@ -54,4 +54,14 @@ gcloud config set compute/zone us-west1-c
 
 > Enable `synchronize-panes`: `ctrl+b` then `shift :`. Then type `set synchronize-panes on` at the prompt. To disable synchronization: `set synchronize-panes off`.
 
+## Running Commands in Parallel with iTerm2 (on macOS)
+
+[iTerm2](https://www.iterm2.com/) may be used to run commands on multiple compute instances at the same time. Labs in this tutorial may require running the same commands across multiple compute instances, in those cases consider using iTerm2 and splitting a window into multiple panes.
+
+> The use of iTerm2 is optional and not required to complete this tutorial.
+
+![iterm2 screenshot](images/iterm2-screenshot.png)
+
+> To create panes type the shortcuts `cmd + d` or `cmd + shift + d` to divide an existing session vertically or horizontally, respectively. Then type `cmd + shift + i` to synchronize. To disable synchronization type `cmd + shift + i` again.
+
 Next: [Installing the Client Tools](02-client-tools.md)
