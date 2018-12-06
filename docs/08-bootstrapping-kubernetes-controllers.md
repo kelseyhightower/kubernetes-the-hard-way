@@ -335,6 +335,8 @@ subjects:
 EOF
 ```
 
+> Remember to run the above commands on each controller node: `controller-0`, `controller-1`, and `controller-2`.
+
 ## The Kubernetes Frontend Load Balancer
 
 In this section you will provision an external load balancer to front the Kubernetes API Servers. The `kubernetes-the-hard-way` static IP address will be attached to the resulting load balancer.
