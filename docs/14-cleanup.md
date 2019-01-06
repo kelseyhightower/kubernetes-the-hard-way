@@ -7,7 +7,7 @@ In this lab you will delete the compute resources created during this tutorial.
 Delete the controller and worker compute instances:
 
 ```
-gcloud -q compute instances delete \
+gcloud -q compute instances delete --zone $(gcloud config get-value compute/zone) \
   controller-0 controller-1 controller-2 \
   worker-0 worker-1 worker-2
 ```
