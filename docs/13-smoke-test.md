@@ -262,7 +262,7 @@ gcloud compute ssh ${INSTANCE_NAME}
 List the containers running under gVisor:
 
 ```
-sudo runsc --root  /run/containerd/runsc/k8s.io list
+sudo runsc --root /run/containerd/runsc/k8s.io list
 ```
 ```
 I0930 19:27:13.255142   20832 x:0] ***************************
