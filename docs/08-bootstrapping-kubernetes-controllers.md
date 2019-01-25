@@ -64,6 +64,8 @@ INTERNAL_IP=$(curl -s -H "Metadata-Flavor: Google" \
 
 Create the `kube-apiserver.service` systemd unit file:
 
+(Please note the `--enable-admission-plugins` flag no longer includes `Initializers` due to [kubernetes/kubernetes#72972](https://github.com/kubernetes/kubernetes/pull/72972#issuecomment-457633844))
+
 ```
 cat <<EOF | sudo tee /etc/systemd/system/kube-apiserver.service
 [Unit]
@@ -82,7 +84,7 @@ ExecStart=/usr/local/bin/kube-apiserver \\
   --authorization-mode=Node,RBAC \\
   --bind-address=0.0.0.0 \\
   --client-ca-file=/var/lib/kubernetes/ca.pem \\
-  --enable-admission-plugins=Initializers,NamespaceLifecycle,NodeRestriction,LimitRanger,ServiceAccount,DefaultStorageClass,ResourceQuota \\
+  --enable-admission-plugins=NamespaceLifecycle,NodeRestriction,LimitRanger,ServiceAccount,DefaultStorageClass,ResourceQuota \\
   --enable-swagger-ui=true \\
   --etcd-cafile=/var/lib/kubernetes/ca.pem \\
   --etcd-certfile=/var/lib/kubernetes/kubernetes.pem \\
