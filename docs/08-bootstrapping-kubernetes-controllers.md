@@ -28,10 +28,10 @@ Download the official Kubernetes release binaries:
 
 ```
 wget -q --show-progress --https-only --timestamping \
-  "https://storage.googleapis.com/kubernetes-release/release/v1.10.2/bin/linux/amd64/kube-apiserver" \
-  "https://storage.googleapis.com/kubernetes-release/release/v1.10.2/bin/linux/amd64/kube-controller-manager" \
-  "https://storage.googleapis.com/kubernetes-release/release/v1.10.2/bin/linux/amd64/kube-scheduler" \
-  "https://storage.googleapis.com/kubernetes-release/release/v1.10.2/bin/linux/amd64/kubectl"
+  "https://storage.googleapis.com/kubernetes-release/release/v1.12.0/bin/linux/amd64/kube-apiserver" \
+  "https://storage.googleapis.com/kubernetes-release/release/v1.12.0/bin/linux/amd64/kube-controller-manager" \
+  "https://storage.googleapis.com/kubernetes-release/release/v1.12.0/bin/linux/amd64/kube-scheduler" \
+  "https://storage.googleapis.com/kubernetes-release/release/v1.12.0/bin/linux/amd64/kubectl"
 ```
 
 Install the Kubernetes binaries:
@@ -270,7 +270,7 @@ curl -H "Host: kubernetes.default.svc.cluster.local" -i http://127.0.0.1/healthz
 ```
 HTTP/1.1 200 OK
 Server: nginx/1.14.0 (Ubuntu)
-Date: Mon, 14 May 2018 13:45:39 GMT
+Date: Sun, 30 Sep 2018 17:44:24 GMT
 Content-Type: text/plain; charset=utf-8
 Content-Length: 2
 Connection: keep-alive
@@ -400,12 +400,12 @@ curl --cacert ca.pem https://${KUBERNETES_PUBLIC_ADDRESS}:6443/version
 ```
 {
   "major": "1",
-  "minor": "10",
-  "gitVersion": "v1.10.2",
-  "gitCommit": "81753b10df112992bf51bbc2c2f85208aad78335",
+  "minor": "12",
+  "gitVersion": "v1.12.0",
+  "gitCommit": "0ed33881dc4355495f623c6f22e7dd0b7632b7c0",
   "gitTreeState": "clean",
-  "buildDate": "2018-04-27T09:10:24Z",
-  "goVersion": "go1.9.3",
+  "buildDate": "2018-09-27T16:55:41Z",
+  "goVersion": "go1.10.4",
   "compiler": "gc",
   "platform": "linux/amd64"
 }

@@ -32,17 +32,17 @@ gcloud compute ssh controller-0 \
 00000010  73 2f 64 65 66 61 75 6c  74 2f 6b 75 62 65 72 6e  |s/default/kubern|
 00000020  65 74 65 73 2d 74 68 65  2d 68 61 72 64 2d 77 61  |etes-the-hard-wa|
 00000030  79 0a 6b 38 73 3a 65 6e  63 3a 61 65 73 63 62 63  |y.k8s:enc:aescbc|
-00000040  3a 76 31 3a 6b 65 79 31  3a 7b 8e 59 78 0f 59 09  |:v1:key1:{.Yx.Y.|
-00000050  e2 6a ce cd f4 b6 4e ec  bc 91 aa 87 06 29 39 8d  |.j....N......)9.|
-00000060  70 e8 5d c4 b1 66 69 49  60 8f c0 cc 55 d3 69 2b  |p.]..fiI`...U.i+|
-00000070  49 bb 0e 7b 90 10 b0 85  5b b1 e2 c6 33 b6 b7 31  |I..{....[...3..1|
-00000080  25 99 a1 60 8f 40 a9 e5  55 8c 0f 26 ae 76 dc 5b  |%..`.@..U..&.v.[|
-00000090  78 35 f5 3e c1 1e bc 21  bb 30 e2 0c e3 80 1e 33  |x5.>...!.0.....3|
-000000a0  90 79 46 6d 23 d8 f9 a2  d7 5d ed 4d 82 2e 9a 5e  |.yFm#....].M...^|
-000000b0  5d b6 3c 34 37 51 4b 83  de 99 1a ea 0f 2f 7c 9b  |].<47QK....../|.|
-000000c0  46 15 93 aa ba 72 ba b9  bd e1 a3 c0 45 90 b1 de  |F....r......E...|
-000000d0  c4 2e c8 d0 94 ec 25 69  7b af 08 34 93 12 3d 1c  |......%i{..4..=.|
-000000e0  fd 23 9b ba e8 d1 25 56  f4 0a                    |.#....%V..|
+00000040  3a 76 31 3a 6b 65 79 31  3a dd 3f 36 6c ce 65 9d  |:v1:key1:.?6l.e.|
+00000050  b3 b1 46 1a ba ae a2 1f  e4 fa 13 0c 4b 6e 2c 3c  |..F.........Kn,<|
+00000060  15 fa 88 56 84 b7 aa c0  7a ca 66 f3 de db 2b a3  |...V....z.f...+.|
+00000070  88 dc b1 b1 d8 2f 16 3e  6b 4a cb ac 88 5d 23 2d  |...../.>kJ...]#-|
+00000080  99 62 be 72 9f a5 01 38  15 c4 43 ac 38 5f ef 88  |.b.r...8..C.8_..|
+00000090  3b 88 c1 e6 b6 06 4f ae  a8 6b c8 40 70 ac 0a d3  |;.....O..k.@p...|
+000000a0  3e dc 2b b6 0f 01 b6 8b  e2 21 29 4d 32 d6 67 a6  |>.+......!)M2.g.|
+000000b0  4e 6d bb 61 0d 85 22 ea  f4 d6 2d 0a af 3c 71 85  |Nm.a.."...-..<q.|
+000000c0  96 27 c9 ec 90 e3 56 8c  94 a7 1c 9a 0e 00 28 11  |.'....V.......(.|
+000000d0  18 28 f4 33 42 d9 57 d9  e3 e9 1c 38 e3 bc 1e c3  |.(.3B.W....8....|
+000000e0  d2 47 f3 20 60 be b8 57  a7 0a                    |.G. `..W..|
 000000ea
 ```
 
@@ -67,8 +67,8 @@ kubectl get pods -l run=nginx
 > output
 
 ```
-NAME                     READY     STATUS    RESTARTS   AGE
-nginx-65899c769f-xkfcn   1/1       Running   0          15s
+NAME                    READY   STATUS    RESTARTS   AGE
+nginx-dbddb74b8-6lxg2   1/1     Running   0          10s
 ```
 
 ### Port Forwarding
@@ -104,13 +104,13 @@ curl --head http://127.0.0.1:8080
 
 ```
 HTTP/1.1 200 OK
-Server: nginx/1.13.12
-Date: Mon, 14 May 2018 13:59:21 GMT
+Server: nginx/1.15.4
+Date: Sun, 30 Sep 2018 19:23:10 GMT
 Content-Type: text/html
 Content-Length: 612
-Last-Modified: Mon, 09 Apr 2018 16:01:09 GMT
+Last-Modified: Tue, 25 Sep 2018 15:04:03 GMT
 Connection: keep-alive
-ETag: "5acb8e45-264"
+ETag: "5baa4e63-264"
 Accept-Ranges: bytes
 ```
 
@@ -136,7 +136,7 @@ kubectl logs $POD_NAME
 > output
 
 ```
-127.0.0.1 - - [14/May/2018:13:59:21 +0000] "HEAD / HTTP/1.1" 200 0 "-" "curl/7.52.1" "-"
+127.0.0.1 - - [30/Sep/2018:19:23:10 +0000] "HEAD / HTTP/1.1" 200 0 "-" "curl/7.58.0" "-"
 ```
 
 ### Exec
@@ -152,7 +152,7 @@ kubectl exec -ti $POD_NAME -- nginx -v
 > output
 
 ```
-nginx version: nginx/1.13.12
+nginx version: nginx/1.15.4
 ```
 
 ## Services
@@ -199,13 +199,13 @@ curl -I http://${EXTERNAL_IP}:${NODE_PORT}
 
 ```
 HTTP/1.1 200 OK
-Server: nginx/1.13.12
-Date: Mon, 14 May 2018 14:01:30 GMT
+Server: nginx/1.15.4
+Date: Sun, 30 Sep 2018 19:25:40 GMT
 Content-Type: text/html
 Content-Length: 612
-Last-Modified: Mon, 09 Apr 2018 16:01:09 GMT
+Last-Modified: Tue, 25 Sep 2018 15:04:03 GMT
 Connection: keep-alive
-ETag: "5acb8e45-264"
+ETag: "5baa4e63-264"
 Accept-Ranges: bytes
 ```
 
@@ -265,22 +265,22 @@ List the containers running under gVisor:
 sudo runsc --root  /run/containerd/runsc/k8s.io list
 ```
 ```
-I0514 14:03:56.108368   14988 x:0] ***************************
-I0514 14:03:56.108548   14988 x:0] Args: [runsc --root /run/containerd/runsc/k8s.io list]
-I0514 14:03:56.108730   14988 x:0] Git Revision: 08879266fef3a67fac1a77f1ea133c3ac75759dd
-I0514 14:03:56.108787   14988 x:0] PID: 14988
-I0514 14:03:56.108838   14988 x:0] UID: 0, GID: 0
-I0514 14:03:56.108877   14988 x:0] Configuration:
-I0514 14:03:56.108912   14988 x:0]              RootDir: /run/containerd/runsc/k8s.io
-I0514 14:03:56.109000   14988 x:0]              Platform: ptrace
-I0514 14:03:56.109080   14988 x:0]              FileAccess: proxy, overlay: false
-I0514 14:03:56.109159   14988 x:0]              Network: sandbox, logging: false
-I0514 14:03:56.109238   14988 x:0]              Strace: false, max size: 1024, syscalls: []
-I0514 14:03:56.109315   14988 x:0] ***************************
-ID                                                                 PID         STATUS      BUNDLE                                                           CREATED                          OWNER
-3528c6b270c76858e15e10ede61bd1100b77519e7c9972d51b370d6a3c60adbb   14766       running     /run/containerd/io.containerd.runtime.v1.linux/k8s.io/3528c6b270c76858e15e10ede61bd1100b77519e7c9972d51b370d6a3c60adbb   2018-05-14T14:02:34.302378996Z
-7ff747c919c2dcf31e64d7673340885138317c91c7c51ec6302527df680ba981   14716       running     /run/containerd/io.containerd.runtime.v1.linux/k8s.io/7ff747c919c2dcf31e64d7673340885138317c91c7c51ec6302527df680ba981   2018-05-14T14:02:32.159552044Z
-I0514 14:03:56.111287   14988 x:0] Exiting with status: 0
+I0930 19:27:13.255142   20832 x:0] ***************************
+I0930 19:27:13.255326   20832 x:0] Args: [runsc --root /run/containerd/runsc/k8s.io list]
+I0930 19:27:13.255386   20832 x:0] Git Revision: 50c283b9f56bb7200938d9e207355f05f79f0d17
+I0930 19:27:13.255429   20832 x:0] PID: 20832
+I0930 19:27:13.255472   20832 x:0] UID: 0, GID: 0
+I0930 19:27:13.255591   20832 x:0] Configuration:
+I0930 19:27:13.255654   20832 x:0]              RootDir: /run/containerd/runsc/k8s.io
+I0930 19:27:13.255781   20832 x:0]              Platform: ptrace
+I0930 19:27:13.255893   20832 x:0]              FileAccess: exclusive, overlay: false
+I0930 19:27:13.256004   20832 x:0]              Network: sandbox, logging: false
+I0930 19:27:13.256128   20832 x:0]              Strace: false, max size: 1024, syscalls: []
+I0930 19:27:13.256238   20832 x:0] ***************************
+ID                                                                 PID         STATUS      BUNDLE                                                                                                                   CREATED                OWNER
+79e74d0cec52a1ff4bc2c9b0bb9662f73ea918959c08bca5bcf07ddb6cb0e1fd   20449       running     /run/containerd/io.containerd.runtime.v1.linux/k8s.io/79e74d0cec52a1ff4bc2c9b0bb9662f73ea918959c08bca5bcf07ddb6cb0e1fd   0001-01-01T00:00:00Z
+af7470029008a4520b5db9fb5b358c65d64c9f748fae050afb6eaf014a59fea5   20510       running     /run/containerd/io.containerd.runtime.v1.linux/k8s.io/af7470029008a4520b5db9fb5b358c65d64c9f748fae050afb6eaf014a59fea5   0001-01-01T00:00:00Z
+I0930 19:27:13.259733   20832 x:0] Exiting with status: 0
 ```
 
 Get the ID of the `untrusted` pod:
@@ -306,21 +306,21 @@ sudo runsc --root /run/containerd/runsc/k8s.io ps ${CONTAINER_ID}
 > output
 
 ```
-I0514 14:05:16.499237   15096 x:0] ***************************
-I0514 14:05:16.499542   15096 x:0] Args: [runsc --root /run/containerd/runsc/k8s.io ps 3528c6b270c76858e15e10ede61bd1100b77519e7c9972d51b370d6a3c60adbb]
-I0514 14:05:16.499597   15096 x:0] Git Revision: 08879266fef3a67fac1a77f1ea133c3ac75759dd
-I0514 14:05:16.499644   15096 x:0] PID: 15096
-I0514 14:05:16.499695   15096 x:0] UID: 0, GID: 0
-I0514 14:05:16.499734   15096 x:0] Configuration:
-I0514 14:05:16.499769   15096 x:0]              RootDir: /run/containerd/runsc/k8s.io
-I0514 14:05:16.499880   15096 x:0]              Platform: ptrace
-I0514 14:05:16.499962   15096 x:0]              FileAccess: proxy, overlay: false
-I0514 14:05:16.500042   15096 x:0]              Network: sandbox, logging: false
-I0514 14:05:16.500120   15096 x:0]              Strace: false, max size: 1024, syscalls: []
-I0514 14:05:16.500197   15096 x:0] ***************************
+I0930 19:31:31.419765   21217 x:0] ***************************
+I0930 19:31:31.419907   21217 x:0] Args: [runsc --root /run/containerd/runsc/k8s.io ps af7470029008a4520b5db9fb5b358c65d64c9f748fae050afb6eaf014a59fea5]
+I0930 19:31:31.419959   21217 x:0] Git Revision: 50c283b9f56bb7200938d9e207355f05f79f0d17
+I0930 19:31:31.420000   21217 x:0] PID: 21217
+I0930 19:31:31.420041   21217 x:0] UID: 0, GID: 0
+I0930 19:31:31.420081   21217 x:0] Configuration:
+I0930 19:31:31.420115   21217 x:0]              RootDir: /run/containerd/runsc/k8s.io
+I0930 19:31:31.420188   21217 x:0]              Platform: ptrace
+I0930 19:31:31.420266   21217 x:0]              FileAccess: exclusive, overlay: false
+I0930 19:31:31.420424   21217 x:0]              Network: sandbox, logging: false
+I0930 19:31:31.420515   21217 x:0]              Strace: false, max size: 1024, syscalls: []
+I0930 19:31:31.420676   21217 x:0] ***************************
 UID       PID       PPID      C         STIME     TIME      CMD
-0         1         0         0         14:02     40ms      app
-I0514 14:05:16.501354   15096 x:0] Exiting with status: 0
+0         1         0         0         19:26     10ms      app
+I0930 19:31:31.422022   21217 x:0] Exiting with status: 0
 ```
 
 Next: [Cleaning Up](14-cleanup.md)
