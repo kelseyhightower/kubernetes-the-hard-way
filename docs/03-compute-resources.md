@@ -1,8 +1,7 @@
 # Provisioning Compute Resources
 
-Kubernetes requires a set of machines to host the Kubernetes control plane and the worker nodes where containers are ultimately run. In this lab you will provision the compute resources required for running a secure and highly available Kubernetes cluster across a single [compute zone](https://cloud.google.com/compute/docs/regions-zones/regions-zones).
+Kubernetes requires a set of machines to host the Kubernetes control plane and the worker nodes where containers are ultimately run. In this lab you will provision the compute resources required for running a secure and highly available Kubernetes cluster.
 
-> Ensure a default compute zone and region have been set as described in the [Prerequisites](01-prerequisites.md#set-a-default-compute-region-and-zone) lab.
 
 ## Networking
 
@@ -10,109 +9,58 @@ The Kubernetes [networking model](https://kubernetes.io/docs/concepts/cluster-ad
 
 > Setting up network policies is out of scope for this tutorial.
 
-### Virtual Private Cloud Network
+### Virtual Network
 
-In this section a dedicated [Virtual Private Cloud](https://cloud.google.com/compute/docs/networks-and-firewalls#networks) (VPC) network will be setup to host the Kubernetes cluster.
+In this section Virtual Network will be setup to host the Kubernetes cluster.
 
-Create the `kubernetes-the-hard-way` custom VPC network:
+1. Open Virtual Machine Manager, and from menu, go to Edit -> Connection Details.
+2. Go to Virtual Networks tab, and click the plus(+) button at the left lower side of the window.
+3. Type `kubernetes-nw` in the textbox named `Network Name`, and click Forward.
+4. Type `10.240.0.0/24` in the textbox named `Network`, type `10.240.0.2` in the textbox named `Start`, type `10.240.0.254` in the textbox named `end`, and click Forward.
+5. You will be asked whether enabling IPv6 or not. Don't check the checkbox, and click Forward.
+6. Click the radiobutton named `Forwarding to physical network`, type `kubernetes-nw.com` in the textbox named `DNS Domain Name`, and click Finish.
+7. Click the network created above, and take a note of the value of Device. This value will be needed when setting routing.
 
-```
-gcloud compute networks create kubernetes-the-hard-way --subnet-mode custom
-```
-
-A [subnet](https://cloud.google.com/compute/docs/vpc/#vpc_networks_and_subnets) must be provisioned with an IP address range large enough to assign a private IP address to each node in the Kubernetes cluster.
-
-Create the `kubernetes` subnet in the `kubernetes-the-hard-way` VPC network:
-
-```
-gcloud compute networks subnets create kubernetes \
-  --network kubernetes-the-hard-way \
-  --range 10.240.0.0/24
-```
-
-> The `10.240.0.0/24` IP address range can host up to 254 compute instances.
-
-### Firewall Rules
-
-Create a firewall rule that allows internal communication across all protocols:
-
-```
-gcloud compute firewall-rules create kubernetes-the-hard-way-allow-internal \
-  --allow tcp,udp,icmp \
-  --network kubernetes-the-hard-way \
-  --source-ranges 10.240.0.0/24,10.200.0.0/16
-```
-
-Create a firewall rule that allows external SSH, ICMP, and HTTPS:
-
-```
-gcloud compute firewall-rules create kubernetes-the-hard-way-allow-external \
-  --allow tcp:22,tcp:6443,icmp \
-  --network kubernetes-the-hard-way \
-  --source-ranges 0.0.0.0/0
-```
-
-> An [external load balancer](https://cloud.google.com/compute/docs/load-balancing/network/) will be used to expose the Kubernetes API Servers to remote clients.
-
-List the firewall rules in the `kubernetes-the-hard-way` VPC network:
-
-```
-gcloud compute firewall-rules list --filter="network:kubernetes-the-hard-way"
-```
-
-> output
-
-```
-NAME                                    NETWORK                  DIRECTION  PRIORITY  ALLOW                 DENY
-kubernetes-the-hard-way-allow-external  kubernetes-the-hard-way  INGRESS    1000      tcp:22,tcp:6443,icmp
-kubernetes-the-hard-way-allow-internal  kubernetes-the-hard-way  INGRESS    1000      tcp,udp,icmp
-```
 
 ### Kubernetes Public IP Address
 
-Allocate a static IP address that will be attached to the external load balancer fronting the Kubernetes API Servers:
+(There should be something about HAProxy)
 
-```
-gcloud compute addresses create kubernetes-the-hard-way \
-  --region $(gcloud config get-value compute/region)
-```
 
-Verify the `kubernetes-the-hard-way` static IP address was created in your default compute region:
+## Virtual Machines
 
-```
-gcloud compute addresses list --filter="name=('kubernetes-the-hard-way')"
-```
+The virtual machines in this lab will be provisioned using [Ubuntu Server](https://www.ubuntu.com/server) 16.04. Each virtual machines will be provisioned with a fixed private IP address to simplify the Kubernetes bootstrapping process.
 
-> output
 
-```
-NAME                     REGION    ADDRESS        STATUS
-kubernetes-the-hard-way  us-west1  XX.XXX.XXX.XX  RESERVED
-```
+### Base Image
 
-## Compute Instances
+As installing OS to all virtual machines manually is time-consuming, using a base image where OS is already installed is very handy.
 
-The compute instances in this lab will be provisioned using [Ubuntu Server](https://www.ubuntu.com/server) 18.04, which has good support for the [containerd container runtime](https://github.com/containerd/containerd). Each compute instance will be provisioned with a fixed private IP address to simplify the Kubernetes bootstrapping process.
+In this tutorial, `ubuntu-xenial.qcow2` is assumed to be the base image.
+
 
 ### Kubernetes Controllers
 
-Create three compute instances which will host the Kubernetes control plane:
+Create three virtual instances which will host the Kubernetes control plane:
+
+1. Open a terminal, or login to the linux server, and move to the directory where the base image exists (maybe `/var/lib/libvirt/images`?).
+2. Create images for Kubernetes controllers backed by the base image:
 
 ```
-for i in 0 1 2; do
-  gcloud compute instances create controller-${i} \
-    --async \
-    --boot-disk-size 200GB \
-    --can-ip-forward \
-    --image-family ubuntu-1804-lts \
-    --image-project ubuntu-os-cloud \
-    --machine-type n1-standard-1 \
-    --private-network-ip 10.240.0.1${i} \
-    --scopes compute-rw,storage-ro,service-management,service-control,logging-write,monitoring \
-    --subnet kubernetes \
-    --tags kubernetes-the-hard-way,controller
-done
+qemu-img create -f qcow2 ubuntu-xenial.qcow -b ubuntu-xenial-controller0.qcow2
+qemu-img create -f qcow2 ubuntu-xenial.qcow -b ubuntu-xenial-controller0.qcow2
 ```
+
+(You should repeat from 3. to 7. three times)
+
+3. Open Virtual Machine Manager, and click the icon named 'Create a new virtual machine'.
+4. Check the radiobutton named `Importing existing disk image`, and click Forward
+5. Click Browse, click the n-th controller image, click Choose Volume, choose the operating system (`Ubuntu 16.04` in this case), and click Forward.
+6. Type `512` in the textbox named `Memory`, and click Forward.
+7. Type `controller-n`, click Network selection, select the network `kubernetes-nw`, and click Finish.
+
+
+(Todo: Setup Network Interface)
 
 ### Kubernetes Workers
 
