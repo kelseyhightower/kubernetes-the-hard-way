@@ -1,6 +1,6 @@
 # Provisioning Compute Resources
 
-Kubernetes requires a set of machines to host the Kubernetes control plane and the worker nodes where containers are ultimately run. In this lab you will provision the compute resources required for running a secure and highly available Kubernetes cluster.
+Kubernetes requires a set of machines to host the Kubernetes control plane and the worker nodes where containers are ultimately run. In this chapter, you will provision virtual machines required for running a secure and highly available Kubernetes cluster.
 
 
 ## Networking
@@ -22,19 +22,27 @@ In this section Virtual Network will be setup to host the Kubernetes cluster.
 7. Click the network created above, and take a note of the value of Device. This value will be needed when setting routing.
 
 
-### Kubernetes Public IP Address
-
-(There should be something about HAProxy)
-
-
 ## Virtual Machines
 
 The virtual machines in this lab will be provisioned using [Ubuntu Server](https://www.ubuntu.com/server) 16.04. Each virtual machines will be provisioned with a fixed private IP address to simplify the Kubernetes bootstrapping process.
 
+The following virtual machines will be setup in this chapter:
+
+| Name         | vCPU | Ram (MB) | Hostname     | IP Address  |
+|--------------|------|----------|--------------|-------------|
+| lb-1         | 1    | 256      | lb-1         | 10.240.0.10 |
+| controller-1 | 1    | 512      | controller-1 | 10.240.0.11 |
+| controller-2 | 1    | 512      | controller-2 | 10.240.0.12 |
+| controller-3 | 1    | 512      | controller-3 | 10.240.0.13 |
+| worker-1     | 1    | 1024     | worker-1     | 10.240.0.21 |
+| worker-2     | 1    | 1024     | worker-2     | 10.240.0.22 |
+| worker-3     | 1    | 1024     | worker-3     | 10.240.0.23 |
+| client-1     | 1    | 256      | client-1     | 10.240.0.99 |
+
 
 ### Base Image
 
-As installing OS to all virtual machines manually is time-consuming, using a base image where OS is already installed is very handy.
+As installing OS to each virtual machine manually is time-consuming, using a base image where OS is already installed is very handy.
 
 In this tutorial, `ubuntu-xenial.qcow2` is assumed to be the base image.
 
@@ -47,11 +55,12 @@ Create three virtual instances which will host the Kubernetes control plane:
 2. Create images for Kubernetes controllers backed by the base image:
 
 ```
-qemu-img create -f qcow2 ubuntu-xenial.qcow -b ubuntu-xenial-controller0.qcow2
-qemu-img create -f qcow2 ubuntu-xenial.qcow -b ubuntu-xenial-controller0.qcow2
+# qemu-img create -f qcow2 ubuntu-xenial.qcow -b ubuntu-xenial-controller-1.qcow2
+# qemu-img create -f qcow2 ubuntu-xenial.qcow -b ubuntu-xenial-controller-2.qcow2
+# qemu-img create -f qcow2 ubuntu-xenial.qcow -b ubuntu-xenial-controller-3.qcow2
 ```
 
-(You should repeat from 3. to 7. three times)
+(Using each image created above, repeat from 3. to 7..)
 
 3. Open Virtual Machine Manager, and click the icon named 'Create a new virtual machine'.
 4. Check the radiobutton named `Importing existing disk image`, and click Forward
@@ -62,30 +71,143 @@ qemu-img create -f qcow2 ubuntu-xenial.qcow -b ubuntu-xenial-controller0.qcow2
 
 (Todo: Setup Network Interface)
 
+
 ### Kubernetes Workers
 
 Each worker instance requires a pod subnet allocation from the Kubernetes cluster CIDR range. The pod subnet allocation will be used to configure container networking in a later exercise. The `pod-cidr` instance metadata will be used to expose pod subnet allocations to compute instances at runtime.
 
 > The Kubernetes cluster CIDR range is defined by the Controller Manager's `--cluster-cidr` flag. In this tutorial the cluster CIDR range will be set to `10.200.0.0/16`, which supports 254 subnets.
 
-Create three compute instances which will host the Kubernetes worker nodes:
+Create three virtual machines which will host the Kubernetes worker nodes:
+
+1. Open a terminal, or login to the linux server, and move to the directory where the base image exists (maybe `/var/lib/libvirt/images`?).
+2. Create images for Kubernetes controllers backed by the base image:
 
 ```
-for i in 0 1 2; do
-  gcloud compute instances create worker-${i} \
-    --async \
-    --boot-disk-size 200GB \
-    --can-ip-forward \
-    --image-family ubuntu-1804-lts \
-    --image-project ubuntu-os-cloud \
-    --machine-type n1-standard-1 \
-    --metadata pod-cidr=10.200.${i}.0/24 \
-    --private-network-ip 10.240.0.2${i} \
-    --scopes compute-rw,storage-ro,service-management,service-control,logging-write,monitoring \
-    --subnet kubernetes \
-    --tags kubernetes-the-hard-way,worker
-done
+# qemu-img create -f qcow2 ubuntu-xenial.qcow -b ubuntu-xenial-worker-1.qcow2
+# qemu-img create -f qcow2 ubuntu-xenial.qcow -b ubuntu-xenial-worker-2.qcow2
+# qemu-img create -f qcow2 ubuntu-xenial.qcow -b ubuntu-xenial-worker-3.qcow2
 ```
+
+(Using each image created above, repeat from 3. to 7..)
+
+3. Open Virtual Machine Manager, and click the icon named 'Create a new virtual machine'.
+4. Check the radiobutton named `Importing existing disk image`, and click Forward
+5. Click Browse, click the n-th controller image, click Choose Volume, choose the operating system (`Ubuntu 16.04` in this case), and click Forward.
+6. Type `512` in the textbox named `Memory`, and click Forward.
+7. Type `worker-n`, click Network selection, select the network `kubernetes-nw`, and click Finish.
+
+(Todo: Setup Network Interface)
+
+
+### Load Balancer for Kubernetes API Server
+
+Kuberentes API Server...
+
+
+1. Open a terminal, or login to the linux server, and move to the directory where the base image exists (maybe `/var/lib/libvirt/images`?).
+2. Create images for Kubernetes controllers backed by the base image:
+
+```
+# qemu-img create -f qcow2 ubuntu-xenial.qcow -b ubuntu-xenial-lb-1.qcow2
+```
+
+3. Open Virtual Machine Manager, and click the icon named 'Create a new virtual machine'.
+4. Check the radiobutton named `Importing existing disk image`, and click Forward
+5. Click Browse, click the n-th controller image, click Choose Volume, choose the operating system (`Ubuntu 16.04` in this case), and click Forward.
+6. Type `512` in the textbox named `Memory`, and click Forward.
+7. Type `lb-1`, click Network selection, select the network `kubernetes-nw`, and click Finish.
+
+
+### Client for Kubernetes
+
+Create a virtual machine, instead of Cloud Shell in GCP, that will be used as a client for Kubernetes.
+
+
+1. Open a terminal, or login to the linux server, and move to the directory where the base image exists (maybe `/var/lib/libvirt/images`?).
+2. Create images for Kubernetes controllers backed by the base image:
+
+```
+# qemu-img create -f qcow2 ubuntu-xenial.qcow -b ubuntu-xenial-client-1.qcow2
+```
+3. Open Virtual Machine Manager, and click the icon named 'Create a new virtual machine'.
+4. Check the radiobutton named `Importing existing disk image`, and click Forward
+5. Click Browse, click the n-th controller image, click Choose Volume, choose the operating system (`Ubuntu 16.04` in this case), and click Forward.
+6. Type `512` in the textbox named `Memory`, and click Forward.
+7. Type `client-1`, click Network selection, select the network `kubernetes-nw`, and click Finish.
+
+
+### Setup The Hostname and The IP Address of each Virtual Machine
+
+As described above, the IP address of each virtual machine should be fixed.
+
+Referring to the environment information described above, Set the IP Address to each virtual machine.
+
+1. Login to the virtual machine.
+2. Set the hostname:
+
+```
+$ sudo hostnamectl set-hostname <Hostname>
+```
+
+3. Edit configuration of network interfaces:
+
+```
+$ sudo vi /etc/network/interfaces
+$ cat /etc/network/interfaces
+```
+
+`interfaces` must look like this:
+
+```
+master@lb-0:~$ cat /etc/network/interfaces
+# This file describes the network interfaces available on your system
+# and how to activate them. For more information, see interfaces(5).
+
+source /etc/network/interfaces.d/*
+
+# The loopback network interface
+auto lo
+iface lo inet loopback
+
+# The primary network interface
+auto ens3                      # The interface for kubernetes-nw
+iface ens3 inet static         # static is set.
+address 10.240.0.10            # IP Address of the virtual machine
+netmask 255.255.255.0          # netmask of kubernetes-nw
+gateway 10.240.0.1             # gateway of kubernetes-nw
+dns-nameservers 10.240.0.1     # nameserver of kubernetes-nw
+master@lb-0:~$
+```
+
+4. Reboot.
+
+```
+$ sudo reboot
+```
+
+
+### Modify `hosts`
+
+Though resolving hostnames is unnecessary, ...
+
+1. In the host PC, create a text file listing IP addresses and hostnames:
+
+```
+$ cat << EOF > new_hosts
+10.240.0.11  controller-1
+10.240.0.12  controller-2
+10.240.0.13  controller-3
+10.240.0.10  lb-1
+10.240.0.21  worker-1
+10.240.0.22  worker-2
+10.240.0.23  worker-3
+10.240.0.99  client-1
+EOF
+```
+
+
+
 
 ### Verification
 
