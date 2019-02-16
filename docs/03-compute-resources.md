@@ -137,6 +137,9 @@ Create a virtual machine, instead of Cloud Shell in GCP, that will be used as a 
 7. Type `client-1`, click Network selection, select the network `kubernetes-nw`, and click Finish.
 
 
+## Configure Virtual Machines
+
+
 ### Setup The Hostname and The IP Address of each Virtual Machine
 
 As described above, the IP address of each virtual machine should be fixed.
@@ -206,95 +209,46 @@ $ cat << EOF > new_hosts
 EOF
 ```
 
-
-
-
-### Verification
-
-List the compute instances in your default compute zone:
-
-```
-gcloud compute instances list
-```
-
-> output
-
-```
-NAME          ZONE        MACHINE_TYPE   PREEMPTIBLE  INTERNAL_IP  EXTERNAL_IP     STATUS
-controller-0  us-west1-c  n1-standard-1               10.240.0.10  XX.XXX.XXX.XXX  RUNNING
-controller-1  us-west1-c  n1-standard-1               10.240.0.11  XX.XXX.X.XX     RUNNING
-controller-2  us-west1-c  n1-standard-1               10.240.0.12  XX.XXX.XXX.XX   RUNNING
-worker-0      us-west1-c  n1-standard-1               10.240.0.20  XXX.XXX.XXX.XX  RUNNING
-worker-1      us-west1-c  n1-standard-1               10.240.0.21  XX.XXX.XX.XXX   RUNNING
-worker-2      us-west1-c  n1-standard-1               10.240.0.22  XXX.XXX.XX.XX   RUNNING
-```
-
 ## Configuring SSH Access
 
-SSH will be used to configure the controller and worker instances. When connecting to compute instances for the first time SSH keys will be generated for you and stored in the project or instance metadata as describe in the [connecting to instances](https://cloud.google.com/compute/docs/instances/connecting-to-instance) documentation.
+SSH will be used to configure the controller and worker instances.
 
-Test SSH access to the `controller-0` compute instances:
-
-```
-gcloud compute ssh controller-0
-```
-
-If this is your first time connecting to a compute instance SSH keys will be generated for you. Enter a passphrase at the prompt to continue:
+1. In the host PC, generate a SSH key.
 
 ```
-WARNING: The public SSH key file for gcloud does not exist.
-WARNING: The private SSH key file for gcloud does not exist.
-WARNING: You do not have an SSH key for gcloud.
-WARNING: SSH keygen will be executed to generate a key.
-Generating public/private rsa key pair.
-Enter passphrase (empty for no passphrase):
-Enter same passphrase again:
-```
+$ ssh-keygen
 
-At this point the generated SSH keys will be uploaded and stored in your project:
+(...)
 
 ```
-Your identification has been saved in /home/$USER/.ssh/google_compute_engine.
-Your public key has been saved in /home/$USER/.ssh/google_compute_engine.pub.
-The key fingerprint is:
-SHA256:nz1i8jHmgQuGt+WscqP5SeIaSy5wyIJeL71MuV+QruE $USER@$HOSTNAME
-The key's randomart image is:
-+---[RSA 2048]----+
-|                 |
-|                 |
-|                 |
-|        .        |
-|o.     oS        |
-|=... .o .o o     |
-|+.+ =+=.+.X o    |
-|.+ ==O*B.B = .   |
-| .+.=EB++ o      |
-+----[SHA256]-----+
-Updating project ssh metadata...-Updated [https://www.googleapis.com/compute/v1/projects/$PROJECT_ID].
-Updating project ssh metadata...done.
-Waiting for SSH key to propagate.
-```
 
-After the SSH keys have been updated you'll be logged into the `controller-0` instance:
+2. Create a text file containing IP addresses of virtual machines.
 
 ```
-Welcome to Ubuntu 18.04 LTS (GNU/Linux 4.15.0-1006-gcp x86_64)
-
-...
-
-Last login: Sun May 13 14:34:27 2018 from XX.XXX.XXX.XX
+$ cat << EOF > target_hosts.txt
+10.240.0.10
+10.240.0.11
+10.240.0.12
+10.240.0.13
+10.240.0.21
+10.240.0.22
+10.240.0.23
+10.240.0.99
+EOF
 ```
 
-Type `exit` at the prompt to exit the `controller-0` compute instance:
+3. Distribute the key to the virtual machines.
 
 ```
-$USER@controller-0:~$ exit
+$ for target in `cat target_hosts`; do ssh-copy-id -i ~/.ssh/id_rsa-k8s.pub <ID>@$target; done
 ```
-> output
+
+You will be asked to enter password of the user(ID).
+
+4. Verify ...
 
 ```
-logout
-Connection to XX.XXX.XXX.XXX closed
+$ do ssh -i ~/.ssh/id_rsa-k8s <ID>@$target uname -n; done
 ```
 
 Next: [Provisioning a CA and Generating TLS Certificates](04-certificate-authority.md)
