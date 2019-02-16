@@ -137,7 +137,7 @@ Create a virtual machine, instead of Cloud Shell in GCP, that will be used as a 
 7. Type `client-1`, click Network selection, select the network `kubernetes-nw`, and click Finish.
 
 
-## Configure Virtual Machines
+## Configuring Virtual Machines
 
 
 ### Setup The Hostname and The IP Address of each Virtual Machine
@@ -190,7 +190,7 @@ $ sudo reboot
 ```
 
 
-### Modify `hosts`
+### Modifying `hosts`
 
 Though resolving hostnames is unnecessary, ...
 
@@ -217,9 +217,31 @@ SSH will be used to configure the controller and worker instances.
 
 ```
 $ ssh-keygen
-
-(...)
-
+Generating public/private rsa key pair.
+Enter file in which to save the key (/<your home directory>/.ssh/id_rsa): /<your home directory>/.ssh/id_rsa-k8s
+Enter passphrase (empty for no passphrase):  <Enter with no passphrase>
+Enter same passphrase again:  <Enter with no passphrase>
+Your identification has been saved in /<your home directory>/.ssh/id_rsa-k8s.
+Your public key has been saved in /<your home directory>/.ssh/id_rsa-k8s.pub.
+The key fingerprint is:
+SHA256:LYoMGbeATYBBdGB5fdPXKbbSDrpSU8WJKjbzsrb3nY8 empty0x7@jb-x260
+The key's randomart image is:
++---[RSA 2048]----+
+|*B+..   . o o .  |
+|o=.. . o o B o   |
+|. = . . o = o    |
+|   = * . = o     |
+|  o o = S =      |
+|   o o * . .     |
+|    o = o        |
+|     + o  . o    |
+|    ..+ .. E..   |
++----[SHA256]-----+
+$ ll .ssh
+total 16
+-rw------- 1 <your username> users 1823 Feb 14 21:41 id_rsa-k8s
+-rw-r--r-- 1 <your username> users  398 Feb 14 21:41 id_rsa-k8s.pub
+-rw-r--r-- 1 <your username> users 2995 Feb  5 00:56 known_hosts
 ```
 
 2. Create a text file containing IP addresses of virtual machines.
