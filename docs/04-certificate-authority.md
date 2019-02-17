@@ -147,12 +147,12 @@ done
 Results:
 
 ```
-worker-0-key.pem
-worker-0.pem
 worker-1-key.pem
 worker-1.pem
 worker-2-key.pem
 worker-2.pem
+worker-3-key.pem
+worker-3.pem
 ```
 
 ### The Controller Manager Client Certificate
@@ -160,7 +160,7 @@ worker-2.pem
 Generate the `kube-controller-manager` client certificate and private key:
 
 ```
-{
+$ {
 
 cat > kube-controller-manager-csr.json <<EOF
 {
@@ -204,7 +204,7 @@ kube-controller-manager.pem
 Generate the `kube-proxy` client certificate and private key:
 
 ```
-{
+$ {
 
 cat > kube-proxy-csr.json <<EOF
 {
@@ -247,7 +247,7 @@ kube-proxy.pem
 Generate the `kube-scheduler` client certificate and private key:
 
 ```
-{
+$ {
 
 cat > kube-scheduler-csr.json <<EOF
 {
@@ -339,7 +339,7 @@ The Kubernetes Controller Manager leverages a key pair to generate and sign serv
 Generate the `service-account` certificate and private key:
 
 ```
-{
+$ {
 
 cat > service-account-csr.json <<EOF
 {
