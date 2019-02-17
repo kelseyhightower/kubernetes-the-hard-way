@@ -288,4 +288,4 @@ $ rm new_hosts
 ```
 
 
-Next: [Provisioning a CA and Generating TLS Certificates](04-certificate-authority.md)
+Next: [Installing the Client Tools](docs/03-client-tools.md)
