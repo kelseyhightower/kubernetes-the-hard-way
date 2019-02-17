@@ -2,7 +2,7 @@
 
 Kubernetes stores a variety of data including cluster state, application configurations, and secrets. Kubernetes supports the ability to [encrypt](https://kubernetes.io/docs/tasks/administer-cluster/encrypt-data) cluster data at rest.
 
-In this lab you will generate an encryption key and an [encryption config](https://kubernetes.io/docs/tasks/administer-cluster/encrypt-data/#understanding-the-encryption-at-rest-configuration) suitable for encrypting Kubernetes Secrets.
+In this chapter, you will generate an encryption key and an [encryption config](https://kubernetes.io/docs/tasks/administer-cluster/encrypt-data/#understanding-the-encryption-at-rest-configuration) suitable for encrypting Kubernetes Secrets.
 
 ## The Encryption Key
 
@@ -32,7 +32,7 @@ resources:
 EOF
 ```
 
-Copy the `encryption-config.yaml` encryption config file to each controller instance:
+Copy the `encryption-config.yaml` encryption config file to each controller node:
 
 ```
 $ USERNAME=<User Name of Virtual Machines>
