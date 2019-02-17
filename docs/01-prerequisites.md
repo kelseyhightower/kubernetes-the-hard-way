@@ -2,7 +2,9 @@
 
 ## KVM
 
-This tutorial leverages KVM. So you need to have a linux machine on which KVM is installed and running. Also this tutorial assumes that you have some experiences of KVM (i.e. creating and deleting VMs).
+This tutorial leverages KVM. So you need to have a linux machine on which KVM is installed and running.
+
+The following KVM-related tools will be used frequently:
 
 * [Virtual Machine Manager](https://virt-manager.org/): used to create VMs and Networks.
 * [qemu-img](https://qemu.weilnetz.de/doc/qemu-doc.html#disk_005fimages): used to [image files](https://people.gnome.org/~markmc/qcow-image-format-version-1.html).
