@@ -1,12 +1,13 @@
 # Adding Pod Network Routes
 
-Pods scheduled to a node receive an IP address from the node's Pod CIDR range. At this point pods can not communicate with other pods running on different nodes due to missing network routes.
+Pods scheduled to a node receive an IP address from the node's Pod CIDR range. At this point pods cannot communicate with other pods running on different nodes due to missing network routes.
 
 In this chapter, you will create routes for each worker node that maps the node's Pod CIDR range to the node's IP address.
 
 > There are [other ways](https://kubernetes.io/docs/concepts/cluster-administration/networking/#how-to-achieve-this) to implement the Kubernetes networking model.
 
 *The instructions in this chapter should be done in the host, not in the virtual machines.*
+
 
 ## Routes
 
