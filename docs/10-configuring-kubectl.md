@@ -2,7 +2,8 @@
 
 In this chapter, you will generate a kubeconfig file for the `kubectl` command line utility based on the `admin` user credentials.
 
-> Run the commands in this chapter from the same directory used to generate the admin client certificates.
+> Run the commands in this chapter from the same virtual machine used to generate the admin client certificates.
+
 
 ## The Admin Kubernetes Configuration File
 
@@ -30,6 +31,7 @@ $ {
   kubectl config use-context kubernetes-the-hard-way
 }
 ```
+
 
 ## Verification
 
