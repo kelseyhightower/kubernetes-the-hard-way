@@ -1,13 +1,13 @@
 # Bootstrapping the Kubernetes Control Plane
 
-In this lab you will bootstrap the Kubernetes control plane across three compute instances and configure it for high availability. You will also create an external load balancer that exposes the Kubernetes API Servers to remote clients. The following components will be installed on each node: Kubernetes API Server, Scheduler, and Controller Manager.
+In this chapter, you will bootstrap the Kubernetes control plane across three virtual machines and configure it for high availability. You will also create an load balancer that exposes the Kubernetes API Servers to remote clients. The following components will be installed on each node: Kubernetes API Server, Scheduler, and Controller Manager.
 
 ## Prerequisites
 
-The commands in this lab must be run on each controller instance: `controller-1`, `controller-2`, and `controller-3`. Login to each controller instance:
+The commands in this lab must be run on each controller node: `controller-1`, `controller-2`, and `controller-3`. Login to each controller node:
 
 ```
-$ ssh -i ~/.ssh/id_rsa-k8s.pub 10.240.0.11
+$ ssh -i ~/.ssh/id_rsa-k8s 10.240.0.11
 ```
 
 ### Running commands in parallel with tmux
@@ -114,7 +114,7 @@ EOF
 Move the `kube-controller-manager` kubeconfig into place:
 
 ```
-sudo mv kube-controller-manager.kubeconfig /var/lib/kubernetes/
+$ sudo mv kube-controller-manager.kubeconfig /var/lib/kubernetes/
 ```
 
 Create the `kube-controller-manager.service` systemd unit file:
@@ -204,7 +204,7 @@ $ {
 ### Verification
 
 ```
-kubectl get componentstatuses --kubeconfig admin.kubeconfig
+$ kubectl get componentstatuses --kubeconfig admin.kubeconfig
 ```
 
 ```
