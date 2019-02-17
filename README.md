@@ -21,7 +21,7 @@ Kubernetes The Hard Way guides you through bootstrapping a highly available Kube
 * [etcd](https://github.com/coreos/etcd) v3.3.9
 * [CoreDNS](https://github.com/coredns/coredns) v1.2.2
 
-## Chapters
+## Table of Contents
 
 This tutorial assumes you have an KVM host or a Linux PC running KVM. While KVM host is used for basic infrastructure requirements the lessons learned in this tutorial may be applied to other platforms.
 
