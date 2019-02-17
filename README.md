@@ -21,9 +21,9 @@ Kubernetes The Hard Way guides you through bootstrapping a highly available Kube
 * [etcd](https://github.com/coreos/etcd) v3.3.9
 * [CoreDNS](https://github.com/coredns/coredns) v1.2.2
 
-## Labs
+## Chapters
 
-This tutorial assumes you have access to the [Google Cloud Platform](https://cloud.google.com). While GCP is used for basic infrastructure requirements the lessons learned in this tutorial can be applied to other platforms.
+This tutorial assumes you have an KVM host or a Linux PC running KVM. While KVM host is used for basic infrastructure requirements the lessons learned in this tutorial may be applied to other platforms.
 
 * [Prerequisites](docs/01-prerequisites.md)
 * [Installing the Client Tools](docs/02-client-tools.md)
@@ -48,6 +48,7 @@ This tutorial assumes you have access to the [Google Cloud Platform](https://clo
 * [Kubernetes The Hard Way](https://github.com/kelseyhightower/kubernetes-the-hard-way)
 * [Kubernetes The Hard Way - Bare Metal](https://github.com/Praqma/LearnKubernetes/blob/master/kamran/Kubernetes-The-Hard-Way-on-BareMetal.md)
 
+
 ### HA Proxy
 
 * [Load Balancing with HAProxy](https://serversforhackers.com/c/load-balancing-with-haproxy)
@@ -56,11 +57,12 @@ This tutorial assumes you have access to the [Google Cloud Platform](https://clo
 * [TLS errors in apiserver when running with calico](https://github.com/kubernetes-incubator/bootkube/issues/960)
 * [Building HAProxy so that it can use TLSv1.3](https://dnsprivacy.org/wiki/display/DP/Building+HAProxy+so+that+it+can+use+TLSv1.3)
 
-### tmux
 
+### tmux
 
 * [tmux Tutorial — Split Terminal Windows Easily](https://lukaszwrobel.pl/blog/tmux-tutorial-split-terminal-windows-easily/)
 * [How do I equally balance tmux(1) split panes?](https://unix.stackexchange.com/questions/32986/how-do-i-equally-balance-tmux1-split-panes)
+
 
 ### SSH
 
