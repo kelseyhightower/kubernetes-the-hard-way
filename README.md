@@ -10,7 +10,7 @@ Kubernetes The Hard Way is optimized for learning, which means taking the long r
 
 The target audience for this tutorial is someone planning to support a production Kubernetes cluster and wants to understand how everything fits together.
 
-Also this tutorial assumes that you have some experiences of KVM (i.e. creating and deleting VMs).
+Also this tutorial assumes that the audience have some experiences of KVM (i.e. creating and deleting VMs).
 
 
 ## Cluster Details
@@ -23,6 +23,7 @@ Kubernetes The Hard Way guides you through bootstrapping a highly available Kube
 * [CNI Container Networking](https://github.com/containernetworking/cni) 0.6.0
 * [etcd](https://github.com/coreos/etcd) v3.3.9
 * [CoreDNS](https://github.com/coredns/coredns) v1.2.2
+
 
 ## Table of Contents
 
@@ -42,6 +43,14 @@ This tutorial assumes you have an KVM host or a Linux PC running KVM. While KVM 
 * [Deploying the DNS Cluster Add-on](docs/12-dns-addon.md)
 * [Smoke Test](docs/13-smoke-test.md)
 * [Cleaning Up](docs/14-cleanup.md)
+
+
+## Major Changes from Original Kubernetes the Hard Way
+
+* HA Proxy is used as a load balancer for API Server.
+* KVM host is in charge of Pod Network Routes.
+* Cloud Shell in GCP is replaced by a virtual machine.
+* nodes' name and IP address starts from `1`.
 
 
 ## References
