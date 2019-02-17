@@ -1,6 +1,8 @@
 # Smoke Test
 
-In this lab you will complete a series of tasks to ensure your Kubernetes cluster is functioning correctly.
+In this chapter, you will complete a series of tasks to ensure your Kubernetes cluster is functioning correctly.
+
+**All procedures in this chapter should be done in `client-1` unless an target virtual machines is specified.**
 
 ## Data Encryption
 
@@ -180,13 +182,13 @@ $ NODE_PORT=$(kubectl get svc nginx \
 Retrieve the IP address of a worker instance:
 
 ```
-WORKER_IP=$ kubectl get nodes $(kubectl get pods -o wide | grep nginx | awk '{ print $7 }') -o wide | tail -1 | awk '{ print $6 }'
+$ WORKER_IP=$ kubectl get nodes $(kubectl get pods -o wide | grep nginx | awk '{ print $7 }') -o wide | tail -1 | awk '{ print $6 }'
 ```
 
 Make an HTTP request using the IP address and the `nginx` node port:
 
 ```
-curl -I http://${WORKER_IP}:${NODE_PORT}
+$ curl -I http://${WORKER_IP}:${NODE_PORT}
 ```
 
 > output
@@ -252,7 +254,7 @@ $ INSTANCE_IP_ADDRESS=$(kubectl get nodes ${INSTANCE_NAME} -o wide | tail -1 | a
 SSH into the worker node:
 
 ```
-$ ssh -i ~/.ssh/id_rsa-k8s.pub ${INSTANCE_IP_ADDRESS}
+$ ssh -i ~/.ssh/id_rsa-k8s ${INSTANCE_IP_ADDRESS}
 ```
 
 List the containers running under gVisor:
