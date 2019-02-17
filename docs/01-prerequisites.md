@@ -2,11 +2,12 @@
 
 ## KVM
 
-This tutorial leverages KVM. So you need to have a linux machine on which KVM is installed.
+This tutorial leverages KVM. So you need to have a linux machine on which KVM is installed and running. Also this tutorial assumes that you have some experiences of KVM (i.e. creating and deleting VMs).
 
-You can find how to install KVM on any linux distribution on the Internet.
+* [Virtual Machine Manager](https://virt-manager.org/): used to create VMs and Networks.
+* [qemu-img](https://qemu.weilnetz.de/doc/qemu-doc.html#disk_005fimages): used to [image files](https://people.gnome.org/~markmc/qcow-image-format-version-1.html).
 
-In this tutorial, [openSUSE Tumbleweed](https://en.opensuse.org/Portal:Tumbleweed) will be used, but in most cases, there should be no problem caused by specific distributions or libvirt versions.
+In this tutorial, [openSUSE Tumbleweed](https://en.opensuse.org/Portal:Tumbleweed) will be used as host PC, but in most cases there should be no problem caused by specific distributions or libvirt versions.
 
 Currently, I use the following packages:
 
