@@ -2,6 +2,9 @@
 
 In this chapter, you will generate [Kubernetes configuration files](https://kubernetes.io/docs/concepts/configuration/organize-cluster-access-kubeconfig/), also known as kubeconfigs, which enable Kubernetes clients to locate and authenticate to the Kubernetes API Servers.
 
+**All procedures in this chapter should be done in `client-1`.**
+
+
 ## Client Authentication Configs
 
 In this section you will generate kubeconfig files for the `controller manager`, `kubelet`, `kube-proxy`, and `scheduler` clients and the `admin` user.
@@ -25,7 +28,7 @@ When generating kubeconfig files for Kubelets the client certificate matching th
 Generate a kubeconfig file for each worker node:
 
 ```
-for instance in worker-1 worker-2 worker-3; do
+$ for instance in worker-1 worker-2 worker-3; do
   kubectl config set-cluster kubernetes-the-hard-way \
     --certificate-authority=ca.pem \
     --embed-certs=true \
@@ -60,7 +63,7 @@ worker-3.kubeconfig
 Generate a kubeconfig file for the `kube-proxy` service:
 
 ```
-{
+$ {
   kubectl config set-cluster kubernetes-the-hard-way \
     --certificate-authority=ca.pem \
     --embed-certs=true \
@@ -93,7 +96,7 @@ kube-proxy.kubeconfig
 Generate a kubeconfig file for the `kube-controller-manager` service:
 
 ```
-{
+$ {
   kubectl config set-cluster kubernetes-the-hard-way \
     --certificate-authority=ca.pem \
     --embed-certs=true \
@@ -127,7 +130,7 @@ kube-controller-manager.kubeconfig
 Generate a kubeconfig file for the `kube-scheduler` service:
 
 ```
-{
+$ {
   kubectl config set-cluster kubernetes-the-hard-way \
     --certificate-authority=ca.pem \
     --embed-certs=true \
@@ -160,7 +163,7 @@ kube-scheduler.kubeconfig
 Generate a kubeconfig file for the `admin` user:
 
 ```
-{
+$ {
   kubectl config set-cluster kubernetes-the-hard-way \
     --certificate-authority=ca.pem \
     --embed-certs=true \
@@ -196,7 +199,7 @@ Copy the appropriate `kubelet` and `kube-proxy` kubeconfig files to each worker 
 ```
 $ USERNAME=<User Name of Virtual Machines>
 $ for num in 1 2 3; do
-  scp -i ~/.ssh/id_rsa-k8s.pub worker-${num}.kubeconfig kube-proxy.kubeconfig ${USERNAME}@10.240.0.2${num}:~/
+  scp -i ~/.ssh/id_rsa-k8s worker-${num}.kubeconfig kube-proxy.kubeconfig ${USERNAME}@10.240.0.2${num}:~/
 done
 ```
 
