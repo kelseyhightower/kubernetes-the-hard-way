@@ -1,20 +1,20 @@
 # Bootstrapping the Kubernetes Worker Nodes
 
-In this lab you will bootstrap three Kubernetes worker nodes. The following components will be installed on each node: [runc](https://github.com/opencontainers/runc), [gVisor](https://github.com/google/gvisor), [container networking plugins](https://github.com/containernetworking/cni), [containerd](https://github.com/containerd/containerd), [kubelet](https://kubernetes.io/docs/admin/kubelet), and [kube-proxy](https://kubernetes.io/docs/concepts/cluster-administration/proxies).
+In this chapter, you will bootstrap three Kubernetes worker nodes. The following components will be installed on each node: [runc](https://github.com/opencontainers/runc), [gVisor](https://github.com/google/gvisor), [container networking plugins](https://github.com/containernetworking/cni), [containerd](https://github.com/containerd/containerd), [kubelet](https://kubernetes.io/docs/admin/kubelet), and [kube-proxy](https://kubernetes.io/docs/concepts/cluster-administration/proxies).
 
 
 ## Prerequisites
 
-The commands in this lab must be run on each worker instance: `worker-1`, `worker-2`, and `worker-3`. Login to each worker instance:
+The commands in this chapter must be run on each worker node: `worker-1`, `worker-2`, and `worker-3`. Login to each worker node:
 
 ```
-$ ssh -i ~/.ssh/id_rsa-k8s.pub 10.240.0.21
+$ ssh -i ~/.ssh/id_rsa-k8s 10.240.0.21
 ```
 
 
 ### Running commands in parallel with tmux
 
-[tmux](https://github.com/tmux/tmux/wiki) can be used to run commands on multiple compute instances at the same time. See the [Running commands in parallel with tmux](01-prerequisites.md#running-commands-in-parallel-with-tmux) section in the Prerequisites lab.
+[tmux](https://github.com/tmux/tmux/wiki) can be used to run commands on multiple virtual machines at the same time. See the [Running commands in parallel with tmux](01-prerequisites.md#running-commands-in-parallel-with-tmux) section in the Prerequisites lab.
 
 
 ## Provisioning a Kubernetes Worker Node
@@ -72,7 +72,7 @@ $ {
 
 ### Configure CNI Networking
 
-Retrieve the Pod CIDR range for the current compute instance:
+Get the Pod CIDR range for the current compute instance:
 
 ```
 $ POD_CIDR=10.200.$(uname -n | awk -F"-" '{print $2}').0/24
@@ -237,7 +237,7 @@ EOF
 ### Configure the Kubernetes Proxy
 
 ```
-sudo mv kube-proxy.kubeconfig /var/lib/kube-proxy/kubeconfig
+$ sudo mv kube-proxy.kubeconfig /var/lib/kube-proxy/kubeconfig
 ```
 
 Create the `kube-proxy-config.yaml` configuration file:
