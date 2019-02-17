@@ -43,5 +43,25 @@ This tutorial assumes you have access to the [Google Cloud Platform](https://clo
 
 ## References
 
+### Kubernetes
+
 * [Kubernetes The Hard Way](https://github.com/kelseyhightower/kubernetes-the-hard-way)
 * [Kubernetes The Hard Way - Bare Metal](https://github.com/Praqma/LearnKubernetes/blob/master/kamran/Kubernetes-The-Hard-Way-on-BareMetal.md)
+
+### HA Proxy
+
+* [Load Balancing with HAProxy](https://serversforhackers.com/c/load-balancing-with-haproxy)
+* [How to Use HAProxy for Load Balancing](https://www.linode.com/docs/uptime/loadbalancing/how-to-use-haproxy-for-load-balancing/)
+* [HAProxy TCP Reverse Proxy Setup Guide (SSL/TLS Passthrough Proxy)](https://www.ssltrust.com.au/help/setup-guides/haproxy-reverse-proxy-setup-guide)
+* [TLS errors in apiserver when running with calico](https://github.com/kubernetes-incubator/bootkube/issues/960)
+* [Building HAProxy so that it can use TLSv1.3](https://dnsprivacy.org/wiki/display/DP/Building+HAProxy+so+that+it+can+use+TLSv1.3)
+
+### tmux
+
+
+* [tmux Tutorial — Split Terminal Windows Easily](https://lukaszwrobel.pl/blog/tmux-tutorial-split-terminal-windows-easily/)
+* [How do I equally balance tmux(1) split panes?](https://unix.stackexchange.com/questions/32986/how-do-i-equally-balance-tmux1-split-panes)
+
+### SSH
+
+* [Copy SSH RSA security key for multiple servers](http://www.technokain.org/copy-ssh-rsa-security-key-multiple-servers/)
