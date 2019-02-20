@@ -15,15 +15,15 @@ In this section, Virtual Network will be setup to host the Kubernetes cluster.
 
 1. Open Virtual Machine Manager, and from menu, go to `Edit` -> `Connection Details`.
 2. Go to `Virtual Networks` tab, and click the plus(+) button at the left lower side of the window.
-3. Type `kubernetes-nw` in the textbox named `Network Name`, and click Forward.
-4. Type `10.240.0.0/24` in the textbox named `Network`, type `10.240.0.2` in the textbox named `Start`, type `10.240.0.254` in the textbox named `end`, and click Forward.
+3. Type `kubernetes-nw` in the textbox named `Network Name`, and click `Forward`.
+4. Type `10.240.0.0/24` in the textbox named `Network`, type `10.240.0.2` in the textbox named `Start`, type `10.240.0.254` in the textbox named `end`, and click `Forward`.
 5. You will be asked whether enabling IPv6 or not. Don't check the checkbox, and click `Forward`.
 6. Click the radiobutton named `Forwarding to physical network`, type `kubernetes-nw.com` in the textbox named `DNS Domain Name`, and click `Finish`.
 
 
 ## Virtual Machines
 
-The virtual machines in this lab will be provisioned using [Ubuntu Server](https://www.ubuntu.com/server) 16.04. Each virtual machines will be provisioned with a fixed private IP address to simplify the Kubernetes bootstrapping process.
+The virtual machines in this lab will be provisioned using [Ubuntu Server](https://www.ubuntu.com/server) [16.04](https://wiki.ubuntu.com/XenialXerus/ReleaseNotes). Each virtual machines will be provisioned with a fixed private IP address to simplify the Kubernetes bootstrapping process.
 
 The following virtual machines will be setup in this chapter:
 
@@ -54,9 +54,9 @@ Create three virtual instances which will host the Kubernetes control plane:
 2. Create images for Kubernetes controllers backed by the base image:
 
 ```
-# qemu-img create -f qcow2 ubuntu-xenial.qcow -b ubuntu-xenial-controller-1.qcow2
-# qemu-img create -f qcow2 ubuntu-xenial.qcow -b ubuntu-xenial-controller-2.qcow2
-# qemu-img create -f qcow2 ubuntu-xenial.qcow -b ubuntu-xenial-controller-3.qcow2
+# qemu-img create -f qcow2 -b ubuntu-xenial.qcow2 ubuntu-xenial-controller-1.qcow2
+# qemu-img create -f qcow2 -b ubuntu-xenial.qcow2 ubuntu-xenial-controller-2.qcow2
+# qemu-img create -f qcow2 -b ubuntu-xenial.qcow2 ubuntu-xenial-controller-3.qcow2
 ```
 
 (Using each image created above, repeat from 3. to 7..)
@@ -80,9 +80,9 @@ Create three virtual machines which will host the Kubernetes worker nodes:
 2. Create images for Kubernetes controllers backed by the base image:
 
 ```
-# qemu-img create -f qcow2 ubuntu-xenial.qcow -b ubuntu-xenial-worker-1.qcow2
-# qemu-img create -f qcow2 ubuntu-xenial.qcow -b ubuntu-xenial-worker-2.qcow2
-# qemu-img create -f qcow2 ubuntu-xenial.qcow -b ubuntu-xenial-worker-3.qcow2
+# qemu-img create -f qcow2 -b ubuntu-xenial.qcow2 ubuntu-xenial-worker-1.qcow2
+# qemu-img create -f qcow2 -b ubuntu-xenial.qcow2 ubuntu-xenial-worker-2.qcow2
+# qemu-img create -f qcow2 -b ubuntu-xenial.qcow2 ubuntu-xenial-worker-3.qcow2
 ```
 
 (Using each image created above, repeat from 3. to 7..)
@@ -101,7 +101,7 @@ Create three virtual machines which will host the Kubernetes worker nodes:
 2. Create images for Kubernetes controllers backed by the base image:
 
 ```
-# qemu-img create -f qcow2 ubuntu-xenial.qcow -b ubuntu-xenial-lb-1.qcow2
+# qemu-img create -f qcow2 -b ubuntu-xenial.qcow2 ubuntu-xenial-lb-1.qcow2
 ```
 
 3. Open Virtual Machine Manager, and click the icon named `Create a new virtual machine`.
@@ -120,7 +120,7 @@ Instead of Cloud Shell in GCP, create a virtual machine that will be used as a c
 2. Create images for Kubernetes controllers backed by the base image:
 
 ```
-# qemu-img create -f qcow2 ubuntu-xenial.qcow -b ubuntu-xenial-client-1.qcow2
+# qemu-img create -f qcow2 -b ubuntu-xenial.qcow2 ubuntu-xenial-client-1.qcow2
 ```
 3. Open Virtual Machine Manager, and click the icon named `Create a new virtual machine`.
 4. Check the radiobutton named `Importing existing disk image`, and click `Forward`.

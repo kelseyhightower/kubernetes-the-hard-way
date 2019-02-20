@@ -7,7 +7,7 @@ This tutorial leverages KVM. So you need to have a linux machine on which KVM is
 The following KVM-related tools will be used frequently:
 
 * [Virtual Machine Manager](https://virt-manager.org/): used to create VMs and Networks.
-* [qemu-img](https://qemu.weilnetz.de/doc/qemu-doc.html#disk_005fimages): used to [image files](https://people.gnome.org/~markmc/qcow-image-format-version-1.html).
+* [qemu-img](https://qemu.weilnetz.de/doc/qemu-doc.html#disk_005fimages): used to create [image files](https://people.gnome.org/~markmc/qcow-image-format-version-1.html).
 
 In this tutorial, [openSUSE Tumbleweed](https://en.opensuse.org/Portal:Tumbleweed) will be used as host PC, but in most cases there should be no problem caused by specific distributions or libvirt versions.
 
@@ -85,4 +85,4 @@ If you want to setup tmux like above, `ctrl+b` -> `"` twice, then `ctrl+b` -> `a
 > Enable `synchronize-panes`: `ctrl+b` then `shift :`. Then type `set synchronize-panes on` at the prompt. To disable synchronization: `set synchronize-panes off`.
 >
 
-Next: [Installing the Client Tools](02-client-tools.md)
+Next: [Provisioning Compute Resources](02-compute-resources.md)
