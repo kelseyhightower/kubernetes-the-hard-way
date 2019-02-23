@@ -2,15 +2,30 @@
 
 In this chapter, you will bootstrap the Kubernetes control plane across three virtual machines and configure it for high availability. You will also create an load balancer that exposes the Kubernetes API Servers to remote clients. The following components will be installed on each node: Kubernetes API Server, Scheduler, and Controller Manager.
 
-## Prerequisites
 
-The commands in this lab must be run on each controller node: `controller-1`, `controller-2`, and `controller-3`. Login to each controller node:
+## Download and Distribute the Kubernetes Controller Binaries
+
+In `client-1`, Download and distribute the official Kubernetes release binaries:
+
+```
+$ {wget -q --show-progress --https-only --timestamping \
+  "https://storage.googleapis.com/kubernetes-release/release/v1.12.0/bin/linux/amd64/kube-apiserver" \
+  "https://storage.googleapis.com/kubernetes-release/release/v1.12.0/bin/linux/amd64/kube-controller-manager" \
+  "https://storage.googleapis.com/kubernetes-release/release/v1.12.0/bin/linux/amd64/kube-scheduler" \
+  "https://storage.googleapis.com/kubernetes-release/release/v1.12.0/bin/linux/amd64/kubectl"
+$ for num in 1 2 3; do
+  scp -i ~/.ssh/id_rsa-k8s kube-apiserver kube-controller-manager kube-scheduler kubectl ${USER}@10.240.0.1${num}:~/
+done
+```
+
+
+## Running commands in parallel with tmux
+
+After this section, the commands must be run on each controller node: `controller-1`, `controller-2`, and `controller-3`. Login to each controller node:
 
 ```
 $ ssh -i ~/.ssh/id_rsa-k8s 10.240.0.11
 ```
-
-### Running commands in parallel with tmux
 
 [tmux](https://github.com/tmux/tmux/wiki) can be used to run commands on multiple virtual machines at the same time. See the [Running commands in parallel with tmux](01-prerequisites.md#running-commands-in-parallel-with-tmux) section in the Prerequisites lab.
 
@@ -23,17 +38,7 @@ Create the Kubernetes configuration directory:
 $ sudo mkdir -p /etc/kubernetes/config
 ```
 
-### Download and Install the Kubernetes Controller Binaries
-
-Download the official Kubernetes release binaries:
-
-```
-$ wget -q --show-progress --https-only --timestamping \
-  "https://storage.googleapis.com/kubernetes-release/release/v1.12.0/bin/linux/amd64/kube-apiserver" \
-  "https://storage.googleapis.com/kubernetes-release/release/v1.12.0/bin/linux/amd64/kube-controller-manager" \
-  "https://storage.googleapis.com/kubernetes-release/release/v1.12.0/bin/linux/amd64/kube-scheduler" \
-  "https://storage.googleapis.com/kubernetes-release/release/v1.12.0/bin/linux/amd64/kubectl"
-```
+## Install the Kubernetes Controller Binaries
 
 Install the Kubernetes binaries:
 
@@ -44,7 +49,7 @@ $ {
 }
 ```
 
-### Configure the Kubernetes API Server
+## Configure the Kubernetes API Server
 
 ```
 $ {
@@ -87,7 +92,7 @@ ExecStart=/usr/local/bin/kube-apiserver \\
   --etcd-cafile=/var/lib/kubernetes/ca.pem \\
   --etcd-certfile=/var/lib/kubernetes/kubernetes.pem \\
   --etcd-keyfile=/var/lib/kubernetes/kubernetes-key.pem \\
-  --etcd-servers=https://10.240.0.10:2379,https://10.240.0.11:2379,https://10.240.0.12:2379 \\
+  --etcd-servers=https://10.240.0.11:2379,https://10.240.0.12:2379,https://10.240.0.13:2379 \\
   --event-ttl=1h \\
   --experimental-encryption-provider-config=/var/lib/kubernetes/encryption-config.yaml \\
   --kubelet-certificate-authority=/var/lib/kubernetes/ca.pem \\
@@ -109,7 +114,7 @@ WantedBy=multi-user.target
 EOF
 ```
 
-### Configure the Kubernetes Controller Manager
+## Configure the Kubernetes Controller Manager
 
 Move the `kube-controller-manager` kubeconfig into place:
 
@@ -147,7 +152,7 @@ WantedBy=multi-user.target
 EOF
 ```
 
-### Configure the Kubernetes Scheduler
+## Configure the Kubernetes Scheduler
 
 Move the `kube-scheduler` kubeconfig into place:
 
@@ -188,7 +193,7 @@ WantedBy=multi-user.target
 EOF
 ```
 
-### Start the Controller Services
+## Start the Controller Services
 
 ```
 $ {
@@ -201,7 +206,7 @@ $ {
 > Allow up to 10 seconds for the Kubernetes API Server to fully initialize.
 
 
-### Verification
+## Verification
 
 ```
 $ kubectl get componentstatuses --kubeconfig admin.kubeconfig
@@ -223,8 +228,10 @@ In this section you will configure RBAC permissions to allow the Kubernetes API 
 
 > This tutorial sets the Kubelet `--authorization-mode` flag to `Webhook`. Webhook mode uses the [SubjectAccessReview](https://kubernetes.io/docs/admin/authorization/#checking-api-access) API to determine authorization.
 
+Login to `controller-1`:
+
 ```
-$ ssh -i ~/.ssh/id_rsa-k8s.pub 10.240.0.11
+$ ssh -i ~/.ssh/id_rsa-k8s 10.240.0.11
 ```
 
 Create the `system:kube-apiserver-to-kubelet` [ClusterRole](https://kubernetes.io/docs/admin/authorization/rbac/#role-and-clusterrole) with permissions to access the Kubelet API and perform most common tasks associated with managing pods:
@@ -285,7 +292,7 @@ In this section you will setup a load balancer to front the Kubernetes API Serve
 Login to the load balancer:
 
 ```
-$ ssh -i ~/.ssh/id_rsa-k8s.pub 10.240.0.10
+$ ssh -i ~/.ssh/id_rsa-k8s 10.240.0.10
 ```
 
 
@@ -299,8 +306,7 @@ $ sudo apt-get install -y haproxy
 Edit `haproxy.cfg`:
 
 ```
-$ sudo vi /etc/haproxy/haproxy.cfg
-$ cat /etc/haproxy/haproxy.cfg
+$ cat << EOF | sudo tee /etc/haproxy/haproxy.cfg
 global
     log /dev/log    local0
     log /dev/log    local1 notice
@@ -357,6 +363,7 @@ listen stats
     stats uri /
     stats hide-version
     stats auth someuser:password
+EOF
 $
 ```
 
@@ -364,14 +371,17 @@ $
 Enable and start `haproxy` service:
 
 ```
-$ sudo systemctl enable haproxy
-$ sudo systemctl start haproxy
+$ {
+sudo systemctl enable haproxy
+sudo systemctl stop haproxy
+sudo systemctl start haproxy
+}
 ```
 
 
 ### Verification
 
-Login to one of the controller nodes, and make a HTTP request for the Kubernetes version info:
+Login to the one of the controller nodes, and make a HTTP request for the Kubernetes version info:
 
 ```
 $ curl --cacert /var/lib/kubernetes/ca.pem https://10.240.0.10:6443/version
