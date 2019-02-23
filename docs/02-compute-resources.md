@@ -25,6 +25,8 @@ In this section, Virtual Network will be setup to host the Kubernetes cluster.
 
 The virtual machines in this lab will be provisioned using [Ubuntu Server](https://www.ubuntu.com/server) [16.04](https://wiki.ubuntu.com/XenialXerus/ReleaseNotes). Each virtual machines will be provisioned with a fixed private IP address to simplify the Kubernetes bootstrapping process.
 
+Note that this tutorial assumes that all virtual machines has a same user.
+
 The following virtual machines will be setup in this chapter:
 
 | Name         | vCPU | Ram (MB) | Hostname     | IP Address  |
