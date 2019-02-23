@@ -280,6 +280,14 @@ EOF
 ```
 
 
+### Disabling Swap
+
+```
+$ sudo sed -i '/swap/d' /etc/fstab
+$ sudo swapoff -a
+```
+
+
 ### Starting the Worker Services
 
 ```
