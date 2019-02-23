@@ -3,21 +3,40 @@
 In this chapter, you will bootstrap three Kubernetes worker nodes. The following components will be installed on each node: [runc](https://github.com/opencontainers/runc), [gVisor](https://github.com/google/gvisor), [container networking plugins](https://github.com/containernetworking/cni), [containerd](https://github.com/containerd/containerd), [kubelet](https://kubernetes.io/docs/admin/kubelet), and [kube-proxy](https://kubernetes.io/docs/concepts/cluster-administration/proxies).
 
 
-## Prerequisites
+## Provisioning a Kubernetes Worker Node
 
-The commands in this chapter must be run on each worker node: `worker-1`, `worker-2`, and `worker-3`. Login to each worker node:
+### Download and Distribute Worker Binaries
+
+In `client-1`, Download and distribute the official Kubernetes required binaries:
+
+Note: `kubectl` is already downloaded at the last chapter.
+
+```
+$ wget -q --show-progress --https-only --timestamping \
+  https://github.com/kubernetes-sigs/cri-tools/releases/download/v1.12.0/crictl-v1.12.0-linux-amd64.tar.gz \
+  https://storage.googleapis.com/kubernetes-the-hard-way/runsc-50c283b9f56bb7200938d9e207355f05f79f0d17 \
+  https://github.com/opencontainers/runc/releases/download/v1.0.0-rc5/runc.amd64 \
+  https://github.com/containernetworking/plugins/releases/download/v0.6.0/cni-plugins-amd64-v0.6.0.tgz \
+  https://github.com/containerd/containerd/releases/download/v1.2.0-rc.0/containerd-1.2.0-rc.0.linux-amd64.tar.gz \
+  https://storage.googleapis.com/kubernetes-release/release/v1.12.0/bin/linux/amd64/kube-proxy \
+  https://storage.googleapis.com/kubernetes-release/release/v1.12.0/bin/linux/amd64/kubelet
+$ for num in 1 2 3; do
+  scp -i ~/.ssh/id_rsa-k8s crictl-v1.12.0-linux-amd64.tar.gz runsc-50c283b9f56bb7200938d9e207355f05f79f0d17 runc.amd64 cni-plugins-amd64-v0.6.0.tgz containerd-1.2.0-rc.0.linux-amd64.tar.gz kube-proxy kubelet kubectl ${USER}@10.240.0.2${num}:~/
+done
+```
+
+### Running commands in parallel with tmux
+
+After this section, the commands must be run on each worker node: `worker-1`, `worker-2`, and `worker-3`. Login to each worker node:
 
 ```
 $ ssh -i ~/.ssh/id_rsa-k8s 10.240.0.21
 ```
 
-
-### Running commands in parallel with tmux
-
 [tmux](https://github.com/tmux/tmux/wiki) can be used to run commands on multiple virtual machines at the same time. See the [Running commands in parallel with tmux](01-prerequisites.md#running-commands-in-parallel-with-tmux) section in the Prerequisites lab.
 
 
-## Provisioning a Kubernetes Worker Node
+### Installing Dependencies
 
 Install the OS dependencies:
 
@@ -30,19 +49,7 @@ $ {
 
 > The socat binary enables support for the `kubectl port-forward` command.
 
-### Download and Install Worker Binaries
-
-```
-$ wget -q --show-progress --https-only --timestamping \
-  https://github.com/kubernetes-sigs/cri-tools/releases/download/v1.12.0/crictl-v1.12.0-linux-amd64.tar.gz \
-  https://storage.googleapis.com/kubernetes-the-hard-way/runsc-50c283b9f56bb7200938d9e207355f05f79f0d17 \
-  https://github.com/opencontainers/runc/releases/download/v1.0.0-rc5/runc.amd64 \
-  https://github.com/containernetworking/plugins/releases/download/v0.6.0/cni-plugins-amd64-v0.6.0.tgz \
-  https://github.com/containerd/containerd/releases/download/v1.2.0-rc.0/containerd-1.2.0-rc.0.linux-amd64.tar.gz \
-  https://storage.googleapis.com/kubernetes-release/release/v1.12.0/bin/linux/amd64/kubectl \
-  https://storage.googleapis.com/kubernetes-release/release/v1.12.0/bin/linux/amd64/kube-proxy \
-  https://storage.googleapis.com/kubernetes-release/release/v1.12.0/bin/linux/amd64/kubelet
-```
+### Install Worker Binaries
 
 Create the installation directories:
 
@@ -272,7 +279,8 @@ WantedBy=multi-user.target
 EOF
 ```
 
-### Start the Worker Services
+
+### Starting the Worker Services
 
 ```
 $ {
@@ -289,10 +297,10 @@ $ {
 
 > The virtual machines created in this tutorial will not have permission to complete this section. Run the following commands from the same machine used to create the compute instances.
 
-List the registered Kubernetes nodes:
+In `client-1`, list the registered Kubernetes nodes:
 
 ```
-$ ssh -i ~/.ssh/id_rsa-k8s.pub 10.240.0.11 "kubectl get nodes --kubeconfig admin.kubeconfig"
+$ ssh -i ~/.ssh/id_rsa-k8s 10.240.0.11 "kubectl get nodes --kubeconfig admin.kubeconfig"
 ```
 
 > output
