@@ -184,7 +184,7 @@ $ sudo reboot
 ```
 
 
-## Configuring SSH Access
+### Configuring SSH Access
 
 SSH will be used to configure the controller and worker nodes.
 
