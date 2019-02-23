@@ -143,7 +143,7 @@ cfssl gencert \
   -config=ca-config.json \
   -hostname=worker-${num},${INTERNAL_IP} \
   -profile=kubernetes \
-  ${instance}-csr.json | cfssljson -bare worker-${num}
+  worker-${num}-csr.json | cfssljson -bare worker-${num}
 done
 ```
 
@@ -386,19 +386,17 @@ service-account.pem
 Copy the appropriate certificates and private keys to each worker instance:
 
 ```
-$ USERNAME=<User Name of Virtual Machines>
 $ for num in 1 2 3; do
-  scp -i ~/.ssh/id_rsa-k8s.pub ca.pem worker-${num}-key.pem worker-${num}.pem ${USERNAME}@10.240.0.2${num}:~/
+  scp -i ~/.ssh/id_rsa-k8s ca.pem worker-${num}-key.pem worker-${num}.pem ${USER}@10.240.0.2${num}:~/
 done
 ```
 
 Copy the appropriate certificates and private keys to each controller instance:
 
 ```
-$ USERNAME=<User Name of Virtual Machines>
 $ for num in 1 2 3; do
-  scp -i ~/.ssh/id_rsa-k8s.pub ca.pem ca-key.pem kubernetes-key.pem kubernetes.pem \
-    service-account-key.pem service-account.pem ${USERNAME}@10.240.0.1${num}:~/
+  scp -i ~/.ssh/id_rsa-k8s ca.pem ca-key.pem kubernetes-key.pem kubernetes.pem \
+    service-account-key.pem service-account.pem ${USER}@10.240.0.1${num}:~/
 done
 ```
 
