@@ -63,7 +63,7 @@ Create three virtual instances which will host the Kubernetes control plane:
 
 3. Open Virtual Machine Manager, and click the icon named `Create a new virtual machine`.
 4. Check the radiobutton named `Importing existing disk image`, and click `Forward`.
-5. Click `Browse`, click the n-th controller image, click Choose Volume, choose the operating system (`Ubuntu 16.04` in this case), and click `Forward`.
+5. Click `Browse`, click the n-th controller image, click `Choose Volume`, choose the operating system (`Ubuntu 16.04` in this case), and click `Forward`.
 6. Type `512` in the textbox named `Memory`, and click Forward.
 7. Type `controller-n`(`n` should be `1`, `2`, or `3`), click `Network selection`, select the network `kubernetes-nw`, and click `Finish`.
 
@@ -136,9 +136,9 @@ Instead of Cloud Shell in GCP, create a virtual machine that will be used as a c
 
 As described above, the IP address of each virtual machine should be fixed.
 
-Referring to the environment information described above, Set the IP Address to each virtual machine.
+Referring to the environment information described above, Set the hostname and the IP Address to each virtual machine.
 
-1. Through SSH or Graphic Console by Virtual Machine Manager, login to the virtual machine.
+1. Through SSH or Graphic Console in Virtual Machine Manager, login to the virtual machine.
 2. Set the hostname:
 
 ```
@@ -215,12 +215,13 @@ total 16
 -rw------- 1 <your username> users 1823 Feb 14 21:41 id_rsa-k8s
 -rw-r--r-- 1 <your username> users  398 Feb 14 21:41 id_rsa-k8s.pub
 -rw-r--r-- 1 <your username> users 2995 Feb  5 00:56 known_hosts
+$
 ```
 
 2. Create a text file containing IP addresses of virtual machines.
 
 ```
-$ cat << EOF > target_hosts.txt
+$ cat << EOF > target_hosts
 10.240.0.10
 10.240.0.11
 10.240.0.12
@@ -237,12 +238,12 @@ EOF
 $ for target in `cat target_hosts`; do ssh-copy-id -i ~/.ssh/id_rsa-k8s.pub <your username>@$target; done
 ```
 
-You will be asked to enter password of the user(ID).
+You will be asked to enter password of the user(ID) of each virtual machine.
 
 4. Verify it.
 
 ```
-$ do ssh -i ~/.ssh/id_rsa-k8s <your username>@$target uname -n; done
+$ for target in `cat target_hosts`; do ssh -i ~/.ssh/id_rsa-k8s <your username>@$target uname -n; done
 ```
 
 
@@ -266,26 +267,24 @@ EOF
 2. Add new hosts to `client-1`.
 
 ```
-$ sudo cat new_hosts >> /etc/hosts
+$ sudo su -c 'cat $(realpath new_hosts) >> /etc/hosts'
 ```
 
 3. Distribute `new_hosts` to the other virtual machines.
 
 ```
-$ for i in `cat target_hosts.txt`; \
-do scp -i ~/.ssh/id_rsa-k8s new_hosts <your username>@$target:~/; \
+$ for target in `cat target_hosts`; \
+do scp -i ~/.ssh/id_rsa-k8s new_hosts ${USER}@${target}:~/; \
 done
 ```
 
 4. Login to each virtual machines to which `new_hosts` is sent to, add `new_hosts` to `/etc/hosts`.
 
-(`tmux` can make this procedure done simply)
+```
+$ for target in $(cat target_hosts); do ssh -t -i ~/.ssh/id_rsa-k8s ${USER}@${target} "sudo su -c 'cat /home/${USER}/new_hosts >> /etc/hosts'"; done
+```
 
-```
-$ ssh -i ~/.ssh/id_rsa-k8s <Your Username>@<IP Address>
-$ sudo cat new_hosts >> /etc/hosts
-$ rm new_hosts
-```
+You will be asked to enter password of the user(ID) of each virtual machine.
 
 
 Next: [Installing the Client Tools](docs/03-client-tools.md)
