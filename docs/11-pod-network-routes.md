@@ -6,7 +6,7 @@ In this chapter, you will create routes for each worker node that maps the node'
 
 > There are [other ways](https://kubernetes.io/docs/concepts/cluster-administration/networking/#how-to-achieve-this) to implement the Kubernetes networking model.
 
-*The instructions in this chapter should be done in the host, not in the virtual machines.*
+**The instructions in this chapter should be done in the host, not in the virtual machines.**
 
 
 ## Routes
