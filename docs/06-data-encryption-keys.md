@@ -38,9 +38,8 @@ EOF
 Copy the `encryption-config.yaml` encryption config file to each controller node:
 
 ```
-$ USERNAME=<User Name of Virtual Machines>
 $ for num in 1 2 3; do
-  scp -i ~/.ssh/id_rsa-k8s.pub encryption-config.yaml ${USERNAME}@10.240.0.1${num}:~/
+  scp -i ~/.ssh/id_rsa-k8s encryption-config.yaml ${USER}@10.240.0.1${num}:~/
 done
 ```
 
