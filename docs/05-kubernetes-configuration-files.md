@@ -197,18 +197,16 @@ admin.kubeconfig
 Copy the appropriate `kubelet` and `kube-proxy` kubeconfig files to each worker instance:
 
 ```
-$ USERNAME=<User Name of Virtual Machines>
 $ for num in 1 2 3; do
-  scp -i ~/.ssh/id_rsa-k8s worker-${num}.kubeconfig kube-proxy.kubeconfig ${USERNAME}@10.240.0.2${num}:~/
+  scp -i ~/.ssh/id_rsa-k8s worker-${num}.kubeconfig kube-proxy.kubeconfig ${USER}@10.240.0.2${num}:~/
 done
 ```
 
 Copy the appropriate `kube-controller-manager` and `kube-scheduler` kubeconfig files to each controller instance:
 
 ```
-$ USERNAME=<User Name of Virtual Machines>
 $ for num in 1 2 3; do
-  scp -i ~/.ssh/id_rsa-k8s.pub admin.kubeconfig kube-controller-manager.kubeconfig kube-scheduler.kubeconfig ${USERNAME}@10.240.0.1${num}:~/
+  scp -i ~/.ssh/id_rsa-k8s admin.kubeconfig kube-controller-manager.kubeconfig kube-scheduler.kubeconfig ${USER}@10.240.0.1${num}:~/
 done
 ```
 
