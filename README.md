@@ -1,10 +1,23 @@
-# Kubernetes The Hard Way on KVM(Work in Progess)
+# Kubernetes The Hard Way on KVM
 
 This tutorial walks you through setting up Kubernetes the hard way. This guide is not for people looking for a fully automated command to bring up a Kubernetes cluster. If that's you then check out [Google Kubernetes Engine](https://cloud.google.com/kubernetes-engine), or the [Getting Started Guides](http://kubernetes.io/docs/getting-started-guides/).
 
 Kubernetes The Hard Way is optimized for learning, which means taking the long route to ensure you understand each task required to bootstrap a Kubernetes cluster.
 
 > The results of this tutorial should not be viewed as production ready, and may receive limited support from the community, but don't let that stop you from learning!
+
+
+## Major Changes from Original Kubernetes the Hard Way
+
+* Instead of GCP, KVM is used.
+* HA Proxy is used as a load balancer for API Server.
+* KVM host is in charge of Pod Network Routes.
+* Cloud Shell in GCP is replaced by a virtual machine.
+* Nodes' name and IP address starts from `1` (Note that the name of etcd nodes starts from `etcd-0`).
+* The order of chapters are a little bit changed.
+* The version of Ubuntu is xenial.
+* (Todo) Additional information is added for CKA Exam.
+
 
 ## Target Audience
 
@@ -43,14 +56,6 @@ This tutorial assumes you have an KVM host or a Linux PC running KVM. While KVM 
 * [Deploying the DNS Cluster Add-on](docs/12-dns-addon.md)
 * [Smoke Test](docs/13-smoke-test.md)
 * [Cleaning Up](docs/14-cleanup.md)
-
-
-## Major Changes from Original Kubernetes the Hard Way
-
-* HA Proxy is used as a load balancer for API Server.
-* KVM host is in charge of Pod Network Routes.
-* Cloud Shell in GCP is replaced by a virtual machine.
-* nodes' name and IP address starts from `1`.
 
 
 ## References
