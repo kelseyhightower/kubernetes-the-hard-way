@@ -18,7 +18,7 @@ $ kubectl create secret generic kubernetes-the-hard-way \
 Print a hexdump of the `kubernetes-the-hard-way` secret stored in etcd:
 
 ```
-$ ssh -i ~/.ssh/id_rsa-k8s.pub 10.240.0.21 "sudo ETCDCTL_API=3 etcdctl get \
+$ ssh -t -i ~/.ssh/id_rsa-k8s 10.240.0.11 "sudo ETCDCTL_API=3 etcdctl get \
   --endpoints=https://127.0.0.1:2379 \
   --cacert=/etc/etcd/ca.pem \
   --cert=/etc/etcd/kubernetes.pem \
@@ -179,10 +179,10 @@ $ NODE_PORT=$(kubectl get svc nginx \
   --output=jsonpath='{range .spec.ports[0]}{.nodePort}')
 ```
 
-Retrieve the IP address of a worker instance:
+Retrieve the IP address of the worker node:
 
 ```
-$ WORKER_IP=$ kubectl get nodes $(kubectl get pods -o wide | grep nginx | awk '{ print $7 }') -o wide | tail -1 | awk '{ print $6 }'
+$ WORKER_IP=$(kubectl get nodes $(kubectl get pods -o wide | grep nginx | awk '{ print $7 }') -o wide | tail -1 | awk '{ print $6 }')
 ```
 
 Make an HTTP request using the IP address and the `nginx` node port:
