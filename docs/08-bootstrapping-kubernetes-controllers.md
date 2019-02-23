@@ -2,8 +2,9 @@
 
 In this chapter, you will bootstrap the Kubernetes control plane across three virtual machines and configure it for high availability. You will also create an load balancer that exposes the Kubernetes API Servers to remote clients. The following components will be installed on each node: Kubernetes API Server, Scheduler, and Controller Manager.
 
+## Provision the Kubernetes Control Plane
 
-## Download and Distribute the Kubernetes Controller Binaries
+### Download and Distribute the Kubernetes Controller Binaries
 
 In `client-1`, Download and distribute the official Kubernetes release binaries:
 
@@ -19,7 +20,7 @@ done
 ```
 
 
-## Running commands in parallel with tmux
+### Running commands in parallel with tmux
 
 After this section, the commands must be run on each controller node: `controller-1`, `controller-2`, and `controller-3`. Login to each controller node:
 
@@ -30,15 +31,13 @@ $ ssh -i ~/.ssh/id_rsa-k8s 10.240.0.11
 [tmux](https://github.com/tmux/tmux/wiki) can be used to run commands on multiple virtual machines at the same time. See the [Running commands in parallel with tmux](01-prerequisites.md#running-commands-in-parallel-with-tmux) section in the Prerequisites lab.
 
 
-## Provision the Kubernetes Control Plane
+### Install the Kubernetes Controller Binaries
 
 Create the Kubernetes configuration directory:
 
 ```
 $ sudo mkdir -p /etc/kubernetes/config
 ```
-
-## Install the Kubernetes Controller Binaries
 
 Install the Kubernetes binaries:
 
@@ -49,7 +48,7 @@ $ {
 }
 ```
 
-## Configure the Kubernetes API Server
+### Configure the Kubernetes API Server
 
 ```
 $ {
@@ -114,7 +113,7 @@ WantedBy=multi-user.target
 EOF
 ```
 
-## Configure the Kubernetes Controller Manager
+### Configure the Kubernetes Controller Manager
 
 Move the `kube-controller-manager` kubeconfig into place:
 
@@ -152,7 +151,7 @@ WantedBy=multi-user.target
 EOF
 ```
 
-## Configure the Kubernetes Scheduler
+### Configure the Kubernetes Scheduler
 
 Move the `kube-scheduler` kubeconfig into place:
 
@@ -193,7 +192,7 @@ WantedBy=multi-user.target
 EOF
 ```
 
-## Start the Controller Services
+### Start the Controller Services
 
 ```
 $ {
