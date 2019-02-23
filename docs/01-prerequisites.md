@@ -82,6 +82,8 @@ libvirt-daemon-driver-storage-rbd-4.10.0-2.2.x86_64
 
 If you want to setup tmux like above, `ctrl+b` -> `"` twice, then `ctrl+b` -> `alt+2`.
 
+You can move to another window by `ctrl+b`, then an arrow key where you want to move.
+
 > Enable `synchronize-panes`: `ctrl+b` then `shift :`. Then type `set synchronize-panes on` at the prompt. To disable synchronization: `set synchronize-panes off`.
 >
 
