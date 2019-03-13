@@ -43,6 +43,17 @@ Install the Kubernetes binaries:
 }
 ```
 
+Running below test cases to verify:
+
+```
+{
+  (ls /usr/local/bin/kube-apiserver >> /dev/null 2>&1 && echo "PASSED kube-apiserver") || echo "FAILED kube-apiserver"
+  (ls /usr/local/bin/kube-controller-manager >> /dev/null 2>&1 && echo "PASSED kube-controller-manager") || echo "FAILED kube-controller-manager"
+  (ls /usr/local/bin/kube-scheduler >> /dev/null 2>&1 && echo "PASSED kube-scheduler") || echo "FAILED kube-scheduler"
+  (ls /usr/local/bin/kubectl >> /dev/null 2>&1 && echo "PASSED kubectl") || echo "FAILED kubectl"
+}
+```
+
 ### Configure the Kubernetes API Server
 
 ```
@@ -109,6 +120,27 @@ WantedBy=multi-user.target
 EOF
 ```
 
+Running below test cases to verify:
+
+```
+{
+  $CTRLER0_IP=10.240.0.10
+  $CTRLER1_IP=10.240.0.11
+  $CTRLER2_IP=10.240.0.12
+  (ls /var/lib/kubernetes/ca.pem >> /dev/null 2>&1 && echo "PASSED ca.pem") || echo "FAILED ca.pem"
+  (ls /var/lib/kubernetes/ca-key.pem >> /dev/null 2>&1 && echo "PASSED ca-key.pem") || echo "FAILED ca-key.pem"
+  (ls /var/lib/kubernetes/kubernetes.pem >> /dev/null 2>&1 && echo "PASSED kubernetes.pem") || echo "FAILED kubernetes.pem"
+  (ls /var/lib/kubernetes/kubernetes-key.pem >> /dev/null 2>&1 && echo "PASSED kubernetes-key.pem") || echo "FAILED kubernetes-key.pem"
+  (ls /var/lib/kubernetes/service-account.pem >> /dev/null 2>&1 && echo "PASSED service-account.pem") || echo "FAILED service-account.pem"
+  (ls /var/lib/kubernetes/service-account-key.pem >> /dev/null 2>&1 && echo "PASSED service-account-key.pem") || echo "FAILED service-account-key.pem"
+  (ls /var/lib/kubernetes/encryption-config.yaml >> /dev/null 2>&1 && echo "PASSED encryption-config.yaml") || echo "FAILED encryption-config.yaml"
+  (ls /etc/systemd/system/kube-apiserver.service >> /dev/null 2>&1 && echo "PASSED kube-apiserver.service") || echo "FAILED kube-apiserver.service"
+  (grep -o 'etcd-servers=[^"]*' /etc/systemd/system/kube-apiserver.service | grep ${CTRLER0_IP} >> /dev/null 2>&1 && echo "PASSED etcd-servers ${CTRLER0_IP}") || echo "FAILED etcd-servers ${CTRLER0_IP}"
+  (grep -o 'etcd-servers=[^"]*' /etc/systemd/system/kube-apiserver.service | grep ${CTRLER1_IP} >> /dev/null 2>&1 && echo "PASSED etcd-servers ${CTRLER1_IP}") || echo "FAILED etcd-servers ${CTRLER1_IP}"
+  (grep -o 'etcd-servers=[^"]*' /etc/systemd/system/kube-apiserver.service | grep ${CTRLER2_IP} >> /dev/null 2>&1 && echo "PASSED etcd-servers ${CTRLER2_IP}") || echo "FAILED etcd-servers ${CTRLER2_IP}"
+}
+```
+
 ### Configure the Kubernetes Controller Manager
 
 Move the `kube-controller-manager` kubeconfig into place:
@@ -145,6 +177,24 @@ RestartSec=5
 [Install]
 WantedBy=multi-user.target
 EOF
+```
+
+Running below test cases to verify:
+
+```
+{
+  (ls /var/lib/kubernetes/kube-controller-manager.kubeconfig >> /dev/null 2>&1 && echo "PASSED kube-controller-manager.kubeconfig") || echo "FAILED kube-controller-manager.kubeconfig"
+  (ls /etc/systemd/system/kube-controller-manager.service >> /dev/null 2>&1 && echo "PASSED kube-controller-manager.service") || echo "FAILED kube-controller-manager.service"
+  (ls /var/lib/kubernetes/ca.pem >> /dev/null 2>&1 && echo "PASSED ca.pem") || echo "FAILED ca.pem"
+  (ls /var/lib/kubernetes/ca-key.pem >> /dev/null 2>&1 && echo "PASSED ca-key.pem.pem") || echo "FAILED ca-key.pem.pem"
+  (ls /var/lib/kubernetes/service-account-key.pem >> /dev/null 2>&1 && echo "PASSED service-account-key.pem") || echo "FAILED service-account-key.pem"
+  (grep -o 'ExecStart=[^"]*' /etc/systemd/system/kube-controller-manager.service | grep "/usr/local/bin/kube-controller-manager" >> /dev/null 2>&1 && echo "PASSED ExecStart") || echo "FAILED ExecStart"
+  (grep -o 'cluster-signing-cert-file=[^"]*' /etc/systemd/system/kube-controller-manager.service | grep "/var/lib/kubernetes/ca.pem" >> /dev/null 2>&1 && echo "PASSED cluster-signing-cert-file") || echo "FAILED cluster-signing-cert-file"
+  (grep -o 'cluster-signing-key-file=[^"]*' /etc/systemd/system/kube-controller-manager.service | grep "/var/lib/kubernetes/ca-key.pem" >> /dev/null 2>&1 && echo "PASSED cluster-signing-key-file") || echo "FAILED cluster-signing-key-file"
+  (grep -o 'kubeconfig=[^"]*' /etc/systemd/system/kube-controller-manager.service | grep "/var/lib/kubernetes/kube-controller-manager.kubeconfig" >> /dev/null 2>&1 && echo "PASSED kubeconfig") || echo "FAILED kubeconfig"
+  (grep -o 'root-ca-file=[^"]*' /etc/systemd/system/kube-controller-manager.service | grep "/var/lib/kubernetes/ca.pem" >> /dev/null 2>&1 && echo "PASSED root-ca-file") || echo "FAILED root-ca-file"
+  (grep -o 'service-account-private-key-file=[^"]*' /etc/systemd/system/kube-controller-manager.service | grep "/var/lib/kubernetes/service-account-key.pem" >> /dev/null 2>&1 && echo "PASSED service-account-private-key-file") || echo "FAILED service-account-private-key-file"
+}
 ```
 
 ### Configure the Kubernetes Scheduler
@@ -186,6 +236,20 @@ RestartSec=5
 [Install]
 WantedBy=multi-user.target
 EOF
+```
+
+Running below test cases to verify:
+
+```
+{
+  (ls /var/lib/kubernetes/kube-scheduler.kubeconfig >> /dev/null 2>&1 && echo "PASSED kube-scheduler.kubeconfig") || echo "FAILED kube-scheduler.kubeconfig"
+  (ls /etc/kubernetes/config/kube-scheduler.yaml >> /dev/null 2>&1 && echo "PASSED kube-scheduler.yaml") || echo "FAILED kube-scheduler.yaml"
+  (ls /etc/systemd/system/kube-scheduler.service >> /dev/null 2>&1 && echo "PASSED kube-scheduler.service") || echo "FAILED kube-scheduler.service"
+  (ls /usr/local/bin/kube-scheduler >> /dev/null 2>&1 && echo "PASSED kube-scheduler") || echo "FAILED kube-scheduler"
+  (grep -o 'kubeconfig:[^:]*' /etc/kubernetes/config/kube-scheduler.yaml | grep "/var/lib/kubernetes/kube-scheduler.kubeconfig" >> /dev/null 2>&1 && echo "PASSED kubeconfig") || echo "FAILED kubeconfig"
+  (grep -o 'ExecStart=[^"]*' /etc/systemd/system/kube-scheduler.service | grep "/usr/local/bin/kube-scheduler" >> /dev/null 2>&1 && echo "PASSED ExecStart") || echo "FAILED ExecStart"
+  (grep -o 'config=[^"]*' /etc/systemd/system/kube-scheduler.service | grep "/etc/kubernetes/config/kube-scheduler.yaml" >> /dev/null 2>&1 && echo "PASSED config") || echo "FAILED config"
+}
 ```
 
 ### Start the Controller Services
@@ -243,6 +307,16 @@ sudo systemctl restart nginx
 sudo systemctl enable nginx
 ```
 
+Running below test cases to verify:
+
+```
+{
+  (ls /etc/nginx/sites-available/kubernetes.default.svc.cluster.local >> /dev/null 2>&1 && echo "PASSED sites-available/kubernetes.default.svc.cluster.local") || echo "FAILED sites-available/kubernetes.default.svc.cluster.local"
+  (ls /etc/nginx/sites-enabled/kubernetes.default.svc.cluster.local >> /dev/null 2>&1 && echo "PASSED sites-enabled/kubernetes.default.svc.cluster.local") || echo "FAILED sites-enabled/kubernetes.default.svc.cluster.local"
+  (curl -H "Host: kubernetes.default.svc.cluster.local" -is http://127.0.0.1/healthz | grep "200 OK" >> /dev/null 2>&1 && echo "PASSED 200 OK") || echo "FAILED 200 OK"
+}
+```
+
 ### Verification
 
 ```
@@ -282,6 +356,9 @@ ok
 In this section you will configure RBAC permissions to allow the Kubernetes API Server to access the Kubelet API on each worker node. Access to the Kubelet API is required for retrieving metrics, logs, and executing commands in pods.
 
 > This tutorial sets the Kubelet `--authorization-mode` flag to `Webhook`. Webhook mode uses the [SubjectAccessReview](https://kubernetes.io/docs/admin/authorization/#checking-api-access) API to determine authorization.
+
+In this section you are interacting with your cluster as a whole, so the following 2 role creation commands only need to be run from a single controller
+
 
 ```
 gcloud compute ssh controller-0
