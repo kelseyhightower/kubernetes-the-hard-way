@@ -155,12 +155,6 @@ admin.kubeconfig
 Copy the appropriate `kubelet` and `kube-proxy` kubeconfig files to each worker instance:
 
 ```
-for instance in worker-1; do
-  scp ${instance}.kubeconfig ${instance}:~/
-done
-```
-
-```
 for instance in worker-1 worker-2; do
   scp kube-proxy.kubeconfig ${instance}:~/
 done
