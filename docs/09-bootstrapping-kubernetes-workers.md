@@ -51,6 +51,46 @@ Copy the appropriate certificates and private keys to the worker node:
 scp ca.crt worker-1.crt worker-1.key worker-1:~/
 ```
 
+
+### The kubelet Kubernetes Configuration File
+
+When generating kubeconfig files for Kubelets the client certificate matching the Kubelet's node name must be used. This will ensure Kubelets are properly authorized by the Kubernetes [Node Authorizer](https://kubernetes.io/docs/admin/authorization/node/).
+
+Get the kub-api server load-balancer IP.
+```
+LOADBALANCER_ADDRESS=192.168.5.30
+```
+
+Generate a kubeconfig file for the first worker node:
+
+```
+  kubectl config set-cluster kubernetes-the-hard-way \
+    --certificate-authority=ca.crt \
+    --embed-certs=true \
+    --server=https://${LOADBALANCER_ADDRESS}:6443 \
+    --kubeconfig=${instance}.kubeconfig
+
+  kubectl config set-credentials system:node:worker-1 \
+    --client-certificate=worker-1.crt \
+    --client-key=worker-1.key \
+    --embed-certs=true \
+    --kubeconfig=worker-1.kubeconfig
+
+  kubectl config set-context default \
+    --cluster=kubernetes-the-hard-way \
+    --user=system:node:worker-1 \
+    --kubeconfig=worker-1.kubeconfig
+
+  kubectl config use-context default --kubeconfig=worker-1.kubeconfig
+done
+```
+
+Results:
+
+```
+worker-1.kubeconfig
+```
+
 ### Download and Install Worker Binaries
 
 ```
