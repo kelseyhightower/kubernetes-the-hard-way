@@ -13,7 +13,7 @@ export PATH=$PATH:/usr/local/go/bin:$GOPATH/bin
 ## Install kubetest
 
 ```
-sudo go get -v -u k8s.io/test-infra/kubetest
+go get -v -u k8s.io/test-infra/kubetest
 ```
 
 > Note: This may take a few minutes depending on your network speed
