@@ -56,16 +56,10 @@ NAME                      READY   STATUS    RESTARTS   AGE
 busybox-bd8fb7cbd-vflm9   1/1     Running   0          10s
 ```
 
-Retrieve the full name of the `busybox` pod:
-
-```
-POD_NAME=$(kubectl get pods -l run=busybox -o jsonpath="{.items[0].metadata.name}")
-```
-
 Execute a DNS lookup for the `kubernetes` service inside the `busybox` pod:
 
 ```
-kubectl exec -ti $POD_NAME -- nslookup kubernetes
+kubectl exec -ti busybox -- nslookup kubernetes
 ```
 
 > output
