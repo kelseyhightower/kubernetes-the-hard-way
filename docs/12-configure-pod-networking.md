@@ -10,7 +10,7 @@ Download the CNI Plugins required for weave on each of the worker nodes - `worke
 
 Extract it to /opt/cni/bin directory
 
-`sudo tar -xzvf cni-plugins-amd64-v0.7.5.tgz  --directory /opt/cni/bin/``
+`sudo tar -xzvf cni-plugins-amd64-v0.7.5.tgz  --directory /opt/cni/bin/`
 
 ### Deploy Weave Network
 
