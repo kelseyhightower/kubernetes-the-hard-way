@@ -32,6 +32,7 @@ master-1$ kubectl get pods -n kube-system
 > output
 
 ```
-NAME                       READY   STATUS    RESTARTS   AGE
-weave-net-cfzk5            2/2     Running   0          41m
+NAME              READY   STATUS    RESTARTS   AGE
+weave-net-58j2j   2/2     Running   0          89s
+weave-net-rr5dk   2/2     Running   0          89s
 ```
