@@ -57,11 +57,12 @@ LOADBALANCER_ADDRESS=192.168.5.30
 Generate a kubeconfig file for the first worker node:
 
 ```
+{
   kubectl config set-cluster kubernetes-the-hard-way \
     --certificate-authority=ca.crt \
     --embed-certs=true \
     --server=https://${LOADBALANCER_ADDRESS}:6443 \
-    --kubeconfig=${instance}.kubeconfig
+    --kubeconfig=worker-1.kubeconfig
 
   kubectl config set-credentials system:node:worker-1 \
     --client-certificate=worker-1.crt \
@@ -75,7 +76,7 @@ Generate a kubeconfig file for the first worker node:
     --kubeconfig=worker-1.kubeconfig
 
   kubectl config use-context default --kubeconfig=worker-1.kubeconfig
-done
+}
 ```
 
 Results:
@@ -91,6 +92,8 @@ master-1$ scp ca.crt worker-1.crt worker-1.key worker-1.kubeconfig worker-1:~/
 ```
 
 ### Download and Install Worker Binaries
+
+Going forward all activities are to be done on the `worker-1` node.
 
 ```
 worker-1$ wget -q --show-progress --https-only --timestamping \
