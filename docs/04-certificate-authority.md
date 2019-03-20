@@ -6,17 +6,8 @@ In this lab you will provision a [PKI Infrastructure](https://en.wikipedia.org/w
 
 You can do these on any machine with `openssl` on it. But you should be able to copy the generated files to the provisioned VMs. Or just do these from one of the master nodes.
 
-In my case I do it on the master-1 node, so I create an SSH key pair from the master-1 node and place them in the authorized_keys on the other nodes.
+In our case we do it on the master-1 node, as we have set it up to be the administrative client.
 
-Generate Key Pair on master-1 node
-`ssh-keygen`
-
-Move public key to other nodes
-
-```cat >> ~/.ssh/authorized_keys <<EOF
-ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDiOE4ljVBCoQqtW26sWuYuC5UA91JtqC9ikWl9xDmpd0E8d5/WqvEBPzoUTe3w3pBzWJ8Zho1Uyf8zPhmwE1+l0LsgrtKmFNhh2bRcdptvUCJddrhvfC39BalAg9rYPl4qzZrKRI4904/ErRKVBidRR24rSU2fhqFjpsGpdQJOWa4HzRjpfCwvMnPmL1XaU6T8Hsrv4ol+/D+o/YwXBEjE/TrIkMutG1c37batVHsOz3o16NPbsnZnH2nEOZr/dhKmkQn0qshs/6GvU5glx5rnGbnrykj3t6xGmkbdfDVUYiXwS4BBRp8FYmlBuVn9wMGdZxZSDmH2E1yIplP8+08b vagrant@master-1
-EOF
-```
 
 ## Certificate Authority
 
