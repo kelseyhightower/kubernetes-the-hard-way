@@ -12,18 +12,16 @@ Generate a kubeconfig file suitable for authenticating as the `admin` user:
 
 ```
 {
-  KUBERNETES_PUBLIC_ADDRESS=$(gcloud compute addresses describe kubernetes-the-hard-way \
-    --region $(gcloud config get-value compute/region) \
-    --format 'value(address)')
+  KUBERNETES_LB_ADDRESS=192.168.5.30
 
   kubectl config set-cluster kubernetes-the-hard-way \
-    --certificate-authority=ca.pem \
+    --certificate-authority=ca.crt \
     --embed-certs=true \
-    --server=https://${KUBERNETES_PUBLIC_ADDRESS}:6443
+    --server=https://${KUBERNETES_LB_ADDRESS}:6443
 
   kubectl config set-credentials admin \
-    --client-certificate=admin.pem \
-    --client-key=admin-key.pem
+    --client-certificate=admin.crt \
+    --client-key=admin.key
 
   kubectl config set-context kubernetes-the-hard-way \
     --cluster=kubernetes-the-hard-way \
@@ -48,7 +46,6 @@ NAME                 STATUS    MESSAGE             ERROR
 controller-manager   Healthy   ok
 scheduler            Healthy   ok
 etcd-1               Healthy   {"health":"true"}
-etcd-2               Healthy   {"health":"true"}
 etcd-0               Healthy   {"health":"true"}
 ```
 
@@ -62,9 +59,8 @@ kubectl get nodes
 
 ```
 NAME       STATUS   ROLES    AGE    VERSION
-worker-0   Ready    <none>   117s   v1.12.0
-worker-1   Ready    <none>   118s   v1.12.0
-worker-2   Ready    <none>   118s   v1.12.0
+worker-1   Ready    <none>   118s   v1.13.0
+worker-2   Ready    <none>   118s   v1.13.0
 ```
 
-Next: [Provisioning Pod Network Routes](11-pod-network-routes.md)
+Next: [Deploy Pod Networking](12-configure-pod-networking.md)
