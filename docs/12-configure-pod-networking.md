@@ -36,3 +36,5 @@ NAME              READY   STATUS    RESTARTS   AGE
 weave-net-58j2j   2/2     Running   0          89s
 weave-net-rr5dk   2/2     Running   0          89s
 ```
+
+Next: [Kube API Server to Kubelet Connectivity](13-kube-apiserver-to-kubelet.md)

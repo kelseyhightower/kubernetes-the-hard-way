@@ -59,4 +59,4 @@ kubectl version --client
 Client Version: version.Info{Major:"1", Minor:"13", GitVersion:"v1.13.0", GitCommit:"ddf47ac13c1a9483ea035a79cd7c10005ff21a6d", GitTreeState:"clean", BuildDate:"2018-12-03T21:04:45Z", GoVersion:"go1.11.2", Compiler:"gc", Platform:"linux/amd64"}
 ```
 
-Next: [Provisioning Compute Resources](03-compute-resources.md)
+Next: [Certificate Authority](04-certificate-authority.md)

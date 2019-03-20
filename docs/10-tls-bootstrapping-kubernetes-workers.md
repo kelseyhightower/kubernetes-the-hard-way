@@ -399,3 +399,5 @@ NAME       STATUS   ROLES    AGE   VERSION
 worker-1   Ready    <none>   12h   v1.13.0
 worker-2   Ready    <none>   37m   v1.13.0
 ```
+
+Next: [Configuring Kubectl](11-configuring-kubectl.md)

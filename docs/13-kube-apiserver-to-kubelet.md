@@ -52,3 +52,5 @@ subjects:
     name: kube-apiserver
 EOF
 ```
+
+Next: [DNS Addon](14-dns-addon.md)
