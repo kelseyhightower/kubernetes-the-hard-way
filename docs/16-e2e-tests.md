@@ -32,3 +32,6 @@ export KUBE_MASTER=master-1
 kubetest --test --provider=skeleton --test_args="--ginkgo.focus=\[Conformance\]" | tee test.out
 
 ```
+
+
+This could take about 1.5 to 2 hours. The number of tests run and passed will be displayed at the end.
