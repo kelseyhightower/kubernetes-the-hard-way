@@ -45,7 +45,7 @@ Install the Kubernetes binaries:
 {
   sudo mkdir -p /var/lib/kubernetes/
 
-  sudo mv ca.crt ca.key kube-apiserver.crt kube-apiserver.key \
+  sudo cp ca.crt ca.key kube-apiserver.crt kube-apiserver.key \
     service-account.key service-account.crt \
     etcd-server.key etcd-server.crt \
     encryption-config.yaml /var/lib/kubernetes/
@@ -218,7 +218,7 @@ In this section you will provision an external load balancer to front the Kubern
 
 ```
 #Install HAProxy
-apt-get update && apt-get install -y haproxy
+sudo apt-get update && sudo apt-get install -y haproxy
 
 ```
 
