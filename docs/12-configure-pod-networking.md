@@ -15,6 +15,8 @@ Extract it to /opt/cni/bin directory
 ### Deploy Weave Network
 
 Deploy weave network. Run only once on the `master` node.
+
+
 `kubectl apply -f "https://cloud.weave.works/k8s/net?k8s-version=$(kubectl version | base64 | tr -d '\n')"`
 
 Weave uses POD CIDR of `10.32.0.0/12` by default.
