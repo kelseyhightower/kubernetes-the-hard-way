@@ -4,7 +4,7 @@ In this lab you will bootstrap the Kubernetes control plane across 2 compute ins
 
 ## Prerequisites
 
-The commands in this lab must be run on each controller instance: `controller-1`, and `controller-2`. Login to each controller instance using SSH Terminal. Example:
+The commands in this lab must be run on each controller instance: `master-1`, and `master-2`. Login to each controller instance using SSH Terminal. Example:
 
 ### Running commands in parallel with tmux
 
