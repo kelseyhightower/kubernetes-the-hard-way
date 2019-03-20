@@ -223,7 +223,7 @@ sudo apt-get update && sudo apt-get install -y haproxy
 ```
 
 ```
-cat > /etc/haproxy/haproxy.cfg <<EOF
+cat <<EOF | sudo tee /etc/haproxy/haproxy.cfg 
 frontend kubernetes
     bind 192.168.5.30:6443
     option tcplog
