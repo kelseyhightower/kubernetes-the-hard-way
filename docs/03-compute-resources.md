@@ -8,7 +8,7 @@ Download this github repository and cd into the vagrant folder
 
 CD into vagrant directory
 
-`cd kubernetes-the-hard-way.git\vagrant`
+`cd kubernetes-the-hard-way\vagrant`
 
 Run Vagrant up
 
