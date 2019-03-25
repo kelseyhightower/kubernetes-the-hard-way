@@ -35,7 +35,7 @@ This does the below:
 - Add's a DNS entry to each of the nodes to access internet
     > DNS: 8.8.8.8
 
-- Install's Docker on Master and Worker nodes
+- Install's Docker on Worker nodes
 - Runs the below command on all nodes to allow for network forwarding in IP Tables.
   This is required for kubernetes networking to function correctly.
     > sysctl net.bridge.bridge-nf-call-iptables=1
