@@ -1,4 +1,4 @@
-# Kubernetes The Hard Way
+# Kubernetes The Hard Way On VirtualBox
 
 This tutorial walks you through setting up Kubernetes the hard way on a local machine using VirtualBox.
 This guide is not for people looking for a fully automated command to bring up a Kubernetes cluster.
