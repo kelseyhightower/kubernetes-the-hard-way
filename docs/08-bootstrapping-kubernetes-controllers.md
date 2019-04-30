@@ -240,7 +240,7 @@ EOF
 ```
 
 ```
-sudo service haproxy start
+sudo service haproxy restart
 ```
 
 ### Verification
