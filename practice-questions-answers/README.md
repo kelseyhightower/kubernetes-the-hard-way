@@ -46,3 +46,10 @@ This repository contains answers for the practice tests hosted on the course [Ce
 | Troubleshooting                  | Application Failure                |
 | Troubleshooting                  | Control Plane Failure              |
 | Troubleshooting                  | Worker Node Failure                |
+
+
+# Contributing Guide
+
+1. The folder structure for all topics and associated practice tests are created already. Use the same pattern to create one if it doesn't exist.
+2. Create a file with your answers.
+3. Send in a pull request
