@@ -42,6 +42,7 @@ Set a default compute zone:
 gcloud config set compute/zone us-west1-c
 ```
 
+> Use the `gcloud auth login` to authenticate with the Google Cloud SDK.
 > Use the `gcloud compute zones list` command to view additional regions and zones.
 
 ## Running Commands in Parallel with tmux
