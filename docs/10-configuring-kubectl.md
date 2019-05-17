@@ -55,16 +55,16 @@ etcd-0               Healthy   {"health":"true"}
 List the nodes in the remote Kubernetes cluster:
 
 ```
-kubectl get nodes
+kubectl get nodes -o wide
 ```
 
 > output
 
 ```
-NAME       STATUS   ROLES    AGE    VERSION
-worker-0   Ready    <none>   117s   v1.12.0
-worker-1   Ready    <none>   118s   v1.12.0
-worker-2   Ready    <none>   118s   v1.12.0
+NAME       STATUS   ROLES    AGE     VERSION   INTERNAL-IP   EXTERNAL-IP   OS-IMAGE       KERNEL-VERSION   CONTAINER-RUNTIME
+worker-0   Ready    <none>   3m42s   v1.14.2   10.240.0.20   <none>        Ubuntu 19.04   5.0.0-1006-gcp   containerd://1.2.6
+worker-1   Ready    <none>   3m46s   v1.14.2   10.240.0.21   <none>        Ubuntu 19.04   5.0.0-1006-gcp   containerd://1.2.6
+worker-2   Ready    <none>   3m44s   v1.14.2   10.240.0.22   <none>        Ubuntu 19.04   5.0.0-1006-gcp   containerd://1.2.6
 ```
 
 Next: [Provisioning Pod Network Routes](11-pod-network-routes.md)
