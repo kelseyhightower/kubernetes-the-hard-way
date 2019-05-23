@@ -17,9 +17,9 @@ The Kubernetes [networking model](https://kubernetes.io/docs/concepts/cluster-ad
 
 > Setting up network policies is out of scope for this tutorial.
 
-### Virtual Private Cloud Network
+### Virtual Network
 
-In this section a dedicated [Virtual Network](https://docs.microsoft.com/en-us/azure/virtual-network/virtual-networks-overview) (VNET) network will be setup to host the Kubernetes cluster. A subnet must be provisioned with an IP address range large enough to assign a private IP address to each node in the Kubernetes cluster.
+In this section a dedicated [Virtual Network](https://docs.microsoft.com/en-us/azure/virtual-network/virtual-networks-overview) (VNET) will be setup to host the Kubernetes cluster. A subnet must be provisioned with an IP address range large enough to assign a private IP address to each node in the Kubernetes cluster.
 
 Create the `kubernetes-the-hard-way` custom VNET network and subnet:
 

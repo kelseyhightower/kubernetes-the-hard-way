@@ -132,11 +132,9 @@ cat > ${instance}-csr.json <<EOF
 }
 EOF
 
-EXTERNAL_IP=$(gcloud compute instances describe ${instance} \
-  --format 'value(networkInterfaces[0].accessConfigs[0].natIP)')
+EXTERNAL_IP=$(az vm show --show-details -g kubernetes-the-hard-way -n ${instance} --output tsv | cut -f19)
 
-INTERNAL_IP=$(gcloud compute instances describe ${instance} \
-  --format 'value(networkInterfaces[0].networkIP)')
+INTERNAL_IP=$(az vm show --show-details -g kubernetes-the-hard-way -n ${instance} --output tsv | cut -f16)
 
 cfssl gencert \
   -ca=ca.pem \
@@ -299,9 +297,7 @@ Generate the Kubernetes API Server certificate and private key:
 ```
 {
 
-KUBERNETES_PUBLIC_ADDRESS=$(gcloud compute addresses describe kubernetes-the-hard-way \
-  --region $(gcloud config get-value compute/region) \
-  --format 'value(address)')
+KUBERNETES_PUBLIC_ADDRESS=$(az network public-ip show -g kubernetes-the-hard-way -n kubernetes-the-hard-way-ip --output tsv | cut -f6)
 
 cat > kubernetes-csr.json <<EOF
 {
@@ -392,7 +388,8 @@ Copy the appropriate certificates and private keys to each worker instance:
 
 ```
 for instance in worker-0 worker-1 worker-2; do
-  gcloud compute scp ca.pem ${instance}-key.pem ${instance}.pem ${instance}:~/
+  EXTERNAL_IP=$(az vm show --show-details -g kubernetes-the-hard-way -n ${instance} --output tsv | cut -f19)
+  scp ca.pem ${instance}-key.pem ${instance}.pem azureuser@${EXTERNAL_IP}:~/
 done
 ```
 
@@ -400,8 +397,8 @@ Copy the appropriate certificates and private keys to each controller instance:
 
 ```
 for instance in controller-0 controller-1 controller-2; do
-  gcloud compute scp ca.pem ca-key.pem kubernetes-key.pem kubernetes.pem \
-    service-account-key.pem service-account.pem ${instance}:~/
+  EXTERNAL_IP=$(az vm show --show-details -g kubernetes-the-hard-way -n ${instance} --output tsv | cut -f19)
+  scp ca.pem ca-key.pem kubernetes-key.pem kubernetes.pem service-account-key.pem service-account.pem azureuser@${EXTERNAL_IP}:~/
 done
 ```
 
