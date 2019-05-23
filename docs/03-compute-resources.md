@@ -1,8 +1,15 @@
 # Provisioning Compute Resources
 
-Kubernetes requires a set of machines to host the Kubernetes control plane and the worker nodes where containers are ultimately run. In this lab you will provision the compute resources required for running a secure and highly available Kubernetes cluster across a single [compute zone](https://cloud.google.com/compute/docs/regions-zones/regions-zones).
+Kubernetes requires a set of machines to host the Kubernetes control plane and the worker nodes where containers are ultimately run. In this lab you will provision the compute resources required for running a secure and highly available Kubernetes cluster.
 
-> Ensure a default compute zone and region have been set as described in the [Prerequisites](01-prerequisites.md#set-a-default-compute-region-and-zone) lab.
+> Ensure a default region has been set as described in the [Prerequisites](01-prerequisites.md#set-a-default-compute-region-and-zone) lab.
+
+## Resource Group
+In Azure, compute resources are tied to a resource group, let's create one for the tutorial:
+
+```
+az group create --name kubernetes-the-hard-way --location westus2
+```
 
 ## Networking
 
@@ -12,60 +19,82 @@ The Kubernetes [networking model](https://kubernetes.io/docs/concepts/cluster-ad
 
 ### Virtual Private Cloud Network
 
-In this section a dedicated [Virtual Private Cloud](https://cloud.google.com/compute/docs/networks-and-firewalls#networks) (VPC) network will be setup to host the Kubernetes cluster.
+In this section a dedicated [Virtual Network](https://docs.microsoft.com/en-us/azure/virtual-network/virtual-networks-overview) (VNET) network will be setup to host the Kubernetes cluster. A subnet must be provisioned with an IP address range large enough to assign a private IP address to each node in the Kubernetes cluster.
 
-Create the `kubernetes-the-hard-way` custom VPC network:
-
-```
-gcloud compute networks create kubernetes-the-hard-way --subnet-mode custom
-```
-
-A [subnet](https://cloud.google.com/compute/docs/vpc/#vpc_networks_and_subnets) must be provisioned with an IP address range large enough to assign a private IP address to each node in the Kubernetes cluster.
-
-Create the `kubernetes` subnet in the `kubernetes-the-hard-way` VPC network:
+Create the `kubernetes-the-hard-way` custom VNET network and subnet:
 
 ```
-gcloud compute networks subnets create kubernetes \
-  --network kubernetes-the-hard-way \
-  --range 10.240.0.0/24
+az network vnet create \
+  --resource-group kubernetes-the-hard-way \
+  --name kubernetes-the-hard-way-vnet \
+  --address-prefixes 10.240.0.0/16 \
+  --subnet-name kubernetes-the-hard-way-subnet \
+  --subnet-prefixes 10.240.0.0/24
 ```
 
 > The `10.240.0.0/24` IP address range can host up to 254 compute instances.
 
-### Firewall Rules
+### Security Group
 
-Create a firewall rule that allows internal communication across all protocols:
-
-```
-gcloud compute firewall-rules create kubernetes-the-hard-way-allow-internal \
-  --allow tcp,udp,icmp \
-  --network kubernetes-the-hard-way \
-  --source-ranges 10.240.0.0/24,10.200.0.0/16
-```
-
-Create a firewall rule that allows external SSH, ICMP, and HTTPS:
+Create a security group that allows internal communication across all protocols:
 
 ```
-gcloud compute firewall-rules create kubernetes-the-hard-way-allow-external \
-  --allow tcp:22,tcp:6443,icmp \
-  --network kubernetes-the-hard-way \
-  --source-ranges 0.0.0.0/0
+az network nsg create --resource-group kubernetes-the-hard-way --name kubernetes-the-hard-way-nsg
 ```
 
-> An [external load balancer](https://cloud.google.com/compute/docs/load-balancing/network/) will be used to expose the Kubernetes API Servers to remote clients.
-
-List the firewall rules in the `kubernetes-the-hard-way` VPC network:
+Create a firewall rule that allows external SSH, and HTTPS:
 
 ```
-gcloud compute firewall-rules list --filter="network:kubernetes-the-hard-way"
+az network nsg rule create \
+  --resource-group kubernetes-the-hard-way \
+  --nsg-name kubernetes-the-hard-way-nsg \
+  --name K8s \
+  --access Allow \
+  --protocol Tcp \
+  --direction Inbound \
+  --priority 100 \
+  --source-address-prefix Internet \
+  --source-port-range "*" \
+  --destination-port-ranges 22 6443
+```
+
+> An [external load balancer](https://azure.microsoft.com/en-us/services/load-balancer/) will be used to expose the Kubernetes API Servers to remote clients.
+
+List the security group rule in the `kubernetes-the-hard-way` resource group:
+
+```
+az network nsg rule show --resource-group kubernetes-the-hard-way --name K8s --nsg-name kubernetes-the-hard-way-nsg
 ```
 
 > output
 
-```
-NAME                                    NETWORK                  DIRECTION  PRIORITY  ALLOW                 DENY
-kubernetes-the-hard-way-allow-external  kubernetes-the-hard-way  INGRESS    1000      tcp:22,tcp:6443,icmp
-kubernetes-the-hard-way-allow-internal  kubernetes-the-hard-way  INGRESS    1000      tcp,udp,icmp
+```json
+{
+  "access": "Allow",
+  "description": null,
+  "destinationAddressPrefix": "*",
+  "destinationAddressPrefixes": [],
+  "destinationApplicationSecurityGroups": null,
+  "destinationPortRange": null,
+  "destinationPortRanges": [
+    "22",
+    "6443"
+  ],
+  "direction": "Inbound",
+  "etag": "W/\"XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX\"",
+  "id": "/subscriptions/XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX/resourceGroups/kubernetes-the-hard-way/providers/Microsoft.Network/networkSecurityGroups/kubernetes-the-hard-way-nsg/securityRules/K8s",
+  "name": "K8s",
+  "priority": 100,
+  "protocol": "Tcp",
+  "provisioningState": "Succeeded",
+  "resourceGroup": "kubernetes-the-hard-way",
+  "sourceAddressPrefix": "Internet",
+  "sourceAddressPrefixes": [],
+  "sourceApplicationSecurityGroups": null,
+  "sourcePortRange": "*",
+  "sourcePortRanges": [],
+  "type": "Microsoft.Network/networkSecurityGroups/securityRules"
+}
 ```
 
 ### Kubernetes Public IP Address
@@ -73,21 +102,46 @@ kubernetes-the-hard-way-allow-internal  kubernetes-the-hard-way  INGRESS    1000
 Allocate a static IP address that will be attached to the external load balancer fronting the Kubernetes API Servers:
 
 ```
-gcloud compute addresses create kubernetes-the-hard-way \
-  --region $(gcloud config get-value compute/region)
+az network public-ip create \
+  --name kubernetes-the-hard-way-ip \
+  --resource-group kubernetes-the-hard-way \
+  --allocation-method Static
 ```
 
 Verify the `kubernetes-the-hard-way` static IP address was created in your default compute region:
 
 ```
-gcloud compute addresses list --filter="name=('kubernetes-the-hard-way')"
+az network public-ip show --resource-group kubernetes-the-hard-way --name kubernetes-the-hard-way-ip
 ```
 
 > output
 
-```
-NAME                     REGION    ADDRESS        STATUS
-kubernetes-the-hard-way  us-west1  XX.XXX.XXX.XX  RESERVED
+```json
+{
+  "ddosSettings": null,
+  "dnsSettings": null,
+  "etag": "W/\"XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX\"",
+  "id": "/subscriptions/XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX/resourceGroups/kubernetes-the-hard-way/providers/Microsoft.Network/publicIPAddresses/kubernetes-the-hard-way-ip",
+  "idleTimeoutInMinutes": 4,
+  "ipAddress": "XX.XXX.XXX.XX",
+  "ipConfiguration": null,
+  "ipTags": [],
+  "location": "westus2",
+  "name": "kubernetes-the-hard-way-ip",
+  "provisioningState": "Succeeded",
+  "publicIpAddressVersion": "IPv4",
+  "publicIpAllocationMethod": "Static",
+  "publicIpPrefix": null,
+  "resourceGroup": "kubernetes-the-hard-way",
+  "resourceGuid": "XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX",
+  "sku": {
+    "name": "Basic",
+    "tier": "Regional"
+  },
+  "tags": null,
+  "type": "Microsoft.Network/publicIPAddresses",
+  "zones": null
+}
 ```
 
 ## Compute Instances
@@ -100,17 +154,20 @@ Create three compute instances which will host the Kubernetes control plane:
 
 ```
 for i in 0 1 2; do
-  gcloud compute instances create controller-${i} \
-    --async \
-    --boot-disk-size 200GB \
-    --can-ip-forward \
-    --image-family ubuntu-1804-lts \
-    --image-project ubuntu-os-cloud \
-    --machine-type n1-standard-1 \
-    --private-network-ip 10.240.0.1${i} \
-    --scopes compute-rw,storage-ro,service-management,service-control,logging-write,monitoring \
-    --subnet kubernetes \
-    --tags kubernetes-the-hard-way,controller
+  az vm create \
+    --name controller-${i} \
+    --resource-group kubernetes-the-hard-way
+    --no-wait \
+    --vent-name kubernetes-the-hard-way-vnet
+    --subnet kubernetes-the-hard-way-subnet
+    --nsg kubernetes-the-hard-way-nsg
+    --private-ip-address 10.240.0.1${i}
+    --public-ip-address-allocation Static
+    --image Canonical:UbuntuServer:18.04-LTS:latest
+    --admin-username azureuser
+    --generate-ssh-keys
+    --size Standard_B2s
+    --data-disk-sizes-gb 200
 done
 ```
 
@@ -124,18 +181,20 @@ Create three compute instances which will host the Kubernetes worker nodes:
 
 ```
 for i in 0 1 2; do
-  gcloud compute instances create worker-${i} \
-    --async \
-    --boot-disk-size 200GB \
-    --can-ip-forward \
-    --image-family ubuntu-1804-lts \
-    --image-project ubuntu-os-cloud \
-    --machine-type n1-standard-1 \
-    --metadata pod-cidr=10.200.${i}.0/24 \
-    --private-network-ip 10.240.0.2${i} \
-    --scopes compute-rw,storage-ro,service-management,service-control,logging-write,monitoring \
-    --subnet kubernetes \
-    --tags kubernetes-the-hard-way,worker
+  az vm create \
+    --name worker-${i} \
+    --resource-group kubernetes-the-hard-way
+    --no-wait \
+    --vent-name kubernetes-the-hard-way-vnet
+    --subnet kubernetes-the-hard-way-subnet
+    --nsg kubernetes-the-hard-way-nsg
+    --private-ip-address 10.240.0.2${i}
+    --public-ip-address-allocation Static
+    --image Canonical:UbuntuServer:18.04-LTS:latest
+    --admin-username azureuser
+    --generate-ssh-keys
+    --size Standard_B2s
+    --data-disk-sizes-gb 200
 done
 ```
 
@@ -144,68 +203,31 @@ done
 List the compute instances in your default compute zone:
 
 ```
-gcloud compute instances list
+az vm list --resource-group kubernetes-the-hard-way --output table
 ```
 
 > output
 
 ```
-NAME          ZONE        MACHINE_TYPE   PREEMPTIBLE  INTERNAL_IP  EXTERNAL_IP     STATUS
-controller-0  us-west1-c  n1-standard-1               10.240.0.10  XX.XXX.XXX.XXX  RUNNING
-controller-1  us-west1-c  n1-standard-1               10.240.0.11  XX.XXX.X.XX     RUNNING
-controller-2  us-west1-c  n1-standard-1               10.240.0.12  XX.XXX.XXX.XX   RUNNING
-worker-0      us-west1-c  n1-standard-1               10.240.0.20  XXX.XXX.XXX.XX  RUNNING
-worker-1      us-west1-c  n1-standard-1               10.240.0.21  XX.XXX.XX.XXX   RUNNING
-worker-2      us-west1-c  n1-standard-1               10.240.0.22  XXX.XXX.XX.XX   RUNNING
+Name          ResourceGroup            Location    Zones
+------------  -----------------------  ----------  -------
+controller-0  kubernetes-the-hard-way  westus2
+controller-1  kubernetes-the-hard-way  westus2
+controller-2  kubernetes-the-hard-way  westus2
+worker-0      kubernetes-the-hard-way  westus2
+worker-1      kubernetes-the-hard-way  westus2
+worker-2      kubernetes-the-hard-way  westus2
 ```
 
 ## Configuring SSH Access
 
-SSH will be used to configure the controller and worker instances. When connecting to compute instances for the first time SSH keys will be generated for you and stored in the project or instance metadata as describe in the [connecting to instances](https://cloud.google.com/compute/docs/instances/connecting-to-instance) documentation.
+SSH will be used to configure the controller and worker instances. When building the compute instances, if you don't currently have an SSH keypair, one will be generated for you and stored in  your ~/.ssh directory
 
-Test SSH access to the `controller-0` compute instances:
-
-```
-gcloud compute ssh controller-0
-```
-
-If this is your first time connecting to a compute instance SSH keys will be generated for you. Enter a passphrase at the prompt to continue:
+Test SSH access to the `controller-0` compute instances using the VMs public IP address (this can be found by list your VMs with the CLI, or by looking at the VM in the Azure portal):
 
 ```
-WARNING: The public SSH key file for gcloud does not exist.
-WARNING: The private SSH key file for gcloud does not exist.
-WARNING: You do not have an SSH key for gcloud.
-WARNING: SSH keygen will be executed to generate a key.
-Generating public/private rsa key pair.
-Enter passphrase (empty for no passphrase):
-Enter same passphrase again:
+ssh azureuser@{controller-0-Public-IP}
 ```
-
-At this point the generated SSH keys will be uploaded and stored in your project:
-
-```
-Your identification has been saved in /home/$USER/.ssh/google_compute_engine.
-Your public key has been saved in /home/$USER/.ssh/google_compute_engine.pub.
-The key fingerprint is:
-SHA256:nz1i8jHmgQuGt+WscqP5SeIaSy5wyIJeL71MuV+QruE $USER@$HOSTNAME
-The key's randomart image is:
-+---[RSA 2048]----+
-|                 |
-|                 |
-|                 |
-|        .        |
-|o.     oS        |
-|=... .o .o o     |
-|+.+ =+=.+.X o    |
-|.+ ==O*B.B = .   |
-| .+.=EB++ o      |
-+----[SHA256]-----+
-Updating project ssh metadata...-Updated [https://www.googleapis.com/compute/v1/projects/$PROJECT_ID].
-Updating project ssh metadata...done.
-Waiting for SSH key to propagate.
-```
-
-After the SSH keys have been updated you'll be logged into the `controller-0` instance:
 
 ```
 Welcome to Ubuntu 18.04 LTS (GNU/Linux 4.15.0-1006-gcp x86_64)
@@ -218,7 +240,7 @@ Last login: Sun May 13 14:34:27 2018 from XX.XXX.XXX.XX
 Type `exit` at the prompt to exit the `controller-0` compute instance:
 
 ```
-$USER@controller-0:~$ exit
+$azureuser@controller-0:~$ exit
 ```
 > output
 
