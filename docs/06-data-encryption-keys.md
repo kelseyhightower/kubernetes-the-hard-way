@@ -36,7 +36,8 @@ Copy the `encryption-config.yaml` encryption config file to each controller inst
 
 ```
 for instance in controller-0 controller-1 controller-2; do
-  gcloud compute scp encryption-config.yaml ${instance}:~/
+  EXTERNAL_IP=$(az vm show --show-details -g kubernetes-the-hard-way -n ${instance} --output tsv | cut -f19)
+  scp encryption-config.yaml azureuser@${EXTERNAL_IP}:~/
 done
 ```
 
