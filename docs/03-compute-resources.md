@@ -144,25 +144,78 @@ az network public-ip show --resource-group kubernetes-the-hard-way --name kubern
 }
 ```
 
+## The Kubernetes Frontend Load Balancer
+
+In this section you will provision an external load balancer to front the Kubernetes API Servers. The `kubernetes-the-hard-way-ip` static IP address will be attached to the resulting load balancer.
+
+> The compute instances created in this tutorial will not have permission to complete this section. Run the following commands from the same machine used to create the compute instances.
+
+
+### Provision a Network Load Balancer
+
+Create the external load balancer network resources:
+
+```
+{
+  KUBERNETES_PUBLIC_ADDRESS=$(az network public-ip show -g kubernetes-the-hard-way -n kubernetes-the-hard-way-ip --output tsv | cut -f6)
+
+  az network lb create \
+    --name kubernetes-the-hard-way-lb \
+    --resource-group kubernetes-the-hard-way \
+    --backend-pool-name kubernetes-the-hard-way-lb-pool \
+    --public-ip-address kubernetes-the-hard-way-ip \
+    --vent-name kubernetes-the-hard-way-vnet \
+    --subnet kubernetes-the-hard-way-subnet \
+
+  az network lb probe create \
+    --lb-name kubernetes-the-hard-way-lb \
+    --resource-group kubernetes-the-hard-way \
+    --name kubernetes-the-hard-way-lb-probe \
+    --port 80 \
+    --protocol tcp
+
+  az network lb rule create \
+    --resource-group kubernetes-the-hard-way \
+    --lb-name kubernetes-the-hard-way-lb \
+    --name kubernetes-the-hard-way-lb-rule \
+    --protocol tcp \
+    --frontend-port 6443 \
+    --backend-port 6443 \
+    --frontend-ip-name kubernetes-the-hard-way-ip \
+    --backend-pool-name kubernetes-the-hard-way-lb-pool \
+    --probe-name kubernetes-the-hard-way-lb-probe  
+}
+```
+
 ## Compute Instances
 
 The compute instances in this lab will be provisioned using [Ubuntu Server](https://www.ubuntu.com/server) 18.04, which has good support for the [containerd container runtime](https://github.com/containerd/containerd). Each compute instance will be provisioned with a fixed private IP address to simplify the Kubernetes bootstrapping process.
 
 ### Kubernetes Controllers
 
-Create three compute instances which will host the Kubernetes control plane:
+Create three network interfaces and three compute instances which will host the Kubernetes control plane:
 
+```
+for i in 0 1 2; do
+  az network nic create \
+    --resource-group kubernetes-the-hard-way \
+    --name controller-${i}-nic
+    --vnet-name kubernetes-the-hard-way-vnet \
+    --subnet kubernetes-the-hard-way-subnet \
+    --network-security-group kubernetes-the-hard-way-nsg \
+    --private-ip-address 10.240.0.1${i} \
+    --lb-name kubernetes-the-hard-way-lb \
+    --lb-address-pools kubernetes-the-hard-way-lb-pool \
+    --ip-forwarding true
+done
+```
 ```
 for i in 0 1 2; do
   az vm create \
     --name controller-${i} \
     --resource-group kubernetes-the-hard-way
     --no-wait \
-    --vent-name kubernetes-the-hard-way-vnet
-    --subnet kubernetes-the-hard-way-subnet
-    --nsg kubernetes-the-hard-way-nsg
-    --private-ip-address 10.240.0.1${i}
-    --public-ip-address-allocation Static
+    --nics controller-${i}-nic
     --image Canonical:UbuntuServer:18.04-LTS:latest
     --admin-username azureuser
     --generate-ssh-keys
@@ -181,15 +234,25 @@ Create three compute instances which will host the Kubernetes worker nodes:
 
 ```
 for i in 0 1 2; do
+  az network nic create \
+    --resource-group kubernetes-the-hard-way \
+    --name worker-${i}-nic
+    --vnet-name kubernetes-the-hard-way-vnet \
+    --subnet kubernetes-the-hard-way-subnet \
+    --network-security-group kubernetes-the-hard-way-nsg \
+    --private-ip-address 10.240.0.2${i} \
+    --lb-name kubernetes-the-hard-way-lb \
+    --lb-address-pools kubernetes-the-hard-way-lb-pool \
+    --ip-forwarding true
+done
+```
+```
+for i in 0 1 2; do
   az vm create \
     --name worker-${i} \
     --resource-group kubernetes-the-hard-way
     --no-wait \
-    --vent-name kubernetes-the-hard-way-vnet
-    --subnet kubernetes-the-hard-way-subnet
-    --nsg kubernetes-the-hard-way-nsg
-    --private-ip-address 10.240.0.2${i}
-    --public-ip-address-allocation Static
+    --nics worker-${i}-nic
     --image Canonical:UbuntuServer:18.04-LTS:latest
     --admin-username azureuser
     --generate-ssh-keys
