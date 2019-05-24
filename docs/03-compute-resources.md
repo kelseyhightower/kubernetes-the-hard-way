@@ -156,35 +156,28 @@ In this section you will provision an external load balancer to front the Kubern
 Create the external load balancer network resources:
 
 ```
-{
-  KUBERNETES_PUBLIC_ADDRESS=$(az network public-ip show -g kubernetes-the-hard-way -n kubernetes-the-hard-way-ip --output tsv | cut -f6)
+az network lb create \
+  --name kubernetes-the-hard-way-lb \
+  --resource-group kubernetes-the-hard-way \
+  --backend-pool-name kubernetes-the-hard-way-lb-pool \
+  --public-ip-address kubernetes-the-hard-way-ip
 
-  az network lb create \
-    --name kubernetes-the-hard-way-lb \
-    --resource-group kubernetes-the-hard-way \
-    --backend-pool-name kubernetes-the-hard-way-lb-pool \
-    --public-ip-address kubernetes-the-hard-way-ip \
-    --vent-name kubernetes-the-hard-way-vnet \
-    --subnet kubernetes-the-hard-way-subnet \
+az network lb probe create \
+  --lb-name kubernetes-the-hard-way-lb \
+  --resource-group kubernetes-the-hard-way \
+  --name kubernetes-the-hard-way-lb-probe \
+  --port 80 \
+  --protocol tcp
 
-  az network lb probe create \
-    --lb-name kubernetes-the-hard-way-lb \
-    --resource-group kubernetes-the-hard-way \
-    --name kubernetes-the-hard-way-lb-probe \
-    --port 80 \
-    --protocol tcp
-
-  az network lb rule create \
-    --resource-group kubernetes-the-hard-way \
-    --lb-name kubernetes-the-hard-way-lb \
-    --name kubernetes-the-hard-way-lb-rule \
-    --protocol tcp \
-    --frontend-port 6443 \
-    --backend-port 6443 \
-    --frontend-ip-name kubernetes-the-hard-way-ip \
-    --backend-pool-name kubernetes-the-hard-way-lb-pool \
-    --probe-name kubernetes-the-hard-way-lb-probe  
-}
+az network lb rule create \
+  --resource-group kubernetes-the-hard-way \
+  --lb-name kubernetes-the-hard-way-lb \
+  --name kubernetes-the-hard-way-lb-rule \
+  --protocol tcp \
+  --frontend-port 6443 \
+  --backend-port 6443 \
+  --backend-pool-name kubernetes-the-hard-way-lb-pool \
+  --probe-name kubernetes-the-hard-way-lb-probe  
 ```
 
 ## Compute Instances
@@ -199,7 +192,7 @@ Create three network interfaces and three compute instances which will host the 
 for i in 0 1 2; do
   az network nic create \
     --resource-group kubernetes-the-hard-way \
-    --name controller-${i}-nic
+    --name controller-${i}-nic \
     --vnet-name kubernetes-the-hard-way-vnet \
     --subnet kubernetes-the-hard-way-subnet \
     --network-security-group kubernetes-the-hard-way-nsg \
@@ -213,13 +206,14 @@ done
 for i in 0 1 2; do
   az vm create \
     --name controller-${i} \
-    --resource-group kubernetes-the-hard-way
+    --resource-group kubernetes-the-hard-way \
     --no-wait \
-    --nics controller-${i}-nic
-    --image Canonical:UbuntuServer:18.04-LTS:latest
-    --admin-username azureuser
-    --generate-ssh-keys
-    --size Standard_B2s
+    --nics controller-${i}-nic \
+    --public-ip-address-allocation Static
+    --image Canonical:UbuntuServer:18.04-LTS:latest \
+    --admin-username azureuser \
+    --generate-ssh-keys \
+    --size Standard_B2s \
     --data-disk-sizes-gb 200
 done
 ```
@@ -241,8 +235,6 @@ for i in 0 1 2; do
     --subnet kubernetes-the-hard-way-subnet \
     --network-security-group kubernetes-the-hard-way-nsg \
     --private-ip-address 10.240.0.2${i} \
-    --lb-name kubernetes-the-hard-way-lb \
-    --lb-address-pools kubernetes-the-hard-way-lb-pool \
     --ip-forwarding true
 done
 ```
@@ -253,6 +245,7 @@ for i in 0 1 2; do
     --resource-group kubernetes-the-hard-way
     --no-wait \
     --nics worker-${i}-nic
+    --public-ip-address-allocation Static
     --image Canonical:UbuntuServer:18.04-LTS:latest
     --admin-username azureuser
     --generate-ssh-keys
