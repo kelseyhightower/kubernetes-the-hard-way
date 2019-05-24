@@ -12,9 +12,7 @@ Generate a kubeconfig file suitable for authenticating as the `admin` user:
 
 ```
 {
-  KUBERNETES_PUBLIC_ADDRESS=$(gcloud compute addresses describe kubernetes-the-hard-way \
-    --region $(gcloud config get-value compute/region) \
-    --format 'value(address)')
+  KUBERNETES_PUBLIC_ADDRESS=$(az network public-ip show -g kubernetes-the-hard-way -n kubernetes-the-hard-way-ip --output tsv | cut -f6)
 
   kubectl config set-cluster kubernetes-the-hard-way \
     --certificate-authority=ca.pem \
