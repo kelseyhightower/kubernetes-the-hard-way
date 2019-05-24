@@ -161,14 +161,16 @@ az network lb create \
   --resource-group kubernetes-the-hard-way \
   --backend-pool-name kubernetes-the-hard-way-lb-pool \
   --public-ip-address kubernetes-the-hard-way-ip
-
+```
+```
 az network lb probe create \
   --lb-name kubernetes-the-hard-way-lb \
   --resource-group kubernetes-the-hard-way \
   --name kubernetes-the-hard-way-lb-probe \
   --port 80 \
   --protocol tcp
-
+```
+```
 az network lb rule create \
   --resource-group kubernetes-the-hard-way \
   --lb-name kubernetes-the-hard-way-lb \
@@ -190,12 +192,21 @@ Create three network interfaces and three compute instances which will host the 
 
 ```
 for i in 0 1 2; do
+  az network public-ip create \
+    --name controller-${i}-ip \
+    --resource-group kubernetes-the-hard-way \
+    --allocation-method Static
+done
+```
+```
+for i in 0 1 2; do
   az network nic create \
     --resource-group kubernetes-the-hard-way \
     --name controller-${i}-nic \
     --vnet-name kubernetes-the-hard-way-vnet \
     --subnet kubernetes-the-hard-way-subnet \
     --network-security-group kubernetes-the-hard-way-nsg \
+    --public-ip-address controller-${i}-ip
     --private-ip-address 10.240.0.1${i} \
     --lb-name kubernetes-the-hard-way-lb \
     --lb-address-pools kubernetes-the-hard-way-lb-pool \
@@ -228,12 +239,21 @@ Create three compute instances which will host the Kubernetes worker nodes:
 
 ```
 for i in 0 1 2; do
+  az network public-ip create \
+    --name worker-${i}-ip \
+    --resource-group kubernetes-the-hard-way \
+    --allocation-method Static
+done
+```
+```
+for i in 0 1 2; do
   az network nic create \
     --resource-group kubernetes-the-hard-way \
     --name worker-${i}-nic
     --vnet-name kubernetes-the-hard-way-vnet \
     --subnet kubernetes-the-hard-way-subnet \
     --network-security-group kubernetes-the-hard-way-nsg \
+    --public-ip worker-${i}-ip
     --private-ip-address 10.240.0.2${i} \
     --ip-forwarding true
 done
@@ -245,7 +265,6 @@ for i in 0 1 2; do
     --resource-group kubernetes-the-hard-way
     --no-wait \
     --nics worker-${i}-nic
-    --public-ip-address-allocation Static
     --image Canonical:UbuntuServer:18.04-LTS:latest
     --admin-username azureuser
     --generate-ssh-keys
