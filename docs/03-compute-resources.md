@@ -53,7 +53,7 @@ az network nsg rule create \
   --protocol Tcp \
   --direction Inbound \
   --priority 100 \
-  --source-address-prefix Internet \
+  --source-address-prefix Any \
   --source-port-range "*" \
   --destination-port-ranges 22 6443
 ```
@@ -206,7 +206,7 @@ for i in 0 1 2; do
     --vnet-name kubernetes-the-hard-way-vnet \
     --subnet kubernetes-the-hard-way-subnet \
     --network-security-group kubernetes-the-hard-way-nsg \
-    --public-ip-address controller-${i}-ip
+    --public-ip-address controller-${i}-ip \
     --private-ip-address 10.240.0.1${i} \
     --lb-name kubernetes-the-hard-way-lb \
     --lb-address-pools kubernetes-the-hard-way-lb-pool \
@@ -220,7 +220,6 @@ for i in 0 1 2; do
     --resource-group kubernetes-the-hard-way \
     --no-wait \
     --nics controller-${i}-nic \
-    --public-ip-address-allocation Static
     --image Canonical:UbuntuServer:18.04-LTS:latest \
     --admin-username azureuser \
     --generate-ssh-keys \
@@ -301,7 +300,8 @@ SSH will be used to configure the controller and worker instances. When building
 Test SSH access to the `controller-0` compute instances using the VMs public IP address (this can be found by list your VMs with the CLI, or by looking at the VM in the Azure portal):
 
 ```
-ssh azureuser@{controller-0-Public-IP}
+EXTERNAL_IP=$(az vm show --show-details -g kubernetes-the-hard-way -n controller-0 --output tsv | cut -f19)
+ssh azureuser@${EXTERNAL_IP}
 ```
 
 ```
