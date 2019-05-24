@@ -248,11 +248,11 @@ done
 for i in 0 1 2; do
   az network nic create \
     --resource-group kubernetes-the-hard-way \
-    --name worker-${i}-nic
+    --name worker-${i}-nic \
     --vnet-name kubernetes-the-hard-way-vnet \
     --subnet kubernetes-the-hard-way-subnet \
     --network-security-group kubernetes-the-hard-way-nsg \
-    --public-ip worker-${i}-ip
+    --public-ip worker-${i}-ip \
     --private-ip-address 10.240.0.2${i} \
     --ip-forwarding true
 done
@@ -261,14 +261,15 @@ done
 for i in 0 1 2; do
   az vm create \
     --name worker-${i} \
-    --resource-group kubernetes-the-hard-way
+    --resource-group kubernetes-the-hard-way \
     --no-wait \
-    --nics worker-${i}-nic
-    --image Canonical:UbuntuServer:18.04-LTS:latest
-    --admin-username azureuser
-    --generate-ssh-keys
-    --size Standard_B2s
-    --data-disk-sizes-gb 200
+    --nics worker-${i}-nic \
+    --image Canonical:UbuntuServer:18.04-LTS:latest \
+    --admin-username azureuser \
+    --generate-ssh-keys \
+    --size Standard_B2s \
+    --data-disk-sizes-gb 200 \
+    --tags pod-cidr=10.200.${i}.0/24
 done
 ```
 

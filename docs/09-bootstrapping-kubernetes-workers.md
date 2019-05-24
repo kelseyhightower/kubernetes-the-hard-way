@@ -7,7 +7,8 @@ In this lab you will bootstrap three Kubernetes worker nodes. The following comp
 The commands in this lab must be run on each worker instance: `worker-0`, `worker-1`, and `worker-2`. Login to each worker instance using the `gcloud` command. Example:
 
 ```
-gcloud compute ssh worker-0
+EXTERNAL_IP=$(az vm show --show-details -g kubernetes-the-hard-way -n worker-0 --output tsv | cut -f19)
+ssh azureuser@${EXTERNAL_IP}
 ```
 
 ### Running commands in parallel with tmux
@@ -72,8 +73,7 @@ Install the worker binaries:
 Retrieve the Pod CIDR range for the current compute instance:
 
 ```
-POD_CIDR=$(curl -s -H "Metadata-Flavor: Google" \
-  http://metadata.google.internal/computeMetadata/v1/instance/attributes/pod-cidr)
+POD_CIDR=$(curl -H Metadata:true "http://169.254.169.254/metadata/instance/compute/tags?api-version=2018-10-01&format=text" -s | cut -f 2 -d ':' )
 ```
 
 Create the `bridge` network configuration file:
@@ -288,8 +288,11 @@ EOF
 List the registered Kubernetes nodes:
 
 ```
-gcloud compute ssh controller-0 \
-  --command "kubectl get nodes --kubeconfig admin.kubeconfig"
+EXTERNAL_IP=$(az vm show --show-details -g kubernetes-the-hard-way -n controller-0 --output tsv | cut -f19)
+ssh azureuser@${EXTERNAL_IP}
+```
+```
+kubectl get nodes --kubeconfig admin.kubeconfig
 ```
 
 > output
