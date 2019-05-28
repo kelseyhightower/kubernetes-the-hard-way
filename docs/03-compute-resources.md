@@ -254,7 +254,8 @@ for i in 0 1 2; do
     --network-security-group kubernetes-the-hard-way-nsg \
     --public-ip worker-${i}-ip \
     --private-ip-address 10.240.0.2${i} \
-    --ip-forwarding true
+    --ip-forwarding true \
+    --tags podCidr=10.200.${i}.0/24
 done
 ```
 ```
@@ -269,7 +270,7 @@ for i in 0 1 2; do
     --generate-ssh-keys \
     --size Standard_B2s \
     --data-disk-sizes-gb 200 \
-    --tags pod-cidr=10.200.${i}.0/24
+    --tags podCidr=10.200.${i}.0/24
 done
 ```
 
