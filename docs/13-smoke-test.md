@@ -16,13 +16,15 @@ kubectl create secret generic kubernetes-the-hard-way \
 Print a hexdump of the `kubernetes-the-hard-way` secret stored in etcd:
 
 ```
-gcloud compute ssh controller-0 \
-  --command "sudo ETCDCTL_API=3 etcdctl get \
+EXTERNAL_IP=$(az vm show --show-details -g kubernetes-the-hard-way -n controller-0 --output tsv | cut -f19)
+ssh azureuser@${EXTERNAL_IP}
+
+sudo ETCDCTL_API=3 etcdctl get \
   --endpoints=https://127.0.0.1:2379 \
   --cacert=/etc/etcd/ca.pem \
   --cert=/etc/etcd/kubernetes.pem \
   --key=/etc/etcd/kubernetes-key.pem\
-  /registry/secrets/default/kubernetes-the-hard-way | hexdump -C"
+  /registry/secrets/default/kubernetes-the-hard-way | hexdump -C
 ```
 
 > output
