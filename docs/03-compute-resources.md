@@ -188,7 +188,7 @@ The compute instances in this lab will be provisioned using [Ubuntu Server](http
 
 ### Kubernetes Controllers
 
-Create three network interfaces and three compute instances which will host the Kubernetes control plane:
+Create three network interfaces and three compute instances (in an availability set) which will host the Kubernetes control plane:
 
 ```
 for i in 0 1 2; do
@@ -214,10 +214,14 @@ for i in 0 1 2; do
 done
 ```
 ```
+az vm availability-set create --name kubernetes-the-hard-way-as -g kubernetes-the-hard-way 
+```
+```
 for i in 0 1 2; do
   az vm create \
     --name controller-${i} \
     --resource-group kubernetes-the-hard-way \
+    --availability-set kubernetes-the-hard-way-as \
     --no-wait \
     --nics controller-${i}-nic \
     --image Canonical:UbuntuServer:18.04-LTS:latest \
