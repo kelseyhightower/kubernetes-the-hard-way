@@ -6,6 +6,10 @@ This tutorial leverages [Microsoft Azure](https://azure.microsoft.com/en-us/) to
 
 > The compute resources required for this tutorial exceed the Azure free tier.
 
+## nix* Environment
+
+If you're running this tutorial from a Linux or macOS machine, you're all set. If you're running on Windows, you'll need to use WSL. Instructions for setting that up can be found in the official docs [HERE](https://docs.microsoft.com/en-us/windows/wsl/install-win10).
+
 ## Azure CLI
 
 ### Install the Azure CLI
