@@ -31,6 +31,13 @@ for i in 0 1 2; do
     --address-prefix 10.200.${i}.0/24
 done
 ```
+```
+az network vnet subnet update \
+  --resource-group kubernetes-the-hard-way \
+  --vnet-name kubernetes-the-hard-way-vnet \
+  --name kubernetes-the-hard-way-subnet \
+  --route-table kubernetes-the-hard-way-rt
+```
 
 List the routes in the `kubernetes-the-hard-way` VPC network:
 
