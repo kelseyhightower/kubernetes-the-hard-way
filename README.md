@@ -1,4 +1,5 @@
 # Kubernetes The Hard Way (On Azure!)
+This is a fork of [Kelsey Hightower](https://github.com/kelseyhightower)'s amazing Kubernetes the Hard Way tutorial. If you're interested in trying this out on Google Cloud Platform, check out his repo [here](https://github.com/kelseyhightower/kubernetes-the-hard-way)!
 
 This tutorial walks you through setting up Kubernetes the hard way. This guide is not for people looking for a fully automated command to bring up a Kubernetes cluster. If that's you then check out [Azure Kubernetes Service](https://azure.microsoft.com/en-us/services/kubernetes-service/), or the [Getting Started Guides](http://kubernetes.io/docs/getting-started-guides/).
 
