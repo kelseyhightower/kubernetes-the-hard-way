@@ -4,11 +4,10 @@ In this lab you will bootstrap three Kubernetes worker nodes. The following comp
 
 ## Prerequisites
 
-The commands in this lab must be run on each worker instance: `worker-0`, `worker-1`, and `worker-2`. Login to each worker instance using the `gcloud` command. Example:
+The commands in this lab must be run on each worker instance: `worker-0`, `worker-1`, and `worker-2`. Login to each worker instance using `ssh`. Example:
 
 ```
-EXTERNAL_IP=$(az vm show --show-details -g kubernetes-the-hard-way -n worker-0 --output tsv | cut -f19)
-ssh azureuser@${EXTERNAL_IP}
+ssh worker-0
 ```
 
 ### Running commands in parallel with tmux
@@ -288,8 +287,7 @@ EOF
 List the registered Kubernetes nodes:
 
 ```
-EXTERNAL_IP=$(az vm show --show-details -g kubernetes-the-hard-way -n controller-0 --output tsv | cut -f19)
-ssh azureuser@${EXTERNAL_IP}
+ssh controller-0
 ```
 ```
 kubectl get nodes --kubeconfig admin.kubeconfig

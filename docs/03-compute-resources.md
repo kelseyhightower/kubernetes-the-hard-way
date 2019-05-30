@@ -53,7 +53,7 @@ az network nsg rule create \
   --protocol Tcp \
   --direction Inbound \
   --priority 100 \
-  --source-address-prefix Any \
+  --source-address-prefix "*" \
   --source-port-range "*" \
   --destination-port-ranges 22 6443
 ```
@@ -303,11 +303,25 @@ worker-2      kubernetes-the-hard-way  westus2
 
 SSH will be used to configure the controller and worker instances. When building the compute instances, if you don't currently have an SSH keypair, one will be generated for you and stored in  your ~/.ssh directory
 
-Test SSH access to the `controller-0` compute instances using the VMs public IP address (this can be found by list your VMs with the CLI, or by looking at the VM in the Azure portal):
+Let's build an SSH config file to easily be able to SSH to all our controller and worker nodes throughout the lab:
 
 ```
-EXTERNAL_IP=$(az vm show --show-details -g kubernetes-the-hard-way -n controller-0 --output tsv | cut -f19)
-ssh azureuser@${EXTERNAL_IP}
+for instance in controller-0 controller-1 controller-2 worker-0 worker-1 worker-2; do
+  EXTERNAL_IP=$(az vm show --show-details -g kubernetes-the-hard-way -n ${instance} --output tsv | cut -f19)
+  cat <<EOF | tee -a ~/.ssh/config
+  Host ${instance}
+  User azureuser
+  HostName ${EXTERNAL_IP}
+  IdentityFile ~/.ssh/id_rsa
+  ServerAliveInterval 120
+  EOF
+done
+```
+
+Test SSH access to the `controller-0` compute instances:
+
+```
+ssh controller-0
 ```
 
 ```

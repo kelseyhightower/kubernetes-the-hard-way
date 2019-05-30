@@ -7,8 +7,7 @@ Kubernetes components are stateless and store cluster state in [etcd](https://gi
 The commands in this lab must be run on each controller instance: `controller-0`, `controller-1`, and `controller-2`. Login to each controller instance using `ssh`. Example:
 
 ```
-EXTERNAL_IP=$(az vm show --show-details -g kubernetes-the-hard-way -n controller-0 --output tsv | cut -f19)
-ssh azureuser@${EXTERNAL_IP}
+ssh controller-0
 ```
 
 ### Running commands in parallel with tmux

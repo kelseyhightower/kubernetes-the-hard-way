@@ -364,8 +364,7 @@ Copy the appropriate certificates and private keys to each worker instance:
 
 ```
 for instance in worker-0 worker-1 worker-2; do
-  EXTERNAL_IP=$(az vm show --show-details -g kubernetes-the-hard-way -n ${instance} --output tsv | cut -f19)
-  scp ca.pem ${instance}-key.pem ${instance}.pem azureuser@${EXTERNAL_IP}:~/
+  scp ca.pem ${instance}-key.pem ${instance}.pem ${instance}:~/
 done
 ```
 
@@ -373,8 +372,7 @@ Copy the appropriate certificates and private keys to each controller instance:
 
 ```
 for instance in controller-0 controller-1 controller-2; do
-  EXTERNAL_IP=$(az vm show --show-details -g kubernetes-the-hard-way -n ${instance} --output tsv | cut -f19)
-  scp ca.pem ca-key.pem kubernetes-key.pem kubernetes.pem service-account-key.pem service-account.pem azureuser@${EXTERNAL_IP}:~/
+  scp ca.pem ca-key.pem kubernetes-key.pem kubernetes.pem service-account-key.pem service-account.pem ${instance}:~/
 done
 ```
 

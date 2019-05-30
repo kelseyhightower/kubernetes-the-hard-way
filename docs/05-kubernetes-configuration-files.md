@@ -187,8 +187,7 @@ Copy the appropriate `kubelet` and `kube-proxy` kubeconfig files to each worker 
 
 ```
 for instance in worker-0 worker-1 worker-2; do
-  EXTERNAL_IP=$(az vm show --show-details -g kubernetes-the-hard-way -n ${instance} --output tsv | cut -f19)
-  scp ${instance}.kubeconfig kube-proxy.kubeconfig azureuser@${EXTERNAL_IP}:~/
+  scp ${instance}.kubeconfig kube-proxy.kubeconfig ${instance}:~/
 done
 ```
 
@@ -196,8 +195,7 @@ Copy the appropriate `kube-controller-manager` and `kube-scheduler` kubeconfig f
 
 ```
 for instance in controller-0 controller-1 controller-2; do
-  EXTERNAL_IP=$(az vm show --show-details -g kubernetes-the-hard-way -n ${instance} --output tsv | cut -f19)
-  scp admin.kubeconfig kube-controller-manager.kubeconfig kube-scheduler.kubeconfig azureuser@${EXTERNAL_IP}:~/
+  scp admin.kubeconfig kube-controller-manager.kubeconfig kube-scheduler.kubeconfig ${instance}:~/
 done
 ```
 
