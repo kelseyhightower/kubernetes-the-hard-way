@@ -180,23 +180,22 @@ Create a firewall rule that allows remote access to the `nginx` node port:
 
 ```
 az network nsg rule create \
-  --resource-group kubernetes-the-hard-way
-  --nsg-name kubernetes-the-hard-way-nsg
-  --name nginx
-  --access Allow
-  --direction Inbound
-  --priority 101
-  --protocol Tcp
-  --source-address-prefix Any
-  --source-port-range "*"
-  --destination-port-ranges ${NODE_PORT}
+  --resource-group kubernetes-the-hard-way \
+  --nsg-name kubernetes-the-hard-way-nsg \
+  --name nginx \
+  --access Allow \
+  --direction Inbound \
+  --priority 101 \
+  --protocol Tcp \
+  --source-address-prefixes "*" \
+  --source-port-range "*" \
+  --destination-port-ranges ${NODE_PORT} \
 ```
 
 Retrieve the external IP address of a worker instance:
 
 ```
-EXTERNAL_IP=$(gcloud compute instances describe worker-0 \
-  --format 'value(networkInterfaces[0].accessConfigs[0].natIP)')
+EXTERNAL_IP=$(az vm show --show-details -g kubernetes-the-hard-way -n worker-0 --output tsv | cut -f19)
 ```
 
 Make an HTTP request using the external IP address and the `nginx` node port:
@@ -266,7 +265,8 @@ INSTANCE_NAME=$(kubectl get pod untrusted --output=jsonpath='{.spec.nodeName}')
 SSH into the worker node:
 
 ```
-gcloud compute ssh ${INSTANCE_NAME}
+EXTERNAL_IP=$(az vm show --show-details -g kubernetes-the-hard-way -n ${INSTANCE_NAME} --output tsv | cut -f19)
+ssh azureuser@${EXTERNAL_IP} 
 ```
 
 List the containers running under gVisor:

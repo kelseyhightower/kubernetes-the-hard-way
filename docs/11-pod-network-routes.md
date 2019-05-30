@@ -13,7 +13,7 @@ In this section you will gather the information required to create routes in the
 Create the Azure route table
 
 ```
-az network route-table create --group kubernetes-the-hard-way --name kubernetes-the-hard-way-rt
+az network route-table create --resource-group kubernetes-the-hard-way --name kubernetes-the-hard-way-rt
 ```
 
 ## Routes
@@ -26,26 +26,26 @@ for i in 0 1 2; do
     --resource-group kubernetes-the-hard-way \
     --name kubernetes-the-hard-way-route-10-200-${i}-0-24 \
     --route-table-name kubernetes-the-hard-way-rt \
-    --next-hop-type VnetLocal
-    --next-hop-ip-address 10.240.0.2${i}
+    --next-hop-type VirtualAppliance \
+    --next-hop-ip-address 10.240.0.2${i} \
+    --address-prefix 10.200.${i}.0/24
 done
 ```
 
 List the routes in the `kubernetes-the-hard-way` VPC network:
 
 ```
-az network route-table route list --resource-group kubernetes-the-hard-way --route-table-name kubernetes-the-hard-way-rt
+az network route-table route list --resource-group kubernetes-the-hard-way --route-table-name kubernetes-the-hard-way-rt -o table
 ```
 
 > output
 
 ```
-NAME                            NETWORK                  DEST_RANGE     NEXT_HOP                  PRIORITY
-default-route-081879136902de56  kubernetes-the-hard-way  10.240.0.0/24  kubernetes-the-hard-way   1000
-default-route-55199a5aa126d7aa  kubernetes-the-hard-way  0.0.0.0/0      default-internet-gateway  1000
-kubernetes-route-10-200-0-0-24  kubernetes-the-hard-way  10.200.0.0/24  10.240.0.20               1000
-kubernetes-route-10-200-1-0-24  kubernetes-the-hard-way  10.200.1.0/24  10.240.0.21               1000
-kubernetes-route-10-200-2-0-24  kubernetes-the-hard-way  10.200.2.0/24  10.240.0.22               1000
+AddressPrefix    Name                                         NextHopIpAddress    NextHopType       ProvisioningState    ResourceGroup
+---------------  -------------------------------------------  ------------------  ----------------  -------------------  -----------------------
+10.200.0.0/24    kubernetes-the-hard-way-route-10-200-0-0-24  10.240.0.20         VirtualAppliance  Succeeded            kubernetes-the-hard-way
+10.200.1.0/24    kubernetes-the-hard-way-route-10-200-1-0-24  10.240.0.21         VirtualAppliance  Succeeded            kubernetes-the-hard-way
+10.200.2.0/24    kubernetes-the-hard-way-route-10-200-2-0-24  10.240.0.22         VirtualAppliance  Succeeded            kubernetes-the-hard-way
 ```
 
 Next: [Deploying the DNS Cluster Add-on](12-dns-addon.md)
