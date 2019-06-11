@@ -396,8 +396,9 @@ master-1$ kubectl get nodes --kubeconfig admin.kubeconfig
 
 ```
 NAME       STATUS   ROLES    AGE   VERSION
-worker-1   Ready    <none>   12h   v1.13.0
-worker-2   Ready    <none>   37m   v1.13.0
+worker-1   NotReady   <none>   93s   v1.13.0
+worker-2   NotReady   <none>   93s   v1.13.0
 ```
+Note: It is OK for the worker node to be in a NotReady state. That is because we haven't configured Networking yet.
 
 Next: [Configuring Kubectl](11-configuring-kubectl.md)
