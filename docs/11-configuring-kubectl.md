@@ -59,8 +59,9 @@ kubectl get nodes
 
 ```
 NAME       STATUS   ROLES    AGE    VERSION
-worker-1   Ready    <none>   118s   v1.13.0
-worker-2   Ready    <none>   118s   v1.13.0
+worker-1   NotReady    <none>   118s   v1.13.0
+worker-2   NotReady    <none>   118s   v1.13.0
 ```
+Note: It is OK for the worker node to be in a `NotReady` state. Worker nodes will come into `Ready` state once networking is configured.
 
 Next: [Deploy Pod Networking](12-configure-pod-networking.md)
