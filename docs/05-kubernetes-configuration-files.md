@@ -152,7 +152,7 @@ admin.kubeconfig
 
 ## Distribute the Kubernetes Configuration Files
 
-Copy the appropriate `kubelet` and `kube-proxy` kubeconfig files to each worker instance:
+Copy the appropriate `kube-proxy` kubeconfig files to each worker instance:
 
 ```
 for instance in worker-1 worker-2; do
