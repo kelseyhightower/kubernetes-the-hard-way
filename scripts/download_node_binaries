@@ -1,2 +1,0 @@
-#!/usr/bin/env bash
-curl -sL https://github.com/kubernetes/kubernetes/releases/download/v1.15.0/kubernetes.tar.gz | tar zxvf -

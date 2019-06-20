@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+
+ETCD3_RELEASE_VERSION=$1
+OUTPUT_DIR=$(realpath "$2")
+
+tmp_dir=$(mktemp -d)
+
+pushd "$tmp_dir" &> /dev/null
+
+curl -sL "https://github.com/etcd-io/etcd/releases/download/$ETCD3_RELEASE_VERSION/etcd-$ETCD3_RELEASE_VERSION-linux-arm64.tar.gz" | tar -zxf -
+
+mkdir -p $OUTPUT_DIR
+mv etcd-$ETCD3_RELEASE_VERSION-linux-arm64/etcd $OUTPUT_DIR/
+mv etcd-$ETCD3_RELEASE_VERSION-linux-arm64/etcdctl $OUTPUT_DIR/
+
+popd &> /dev/null
+
+rm -rf $tmp_dir

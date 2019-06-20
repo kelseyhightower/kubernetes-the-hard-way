@@ -14,3 +14,11 @@ curl -fsSL https://download.docker.com/linux/debian/gpg | sudo apt-key add -
 sudo add-apt-repository -y "deb [arch=amd64] https://download.docker.com/linux/debian $(lsb_release -cs) stable"
 
 sudo apt-get install -y --allow-unauthenticated docker-ce docker-ce-cli containerd.io
+
+sudo systemctl enable docker
+
+sleep 5
+
+sudo systemctl start docker
+
+sudo usermod -aG docker $USER

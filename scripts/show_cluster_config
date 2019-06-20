@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+
+KTHW_KUBERNETES_VERSION=v1.15.0
+KTHW_ETCD3_VERSION=v3.3.13
+
+cat <<EOF
+{
+    "kubernetes_version": "$KTHW_KUBERNETES_VERSION",
+
+    "etcd3_version": "$KTHW_ETCD3_VERSION",
+    
+    "master": null,
+
+    "workers": [
+    ]
+}
+EOF

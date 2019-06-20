@@ -8,6 +8,8 @@ Vagrant.configure("2") do |config|
   config.vm.box = "debian/stretch64"
   config.vm.box_version = "= 9.9.1"
   
+  config.vm.network "private_network", type: "dhcp"
+
   # greet from every configured VM, revealing its hostname
   config.vm.provision "shell", inline: "echo Hello from \$HOSTNAME"
 

@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+
+# v1.15.0
+K8S_RELEASE_VERSION=$1
+OUTPUT_DIR=$(realpath "$2")
+
+tmp_dir=$(mktemp -d)
+
+pushd "$tmp_dir" &> /dev/null
+
+container_id=$(docker create gcr.io/google-containers/hyperkube:$K8S_RELEASE_VERSION)
+docker cp $container_id:/hyperkube ./hyperkube
+docker rm -f $container_id &> /dev/null
+
+mkdir -p $OUTPUT_DIR/workers
+cp hyperkube $OUTPUT_DIR/workers/kubelet
+cp hyperkube $OUTPUT_DIR/workers/proxy
+cp hyperkube $OUTPUT_DIR/workers/kubectl
+
+mkdir -p $OUTPUT_DIR/masters
+cp hyperkube $OUTPUT_DIR/masters/kubelet
+cp hyperkube $OUTPUT_DIR/masters/proxy
+cp hyperkube $OUTPUT_DIR/masters/kubectl
+cp hyperkube $OUTPUT_DIR/masters/scheduler
+cp hyperkube $OUTPUT_DIR/masters/controller-manager
+cp hyperkube $OUTPUT_DIR/masters/cloud-controller-manager
+cp hyperkube $OUTPUT_DIR/masters/apiserver
+popd &> /dev/null
+
+rm -rf $tmp_dir

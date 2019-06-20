@@ -1,1 +1,4 @@
 .vagrant
+kubernetes/
+etcd*/
+cluster.config
