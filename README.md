@@ -16,10 +16,10 @@ vagrant up
 
 - setup a container runtime
 ```sh
-./scripts/run_script_on_all_nodes install_container_runtime
+./scripts/run_script_on_nodes install_container_runtime
 ```
 
 - download kubernetes
 ```sh
-./scripts/run_script_on_all_nodes download_node_binaries
+./scripts/run_script_on_nodes download_node_binaries
 ```
