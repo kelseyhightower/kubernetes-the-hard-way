@@ -1,0 +1,30 @@
+@startuml
+database etcd [
+  etcd 
+]
+
+package "master-node" {
+  [api-server] -> etcd
+
+  [kubelet] --> [api-server] : watch
+  [kubelet] --> [container-runtime] : run & watch
+  
+  [scheduler] --> [api-server] : watch
+  [scheduler] --> [api-server] : apply
+
+  [controller-manager] --> [api-server] : watch
+  [controller-manager] --> [api-server] : apply
+}
+
+package "worker-node-1" {
+  [kubelet ] --> [api-server] : watch
+  [kubelet ] --> [container-runtime ] : run & watch
+
+}
+
+package "worker-node-2" {
+  [kubelet  ] --> [api-server] : watch
+  [kubelet  ] --> [container-runtime  ] : run & watch
+}
+
+@enduml

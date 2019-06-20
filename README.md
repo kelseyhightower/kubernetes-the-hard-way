@@ -4,38 +4,7 @@ This repository is intended for demo-ing the manual install of kubernetes's comp
 
 It should be able to get you to a working single master (insecure) kubernetes setup on a set of VMs
 
-```plantuml
-@startuml
-database etcd [
-  etcd 
-]
-
-package "master-node" {
-  [api-server] -> etcd
-
-  [kubelet] --> [api-server] : watch
-  [kubelet] --> [container-runtime] : run & watch
-  
-  [scheduler] --> [api-server] : watch
-  [scheduler] --> [api-server] : apply
-
-  [controller-manager] --> [api-server] : watch
-  [controller-manager] --> [api-server] : apply
-}
-
-package "worker-node-1" {
-  [kubelet ] --> [api-server] : watch
-  [kubelet ] --> [container-runtime ] : run & watch
-
-}
-
-package "worker-node-2" {
-  [kubelet  ] --> [api-server] : watch
-  [kubelet  ] --> [container-runtime  ] : run & watch
-}
-
-@enduml
-```
+![End goal diagram](http://www.plantuml.com/plantuml/proxy?src=https://raw.github.com/weekendesk/kubernetes-the-hard-way/VTWO-14496/end_goal.plantuml)
 
 
 # prerequisites
@@ -78,7 +47,8 @@ package "worker-node-2" {
 ./scripts/copy_file_to_nodes ./kubernetes/workers worker
 ```
 
-- copy kubelet, proxy, apiserver, scheduler and native controllers binaries to the master nodes
+- copy etcd, kubelet, kube-proxy, apiserver, scheduler and native controllers binaries to the master nodes
 ```sh
 ./scripts/copy_file_to_nodes ./etcd3 master
+./scripts/copy_file_to_nodes ./kubernetes/masters master
 ```
