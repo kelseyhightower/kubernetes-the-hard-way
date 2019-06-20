@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+SCRIPTS_DIR=$(dirname $0)
+SCRIPT_NAME=$1
+NODE_NAMES=$($SCRIPTS_DIR/node_names)
+
+cat $SCRIPTS_DIR/$SCRIPT_NAME
+
+echo ""
+echo ""
+echo ""
+echo ""
+
+read -n 1 -s -r -p "Press any key to continue..."
+echo ""
+echo ""
+
+# copy script over
+chmod u+x "$SCRIPTS_DIR/$SCRIPT_NAME"
+parallel vagrant scp "$SCRIPTS_DIR/$SCRIPT_NAME" "{}:~/" ::: $NODE_NAMES
+
+# remotely run the script
+parallel vagrant ssh {} -c "\~/$SCRIPT_NAME" ::: $NODE_NAMES
