@@ -25,10 +25,10 @@ This does the below:
     | VM           |  VM Name               | Purpose       | IP           | Forwarded Port   |
     | ------------ | ---------------------- |:-------------:| ------------:| ----------------:|
     | master-1     | kubernetes-ha-master-1 | Master        | 192.168.5.11 |     2711         |
-    | master-1     | kubernetes-ha-master-2 | Master        | 192.168.5.12 |     2712         |
+    | master-2     | kubernetes-ha-master-2 | Master        | 192.168.5.12 |     2712         |
     | worker-1     | kubernetes-ha-worker-1 | Worker        | 192.168.5.21 |     2730         |
     | worker-2     | kubernetes-ha-worker-2 | Worker        | 192.168.5.22 |     2721         |
-    | loadbalancer | kubernetes-ha-lb       | LoadBalancer  | 192.168.5.30 |     2722         |
+    | lb           | kubernetes-ha-lb       | LoadBalancer  | 192.168.5.30 |     2722         |
 
     > These are the default settings. These can be changed in the Vagrant file
 
@@ -68,7 +68,7 @@ Vagrant generates a private key for each of these VMs. It is placed under the .v
 - Ensure VMs are assigned the above IP addresses
 - Ensure you can SSH into these VMs using the IP and private keys
 - Ensure the VMs can ping each other
-- Ensure the master and worker nodes have Docker installed on them. Version: 18.06
+- Ensure the worker nodes have Docker installed on them. Version: 18.06
   > command `sudo docker version`
 
 ## Troubleshooting Tips
