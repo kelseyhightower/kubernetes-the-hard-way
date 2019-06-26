@@ -2,3 +2,4 @@
 kubernetes/
 etcd*/
 cluster.config
+inventory/generated
