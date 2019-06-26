@@ -7,11 +7,11 @@ tmp_dir=$(mktemp -d)
 
 pushd "$tmp_dir" &> /dev/null
 
-curl -sL "https://github.com/etcd-io/etcd/releases/download/$ETCD3_RELEASE_VERSION/etcd-$ETCD3_RELEASE_VERSION-linux-arm64.tar.gz" | tar -zxf -
+curl -sL "https://github.com/etcd-io/etcd/releases/download/$ETCD3_RELEASE_VERSION/etcd-$ETCD3_RELEASE_VERSION-linux-amd64.tar.gz" | tar -zxf -
 
 mkdir -p $OUTPUT_DIR
-mv etcd-$ETCD3_RELEASE_VERSION-linux-arm64/etcd $OUTPUT_DIR/
-mv etcd-$ETCD3_RELEASE_VERSION-linux-arm64/etcdctl $OUTPUT_DIR/
+mv etcd-$ETCD3_RELEASE_VERSION-linux-amd64/etcd $OUTPUT_DIR/
+mv etcd-$ETCD3_RELEASE_VERSION-linux-amd64/etcdctl $OUTPUT_DIR/
 
 popd &> /dev/null
 
