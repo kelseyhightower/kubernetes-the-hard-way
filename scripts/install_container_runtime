@@ -17,8 +17,8 @@ sudo apt-get install -y --allow-unauthenticated docker-ce docker-ce-cli containe
 
 sudo systemctl enable docker
 
-sleep 5
-
 sudo systemctl start docker
+
+sleep 5
 
 sudo usermod -aG docker $USER
