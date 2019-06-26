@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+SCRIPTS_DIR=$(dirname $0)
+MY_COMMAND="$1"
+NODE_NAMES_FILTER="$2"
+NODE_NAMES="$($SCRIPTS_DIR/node_names $NODE_NAMES_FILTER)"
+
+echo "Will run the following command on $(echo $NODE_NAMES | xargs):"
+echo "$MY_COMMAND"
+echo ""
+echo ""
+
+read -n 1 -s -r -p "Press any key to continue..."
+echo ""
+
+# remotely run the script
+
+pushd $SCRIPTS_DIR &> /dev/null
+
+tmp_file=$(mktemp)
+
+cat << WRAPPER_EOF > $tmp_file
+#!/usr/bin/env bash
+$MY_COMMAND
+WRAPPER_EOF
+
+yes | ./run_script_on_nodes "$(basename $tmp_file)" "$NODE_NAMES_FILTER" &> /dev/null
+
+rm -rf $tmp_file
+
+popd &> /dev/null
+

@@ -45,10 +45,14 @@ It should be able to get you to a working single master (insecure) kubernetes se
 - copy kubelet & kube-proxy on the worker nodes
 ```sh
 ./scripts/copy_file_to_nodes ./kubernetes/workers worker
+./scripts/run_command_on_nodes 'sudo mv ~/workers/* /usr/bin/ && rmdir ~/workers' worker
 ```
 
 - copy etcd, kubelet, kube-proxy, apiserver, scheduler and native controllers binaries to the master nodes
 ```sh
 ./scripts/copy_file_to_nodes ./etcd3 master
+./scripts/run_command_on_nodes 'sudo mv ~/etcd3/* /usr/bin/ && rmdir ~/etcd3' master
+
 ./scripts/copy_file_to_nodes ./kubernetes/masters master
+./scripts/run_command_on_nodes 'sudo mv ~/masters/* /usr/bin/ && rmdir ~/masters' master
 ```
