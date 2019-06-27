@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+K8S_RELEASE_VERSION=$1
+
+
+pushd /tmp
+
+container_id=$(docker create gcr.io/google-containers/hyperkube:$K8S_RELEASE_VERSION)
+docker cp $container_id:/hyperkube
+docker rm -f $container_id
+
+chmod u+x hyperkube
+cp hyperkube /usr/bin/kubelet
+cp hyperkube /usr/bin/proxy
+cp hyperkube /usr/bin/kubectl
+cp hyperkube /usr/bin/scheduler
+cp hyperkube /usr/bin/controller-manager
+cp hyperkube /usr/bin/cloud-controller-manager
+cp hyperkube /usr/bin/apiserver
+rm hyperkube
+
+touch .install_kubernetes_master_components
+
+popd
+
+

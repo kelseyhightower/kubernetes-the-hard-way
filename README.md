@@ -9,50 +9,33 @@ It should be able to get you to a working single master (insecure) kubernetes se
 
 # prerequisites
 - vagrant
-- the scp vagrant plugin : `vagrant plugin install vagrant-scp`
-- [the GNU parallel CLI](https://www.gnu.org/software/parallel/)
-- [jq](https://stedolan.github.io/jq/)
+- cfssl
+- cfssljson
+
+You can run the following command to check if you've missed something (don't worry, it won't install anything on your machine)
+```sh
+ansible-playbook kthw-playbook.yml -t check_local_prerequisites -l localhost
+```
 
 # setup
 - run `vagrant up` to start the vms. This will create a master node and 2 worker nodes on your host's network
 
-- run `./scripts/show_cluster_config | tee cluster.config`
-
-- copy the cluster configuration to the nodes:
+- setup a container runtime on the nodes
 ```sh
-./scripts/copy_file_to_nodes cluster.config
+ansible-playbook kthw-playbook.yml -t install_container_runtime -l k8s_nodes
 ```
 
-- install the jq CLI on the nodes so they can read the config
+- install kubelet, kube-proxy, apiserver, scheduler and native controllers on the master nodes
 ```sh
-./scripts/run_script_on_nodes install_jq_cli
+ansible-playbook kthw-playbook.yml -t install_kubernetes_master_components -l masters
 ```
 
-- setup a container runtime
+- install kubelet & kube-proxy on the worker nodes
 ```sh
-./scripts/run_script_on_nodes install_container_runtime
+ansible-playbook kthw-playbook.yml -t install_kubernetes_worker_components -l workers
 ```
 
-- download kubernetes
+- install etcd on the master nodes
 ```sh
-./scripts/download_kubernetes_binaries $(cat cluster.config | jq -r ".kubernetes_version") ./kubernetes
-```
-- download etcd
-```sh
-./scripts/download_etcd_binaries $(cat cluster.config | jq -r ".etcd3_version") ./etcd3
-```
-
-- copy kubelet & kube-proxy on the worker nodes
-```sh
-./scripts/copy_file_to_nodes ./kubernetes/workers worker
-./scripts/run_command_on_nodes 'sudo mv ~/workers/* /usr/bin/ && rmdir ~/workers' worker
-```
-
-- copy etcd, kubelet, kube-proxy, apiserver, scheduler and native controllers binaries to the master nodes
-```sh
-./scripts/copy_file_to_nodes ./etcd3 master
-./scripts/run_command_on_nodes 'sudo mv ~/etcd3/* /usr/bin/ && rmdir ~/etcd3' master
-
-./scripts/copy_file_to_nodes ./kubernetes/masters master
-./scripts/run_command_on_nodes 'sudo mv ~/masters/* /usr/bin/ && rmdir ~/masters' master
+ansible-playbook kthw-playbook.yml -t install_etcd -l masters
 ```

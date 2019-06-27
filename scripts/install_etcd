@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+
+ETCD3_RELEASE_VERSION=$1
+
+pushd /tmp &> /dev/null
+
+curl -sL "https://github.com/etcd-io/etcd/releases/download/$ETCD3_RELEASE_VERSION/etcd-$ETCD3_RELEASE_VERSION-linux-amd64.tar.gz" | tar -zxf -
+
+mv etcd-$ETCD3_RELEASE_VERSION-linux-amd64/etcd /usr/bin/
+mv etcd-$ETCD3_RELEASE_VERSION-linux-amd64/etcdctl /usr/bin/
+
+rm -rf etcd*
+
+touch .install_etcd
+
+popd &> /dev/null

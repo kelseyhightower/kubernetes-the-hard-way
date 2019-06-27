@@ -1,0 +1,21 @@
+---
+
+- name: Prerequisites | required commands are installed and in PATH
+  shell: command -v {{ item }} >/dev/null 2>&1
+  ignore_errors: yes
+  with_items:
+  - cfssl
+  - cfssljson
+  - kubectl
+  register: localhost_has_required_commands
+
+
+- name: Prerequisites | instructions
+  assert:
+    that: "{{ 'failed' not in localhost_has_required_commands }}"
+    fail_msg: "you need to install the following commands: {{ localhost_has_required_commands.results | selectattr('failed', 'sameas', true) | list | map(attribute='item') | list | join(',')}}" 
+
+
+- name: Prerequisites | set_fact
+  set_fact: 
+    local_prerequisites_met: "{{ 'failed' not in localhost_has_required_commands }}"

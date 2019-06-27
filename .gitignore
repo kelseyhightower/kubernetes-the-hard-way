@@ -1,5 +1,4 @@
 .vagrant
-kubernetes/
-etcd*/
-cluster.config
 inventory/generated
+*.retry
+

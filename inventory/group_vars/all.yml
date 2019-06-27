@@ -1,0 +1,4 @@
+
+kubernetes_version: v1.15.0
+etcd3_version: v3.3.13
+

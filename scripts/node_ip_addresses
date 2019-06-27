@@ -1,9 +1,0 @@
-#!/usr/bin/env bash
-SCRIPTS_DIR=$(dirname $0)
-
-for vagrant_box in $($SCRIPTS_DIR/node_names $1)
-do
-    ip_address=$(vagrant ssh $vagrant_box -c "hostname -I | cut -d' ' -f2" 2>/dev/null)
-    echo "$vagrant_box $ip_address"
-done
-

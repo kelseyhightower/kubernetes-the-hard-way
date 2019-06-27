@@ -1,0 +1,49 @@
+---
+- name: Container runtime | Docker | Install dependencies
+  become: yes
+  apt:
+    name:
+    - apt-transport-https
+    - ca-certificates
+    - curl
+    - gnupg2
+    - software-properties-common
+    state: present
+    update_cache: yes        
+
+- name: Container runtime | Docker | Add Docker's apt repository signing key
+  become: yes
+  apt_key:
+    url: https://download.docker.com/linux/debian/gpg
+    state: present
+
+- name: Container runtime | Docker | Add docker repository
+  become: yes
+  apt_repository:
+    repo: "deb [arch=amd64] https://download.docker.com/linux/debian {{ ansible_distribution_release }} stable"
+    state: present
+    update_cache: yes
+
+- name: Container runtime | Docker | Install
+  become: yes
+  apt:
+    name:
+    - docker-ce 
+    - docker-ce-cli 
+    - containerd.io
+    allow_unauthenticated: yes
+    state: present
+
+- name: Container runtime | Docker | Start
+  become: yes
+  service:
+    name: docker
+    state: started
+    enabled: yes
+
+- name: "Container runtime | Docker | add user {{ ansible_user_id }} to group docker"
+  become: yes
+  user:
+    name: "{{ ansible_user_id }}"
+    append: yes
+    groups: docker

@@ -1,0 +1,47 @@
+---
+- hosts: all
+  tasks:
+  - name: Assert local prerequisites are met
+    import_tasks: ./check_local_prerequisites.yml
+    when: "'localhost' in group_names"
+    tags:
+    - check_local_prerequisites
+
+    
+  - name: Install a container runtime
+    import_tasks: ./install_container_runtime.yml
+    when: "'k8s_nodes' in group_names"
+    tags:
+    - install_container_runtime
+  
+
+  - name: Install kubernetes master components 
+    become: yes
+    script: ./scripts/install_kubernetes_master_components {{ kubernetes_version }}
+    args:
+      creates: /tmp/.install_kubernetes_master_components
+    when: "'masters' in group_names"
+    tags:
+    - install_kubernetes_components
+    - install_kubernetes_master_components
+ 
+ 
+  - name: Install kubernetes worker components
+    become: yes
+    script: ./scripts/install_kubernetes_worker_components {{ kubernetes_version }}
+    args:
+      creates: /tmp/.install_kubernetes_worker_components
+    when: "'workers' in group_names"
+    tags:
+    - install_kubernetes_components
+    - install_kubernetes_worker_components
+    
+ 
+  - name: Install etcd
+    become: yes
+    script: ./scripts/install_etcd {{ etcd3_version }}
+    args:
+      creates: /tmp/.install_etcd
+    when: "'masters' in group_names"
+    tags:
+    - install_etcd

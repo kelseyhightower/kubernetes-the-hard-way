@@ -1,3 +1,0 @@
-#!/usr/bin/env bash
-
-vagrant status --machine-readable | grep ,state, | cut -d, -f2 | sort | uniq | grep "$1"
