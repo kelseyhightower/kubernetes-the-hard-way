@@ -4,6 +4,7 @@
   shell: command -v {{ item }} >/dev/null 2>&1
   ignore_errors: yes
   with_items:
+  - vagrant
   - cfssl
   - cfssljson
   - kubectl
