@@ -11,6 +11,6 @@ mv etcd-$ETCD3_RELEASE_VERSION-linux-amd64/etcdctl /usr/bin/
 
 rm -rf etcd*
 
-touch .install_etcd
+touch .download_etcd
 
 popd &> /dev/null

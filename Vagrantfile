@@ -37,6 +37,11 @@ Vagrant.configure("2") do |config|
       end
     end
 
+    inventory.puts "[etcd_peers]"
+    hosts[:masters].each do |node_name|
+        inventory.puts node_name
+      end
+  
     inventory.puts "[k8s_nodes]"
     all_hosts.each do |node_name|
       inventory.puts node_name

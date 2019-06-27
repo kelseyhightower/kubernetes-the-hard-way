@@ -6,42 +6,49 @@
     when: "'localhost' in group_names"
     tags:
     - check_local_prerequisites
+  
+  - name: Root CA
+    import_tasks: ./root_ca.yml
+    when: "'localhost' in group_names"
+    tags:
+    - generate_the_root_ca    
 
-    
-  - name: Install a container runtime
+
+  - name: Download etcd
+    become: yes
+    script: ./scripts/download_etcd {{ etcd3_version }}
+    args:
+      creates: /tmp/.download_etcd
+    when: "'etcd_peers' in group_names"
+    tags:
+    - download_etcd
+
+
+  - name: Install a CRI-compatible container runtime
     import_tasks: ./install_container_runtime.yml
     when: "'k8s_nodes' in group_names"
     tags:
     - install_container_runtime
-  
 
-  - name: Install kubernetes master components 
+
+  - name: Download kubernetes control plane components
     become: yes
-    script: ./scripts/install_kubernetes_master_components {{ kubernetes_version }}
+    script: ./scripts/download_kubernetes_control_plane {{ kubernetes_version }}
     args:
-      creates: /tmp/.install_kubernetes_master_components
+      creates: /tmp/.download_kubernetes_control_plane
     when: "'masters' in group_names"
     tags:
-    - install_kubernetes_components
-    - install_kubernetes_master_components
+    - download_kubernetes
+    - download_kubernetes_control_plane
  
  
-  - name: Install kubernetes worker components
+  - name: Download kubernetes worker components
     become: yes
-    script: ./scripts/install_kubernetes_worker_components {{ kubernetes_version }}
+    script: ./scripts/download_kubernetes_worker_components {{ kubernetes_version }}
     args:
-      creates: /tmp/.install_kubernetes_worker_components
+      creates: /tmp/.download_kubernetes_worker_components
     when: "'workers' in group_names"
     tags:
-    - install_kubernetes_components
-    - install_kubernetes_worker_components
-    
- 
-  - name: Install etcd
-    become: yes
-    script: ./scripts/install_etcd {{ etcd3_version }}
-    args:
-      creates: /tmp/.install_etcd
-    when: "'masters' in group_names"
-    tags:
-    - install_etcd
+    - download_kubernetes
+    - download_kubernetes_worker_components
+

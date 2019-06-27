@@ -13,6 +13,6 @@ cp hyperkube /usr/bin/proxy
 cp hyperkube /usr/bin/kubectl
 rm hyperkube
 
-touch .install_kubernetes_worker_components
+touch .download_kubernetes_worker_components
 
 popd

@@ -18,7 +18,7 @@ cp hyperkube /usr/bin/cloud-controller-manager
 cp hyperkube /usr/bin/apiserver
 rm hyperkube
 
-touch .install_kubernetes_master_components
+touch .download_kubernetes_control_plane
 
 popd
 

@@ -17,25 +17,50 @@ You can run the following command to check if you've missed something (don't wor
 ansible-playbook kthw-playbook.yml -t check_local_prerequisites -l localhost
 ```
 
-# setup
-- run `vagrant up` to start the vms. This will create a master node and 2 worker nodes on your host's network
 
-- setup a container runtime on the nodes
+# Root Certificate Authority
+Kubernetes components implement a certificates based authentication mecanism (non revoked client certficates signed with a server's key are  valid credentials).
+Etcd also implements such a mecanism.
+
+We need a root Certificate Authority to :
+  * enable authentication to the kubernetes api server.
+  * enable authentication to the etcd cluster.
+
+To generate it, run 
+```sh
+ansible-playbook kthw-playbook.yml -t generate_the_root_ca -l localhost
+```
+
+# Infrastructure
+- provision the vms the kubernetes cluster will be running on:
+```sh
+vagrant up
+```
+
+# CRI-compatible container runtime
+- setup a CRI-compatible container runtime on these VMs
 ```sh
 ansible-playbook kthw-playbook.yml -t install_container_runtime -l k8s_nodes
 ```
 
-- install kubelet, kube-proxy, apiserver, scheduler and native controllers on the master nodes
+# Etcd cluster
+- download etcd
 ```sh
-ansible-playbook kthw-playbook.yml -t install_kubernetes_master_components -l masters
+ansible-playbook kthw-playbook.yml -t download_etcd -l etcd_peers
 ```
 
-- install kubelet & kube-proxy on the worker nodes
+# Kubernetes Control Plane
+
+- download kubelet, kube-proxy, apiserver, scheduler and native controllers on the master nodes
 ```sh
-ansible-playbook kthw-playbook.yml -t install_kubernetes_worker_components -l workers
+ansible-playbook kthw-playbook.yml -t download_kubernetes_control_plane -l masters
 ```
 
-- install etcd on the master nodes
+# Kubernetes worker nodes
+- download kubelet & kube-proxy on the worker nodes
 ```sh
-ansible-playbook kthw-playbook.yml -t install_etcd -l masters
+ansible-playbook kthw-playbook.yml -t download_kubernetes_worker_components -l workers
 ```
+
+
+

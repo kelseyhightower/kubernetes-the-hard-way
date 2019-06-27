@@ -2,3 +2,4 @@
 inventory/generated
 *.retry
 
+pki/
