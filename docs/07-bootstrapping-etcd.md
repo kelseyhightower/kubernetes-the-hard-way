@@ -85,6 +85,7 @@ ExecStart=/usr/local/bin/etcd \\
   --data-dir=/var/lib/etcd
 Restart=on-failure
 RestartSec=5
+Type=notify
 
 [Install]
 WantedBy=multi-user.target
