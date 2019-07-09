@@ -37,7 +37,9 @@ EOF
 
 ## Create Cluster Role Binding
 
+```
 kubectl create clusterrolebinding crb-to-create-csr --clusterrole=system:node-bootstrapper --group=system:bootstrappers
+```
 
 --------------- OR ---------------
 
@@ -64,7 +66,9 @@ EOF
 
 # Authorize workers(kubelets) to approve CSR
 
+```
 kubectl create clusterrolebinding crb-to-approve-csr --clusterrole=system:certificates.k8s.io:certificatesigningrequests:nodeclient --group=system:bootstrappers
+```
 
 --------------- OR ---------------
 
@@ -89,19 +93,21 @@ EOF
 `master$ kubectl create -f crb-to-approve-csr.yaml`
 
 
-# Auto rotate certificates
+# Auto rotate/renew certificates
 
-kubectl create clusterrolebinding crb-to-autoapprove-csr --clusterrole=system:certificates.k8s.io:certificatesigningrequests:nodeclient --group=system:bootstrappers
+```
+kubectl create clusterrolebinding auto-approve-renewals-for-nodes --clusterrole=system:certificates.k8s.io:certificatesigningrequests:selfnodeclient --group=system:nodes
+```
 
 --------------- OR ---------------
 
 ```
-cat > crb-to-autoapprove-csr.yaml <<EOF
+cat > auto-approve-renewals-for-nodes.yaml <<EOF
 # Approve renewal CSRs for the group "system:nodes"
 kind: ClusterRoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
-  name: crb-to-autoapprove-csr
+  name: auto-approve-renewals-for-nodes
 subjects:
 - kind: Group
   name: system:nodes
@@ -113,7 +119,7 @@ roleRef:
 EOF
 ```
 
-`master$ kubectl create -f crb-to-autoapprove-csr.yaml`
+`kubectl create -f auto-approve-renewals-for-nodes.yaml`
 
 
 # Create bootstrap context on node03
