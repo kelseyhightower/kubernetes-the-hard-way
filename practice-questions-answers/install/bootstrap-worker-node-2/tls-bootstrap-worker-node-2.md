@@ -96,7 +96,7 @@ EOF
 # Auto rotate/renew certificates
 
 ```
-kubectl create clusterrolebinding auto-approve-renewals-for-nodes --clusterrole=system:certificates.k8s.io:certificatesigningrequests:selfnodeclient --group=system:nodes
+kubectl create clusterrolebinding crb-autorenew-csr-for-nodes --clusterrole=system:certificates.k8s.io:certificatesigningrequests:selfnodeclient --group=system:nodes
 ```
 
 --------------- OR ---------------
@@ -107,7 +107,7 @@ cat > auto-approve-renewals-for-nodes.yaml <<EOF
 kind: ClusterRoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
-  name: auto-approve-renewals-for-nodes
+  name: crb-autorenew-csr-for-nodes
 subjects:
 - kind: Group
   name: system:nodes
