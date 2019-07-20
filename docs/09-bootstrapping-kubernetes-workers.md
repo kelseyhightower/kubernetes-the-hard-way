@@ -81,7 +81,7 @@ Create the `bridge` network configuration file:
 ```
 cat <<EOF | sudo tee /etc/cni/net.d/10-bridge.conf
 {
-    "cniVersion": "0.6.0",
+    "cniVersion": "0.8.1",
     "name": "bridge",
     "type": "bridge",
     "bridge": "cnio0",
