@@ -32,18 +32,17 @@ gcloud compute ssh controller-0 \
 00000010  73 2f 64 65 66 61 75 6c  74 2f 6b 75 62 65 72 6e  |s/default/kubern|
 00000020  65 74 65 73 2d 74 68 65  2d 68 61 72 64 2d 77 61  |etes-the-hard-wa|
 00000030  79 0a 6b 38 73 3a 65 6e  63 3a 61 65 73 63 62 63  |y.k8s:enc:aescbc|
-00000040  3a 76 31 3a 6b 65 79 31  3a dd 3f 36 6c ce 65 9d  |:v1:key1:.?6l.e.|
-00000050  b3 b1 46 1a ba ae a2 1f  e4 fa 13 0c 4b 6e 2c 3c  |..F.........Kn,<|
-00000060  15 fa 88 56 84 b7 aa c0  7a ca 66 f3 de db 2b a3  |...V....z.f...+.|
-00000070  88 dc b1 b1 d8 2f 16 3e  6b 4a cb ac 88 5d 23 2d  |...../.>kJ...]#-|
-00000080  99 62 be 72 9f a5 01 38  15 c4 43 ac 38 5f ef 88  |.b.r...8..C.8_..|
-00000090  3b 88 c1 e6 b6 06 4f ae  a8 6b c8 40 70 ac 0a d3  |;.....O..k.@p...|
-000000a0  3e dc 2b b6 0f 01 b6 8b  e2 21 29 4d 32 d6 67 a6  |>.+......!)M2.g.|
-000000b0  4e 6d bb 61 0d 85 22 ea  f4 d6 2d 0a af 3c 71 85  |Nm.a.."...-..<q.|
-000000c0  96 27 c9 ec 90 e3 56 8c  94 a7 1c 9a 0e 00 28 11  |.'....V.......(.|
-000000d0  18 28 f4 33 42 d9 57 d9  e3 e9 1c 38 e3 bc 1e c3  |.(.3B.W....8....|
-000000e0  d2 47 f3 20 60 be b8 57  a7 0a                    |.G. `..W..|
-000000ea
+00000040  3a 76 31 3a 6b 65 79 31  3a aa 70 a0 fd d1 7a 44  |:v1:key1:.p...zD|
+00000050  4a f0 ac 97 10 42 9f 6a  5b 67 1a be c6 5a b4 7a  |J....B.j[g...Z.z|
+00000060  dd 4a 3e 55 fa e3 7f 3e  04 05 87 c7 ea 4a 79 d5  |.J>U...>.....Jy.|
+00000070  41 3c 84 15 cc db 86 76  92 fc 99 c4 fb 5c f1 9d  |A<.....v.....\..|
+00000080  c4 7f e9 ec 20 a2 0a 0e  81 65 94 00 b4 7f 84 b6  |.... ....e......|
+00000090  b3 8e a4 ac c9 6f dc 1e  de ee 54 41 84 4d 66 7b  |.....o....TA.Mf{|
+000000a0  de d7 ee 5e 0e 24 84 58  33 69 c9 d6 b4 90 29 33  |...^.$.X3i....)3|
+000000b0  78 53 bb f3 99 ac 7c 5b  f8 a5 0c 37 4e df 1f 6c  |xS....|[...7N..l|
+000000c0  ca b9 8d f0 42 4c a0 be  13 a7 65 13 62 f8 13 7d  |....BL....e.b..}|
+000000d0  0d 86 cf ea 55 80 ec f7  16 b1 74 35 d3 aa 4a dc  |....U.....t5..J.|
+000000e0  43 ef 19 df 71 3f 2e 1e  6a 0a                    |C...q?..j.|
 ```
 
 The etcd key should be prefixed with `k8s:enc:aescbc:v1:key1`, which indicates the `aescbc` provider was used to encrypt the data with the `key1` encryption key.
@@ -104,13 +103,13 @@ curl --head http://127.0.0.1:8080
 
 ```
 HTTP/1.1 200 OK
-Server: nginx/1.15.4
-Date: Sun, 30 Sep 2018 19:23:10 GMT
+Server: nginx/1.17.1
+Date: Sat, 20 Jul 2019 15:03:02 GMT
 Content-Type: text/html
 Content-Length: 612
-Last-Modified: Tue, 25 Sep 2018 15:04:03 GMT
+Last-Modified: Tue, 25 Jun 2019 12:19:45 GMT
 Connection: keep-alive
-ETag: "5baa4e63-264"
+ETag: "5d121161-264"
 Accept-Ranges: bytes
 ```
 
@@ -152,7 +151,7 @@ kubectl exec -ti $POD_NAME -- nginx -v
 > output
 
 ```
-nginx version: nginx/1.15.4
+nginx version: nginx/1.17.1
 ```
 
 ## Services
@@ -199,13 +198,13 @@ curl -I http://${EXTERNAL_IP}:${NODE_PORT}
 
 ```
 HTTP/1.1 200 OK
-Server: nginx/1.15.4
-Date: Sun, 30 Sep 2018 19:25:40 GMT
+Server: nginx/1.17.1
+Date: Sat, 20 Jul 2019 15:06:31 GMT
 Content-Type: text/html
 Content-Length: 612
-Last-Modified: Tue, 25 Sep 2018 15:04:03 GMT
+Last-Modified: Tue, 25 Jun 2019 12:19:45 GMT
 Connection: keep-alive
-ETag: "5baa4e63-264"
+ETag: "5d121161-264"
 Accept-Ranges: bytes
 ```
 
@@ -240,10 +239,10 @@ Verify the `untrusted` pod is running:
 kubectl get pods -o wide
 ```
 ```
-NAME                       READY     STATUS    RESTARTS   AGE       IP           NODE
-busybox-68654f944b-djjjb   1/1       Running   0          5m        10.200.0.2   worker-0
-nginx-65899c769f-xkfcn     1/1       Running   0          4m        10.200.1.2   worker-1
-untrusted                  1/1       Running   0          10s       10.200.0.3   worker-0
+NAME                       READY   STATUS    RESTARTS   AGE     IP           NODE       NOMINATED NODE   READINESS GATES
+busybox-78c88d76df-gm8sm   1/1     Running   0          16m     10.200.2.5   worker-2   <none>           <none>
+nginx-7bb7cd8db5-vxhg8     1/1     Running   0          4m58s   10.200.2.6   worker-2   <none>           <none>
+untrusted                  1/1     Running   0          4s      10.200.0.6   worker-0   <none>           <none>
 ```
 
 
@@ -265,22 +264,22 @@ List the containers running under gVisor:
 sudo runsc --root  /run/containerd/runsc/k8s.io list
 ```
 ```
-I0930 19:27:13.255142   20832 x:0] ***************************
-I0930 19:27:13.255326   20832 x:0] Args: [runsc --root /run/containerd/runsc/k8s.io list]
-I0930 19:27:13.255386   20832 x:0] Git Revision: 50c283b9f56bb7200938d9e207355f05f79f0d17
-I0930 19:27:13.255429   20832 x:0] PID: 20832
-I0930 19:27:13.255472   20832 x:0] UID: 0, GID: 0
-I0930 19:27:13.255591   20832 x:0] Configuration:
-I0930 19:27:13.255654   20832 x:0]              RootDir: /run/containerd/runsc/k8s.io
-I0930 19:27:13.255781   20832 x:0]              Platform: ptrace
-I0930 19:27:13.255893   20832 x:0]              FileAccess: exclusive, overlay: false
-I0930 19:27:13.256004   20832 x:0]              Network: sandbox, logging: false
-I0930 19:27:13.256128   20832 x:0]              Strace: false, max size: 1024, syscalls: []
-I0930 19:27:13.256238   20832 x:0] ***************************
+I0720 15:08:16.434026   12656 x:0] ***************************
+I0720 15:08:16.434241   12656 x:0] Args: [runsc --root /run/containerd/runsc/k8s.io list]
+I0720 15:08:16.434316   12656 x:0] Git Revision: 50c283b9f56bb7200938d9e207355f05f79f0d17
+I0720 15:08:16.434386   12656 x:0] PID: 12656
+I0720 15:08:16.434443   12656 x:0] UID: 0, GID: 0
+I0720 15:08:16.434496   12656 x:0] Configuration:
+I0720 15:08:16.434539   12656 x:0]              RootDir: /run/containerd/runsc/k8s.io
+I0720 15:08:16.434635   12656 x:0]              Platform: ptrace
+I0720 15:08:16.434740   12656 x:0]              FileAccess: exclusive, overlay: false
+I0720 15:08:16.434839   12656 x:0]              Network: sandbox, logging: false
+I0720 15:08:16.434936   12656 x:0]              Strace: false, max size: 1024, syscalls: []
+I0720 15:08:16.435031   12656 x:0] ***************************
 ID                                                                 PID         STATUS      BUNDLE                                                                                                                   CREATED                OWNER
-79e74d0cec52a1ff4bc2c9b0bb9662f73ea918959c08bca5bcf07ddb6cb0e1fd   20449       running     /run/containerd/io.containerd.runtime.v1.linux/k8s.io/79e74d0cec52a1ff4bc2c9b0bb9662f73ea918959c08bca5bcf07ddb6cb0e1fd   0001-01-01T00:00:00Z
-af7470029008a4520b5db9fb5b358c65d64c9f748fae050afb6eaf014a59fea5   20510       running     /run/containerd/io.containerd.runtime.v1.linux/k8s.io/af7470029008a4520b5db9fb5b358c65d64c9f748fae050afb6eaf014a59fea5   0001-01-01T00:00:00Z
-I0930 19:27:13.259733   20832 x:0] Exiting with status: 0
+913a16578531d71155a32ad69b08d8243aba86162324d84ac9adca67a11901a6   12348       running     /run/containerd/io.containerd.runtime.v1.linux/k8s.io/913a16578531d71155a32ad69b08d8243aba86162324d84ac9adca67a11901a6   0001-01-01T00:00:00Z   
+b7ff7c891ebdd9046879f8949dfa165b4b03f12c11d3f2baf27e4ff4a23e87f6   12408       running     /run/containerd/io.containerd.runtime.v1.linux/k8s.io/b7ff7c891ebdd9046879f8949dfa165b4b03f12c11d3f2baf27e4ff4a23e87f6   0001-01-01T00:00:00Z   
+I0720 15:08:16.438491   12656 x:0] Exiting with status: 0
 ```
 
 Get the ID of the `untrusted` pod:
