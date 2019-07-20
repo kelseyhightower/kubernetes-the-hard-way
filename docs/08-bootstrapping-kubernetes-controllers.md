@@ -267,10 +267,11 @@ curl -H "Host: kubernetes.default.svc.cluster.local" -i http://127.0.0.1/healthz
 ```
 HTTP/1.1 200 OK
 Server: nginx/1.14.0 (Ubuntu)
-Date: Sun, 30 Sep 2018 17:44:24 GMT
+Date: Sat, 20 Jul 2019 13:23:28 GMT
 Content-Type: text/plain; charset=utf-8
 Content-Length: 2
 Connection: keep-alive
+X-Content-Type-Options: nosniff
 
 ok
 ```
