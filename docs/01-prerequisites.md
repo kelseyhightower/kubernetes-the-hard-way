@@ -16,8 +16,17 @@ Follow the Google Cloud SDK [documentation](https://cloud.google.com/sdk/) to in
 
 Verify the Google Cloud SDK version is 218.0.0 or higher:
 
-```
+```sh
 gcloud version
+```
+
+> output
+
+```
+Google Cloud SDK 241.0.0
+bq 2.0.43
+core 2019.04.02
+gsutil 4.38
 ```
 
 ### Set a Default Compute Region and Zone
@@ -26,19 +35,19 @@ This tutorial assumes a default compute region and zone have been configured.
 
 If you are using the `gcloud` command-line tool for the first time `init` is the easiest way to do this:
 
-```
+```sh
 gcloud init
 ```
 
 Otherwise set a default compute region:
 
-```
+```sh
 gcloud config set compute/region us-west1
 ```
 
 Set a default compute zone:
 
-```
+```sh
 gcloud config set compute/zone us-west1-c
 ```
 

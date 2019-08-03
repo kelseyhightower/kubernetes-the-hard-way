@@ -6,7 +6,7 @@ Kubernetes components are stateless and store cluster state in [etcd](https://gi
 
 The commands in this lab must be run on each controller instance: `controller-0`, `controller-1`, and `controller-2`. Login to each controller instance using the `gcloud` command. Example:
 
-```
+```sh
 gcloud compute ssh controller-0
 ```
 
@@ -20,45 +20,41 @@ gcloud compute ssh controller-0
 
 Download the official etcd release binaries from the [coreos/etcd](https://github.com/coreos/etcd) GitHub project:
 
-```
+```sh
 wget -q --show-progress --https-only --timestamping \
-  "https://github.com/coreos/etcd/releases/download/v3.3.9/etcd-v3.3.9-linux-amd64.tar.gz"
+  "https://github.com/etcd-io/etcd/releases/download/v3.3.13/etcd-v3.3.13-linux-amd64.tar.gz"
 ```
 
 Extract and install the `etcd` server and the `etcdctl` command line utility:
 
-```
-{
-  tar -xvf etcd-v3.3.9-linux-amd64.tar.gz
-  sudo mv etcd-v3.3.9-linux-amd64/etcd* /usr/local/bin/
-}
+```sh
+tar -xvf etcd-v3.3.13-linux-amd64.tar.gz
+sudo mv etcd-v3.3.13-linux-amd64/etcd* /usr/local/bin/
 ```
 
 ### Configure the etcd Server
 
-```
-{
-  sudo mkdir -p /etc/etcd /var/lib/etcd
-  sudo cp ca.pem kubernetes-key.pem kubernetes.pem /etc/etcd/
-}
+```sh
+sudo mkdir -p /etc/etcd /var/lib/etcd
+sudo cp ca.pem kubernetes-key.pem kubernetes.pem /etc/etcd/
 ```
 
 The instance internal IP address will be used to serve client requests and communicate with etcd cluster peers. Retrieve the internal IP address for the current compute instance:
 
-```
+```sh
 INTERNAL_IP=$(curl -s -H "Metadata-Flavor: Google" \
   http://metadata.google.internal/computeMetadata/v1/instance/network-interfaces/0/ip)
 ```
 
 Each etcd member must have a unique name within an etcd cluster. Set the etcd name to match the hostname of the current compute instance:
 
-```
+```sh
 ETCD_NAME=$(hostname -s)
 ```
 
 Create the `etcd.service` systemd unit file:
 
-```
+```sh
 cat <<EOF | sudo tee /etc/systemd/system/etcd.service
 [Unit]
 Description=etcd
@@ -93,7 +89,7 @@ EOF
 
 ### Start the etcd Server
 
-```
+```sh
 {
   sudo systemctl daemon-reload
   sudo systemctl enable etcd
@@ -107,7 +103,7 @@ EOF
 
 List the etcd cluster members:
 
-```
+```sh
 sudo ETCDCTL_API=3 etcdctl member list \
   --endpoints=https://127.0.0.1:2379 \
   --cacert=/etc/etcd/ca.pem \

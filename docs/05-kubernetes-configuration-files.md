@@ -1,6 +1,6 @@
 # Generating Kubernetes Configuration Files for Authentication
 
-In this lab you will generate [Kubernetes configuration files](https://kubernetes.io/docs/concepts/configuration/organize-cluster-access-kubeconfig/), also known as kubeconfigs, which enable Kubernetes clients to locate and authenticate to the Kubernetes API Servers.
+In this lab you will generate [Kubernetes configuration files](https://kubernetes.io/docs/concepts/configuration/organize-cluster-access-kubeconfig/), also known as `kubeconfig`s, which enable Kubernetes clients to locate and authenticate to the Kubernetes API Servers.
 
 ## Client Authentication Configs
 
@@ -12,7 +12,7 @@ Each kubeconfig requires a Kubernetes API Server to connect to. To support high 
 
 Retrieve the `kubernetes-the-hard-way` static IP address:
 
-```
+```sh
 KUBERNETES_PUBLIC_ADDRESS=$(gcloud compute addresses describe kubernetes-the-hard-way \
   --region $(gcloud config get-value compute/region) \
   --format 'value(address)')
@@ -24,7 +24,7 @@ When generating kubeconfig files for Kubelets the client certificate matching th
 
 Generate a kubeconfig file for each worker node:
 
-```
+```sh
 for instance in worker-0 worker-1 worker-2; do
   kubectl config set-cluster kubernetes-the-hard-way \
     --certificate-authority=ca.pem \
@@ -59,8 +59,9 @@ worker-2.kubeconfig
 
 Generate a kubeconfig file for the `kube-proxy` service:
 
-```
+```sh
 {
+
   kubectl config set-cluster kubernetes-the-hard-way \
     --certificate-authority=ca.pem \
     --embed-certs=true \
@@ -79,6 +80,7 @@ Generate a kubeconfig file for the `kube-proxy` service:
     --kubeconfig=kube-proxy.kubeconfig
 
   kubectl config use-context default --kubeconfig=kube-proxy.kubeconfig
+
 }
 ```
 
@@ -92,8 +94,9 @@ kube-proxy.kubeconfig
 
 Generate a kubeconfig file for the `kube-controller-manager` service:
 
-```
+```sh
 {
+
   kubectl config set-cluster kubernetes-the-hard-way \
     --certificate-authority=ca.pem \
     --embed-certs=true \
@@ -112,6 +115,7 @@ Generate a kubeconfig file for the `kube-controller-manager` service:
     --kubeconfig=kube-controller-manager.kubeconfig
 
   kubectl config use-context default --kubeconfig=kube-controller-manager.kubeconfig
+
 }
 ```
 
@@ -126,8 +130,9 @@ kube-controller-manager.kubeconfig
 
 Generate a kubeconfig file for the `kube-scheduler` service:
 
-```
+```sh
 {
+
   kubectl config set-cluster kubernetes-the-hard-way \
     --certificate-authority=ca.pem \
     --embed-certs=true \
@@ -146,6 +151,7 @@ Generate a kubeconfig file for the `kube-scheduler` service:
     --kubeconfig=kube-scheduler.kubeconfig
 
   kubectl config use-context default --kubeconfig=kube-scheduler.kubeconfig
+
 }
 ```
 
@@ -159,8 +165,9 @@ kube-scheduler.kubeconfig
 
 Generate a kubeconfig file for the `admin` user:
 
-```
+```sh
 {
+
   kubectl config set-cluster kubernetes-the-hard-way \
     --certificate-authority=ca.pem \
     --embed-certs=true \
@@ -179,6 +186,7 @@ Generate a kubeconfig file for the `admin` user:
     --kubeconfig=admin.kubeconfig
 
   kubectl config use-context default --kubeconfig=admin.kubeconfig
+
 }
 ```
 
@@ -188,14 +196,11 @@ Results:
 admin.kubeconfig
 ```
 
-
-## 
-
 ## Distribute the Kubernetes Configuration Files
 
 Copy the appropriate `kubelet` and `kube-proxy` kubeconfig files to each worker instance:
 
-```
+```sh
 for instance in worker-0 worker-1 worker-2; do
   gcloud compute scp ${instance}.kubeconfig kube-proxy.kubeconfig ${instance}:~/
 done
@@ -203,7 +208,7 @@ done
 
 Copy the appropriate `kube-controller-manager` and `kube-scheduler` kubeconfig files to each controller instance:
 
-```
+```sh
 for instance in controller-0 controller-1 controller-2; do
   gcloud compute scp admin.kubeconfig kube-controller-manager.kubeconfig kube-scheduler.kubeconfig ${instance}:~/
 done

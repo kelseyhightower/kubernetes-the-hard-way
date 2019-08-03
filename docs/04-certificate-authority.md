@@ -8,7 +8,7 @@ In this section you will provision a Certificate Authority that can be used to g
 
 Generate the CA configuration file, certificate, and private key:
 
-```
+```sh
 {
 
 cat > ca-config.json <<EOF
@@ -54,7 +54,11 @@ cfssl gencert -initca ca-csr.json | cfssljson -bare ca
 Results:
 
 ```
+$ ls -p | grep -v /
+ca-config.json
+ca-csr.json
 ca-key.pem
+ca.csr
 ca.pem
 ```
 
@@ -66,7 +70,7 @@ In this section you will generate client and server certificates for each Kubern
 
 Generate the `admin` client certificate and private key:
 
-```
+```sh
 {
 
 cat > admin-csr.json <<EOF
@@ -101,19 +105,21 @@ cfssl gencert \
 Results:
 
 ```
+admin-csr.json
 admin-key.pem
+admin.csr
 admin.pem
 ```
 
 ### The Kubelet Client Certificates
 
-Kubernetes uses a [special-purpose authorization mode](https://kubernetes.io/docs/admin/authorization/node/) called Node Authorizer, that specifically authorizes API requests made by [Kubelets](https://kubernetes.io/docs/concepts/overview/components/#kubelet). In order to be authorized by the Node Authorizer, Kubelets must use a credential that identifies them as being in the `system:nodes` group, with a username of `system:node:<nodeName>`. In this section you will create a certificate for each Kubernetes worker node that meets the Node Authorizer requirements.
+Kubernetes uses a **special-purpose authorization mode** called [Node Authorizer](https://kubernetes.io/docs/admin/authorization/node/), that specifically authorizes API requests made by [Kubelets](https://kubernetes.io/docs/concepts/overview/components/#kubelet). In order to be authorized by the Node Authorizer, Kubelets must use a credential that identifies them as being in the `system:nodes` group, with a username of `system:node:<nodeName>`. In this section you will create a certificate for each Kubernetes worker node that meets the Node Authorizer requirements.
 
 Generate a certificate and private key for each Kubernetes worker node:
 
-```
+```sh
 for instance in worker-0 worker-1 worker-2; do
-cat > ${instance}-csr.json <<EOF
+  cat > ${instance}-csr.json <<EOF
 {
   "CN": "system:node:${instance}",
   "key": {
@@ -132,30 +138,36 @@ cat > ${instance}-csr.json <<EOF
 }
 EOF
 
-EXTERNAL_IP=$(gcloud compute instances describe ${instance} \
-  --format 'value(networkInterfaces[0].accessConfigs[0].natIP)')
+  EXTERNAL_IP=$(gcloud compute instances describe ${instance} \
+    --format 'value(networkInterfaces[0].accessConfigs[0].natIP)')
 
-INTERNAL_IP=$(gcloud compute instances describe ${instance} \
-  --format 'value(networkInterfaces[0].networkIP)')
+  INTERNAL_IP=$(gcloud compute instances describe ${instance} \
+    --format 'value(networkInterfaces[0].networkIP)')
 
-cfssl gencert \
-  -ca=ca.pem \
-  -ca-key=ca-key.pem \
-  -config=ca-config.json \
-  -hostname=${instance},${EXTERNAL_IP},${INTERNAL_IP} \
-  -profile=kubernetes \
-  ${instance}-csr.json | cfssljson -bare ${instance}
+  cfssl gencert \
+    -ca=ca.pem \
+    -ca-key=ca-key.pem \
+    -config=ca-config.json \
+    -hostname=${instance},${EXTERNAL_IP},${INTERNAL_IP} \
+    -profile=kubernetes \
+    ${instance}-csr.json | cfssljson -bare ${instance}
 done
 ```
 
 Results:
 
 ```
+worker-0-csr.json
 worker-0-key.pem
+worker-0.csr
 worker-0.pem
+worker-1-csr.json
 worker-1-key.pem
+worker-1.csr
 worker-1.pem
+worker-2-csr.json
 worker-2-key.pem
+worker-2.csr
 worker-2.pem
 ```
 
@@ -163,10 +175,10 @@ worker-2.pem
 
 Generate the `kube-controller-manager` client certificate and private key:
 
-```
+```sh
 {
 
-cat > kube-controller-manager-csr.json <<EOF
+  cat > kube-controller-manager-csr.json <<EOF
 {
   "CN": "system:kube-controller-manager",
   "key": {
@@ -185,12 +197,12 @@ cat > kube-controller-manager-csr.json <<EOF
 }
 EOF
 
-cfssl gencert \
-  -ca=ca.pem \
-  -ca-key=ca-key.pem \
-  -config=ca-config.json \
-  -profile=kubernetes \
-  kube-controller-manager-csr.json | cfssljson -bare kube-controller-manager
+  cfssl gencert \
+    -ca=ca.pem \
+    -ca-key=ca-key.pem \
+    -config=ca-config.json \
+    -profile=kubernetes \
+    kube-controller-manager-csr.json | cfssljson -bare kube-controller-manager
 
 }
 ```
@@ -198,7 +210,9 @@ cfssl gencert \
 Results:
 
 ```
+kube-controller-manager-csr.json
 kube-controller-manager-key.pem
+kube-controller-manager.csr
 kube-controller-manager.pem
 ```
 
@@ -207,10 +221,9 @@ kube-controller-manager.pem
 
 Generate the `kube-proxy` client certificate and private key:
 
-```
+```sh
 {
-
-cat > kube-proxy-csr.json <<EOF
+  cat > kube-proxy-csr.json <<EOF
 {
   "CN": "system:kube-proxy",
   "key": {
@@ -229,12 +242,12 @@ cat > kube-proxy-csr.json <<EOF
 }
 EOF
 
-cfssl gencert \
-  -ca=ca.pem \
-  -ca-key=ca-key.pem \
-  -config=ca-config.json \
-  -profile=kubernetes \
-  kube-proxy-csr.json | cfssljson -bare kube-proxy
+  cfssl gencert \
+    -ca=ca.pem \
+    -ca-key=ca-key.pem \
+    -config=ca-config.json \
+    -profile=kubernetes \
+    kube-proxy-csr.json | cfssljson -bare kube-proxy
 
 }
 ```
@@ -242,7 +255,9 @@ cfssl gencert \
 Results:
 
 ```
+kube-proxy-csr.json
 kube-proxy-key.pem
+kube-proxy.csr
 kube-proxy.pem
 ```
 
@@ -250,10 +265,10 @@ kube-proxy.pem
 
 Generate the `kube-scheduler` client certificate and private key:
 
-```
+```sh
 {
 
-cat > kube-scheduler-csr.json <<EOF
+  cat > kube-scheduler-csr.json <<EOF
 {
   "CN": "system:kube-scheduler",
   "key": {
@@ -272,12 +287,12 @@ cat > kube-scheduler-csr.json <<EOF
 }
 EOF
 
-cfssl gencert \
-  -ca=ca.pem \
-  -ca-key=ca-key.pem \
-  -config=ca-config.json \
-  -profile=kubernetes \
-  kube-scheduler-csr.json | cfssljson -bare kube-scheduler
+  cfssl gencert \
+    -ca=ca.pem \
+    -ca-key=ca-key.pem \
+    -config=ca-config.json \
+    -profile=kubernetes \
+    kube-scheduler-csr.json | cfssljson -bare kube-scheduler
 
 }
 ```
@@ -285,7 +300,9 @@ cfssl gencert \
 Results:
 
 ```
+kube-scheduler-csr.json
 kube-scheduler-key.pem
+kube-scheduler.csr
 kube-scheduler.pem
 ```
 
@@ -296,14 +313,14 @@ The `kubernetes-the-hard-way` static IP address will be included in the list of 
 
 Generate the Kubernetes API Server certificate and private key:
 
-```
+```sh
 {
 
-KUBERNETES_PUBLIC_ADDRESS=$(gcloud compute addresses describe kubernetes-the-hard-way \
-  --region $(gcloud config get-value compute/region) \
-  --format 'value(address)')
+  KUBERNETES_PUBLIC_ADDRESS=$(gcloud compute addresses describe kubernetes-the-hard-way \
+    --region $(gcloud config get-value compute/region) \
+    --format 'value(address)')
 
-cat > kubernetes-csr.json <<EOF
+  cat > kubernetes-csr.json <<EOF
 {
   "CN": "kubernetes",
   "key": {
@@ -322,13 +339,13 @@ cat > kubernetes-csr.json <<EOF
 }
 EOF
 
-cfssl gencert \
-  -ca=ca.pem \
-  -ca-key=ca-key.pem \
-  -config=ca-config.json \
-  -hostname=10.32.0.1,10.240.0.10,10.240.0.11,10.240.0.12,${KUBERNETES_PUBLIC_ADDRESS},127.0.0.1,kubernetes.default \
-  -profile=kubernetes \
-  kubernetes-csr.json | cfssljson -bare kubernetes
+  cfssl gencert \
+    -ca=ca.pem \
+    -ca-key=ca-key.pem \
+    -config=ca-config.json \
+    -hostname=10.32.0.1,10.240.0.10,10.240.0.11,10.240.0.12,${KUBERNETES_PUBLIC_ADDRESS},127.0.0.1,kubernetes.default \
+    -profile=kubernetes \
+    kubernetes-csr.json | cfssljson -bare kubernetes
 
 }
 ```
@@ -336,7 +353,9 @@ cfssl gencert \
 Results:
 
 ```
+kubernetes-csr.json
 kubernetes-key.pem
+kubernetes.csr
 kubernetes.pem
 ```
 
@@ -346,10 +365,10 @@ The Kubernetes Controller Manager leverages a key pair to generate and sign serv
 
 Generate the `service-account` certificate and private key:
 
-```
+```sh
 {
 
-cat > service-account-csr.json <<EOF
+  cat > service-account-csr.json <<EOF
 {
   "CN": "service-accounts",
   "key": {
@@ -368,12 +387,12 @@ cat > service-account-csr.json <<EOF
 }
 EOF
 
-cfssl gencert \
-  -ca=ca.pem \
-  -ca-key=ca-key.pem \
-  -config=ca-config.json \
-  -profile=kubernetes \
-  service-account-csr.json | cfssljson -bare service-account
+  cfssl gencert \
+    -ca=ca.pem \
+    -ca-key=ca-key.pem \
+    -config=ca-config.json \
+    -profile=kubernetes \
+    service-account-csr.json | cfssljson -bare service-account
 
 }
 ```
@@ -381,24 +400,30 @@ cfssl gencert \
 Results:
 
 ```
+service-account-csr.json
 service-account-key.pem
+service-account.csr
 service-account.pem
 ```
-
 
 ## Distribute the Client and Server Certificates
 
 Copy the appropriate certificates and private keys to each worker instance:
+- ca.pem
+- worker-X.pem & worker-X-key.pem
 
-```
+```sh
 for instance in worker-0 worker-1 worker-2; do
   gcloud compute scp ca.pem ${instance}-key.pem ${instance}.pem ${instance}:~/
 done
 ```
 
 Copy the appropriate certificates and private keys to each controller instance:
+- ca.pem & ca-key.pem
+- kubernetes-key.pem & kubernetes.pem
+- service-account-key.pem & service-account.pem
 
-```
+```sh
 for instance in controller-0 controller-1 controller-2; do
   gcloud compute scp ca.pem ca-key.pem kubernetes-key.pem kubernetes.pem \
     service-account-key.pem service-account.pem ${instance}:~/

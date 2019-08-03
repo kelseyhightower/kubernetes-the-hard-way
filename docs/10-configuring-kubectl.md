@@ -10,7 +10,7 @@ Each kubeconfig requires a Kubernetes API Server to connect to. To support high 
 
 Generate a kubeconfig file suitable for authenticating as the `admin` user:
 
-```
+```sh
 {
   KUBERNETES_PUBLIC_ADDRESS=$(gcloud compute addresses describe kubernetes-the-hard-way \
     --region $(gcloud config get-value compute/region) \
@@ -37,7 +37,7 @@ Generate a kubeconfig file suitable for authenticating as the `admin` user:
 
 Check the health of the remote Kubernetes cluster:
 
-```
+```sh
 kubectl get componentstatuses
 ```
 
@@ -54,17 +54,17 @@ etcd-0               Healthy   {"health":"true"}
 
 List the nodes in the remote Kubernetes cluster:
 
-```
+```sh
 kubectl get nodes
 ```
 
 > output
 
 ```
-NAME       STATUS   ROLES    AGE    VERSION
-worker-0   Ready    <none>   117s   v1.12.0
-worker-1   Ready    <none>   118s   v1.12.0
-worker-2   Ready    <none>   118s   v1.12.0
+NAME       STATUS   ROLES    AGE     VERSION
+worker-0   Ready    <none>   3m59s   v1.14.4
+worker-1   Ready    <none>   3m58s   v1.14.4
+worker-2   Ready    <none>   3m57s   v1.14.4
 ```
 
 Next: [Provisioning Pod Network Routes](11-pod-network-routes.md)

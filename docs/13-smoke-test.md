@@ -8,14 +8,14 @@ In this section you will verify the ability to [encrypt secret data at rest](htt
 
 Create a generic secret:
 
-```
+```sh
 kubectl create secret generic kubernetes-the-hard-way \
   --from-literal="mykey=mydata"
 ```
 
 Print a hexdump of the `kubernetes-the-hard-way` secret stored in etcd:
 
-```
+```sh
 gcloud compute ssh controller-0 \
   --command "sudo ETCDCTL_API=3 etcdctl get \
   --endpoints=https://127.0.0.1:2379 \
@@ -54,13 +54,13 @@ In this section you will verify the ability to create and manage [Deployments](h
 
 Create a deployment for the [nginx](https://nginx.org/en/) web server:
 
-```
+```sh
 kubectl run nginx --image=nginx
 ```
 
 List the pod created by the `nginx` deployment:
 
-```
+```sh
 kubectl get pods -l run=nginx
 ```
 
@@ -77,13 +77,13 @@ In this section you will verify the ability to access applications remotely usin
 
 Retrieve the full name of the `nginx` pod:
 
-```
+```sh
 POD_NAME=$(kubectl get pods -l run=nginx -o jsonpath="{.items[0].metadata.name}")
 ```
 
 Forward port `8080` on your local machine to port `80` of the `nginx` pod:
 
-```
+```sh
 kubectl port-forward $POD_NAME 8080:80
 ```
 
@@ -104,13 +104,13 @@ curl --head http://127.0.0.1:8080
 
 ```
 HTTP/1.1 200 OK
-Server: nginx/1.15.4
-Date: Sun, 30 Sep 2018 19:23:10 GMT
+Server: nginx/1.17.2
+Date: Sat, 03 Aug 2019 03:35:08 GMT
 Content-Type: text/html
 Content-Length: 612
-Last-Modified: Tue, 25 Sep 2018 15:04:03 GMT
+Last-Modified: Tue, 23 Jul 2019 11:45:37 GMT
 Connection: keep-alive
-ETag: "5baa4e63-264"
+ETag: "5d36f361-264"
 Accept-Ranges: bytes
 ```
 
@@ -129,14 +129,14 @@ In this section you will verify the ability to [retrieve container logs](https:/
 
 Print the `nginx` pod logs:
 
-```
+```sh
 kubectl logs $POD_NAME
 ```
 
 > output
 
 ```
-127.0.0.1 - - [30/Sep/2018:19:23:10 +0000] "HEAD / HTTP/1.1" 200 0 "-" "curl/7.58.0" "-"
+127.0.0.1 - - [03/Aug/2019:03:35:08 +0000] "HEAD / HTTP/1.1" 200 0 "-" "curl/7.54.0" "-"
 ```
 
 ### Exec
@@ -152,7 +152,7 @@ kubectl exec -ti $POD_NAME -- nginx -v
 > output
 
 ```
-nginx version: nginx/1.15.4
+nginx version: nginx/1.17.2
 ```
 
 ## Services
@@ -161,7 +161,7 @@ In this section you will verify the ability to expose applications using a [Serv
 
 Expose the `nginx` deployment using a [NodePort](https://kubernetes.io/docs/concepts/services-networking/service/#type-nodeport) service:
 
-```
+```sh
 kubectl expose deployment nginx --port 80 --type NodePort
 ```
 
@@ -169,14 +169,21 @@ kubectl expose deployment nginx --port 80 --type NodePort
 
 Retrieve the node port assigned to the `nginx` service:
 
-```
+```sh
 NODE_PORT=$(kubectl get svc nginx \
   --output=jsonpath='{range .spec.ports[0]}{.nodePort}')
+echo $NODE_PORT
+```
+
+> output
+
+```
+30313
 ```
 
 Create a firewall rule that allows remote access to the `nginx` node port:
 
-```
+```sh
 gcloud compute firewall-rules create kubernetes-the-hard-way-allow-nginx-service \
   --allow=tcp:${NODE_PORT} \
   --network kubernetes-the-hard-way
@@ -184,28 +191,28 @@ gcloud compute firewall-rules create kubernetes-the-hard-way-allow-nginx-service
 
 Retrieve the external IP address of a worker instance:
 
-```
+```sh
 EXTERNAL_IP=$(gcloud compute instances describe worker-0 \
   --format 'value(networkInterfaces[0].accessConfigs[0].natIP)')
 ```
 
 Make an HTTP request using the external IP address and the `nginx` node port:
 
-```
-curl -I http://${EXTERNAL_IP}:${NODE_PORT}
+```sh
+curl -I "http://${EXTERNAL_IP}:${NODE_PORT}"
 ```
 
 > output
 
 ```
 HTTP/1.1 200 OK
-Server: nginx/1.15.4
-Date: Sun, 30 Sep 2018 19:25:40 GMT
+Server: nginx/1.17.2
+Date: Sat, 03 Aug 2019 03:43:19 GMT
 Content-Type: text/html
 Content-Length: 612
-Last-Modified: Tue, 25 Sep 2018 15:04:03 GMT
+Last-Modified: Tue, 23 Jul 2019 11:45:37 GMT
 Connection: keep-alive
-ETag: "5baa4e63-264"
+ETag: "5d36f361-264"
 Accept-Ranges: bytes
 ```
 
@@ -215,7 +222,7 @@ This section will verify the ability to run untrusted workloads using [gVisor](h
 
 Create the `untrusted` pod:
 
-```
+```sh
 cat <<EOF | kubectl apply -f -
 apiVersion: v1
 kind: Pod
@@ -236,34 +243,43 @@ In this section you will verify the `untrusted` pod is running under gVisor (run
 
 Verify the `untrusted` pod is running:
 
-```
-kubectl get pods -o wide
-```
-```
-NAME                       READY     STATUS    RESTARTS   AGE       IP           NODE
-busybox-68654f944b-djjjb   1/1       Running   0          5m        10.200.0.2   worker-0
-nginx-65899c769f-xkfcn     1/1       Running   0          4m        10.200.1.2   worker-1
-untrusted                  1/1       Running   0          10s       10.200.0.3   worker-0
+```sh
+kubectl get pods,svc -o wide
 ```
 
+> output
+
+```
+NAME                           READY   STATUS    RESTARTS   AGE   IP           NODE       NOMINATED NODE   READINESS GATES
+pod/busybox-68f7d47fc6-fnzlp   1/1     Running   0          18m   10.200.1.2   worker-1   <none>           <none>
+pod/nginx                      1/1     Running   0          11m   10.200.1.3   worker-1   <none>           <none>
+pod/untrusted                  1/1     Running   0          90s   10.200.0.3   worker-0   <none>           <none>
+
+NAME                 TYPE        CLUSTER-IP    EXTERNAL-IP   PORT(S)        AGE     SELECTOR
+service/kubernetes   ClusterIP   10.32.0.1     <none>        443/TCP        7h20m   <none>
+service/nginx        NodePort    10.32.0.147   <none>        80:31209/TCP   7m30s   run=nginx
+```
 
 Get the node name where the `untrusted` pod is running:
 
-```
+```sh
 INSTANCE_NAME=$(kubectl get pod untrusted --output=jsonpath='{.spec.nodeName}')
 ```
 
 SSH into the worker node:
 
-```
+```sh
 gcloud compute ssh ${INSTANCE_NAME}
 ```
 
 List the containers running under gVisor:
 
-```
+```sh
 sudo runsc --root  /run/containerd/runsc/k8s.io list
 ```
+
+> output
+
 ```
 I0930 19:27:13.255142   20832 x:0] ***************************
 I0930 19:27:13.255326   20832 x:0] Args: [runsc --root /run/containerd/runsc/k8s.io list]
@@ -285,21 +301,21 @@ I0930 19:27:13.259733   20832 x:0] Exiting with status: 0
 
 Get the ID of the `untrusted` pod:
 
-```
+```sh
 POD_ID=$(sudo crictl -r unix:///var/run/containerd/containerd.sock \
   pods --name untrusted -q)
 ```
 
 Get the ID of the `webserver` container running in the `untrusted` pod:
 
-```
+```sh
 CONTAINER_ID=$(sudo crictl -r unix:///var/run/containerd/containerd.sock \
   ps -p ${POD_ID} -q)
 ```
 
 Use the gVisor `runsc` command to display the processes running inside the `webserver` container:
 
-```
+```sh
 sudo runsc --root /run/containerd/runsc/k8s.io ps ${CONTAINER_ID}
 ```
 
