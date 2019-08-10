@@ -218,12 +218,12 @@ In this section you will provision an external load balancer to front the Kubern
 
 ```
 #Install HAProxy
-sudo apt-get update && sudo apt-get install -y haproxy
+loadbalancer# sudo apt-get update && sudo apt-get install -y haproxy
 
 ```
 
 ```
-cat <<EOF | sudo tee /etc/haproxy/haproxy.cfg 
+loadbalancer# cat <<EOF | sudo tee /etc/haproxy/haproxy.cfg 
 frontend kubernetes
     bind 192.168.5.30:6443
     option tcplog
@@ -240,7 +240,7 @@ EOF
 ```
 
 ```
-sudo service haproxy restart
+loadbalancer# sudo service haproxy restart
 ```
 
 ### Verification
