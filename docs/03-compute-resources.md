@@ -318,6 +318,11 @@ for instance in controller-0 controller-1 controller-2 worker-0 worker-1 worker-
 done
 ```
 
+After this is done, set the correct permissions on the new config file:
+```
+chmod 644 ~/.ssh/config
+```
+
 Test SSH access to the `controller-0` compute instances:
 
 ```
