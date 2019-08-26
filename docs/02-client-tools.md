@@ -70,34 +70,10 @@ Runtime: go1.6
 
 ## Install kubectl
 
-The `kubectl` command line utility is used to interact with the Kubernetes API Server. Download and install `kubectl` from the official release binaries:
-
-### OS X
+The `kubectl` command line utility is used to interact with the Kubernetes API Server. We'll use the Azure CLI to install it:
 
 ```
-curl -o kubectl https://storage.googleapis.com/kubernetes-release/release/v1.12.0/bin/darwin/amd64/kubectl
-```
-
-```
-chmod +x kubectl
-```
-
-```
-sudo mv kubectl /usr/local/bin/
-```
-
-### Linux
-
-```
-wget https://storage.googleapis.com/kubernetes-release/release/v1.12.0/bin/linux/amd64/kubectl
-```
-
-```
-chmod +x kubectl
-```
-
-```
-sudo mv kubectl /usr/local/bin/
+az aks install-cli
 ```
 
 ### Verification
