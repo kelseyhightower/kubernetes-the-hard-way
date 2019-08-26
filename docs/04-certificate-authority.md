@@ -171,6 +171,7 @@ cat > kube-controller-manager-csr.json <<EOF
     }
   ]
 }
+EOF
 ```
 ```
 cfssl gencert \
