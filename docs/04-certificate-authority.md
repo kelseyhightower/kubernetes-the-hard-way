@@ -125,8 +125,8 @@ cat > ${instance}-csr.json <<EOF
 }
 EOF
 
-EXTERNAL_IP=$(az vm show --show-details -g kubernetes-the-hard-way -n ${instance} --output tsv | cut -f19)
-INTERNAL_IP=$(az vm show --show-details -g kubernetes-the-hard-way -n ${instance} --output tsv | cut -f16)
+EXTERNAL_IP=$(az vm show --show-details -g kubernetes-the-hard-way -n ${instance} --query publicIps --output tsv)
+INTERNAL_IP=$(az vm show --show-details -g kubernetes-the-hard-way -n ${instance} --query privateIps --output tsv)
 
 cfssl gencert \
   -ca=ca.pem \
