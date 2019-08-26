@@ -307,7 +307,7 @@ Let's build an SSH config file to easily be able to SSH to all our controller an
 
 ```
 for instance in controller-0 controller-1 controller-2 worker-0 worker-1 worker-2; do
-  EXTERNAL_IP=$(az vm show --show-details -g kubernetes-the-hard-way -n ${instance} --output tsv | cut -f19)
+  EXTERNAL_IP=$(az vm show --show-details -g kubernetes-the-hard-way -n ${instance} --query publicIps --output tsv)
   cat <<EOF | tee -a ~/.ssh/config
   Host ${instance}
   User azureuser

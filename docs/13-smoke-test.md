@@ -16,8 +16,7 @@ kubectl create secret generic kubernetes-the-hard-way \
 Print a hexdump of the `kubernetes-the-hard-way` secret stored in etcd:
 
 ```
-EXTERNAL_IP=$(az vm show --show-details -g kubernetes-the-hard-way -n controller-0 --output tsv | cut -f19)
-ssh azureuser@${EXTERNAL_IP}
+ssh controller-0
 
 sudo ETCDCTL_API=3 etcdctl get \
   --endpoints=https://127.0.0.1:2379 \
@@ -195,7 +194,7 @@ az network nsg rule create \
 Retrieve the external IP address of a worker instance:
 
 ```
-EXTERNAL_IP=$(az vm show --show-details -g kubernetes-the-hard-way -n worker-0 --output tsv | cut -f19)
+EXTERNAL_IP=$(az vm show --show-details -g kubernetes-the-hard-way -n worker-0 --query publicIps --output tsv)
 ```
 
 Make an HTTP request using the external IP address and the `nginx` node port:
@@ -265,7 +264,7 @@ INSTANCE_NAME=$(kubectl get pod untrusted --output=jsonpath='{.spec.nodeName}')
 SSH into the worker node:
 
 ```
-EXTERNAL_IP=$(az vm show --show-details -g kubernetes-the-hard-way -n ${INSTANCE_NAME} --output tsv | cut -f19)
+EXTERNAL_IP=$(az vm show --show-details -g kubernetes-the-hard-way -n ${INSTANCE_NAME} --query publicIps --output tsv)
 ssh azureuser@${EXTERNAL_IP} 
 ```
 
