@@ -16,6 +16,12 @@ curl -o cfssl https://pkg.cfssl.org/R1.2/cfssl_darwin-amd64
 curl -o cfssljson https://pkg.cfssl.org/R1.2/cfssljson_darwin-amd64
 ```
 
+Check if sha256sum match one provided at: https://pkg.cfssl.org/R1.2/SHA256SUMS
+
+```
+shasum -a 256 cfssl cfssljson
+```
+
 ```
 chmod +x cfssl cfssljson
 ```
@@ -36,6 +42,12 @@ brew install cfssl
 wget -q --show-progress --https-only --timestamping \
   https://pkg.cfssl.org/R1.2/cfssl_linux-amd64 \
   https://pkg.cfssl.org/R1.2/cfssljson_linux-amd64
+```
+
+Check if sha256sum match one provided at: https://pkg.cfssl.org/R1.2/SHA256SUMS
+
+```
+sha256sum cfssl_linux-amd64 cfssljson_linux-amd64
 ```
 
 ```
