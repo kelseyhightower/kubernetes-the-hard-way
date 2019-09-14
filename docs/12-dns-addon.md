@@ -40,7 +40,7 @@ coredns-699f8ddd77-gtcgb   1/1     Running   0          20s
 Create a `busybox` deployment:
 
 ```
-kubectl run busybox --image=busybox:1.28 --command -- sleep 3600
+kubectl run --generator=run-pod/v1 busybox --image=busybox:1.28 --command -- sleep 3600
 ```
 
 List the pod created by the `busybox` deployment:
@@ -52,8 +52,8 @@ kubectl get pods -l run=busybox
 > output
 
 ```
-NAME                      READY   STATUS    RESTARTS   AGE
-busybox-bd8fb7cbd-vflm9   1/1     Running   0          10s
+NAME      READY   STATUS    RESTARTS   AGE
+busybox   1/1     Running   0          3s
 ```
 
 Retrieve the full name of the `busybox` pod:
