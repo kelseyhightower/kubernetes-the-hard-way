@@ -208,11 +208,10 @@ Waiting for SSH key to propagate.
 After the SSH keys have been updated you'll be logged into the `controller-0` instance:
 
 ```
-Welcome to Ubuntu 18.04 LTS (GNU/Linux 4.15.0-1006-gcp x86_64)
-
+Welcome to Ubuntu 18.04.3 LTS (GNU/Linux 4.15.0-1042-gcp x86_64)
 ...
 
-Last login: Sun May 13 14:34:27 2018 from XX.XXX.XXX.XX
+Last login: Sun Sept 14 14:34:27 2019 from XX.XXX.XXX.XX
 ```
 
 Type `exit` at the prompt to exit the `controller-0` compute instance:
