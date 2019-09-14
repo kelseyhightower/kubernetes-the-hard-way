@@ -47,3 +47,4 @@ service-account-key.pem
 service-account.csr
 service-account.pem
 service-account-csr.json
+*.swp

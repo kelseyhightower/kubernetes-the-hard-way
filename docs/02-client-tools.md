@@ -7,13 +7,13 @@ In this lab you will install the command line utilities required to complete thi
 
 The `cfssl` and `cfssljson` command line utilities will be used to provision a [PKI Infrastructure](https://en.wikipedia.org/wiki/Public_key_infrastructure) and generate TLS certificates.
 
-Download and install `cfssl` and `cfssljson` from the [cfssl repository](https://pkg.cfssl.org):
+Download and install `cfssl` and `cfssljson`:
 
 ### OS X
 
 ```
-curl -o cfssl https://pkg.cfssl.org/R1.2/cfssl_darwin-amd64
-curl -o cfssljson https://pkg.cfssl.org/R1.2/cfssljson_darwin-amd64
+curl -o cfssl https://storage.googleapis.com/kubernetes-the-hard-way/cfssl/darwin/cfssl
+curl -o cfssljson https://storage.googleapis.com/kubernetes-the-hard-way/cfssl/darwin/cfssljson
 ```
 
 ```
@@ -34,25 +34,21 @@ brew install cfssl
 
 ```
 wget -q --show-progress --https-only --timestamping \
-  https://pkg.cfssl.org/R1.2/cfssl_linux-amd64 \
-  https://pkg.cfssl.org/R1.2/cfssljson_linux-amd64
+  https://storage.googleapis.com/kubernetes-the-hard-way/cfssl/linux/cfssl \
+  https://storage.googleapis.com/kubernetes-the-hard-way/cfssl/linux/cfssljson
 ```
 
 ```
-chmod +x cfssl_linux-amd64 cfssljson_linux-amd64
+chmod +x cfssl cfssljson
 ```
 
 ```
-sudo mv cfssl_linux-amd64 /usr/local/bin/cfssl
-```
-
-```
-sudo mv cfssljson_linux-amd64 /usr/local/bin/cfssljson
+sudo mv cfssl cfssljson /usr/local/bin/
 ```
 
 ### Verification
 
-Verify `cfssl` version 1.2.0 or higher is installed:
+Verify `cfssl` and `cfssljson` version 1.3.4 or higher is installed:
 
 ```
 cfssl version
@@ -61,12 +57,19 @@ cfssl version
 > output
 
 ```
-Version: 1.2.0
+Version: 1.3.4
 Revision: dev
-Runtime: go1.6
+Runtime: go1.13
 ```
 
-> The cfssljson command line utility does not provide a way to print its version.
+```
+cfssljson --version
+```
+```
+Version: 1.3.4
+Revision: dev
+Runtime: go1.13
+```
 
 ## Install kubectl
 
@@ -75,7 +78,7 @@ The `kubectl` command line utility is used to interact with the Kubernetes API S
 ### OS X
 
 ```
-curl -o kubectl https://storage.googleapis.com/kubernetes-release/release/v1.12.0/bin/darwin/amd64/kubectl
+curl -o kubectl https://storage.googleapis.com/kubernetes-release/release/v1.15.3/bin/darwin/amd64/kubectl
 ```
 
 ```
@@ -89,7 +92,7 @@ sudo mv kubectl /usr/local/bin/
 ### Linux
 
 ```
-wget https://storage.googleapis.com/kubernetes-release/release/v1.12.0/bin/linux/amd64/kubectl
+wget https://storage.googleapis.com/kubernetes-release/release/v1.15.3/bin/linux/amd64/kubectl
 ```
 
 ```
@@ -102,7 +105,7 @@ sudo mv kubectl /usr/local/bin/
 
 ### Verification
 
-Verify `kubectl` version 1.12.0 or higher is installed:
+Verify `kubectl` version 1.15.3 or higher is installed:
 
 ```
 kubectl version --client
@@ -111,7 +114,7 @@ kubectl version --client
 > output
 
 ```
-Client Version: version.Info{Major:"1", Minor:"12", GitVersion:"v1.12.0", GitCommit:"0ed33881dc4355495f623c6f22e7dd0b7632b7c0", GitTreeState:"clean", BuildDate:"2018-09-27T17:05:32Z", GoVersion:"go1.10.4", Compiler:"gc", Platform:"linux/amd64"}
+Client Version: version.Info{Major:"1", Minor:"15", GitVersion:"v1.15.3", GitCommit:"2d3c76f9091b6bec110a5e63777c332469e0cba2", GitTreeState:"clean", BuildDate:"2019-08-19T11:13:54Z", GoVersion:"go1.12.9", Compiler:"gc", Platform:"linux/amd64"}
 ```
 
 Next: [Provisioning Compute Resources](03-compute-resources.md)
