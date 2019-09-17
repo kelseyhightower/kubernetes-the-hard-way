@@ -9,7 +9,7 @@ The `cfssl` and `cfssljson` command line utilities will be used to provision a [
 
 Download and install `cfssl` and `cfssljson`:
 
-### OS X
+### macOS
 
 ```
 curl -o cfssl https://storage.googleapis.com/kubernetes-the-hard-way/cfssl/darwin/cfssl
@@ -24,7 +24,7 @@ chmod +x cfssl cfssljson
 sudo mv cfssl cfssljson /usr/local/bin/
 ```
 
-Some OS X users may experience problems using the pre-built binaries in which case [Homebrew](https://brew.sh) might be a better option:
+Some macOS users may experience problems using the pre-built binaries in which case [Homebrew](https://brew.sh) might be a better option:
 
 ```
 brew install cfssl
@@ -75,7 +75,7 @@ Runtime: go1.13
 
 The `kubectl` command line utility is used to interact with the Kubernetes API Server. Download and install `kubectl` from the official release binaries:
 
-### OS X
+### macOS
 
 ```
 curl -o kubectl https://storage.googleapis.com/kubernetes-release/release/v1.15.3/bin/darwin/amd64/kubectl
