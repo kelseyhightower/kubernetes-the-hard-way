@@ -113,7 +113,7 @@ EOF
 Move the `kube-controller-manager` kubeconfig into place:
 
 ```
-sudo mv kube-controller-manager.kubeconfig /var/lib/kubernetes/
+sudo mv kube-controller-manager /var/lib/kubernetes/
 ```
 
 Create the `kube-controller-manager.service` systemd unit file:
