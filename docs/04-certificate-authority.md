@@ -47,7 +47,7 @@ In this section you will generate client and server certificates for each Kubern
 Generate the `admin` client certificate and private key:
 
 ```
-# Geenrate private key for admin user
+# Generate private key for admin user
 openssl genrsa -out admin.key 2048
 
 # Generate CSR for admin user. Note the OU.
