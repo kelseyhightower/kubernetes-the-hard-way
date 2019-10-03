@@ -62,7 +62,6 @@ worker-2.kubeconfig
 Generate a kubeconfig file for the `kube-proxy` service:
 
 ```
-{
   kubectl config set-cluster kubernetes-the-hard-way \
     --certificate-authority=ca.pem \
     --embed-certs=true \
@@ -81,7 +80,6 @@ Generate a kubeconfig file for the `kube-proxy` service:
     --kubeconfig=kube-proxy.kubeconfig
 
   kubectl config use-context default --kubeconfig=kube-proxy.kubeconfig
-}
 ```
 
 Results:
@@ -95,7 +93,6 @@ kube-proxy.kubeconfig
 Generate a kubeconfig file for the `kube-controller-manager` service:
 
 ```
-{
   kubectl config set-cluster kubernetes-the-hard-way \
     --certificate-authority=ca.pem \
     --embed-certs=true \
@@ -114,7 +111,6 @@ Generate a kubeconfig file for the `kube-controller-manager` service:
     --kubeconfig=kube-controller-manager.kubeconfig
 
   kubectl config use-context default --kubeconfig=kube-controller-manager.kubeconfig
-}
 ```
 
 Results:
@@ -129,7 +125,6 @@ kube-controller-manager.kubeconfig
 Generate a kubeconfig file for the `kube-scheduler` service:
 
 ```
-{
   kubectl config set-cluster kubernetes-the-hard-way \
     --certificate-authority=ca.pem \
     --embed-certs=true \
@@ -148,7 +143,6 @@ Generate a kubeconfig file for the `kube-scheduler` service:
     --kubeconfig=kube-scheduler.kubeconfig
 
   kubectl config use-context default --kubeconfig=kube-scheduler.kubeconfig
-}
 ```
 
 Results:
@@ -162,7 +156,6 @@ kube-scheduler.kubeconfig
 Generate a kubeconfig file for the `admin` user:
 
 ```
-{
   kubectl config set-cluster kubernetes-the-hard-way \
     --certificate-authority=ca.pem \
     --embed-certs=true \
@@ -181,7 +174,6 @@ Generate a kubeconfig file for the `admin` user:
     --kubeconfig=admin.kubeconfig
 
   kubectl config use-context default --kubeconfig=admin.kubeconfig
-}
 ```
 
 Results:
