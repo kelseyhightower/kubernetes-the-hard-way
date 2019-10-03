@@ -98,7 +98,7 @@ The compute instances in this lab will be provisioned using [Ubuntu Server](http
 
 Create three compute instances which will host the Kubernetes control plane:
 
-```
+```sh
 for i in 0 1 2; do
   gcloud compute instances create controller-${i} \
     --async \
@@ -122,7 +122,7 @@ Each worker instance requires a pod subnet allocation from the Kubernetes cluste
 
 Create three compute instances which will host the Kubernetes worker nodes:
 
-```
+```sh
 for i in 0 1 2; do
   gcloud compute instances create worker-${i} \
     --async \
