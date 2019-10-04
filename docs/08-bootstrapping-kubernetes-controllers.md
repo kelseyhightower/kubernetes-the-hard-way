@@ -60,7 +60,7 @@ INTERNAL_IP=$(curl -s -H "Metadata-Flavor: Google" \
 
 Create the `kube-apiserver.service` systemd unit file:
 
-```
+```sh
 cat <<EOF | sudo tee /etc/systemd/system/kube-apiserver.service
 [Unit]
 Description=Kubernetes API Server
@@ -114,7 +114,7 @@ sudo mv kube-controller-manager.kubeconfig /var/lib/kubernetes/
 
 Create the `kube-controller-manager.service` systemd unit file:
 
-```
+```sh
 cat <<EOF | sudo tee /etc/systemd/system/kube-controller-manager.service
 [Unit]
 Description=Kubernetes Controller Manager
@@ -152,7 +152,7 @@ sudo mv kube-scheduler.kubeconfig /var/lib/kubernetes/
 
 Create the `kube-scheduler.yaml` configuration file:
 
-```
+```sh
 cat <<EOF | sudo tee /etc/kubernetes/config/kube-scheduler.yaml
 apiVersion: kubescheduler.config.k8s.io/v1alpha1
 kind: KubeSchedulerConfiguration
@@ -165,7 +165,7 @@ EOF
 
 Create the `kube-scheduler.service` systemd unit file:
 
-```
+```sh
 cat <<EOF | sudo tee /etc/systemd/system/kube-scheduler.service
 [Unit]
 Description=Kubernetes Scheduler
@@ -206,7 +206,7 @@ sudo apt-get update
 sudo apt-get install -y nginx
 ```
 
-```
+```sh
 cat > kubernetes.default.svc.cluster.local <<EOF
 server {
   listen      80;
@@ -285,7 +285,7 @@ gcloud compute ssh controller-0
 
 Create the `system:kube-apiserver-to-kubelet` [ClusterRole](https://kubernetes.io/docs/admin/authorization/rbac/#role-and-clusterrole) with permissions to access the Kubelet API and perform most common tasks associated with managing pods:
 
-```
+```sh
 cat <<EOF | kubectl apply --kubeconfig admin.kubeconfig -f -
 apiVersion: rbac.authorization.k8s.io/v1beta1
 kind: ClusterRole
@@ -313,7 +313,7 @@ The Kubernetes API Server authenticates to the Kubelet as the `kubernetes` user 
 
 Bind the `system:kube-apiserver-to-kubelet` ClusterRole to the `kubernetes` user:
 
-```
+```sh
 cat <<EOF | kubectl apply --kubeconfig admin.kubeconfig -f -
 apiVersion: rbac.authorization.k8s.io/v1beta1
 kind: ClusterRoleBinding
@@ -342,7 +342,7 @@ In this section you will provision an external load balancer to front the Kubern
 
 Create the external load balancer network resources:
 
-```
+```sh
 KUBERNETES_PUBLIC_ADDRESS=$(gcloud compute addresses describe kubernetes-the-hard-way \
   --region $(gcloud config get-value compute/region) \
   --format 'value(address)')
