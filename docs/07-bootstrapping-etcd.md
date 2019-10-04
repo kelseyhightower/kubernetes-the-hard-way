@@ -54,7 +54,7 @@ ETCD_NAME=$(hostname -s)
 
 Create the `etcd.service` systemd unit file:
 
-```
+```sh
 cat <<EOF | sudo tee /etc/systemd/system/etcd.service
 [Unit]
 Description=etcd
