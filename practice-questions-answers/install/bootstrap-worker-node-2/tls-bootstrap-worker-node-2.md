@@ -147,6 +147,7 @@ ExecStart=/usr/bin/kubelet \
   --bootstrap-kubeconfig=/tmp/bootstrap-kubeconfig \
   --kubeconfig=/var/lib/kubelet/kubeconfig \
   --register-node=true \
+  --cgroup-driver=systemd \
   --v=2
 Restart=on-failure
 StandardOutput=file:/var/kubeletlog1.log
