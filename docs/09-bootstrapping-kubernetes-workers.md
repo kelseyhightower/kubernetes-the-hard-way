@@ -212,6 +212,12 @@ EOF
 
 > The `resolvConf` configuration is used to avoid loops when using CoreDNS for service discovery on systems running `systemd-resolved`. 
 
+For the GCE cloud provider, we need to override the hostname it uses for each node so it matches with our certificates:
+
+```
+HOSTNAME_OVERRIDE=$(curl -sS http://metadata.google.internal/computeMetadata/v1/instance/name -H "Metadata-Flavor: Google")
+```
+
 Create the `kubelet.service` systemd unit file:
 
 ```
@@ -224,9 +230,11 @@ Requires=containerd.service
 
 [Service]
 ExecStart=/usr/local/bin/kubelet \\
+  --cloud-provider=gce \\
   --config=/var/lib/kubelet/kubelet-config.yaml \\
   --container-runtime=remote \\
   --container-runtime-endpoint=unix:///var/run/containerd/containerd.sock \\
+  --hostname-override=$HOSTNAME_OVERRIDE \\
   --image-pull-progress-deadline=2m \\
   --kubeconfig=/var/lib/kubelet/kubeconfig \\
   --network-plugin=cni \\
