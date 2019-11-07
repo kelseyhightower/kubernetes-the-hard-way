@@ -125,7 +125,7 @@ EOF
 # Create bootstrap context on node03
 
 ```
-kubectl config --kubeconfig=/tmp/bootstrap-kubeconfig set-cluster bootstrap --server='https://172.17.0.65:6443' --certificate-authority=/etc/kubernetes/pki/ca.crt
+kubectl config --kubeconfig=/tmp/bootstrap-kubeconfig set-cluster bootstrap --server='https://172.17.0.65:6443' --certificate-authority=/etc/kubernetes/ca.crt
 kubectl config --kubeconfig=/tmp/bootstrap-kubeconfig set-credentials kubelet-bootstrap --token=09426c.g262dkeidk3dx21x
 kubectl config --kubeconfig=/tmp/bootstrap-kubeconfig set-context bootstrap --user=kubelet-bootstrap --cluster=bootstrap
 kubectl config --kubeconfig=/tmp/bootstrap-kubeconfig use-context bootstrap
