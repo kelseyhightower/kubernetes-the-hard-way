@@ -10,40 +10,38 @@ Each kubeconfig requires a Kubernetes API Server to connect to. To support high 
 
 Generate a kubeconfig file suitable for authenticating as the `admin` user:
 
-```
-{
-  KUBERNETES_PUBLIC_ADDRESS=$(gcloud compute addresses describe kubernetes-the-hard-way \
-    --region $(gcloud config get-value compute/region) \
-    --format 'value(address)')
+```sh
+KUBERNETES_PUBLIC_ADDRESS=$(gcloud compute addresses describe kubernetes-the-hard-way \
+  --region $(gcloud config get-value compute/region) \
+  --format 'value(address)')
 
-  kubectl config set-cluster kubernetes-the-hard-way \
-    --certificate-authority=ca.pem \
-    --embed-certs=true \
-    --server=https://${KUBERNETES_PUBLIC_ADDRESS}:6443
+kubectl config set-cluster kubernetes-the-hard-way \
+  --certificate-authority=ca.pem \
+  --embed-certs=true \
+  --server=https://${KUBERNETES_PUBLIC_ADDRESS}:6443
 
-  kubectl config set-credentials admin \
-    --client-certificate=admin.pem \
-    --client-key=admin-key.pem
+kubectl config set-credentials admin \
+  --client-certificate=admin.pem \
+  --client-key=admin-key.pem
 
-  kubectl config set-context kubernetes-the-hard-way \
-    --cluster=kubernetes-the-hard-way \
-    --user=admin
+kubectl config set-context kubernetes-the-hard-way \
+  --cluster=kubernetes-the-hard-way \
+  --user=admin
 
-  kubectl config use-context kubernetes-the-hard-way
-}
+kubectl config use-context kubernetes-the-hard-way
 ```
 
 ## Verification
 
 Check the health of the remote Kubernetes cluster:
 
-```
+```sh
 kubectl get componentstatuses
 ```
 
 > output
 
-```
+```sh
 NAME                 STATUS    MESSAGE             ERROR
 controller-manager   Healthy   ok
 scheduler            Healthy   ok
@@ -54,13 +52,13 @@ etcd-0               Healthy   {"health":"true"}
 
 List the nodes in the remote Kubernetes cluster:
 
-```
+```sh
 kubectl get nodes
 ```
 
 > output
 
-```
+```sh
 NAME       STATUS   ROLES    AGE    VERSION
 worker-0   Ready    <none>   2m9s   v1.15.3
 worker-1   Ready    <none>   2m9s   v1.15.3

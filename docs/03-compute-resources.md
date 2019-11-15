@@ -16,7 +16,7 @@ In this section a dedicated [Virtual Private Cloud](https://cloud.google.com/com
 
 Create the `kubernetes-the-hard-way` custom VPC network:
 
-```
+```sh
 gcloud compute networks create kubernetes-the-hard-way --subnet-mode custom
 ```
 
@@ -24,7 +24,7 @@ A [subnet](https://cloud.google.com/compute/docs/vpc/#vpc_networks_and_subnets) 
 
 Create the `kubernetes` subnet in the `kubernetes-the-hard-way` VPC network:
 
-```
+```sh
 gcloud compute networks subnets create kubernetes \
   --network kubernetes-the-hard-way \
   --range 10.240.0.0/24
@@ -36,7 +36,7 @@ gcloud compute networks subnets create kubernetes \
 
 Create a firewall rule that allows internal communication across all protocols:
 
-```
+```sh
 gcloud compute firewall-rules create kubernetes-the-hard-way-allow-internal \
   --allow tcp,udp,icmp \
   --network kubernetes-the-hard-way \
@@ -45,7 +45,7 @@ gcloud compute firewall-rules create kubernetes-the-hard-way-allow-internal \
 
 Create a firewall rule that allows external SSH, ICMP, and HTTPS:
 
-```
+```sh
 gcloud compute firewall-rules create kubernetes-the-hard-way-allow-external \
   --allow tcp:22,tcp:6443,icmp \
   --network kubernetes-the-hard-way \
@@ -56,13 +56,13 @@ gcloud compute firewall-rules create kubernetes-the-hard-way-allow-external \
 
 List the firewall rules in the `kubernetes-the-hard-way` VPC network:
 
-```
+```sh
 gcloud compute firewall-rules list --filter="network:kubernetes-the-hard-way"
 ```
 
 > output
 
-```
+```sh
 NAME                                    NETWORK                  DIRECTION  PRIORITY  ALLOW                 DENY
 kubernetes-the-hard-way-allow-external  kubernetes-the-hard-way  INGRESS    1000      tcp:22,tcp:6443,icmp
 kubernetes-the-hard-way-allow-internal  kubernetes-the-hard-way  INGRESS    1000      tcp,udp,icmp
@@ -72,20 +72,20 @@ kubernetes-the-hard-way-allow-internal  kubernetes-the-hard-way  INGRESS    1000
 
 Allocate a static IP address that will be attached to the external load balancer fronting the Kubernetes API Servers:
 
-```
+```sh
 gcloud compute addresses create kubernetes-the-hard-way \
   --region $(gcloud config get-value compute/region)
 ```
 
 Verify the `kubernetes-the-hard-way` static IP address was created in your default compute region:
 
-```
+```sh
 gcloud compute addresses list --filter="name=('kubernetes-the-hard-way')"
 ```
 
 > output
 
-```
+```sh
 NAME                     REGION    ADDRESS        STATUS
 kubernetes-the-hard-way  us-west1  XX.XXX.XXX.XX  RESERVED
 ```
@@ -98,7 +98,7 @@ The compute instances in this lab will be provisioned using [Ubuntu Server](http
 
 Create three compute instances which will host the Kubernetes control plane:
 
-```
+```sh
 for i in 0 1 2; do
   gcloud compute instances create controller-${i} \
     --async \
@@ -122,7 +122,7 @@ Each worker instance requires a pod subnet allocation from the Kubernetes cluste
 
 Create three compute instances which will host the Kubernetes worker nodes:
 
-```
+```sh
 for i in 0 1 2; do
   gcloud compute instances create worker-${i} \
     --async \
@@ -143,13 +143,13 @@ done
 
 List the compute instances in your default compute zone:
 
-```
+```sh
 gcloud compute instances list
 ```
 
 > output
 
-```
+```sh
 NAME          ZONE        MACHINE_TYPE   PREEMPTIBLE  INTERNAL_IP  EXTERNAL_IP     STATUS
 controller-0  us-west1-c  n1-standard-1               10.240.0.10  XX.XXX.XXX.XXX  RUNNING
 controller-1  us-west1-c  n1-standard-1               10.240.0.11  XX.XXX.X.XX     RUNNING
@@ -165,13 +165,13 @@ SSH will be used to configure the controller and worker instances. When connecti
 
 Test SSH access to the `controller-0` compute instances:
 
-```
+```sh
 gcloud compute ssh controller-0
 ```
 
 If this is your first time connecting to a compute instance SSH keys will be generated for you. Enter a passphrase at the prompt to continue:
 
-```
+```sh
 WARNING: The public SSH key file for gcloud does not exist.
 WARNING: The private SSH key file for gcloud does not exist.
 WARNING: You do not have an SSH key for gcloud.
@@ -183,7 +183,7 @@ Enter same passphrase again:
 
 At this point the generated SSH keys will be uploaded and stored in your project:
 
-```
+```sh
 Your identification has been saved in /home/$USER/.ssh/google_compute_engine.
 Your public key has been saved in /home/$USER/.ssh/google_compute_engine.pub.
 The key fingerprint is:
@@ -207,21 +207,21 @@ Waiting for SSH key to propagate.
 
 After the SSH keys have been updated you'll be logged into the `controller-0` instance:
 
-```
+```sh
 Welcome to Ubuntu 18.04.3 LTS (GNU/Linux 4.15.0-1042-gcp x86_64)
 ...
-
 Last login: Sun Sept 14 14:34:27 2019 from XX.XXX.XXX.XX
 ```
 
 Type `exit` at the prompt to exit the `controller-0` compute instance:
 
-```
+```sh
 $USER@controller-0:~$ exit
 ```
+
 > output
 
-```
+```sh
 logout
 Connection to XX.XXX.XXX.XXX closed
 ```
