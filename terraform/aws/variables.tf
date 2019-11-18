@@ -14,9 +14,3 @@ variable "prefix" {
   description = "The prefix to add the name"
   default     = "jibakurei"
 }
-
-variable "prefix" {
-  type        = string
-  description = "The prefix to add the name"
-  default     = "jibakurei"
-}
