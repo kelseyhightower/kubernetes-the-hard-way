@@ -26,13 +26,14 @@ openssl req -new -key ca.key -subj "/CN=KUBERNETES-CA" -out ca.csr
 # Self sign the csr using its own private key
 openssl x509 -req -in ca.csr -signkey ca.key -CAcreateserial  -out ca.crt -days 1000
 ```
-
 Results:
 
 ```
 ca.crt
 ca.key
 ```
+
+Reference : https://kubernetes.io/docs/concepts/cluster-administration/certificates/#openssl
 
 The ca.crt is the Kubernetes Certificate Authority certificate and ca.key is the Kubernetes Certificate Authority private key.
 You will use the ca.crt file in many places, so it will be copied to many places.
