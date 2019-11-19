@@ -117,4 +117,6 @@ sudo ETCDCTL_API=3 etcdctl member list \
 54a5796a6803f252, started, master-1, https://192.168.5.11:2380, https://192.168.5.11:2379
 ```
 
+Reference: https://kubernetes.io/docs/tasks/administer-cluster/configure-upgrade-etcd/#starting-etcd-clusters
+
 Next: [Bootstrapping the Kubernetes Control Plane](08-bootstrapping-kubernetes-controllers.md)
