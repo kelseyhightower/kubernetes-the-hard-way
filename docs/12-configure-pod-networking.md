@@ -12,6 +12,8 @@ Extract it to /opt/cni/bin directory
 
 `sudo tar -xzvf cni-plugins-amd64-v0.7.5.tgz  --directory /opt/cni/bin/`
 
+Reference: https://kubernetes.io/docs/concepts/extend-kubernetes/compute-storage-net/network-plugins/#cni
+
 ### Deploy Weave Network
 
 Deploy weave network. Run only once on the `master` node.
@@ -36,5 +38,7 @@ NAME              READY   STATUS    RESTARTS   AGE
 weave-net-58j2j   2/2     Running   0          89s
 weave-net-rr5dk   2/2     Running   0          89s
 ```
+
+Reference: https://kubernetes.io/docs/tasks/administer-cluster/network-policy-provider/weave-network-policy/#install-the-weave-net-addon
 
 Next: [Kube API Server to Kubelet Connectivity](13-kube-apiserver-to-kubelet.md)
