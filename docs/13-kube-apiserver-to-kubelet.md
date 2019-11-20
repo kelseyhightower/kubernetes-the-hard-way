@@ -30,6 +30,7 @@ rules:
       - "*"
 EOF
 ```
+Reference: https://v1-12.docs.kubernetes.io/docs/reference/access-authn-authz/rbac/#role-and-clusterrole
 
 The Kubernetes API Server authenticates to the Kubelet as the `kubernetes` user using the client certificate as defined by the `--kubelet-client-certificate` flag.
 
@@ -52,5 +53,6 @@ subjects:
     name: kube-apiserver
 EOF
 ```
+Reference: https://v1-12.docs.kubernetes.io/docs/reference/access-authn-authz/rbac/#rolebinding-and-clusterrolebinding
 
 Next: [DNS Addon](14-dns-addon.md)
