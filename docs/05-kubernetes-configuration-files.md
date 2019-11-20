@@ -8,7 +8,7 @@ In this section you will generate kubeconfig files for the `controller manager`,
 
 ### Kubernetes Public IP Address
 
-Each kubeconfig requires a Kubernetes API Server to connect to. To support high availability the IP address assigned to the  load balancer will be used. In our case it is `192.168.5.30`
+Each kubeconfig requires a Kubernetes API Server to connect to. To support high availability the IP address assigned to the load balancer will be used. In our case it is `192.168.5.30`
 
 ```
 LOADBALANCER_ADDRESS=192.168.5.30
@@ -45,6 +45,9 @@ Results:
 
 ```
 kube-proxy.kubeconfig
+
+
+Reference docs for kube-proxy [here](https://kubernetes.io/docs/reference/command-line-tools-reference/kube-proxy/)
 ```
 
 ### The kube-controller-manager Kubernetes Configuration File
@@ -80,6 +83,7 @@ Results:
 kube-controller-manager.kubeconfig
 ```
 
+Reference docs for kube-controller-manager [here](https://kubernetes.io/docs/reference/command-line-tools-reference/kube-controller-manager/)
 
 ### The kube-scheduler Kubernetes Configuration File
 
@@ -114,6 +118,8 @@ Results:
 kube-scheduler.kubeconfig
 ```
 
+Reference docs for kube-scheduler [here](https://kubernetes.io/docs/reference/command-line-tools-reference/kube-scheduler/)
+
 ### The admin Kubernetes Configuration File
 
 Generate a kubeconfig file for the `admin` user:
@@ -147,6 +153,7 @@ Results:
 admin.kubeconfig
 ```
 
+Reference docs for kubeconfig [here](https://kubernetes.io/docs/tasks/access-application-cluster/configure-access-multiple-clusters/)
 
 ##
 
