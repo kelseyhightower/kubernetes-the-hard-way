@@ -54,6 +54,8 @@ wget -q --show-progress --https-only --timestamping \
   https://storage.googleapis.com/kubernetes-release/release/v1.13.0/bin/linux/amd64/kubelet
 ```
 
+Reference: https://kubernetes.io/docs/setup/release/#node-binaries
+
 Create the installation directories:
 
 ```
@@ -127,6 +129,7 @@ Things to note:
 
 Once this is created the token to be used for authentication is `07401b.f395accd246ae52d`
 
+Reference: https://kubernetes.io/docs/reference/access-authn-authz/bootstrap-tokens/#bootstrap-token-secret-format
 
 ## Step 2 Authorize workers(kubelets) to create CSR
 
@@ -157,6 +160,7 @@ EOF
 kubectl create -f csrs-for-bootstrapping.yaml
 
 ```
+Reference: https://kubernetes.io/docs/reference/command-line-tools-reference/kubelet-tls-bootstrapping/#authorize-kubelet-to-create-csr
 
 ## Step 3 Authorize workers(kubelets) to approve CSR
 ```
@@ -183,6 +187,8 @@ EOF
 
 kubectl create -f auto-approve-csrs-for-group.yaml
 ```
+
+Reference: https://kubernetes.io/docs/reference/command-line-tools-reference/kubelet-tls-bootstrapping/#approval
 
 ## Step 3 Authorize workers(kubelets) to Auto Renew Certificates on expiration
 
@@ -212,6 +218,8 @@ EOF
 
 kubectl create -f auto-approve-renewals-for-nodes.yaml
 ```
+
+Reference: https://kubernetes.io/docs/reference/command-line-tools-reference/kubelet-tls-bootstrapping/#approval
 
 ## Step 4 Configure Kubelet to TLS Bootstrap
 
@@ -253,6 +261,8 @@ users:
     token: 07401b.f395accd246ae52d
 EOF
 ```
+
+Reference: https://kubernetes.io/docs/reference/command-line-tools-reference/kubelet-tls-bootstrapping/#kubelet-configuration
 
 ## Step 5 Create Kubelet Config File
 
@@ -383,6 +393,7 @@ Approve
 
 `kubectl certificate approve csr-95bv6`
 
+Reference: https://kubernetes.io/docs/reference/command-line-tools-reference/kubelet-tls-bootstrapping/#kubectl-approval
 
 ## Verification
 
