@@ -1,5 +1,5 @@
 locals {
-  service = "cp-${var.prefix}-${var.name}"
+  service = "cp-${var.prefix}"
 }
 
 data "aws_subnet_ids" "private" {
