@@ -5,7 +5,8 @@ locals {
 data "aws_subnet_ids" "private" {
   vpc_id = "${module.vpc.vpc_id}"
   tags = {
-    Tier = "private-${var.prefix}-${var.name}"
+    Name = "private-${var.prefix}-${var.name}"
+    Tier = "Private"
   }
 }
 

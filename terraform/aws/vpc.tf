@@ -25,13 +25,14 @@ module "vpc" {
     Name = "private-${var.prefix}-${var.name}"
     Terraform = "true"
     Environment = "${local.environment}"
-
+    Tier = "Private"
   }
 
   public_subnet_tags = {
     Name = "public-${var.prefix}-${var.name}"
     Terraform = "true"
     Environment = "${local.environment}"
+    Tier = "Public"
   }
 
 }
