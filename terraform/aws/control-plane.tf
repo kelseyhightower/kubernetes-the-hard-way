@@ -1,5 +1,5 @@
 locals {
-  service = "${var.prefix}-${var.name}-cp"
+  service = "cp-${var.prefix}-${var.name}"
 }
 
 data "aws_subnet_ids" "private" {
@@ -19,49 +19,49 @@ data "aws_ami" "base" {
   }
 }
 
-# module "asg" {
-#   source  = "terraform-aws-modules/autoscaling/aws"
-#   version = "~> 3.0"
-#   name = "cp-leader"
+module "asg" {
+  source  = "terraform-aws-modules/autoscaling/aws"
+  version = "~> 3.0"
+  name = "${local.service}-leader-asg"
 
-#   # Launch configuration
-#   lc_name = "example-lc"
+  # Launch configuration
+  lc_name = "${local.service}-lc"
 
-#   image_id        = "ami-ebd02392"
-#   instance_type   = "t2.micro"
-#   security_groups = ["sg-12345678"]
+  image_id        = "${data.aws_ami.base.id}"
+  instance_type   = "t3.micro"
+  security_groups = ["sg-0179764763f4aeb43"]
 
-#   root_block_device = [
-#     {
-#       volume_size = "8"
-#       volume_type = "gp2"
-#     },
-#   ]
+  root_block_device = [
+    {
+      volume_size = "8"
+      volume_type = "gp2"
+    },
+  ]
 
-#   # Auto scaling group
-#   asg_name                  = "example-asg"
-#   vpc_zone_identifier       = ["subnet-1235678", "subnet-87654321"]
-#   health_check_type         = "EC2"
-#   min_size                  = 1
-#   max_size                  = 1
-#   desired_capacity          = 1
-#   wait_for_capacity_timeout = 0
+  # Auto scaling group
+  asg_name                  = "${local.service}-leader-asg"
+  vpc_zone_identifier       = ["${data.aws_subnet_ids.private.ids}"]
+  health_check_type         = "EC2"
+  min_size                  = 1
+  max_size                  = 1
+  desired_capacity          = 1
+  wait_for_capacity_timeout = 0
 
-#   tags = [
-#     {
-#       key                 = "Environment"
-#       value               = "dev"
-#       propagate_at_launch = true
-#     },
-#     {
-#       key                 = "Project"
-#       value               = "megasecret"
-#       propagate_at_launch = true
-#     },
-#   ]
+  tags = [
+    {
+      key                 = "Environment"
+      value               = "${local.environment}"
+      propagate_at_launch = true
+    },
+    {
+      key                 = "Name"
+      value               = "${var.prefix}-${var.name}"
+      propagate_at_launch = true
+    },
+  ]
 
-#   tags_as_map = {
-#     extra_tag1 = "extra_value1"
-#     extra_tag2 = "extra_value2"
-#   }
-# }
+  # tags_as_map = {
+  #   extra_tag1 = "extra_value1"
+  #   extra_tag2 = "extra_value2"
+  # }
+}
