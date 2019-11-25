@@ -1,3 +1,7 @@
+locals {
+  service = "${var.prefix}-${var.name}-cp"
+}
+
 data "aws_vpc" "main" {
   filter {
     name   = "tag:Name"
