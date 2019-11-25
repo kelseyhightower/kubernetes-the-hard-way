@@ -29,7 +29,7 @@ module "asg" {
 
   image_id        = "${data.aws_ami.base.id}"
   instance_type   = "t3.micro"
-  security_groups = ["sg-0179764763f4aeb43"]
+  security_groups = ["sg-007aac50c4850d797"]
 
   root_block_device = [
     {
