@@ -14,3 +14,9 @@ variable "prefix" {
   description = "The prefix to add the name"
   default     = "jibakurei"
 }
+
+variable "etcd_member_count" {
+  type        = string
+  description = "The number of etcd instances in the cluster"
+  default     = "1"
+}
