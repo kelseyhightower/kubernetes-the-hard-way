@@ -2,12 +2,12 @@ locals {
   service = "${var.prefix}-${var.name}-cp"
 }
 
-data "aws_subnet_ids" "private" {
-  vpc_id = "${module.vpc.vpc_id}"
-  tags = {
-    Tier = "Private"
-  }
-}
+# data "aws_subnet_ids" "private" {
+#   vpc_id = "${module.vpc.vpc_id}"
+#   tags = {
+#     Tier = "Private"
+#   }
+# }
 
 data "aws_ami" "base" {
   owners           = ["self"]
