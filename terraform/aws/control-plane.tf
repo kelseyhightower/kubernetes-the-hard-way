@@ -2,10 +2,11 @@ locals {
   service = "${var.prefix}-${var.name}-cp"
 }
 
-data "aws_vpc" "main" {
-  filter {
-    name   = "tag:Name"
-    values = ["${var.prefix}-${var.name}"]
+data "aws_subnet_ids" "private" {
+  vpc_id = "${module.vpc.id}"
+
+  tags = {
+    Tier = "Private"
   }
 }
 
