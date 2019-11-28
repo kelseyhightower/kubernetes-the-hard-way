@@ -6,7 +6,7 @@ variable "aws_secret_key" {}
 variable "name" {
   type        = string
   description = "The name that will be tagged on all the AWS resources"
-  default     = "tfcloud"
+  default     = "k8s"
 }
 
 variable "prefix" {
