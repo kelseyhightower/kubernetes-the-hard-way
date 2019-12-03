@@ -174,13 +174,6 @@ node03$ systemctl daemon-reload
 node03$ service kubelet start
 ```
 
-On master node check csr status and approve:
-
-```
-master$ kubectl get csr
-master$ kubectl certificate approve node-csr-oJcfudnewY5mcSDHcLseKQ6Oze5YmP9ZdKNRHHdjfJI
-```
-
 Verify node has joined the cluster
 
 ```
