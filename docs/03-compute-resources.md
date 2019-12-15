@@ -110,7 +110,8 @@ for i in 0 1 2; do
     --private-network-ip 10.240.0.1${i} \
     --scopes compute-rw,storage-ro,service-management,service-control,logging-write,monitoring \
     --subnet kubernetes \
-    --tags kubernetes-the-hard-way,controller
+    --tags kubernetes-the-hard-way,controller \
+    --zone $(gcloud config get-value compute/zone)
 done
 ```
 
@@ -135,7 +136,8 @@ for i in 0 1 2; do
     --private-network-ip 10.240.0.2${i} \
     --scopes compute-rw,storage-ro,service-management,service-control,logging-write,monitoring \
     --subnet kubernetes \
-    --tags kubernetes-the-hard-way,worker
+    --tags kubernetes-the-hard-way,worker \
+    --zone $(gcloud config get-value compute/zone)
 done
 ```
 
