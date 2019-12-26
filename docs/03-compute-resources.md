@@ -46,9 +46,9 @@ Create a Google Cloud NAT Gateway
 
 ```
 gcloud compute routers nats create kube-nat-gateway \
-    --router=kube-nat-router \
-    --auto-allocate-nat-external-ips \
-    --nat-all-subnet-ip-ranges
+  --router=kube-nat-router \
+  --auto-allocate-nat-external-ips \
+  --nat-all-subnet-ip-ranges
 ```
 
 ### Firewall Rules
