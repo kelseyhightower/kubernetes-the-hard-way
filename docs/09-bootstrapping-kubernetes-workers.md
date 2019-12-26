@@ -7,7 +7,7 @@ In this lab you will bootstrap three Kubernetes worker nodes. The following comp
 The commands in this lab must be run on each worker instance: `worker-0`, `worker-1`, and `worker-2`. Login to each worker instance using the `gcloud` command. Example:
 
 ```
-gcloud compute ssh worker-0
+gcloud compute ssh --tunnel-through-iap worker-0
 ```
 
 ### Running commands in parallel with tmux
@@ -284,7 +284,7 @@ EOF
 {
   sudo systemctl daemon-reload
   sudo systemctl enable containerd kubelet kube-proxy
-  sudo systemctl start containerd kubelet kube-proxy
+  sudo systemctl status containerd kubelet kube-proxy
 }
 ```
 
@@ -297,7 +297,7 @@ EOF
 List the registered Kubernetes nodes:
 
 ```
-gcloud compute ssh controller-0 \
+gcloud compute ssh --tunnel-through-iap controller-0 \
   --command "kubectl get nodes --kubeconfig admin.kubeconfig"
 ```
 

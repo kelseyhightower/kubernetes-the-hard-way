@@ -32,6 +32,25 @@ gcloud compute networks subnets create kubernetes \
 
 > The `10.240.0.0/24` IP address range can host up to 254 compute instances.
 
+### Cloud NAT
+
+In this tutorial we will be setting up kubernetes with private nodes (that is the nodes doesn't have a Public IP). We need a way for the nodes to connect to the internet (to download container images when we deploy an application for example), that's what a NAT Gateway is used for, we will be using [Google Cloud NAT](https://cloud.google.com/nat/docs/overview) which is a fully managed NAT gateway ()
+
+Create a Google Cloud Router
+
+```
+gcloud compute routers create kube-nat-router --network kubernetes-the-hard-way
+```
+
+Create a Google Cloud NAT Gateway
+
+```
+gcloud compute routers nats create kube-nat-gateway \
+    --router=kube-nat-router \
+    --auto-allocate-nat-external-ips \
+    --nat-all-subnet-ip-ranges
+```
+
 ### Firewall Rules
 
 Create a firewall rule that allows internal communication across all protocols:
@@ -43,14 +62,24 @@ gcloud compute firewall-rules create kubernetes-the-hard-way-allow-internal \
   --source-ranges 10.240.0.0/24,10.200.0.0/16
 ```
 
-Create a firewall rule that allows external SSH, ICMP, and HTTPS:
+Create a firewall rule that allows external ICMP, and HTTPS:
 
 ```
 gcloud compute firewall-rules create kubernetes-the-hard-way-allow-external \
-  --allow tcp:22,tcp:6443,icmp \
+  --allow tcp:6443,icmp \
   --network kubernetes-the-hard-way \
   --source-ranges 0.0.0.0/0
 ```
+
+Create a firewall rule that allows the IAP ([Identity Aware Proxy](https://cloud.google.com/iap/docs/concepts-overview)) netblock, this is required for configuring SSH with [IAP Forwarding](https://cloud.google.com/iap/docs/using-tcp-forwarding) later:
+
+```
+gcloud compute firewall-rules create kubernetes-the-hard-way-allow-iap \
+  --allow tcp \
+  --network kubernetes-the-hard-way \
+  --source-ranges 35.235.240.0/20
+```
+
 
 > An [external load balancer](https://cloud.google.com/compute/docs/load-balancing/network/) will be used to expose the Kubernetes API Servers to remote clients.
 
@@ -110,7 +139,8 @@ for i in 0 1 2; do
     --private-network-ip 10.240.0.1${i} \
     --scopes compute-rw,storage-ro,service-management,service-control,logging-write,monitoring \
     --subnet kubernetes \
-    --tags kubernetes-the-hard-way,controller
+    --tags kubernetes-the-hard-way,controller \
+    --no-address
 done
 ```
 
@@ -135,7 +165,8 @@ for i in 0 1 2; do
     --private-network-ip 10.240.0.2${i} \
     --scopes compute-rw,storage-ro,service-management,service-control,logging-write,monitoring \
     --subnet kubernetes \
-    --tags kubernetes-the-hard-way,worker
+    --tags kubernetes-the-hard-way,worker \
+    --no-address
 done
 ```
 
@@ -161,13 +192,30 @@ worker-2      us-west1-c  n1-standard-1               10.240.0.22  XXX.XXX.XX.XX
 
 ## Configuring SSH Access
 
-SSH will be used to configure the controller and worker instances. When connecting to compute instances for the first time SSH keys will be generated for you and stored in the project or instance metadata as described in the [connecting to instances](https://cloud.google.com/compute/docs/instances/connecting-to-instance) documentation.
+SSH will be used to configure the controller and worker instances. But because our nodes are private we cannot ssh directly into them from the internet, instead we will be using [Identity Aware Proxy](https://cloud.google.com/iap/docs/concepts-overview) with a feature called [TCP forwarding](https://cloud.google.com/iap/docs/using-tcp-forwarding).
+
+Grant your current user the iap.tunnelResourceAccessor IAM role.
+
+```
+{
+  export USER=$(gcloud auth list --format="value(account)")
+
+  export PROJECT=$(gcloud config list --format="value(core.project)")
+
+  gcloud projects add-iam-policy-binding $PROJECT \
+    --member=user:$USER \
+    --role=roles/iap.tunnelResourceAccessor
+}
+```
+
+When connecting to compute instances for the first time SSH keys will be generated for you and stored in the project or instance metadata as described in the [connecting to instances](https://cloud.google.com/compute/docs/instances/connecting-to-instance) documentation.
 
 Test SSH access to the `controller-0` compute instances:
 
 ```
-gcloud compute ssh controller-0
+gcloud compute ssh --tunnel-through-iap controller-0
 ```
+> The --tunnel-through-iap flag tells gcloud to skip trying to connect via public IP and directly use IAP.
 
 If this is your first time connecting to a compute instance SSH keys will be generated for you. Enter a passphrase at the prompt to continue:
 

@@ -16,7 +16,6 @@ gcloud -q compute instances delete \
 ## Networking
 
 Delete the external load balancer network resources:
-
 ```
 {
   gcloud -q compute forwarding-rules delete kubernetes-forwarding-rule \
@@ -30,11 +29,27 @@ Delete the external load balancer network resources:
 }
 ```
 
+Delete the Nginx service external load balancer network resources:
+```
+{
+  gcloud -q compute forwarding-rules delete nginx-service \
+    --region $(gcloud config get-value compute/region)
+
+  gcloud -q compute target-pools delete nginx-service
+
+  gcloud -q compute http-health-checks delete nginx-service
+
+  gcloud -q compute addresses delete nginx-service
+
+  gcloud -q compute firewall-rules delete nginx-service
+}
+```
+
 Delete the `kubernetes-the-hard-way` firewall rules:
 
 ```
 gcloud -q compute firewall-rules delete \
-  kubernetes-the-hard-way-allow-nginx-service \
+  kubernetes-the-hard-way-allow-iap \
   kubernetes-the-hard-way-allow-internal \
   kubernetes-the-hard-way-allow-external \
   kubernetes-the-hard-way-allow-health-check
@@ -48,7 +63,10 @@ Delete the `kubernetes-the-hard-way` network VPC:
     kubernetes-route-10-200-0-0-24 \
     kubernetes-route-10-200-1-0-24 \
     kubernetes-route-10-200-2-0-24
-
+  
+  gcloud -q compute routers delete kube-nat-router \
+    --region $(gcloud config get-value compute/region)
+  
   gcloud -q compute networks subnets delete kubernetes
 
   gcloud -q compute networks delete kubernetes-the-hard-way

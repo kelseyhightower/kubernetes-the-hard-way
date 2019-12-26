@@ -16,7 +16,7 @@ kubectl create secret generic kubernetes-the-hard-way \
 Print a hexdump of the `kubernetes-the-hard-way` secret stored in etcd:
 
 ```
-gcloud compute ssh controller-0 \
+gcloud compute  ssh --tunnel-through-iap controller-0 \
   --command "sudo ETCDCTL_API=3 etcdctl get \
   --endpoints=https://127.0.0.1:2379 \
   --cacert=/etc/etcd/ca.pem \
@@ -148,7 +148,7 @@ Print the nginx version by executing the `nginx -v` command in the `nginx` conta
 kubectl exec -ti $POD_NAME -- nginx -v
 ```
 
-> output
+> output (your output might vary depending on the nginx version)
 
 ```
 nginx version: nginx/1.17.3
@@ -166,32 +166,47 @@ kubectl expose deployment nginx --port 80 --type NodePort
 
 > The LoadBalancer service type can not be used because your cluster is not configured with [cloud provider integration](https://kubernetes.io/docs/getting-started-guides/scratch/#cloud-provider). Setting up cloud provider integration is out of scope for this tutorial.
 
-Retrieve the node port assigned to the `nginx` service:
-
+We will setup a TCP LoadBalancer with the worker nodes as target pool using the port allocated with the service of type NodePort, this will expose the nginx deployment to the internet (We have to use a Load Balancer because the nodes doesn't have a Public IP)
 ```
-NODE_PORT=$(kubectl get svc nginx \
+
+{
+  gcloud compute addresses create nginx-service\
+    --region $(gcloud config get-value compute/region)
+
+  NGINX_SERVICE_PUBLIC_ADDRESS=$(gcloud compute addresses describe nginx-service \
+    --region $(gcloud config get-value compute/region) \
+    --format 'value(address)')
+
+  NODE_PORT=$(kubectl get svc nginx \
   --output=jsonpath='{range .spec.ports[0]}{.nodePort}')
+
+  gcloud compute firewall-rules create nginx-service \
+    --network kubernetes-the-hard-way \
+    --allow tcp:${NODE_PORT}
+
+  gcloud compute http-health-checks create nginx-service \
+    --description "Nginx Health Check" \
+    --host "nginx.default.svc.cluster.local" \
+    --port ${NODE_PORT}
+
+  gcloud compute target-pools create nginx-service \
+    --http-health-check nginx-service
+
+  gcloud compute target-pools add-instances nginx-service \
+   --instances worker-0,worker-1,worker-2
+
+  gcloud compute forwarding-rules create nginx-service \
+    --address ${NGINX_SERVICE_PUBLIC_ADDRESS} \
+    --ports ${NODE_PORT} \
+    --region $(gcloud config get-value compute/region) \
+    --target-pool nginx-target-pool
+}
 ```
 
-Create a firewall rule that allows remote access to the `nginx` node port:
+Make an HTTP request using the external IP address and the nginx node port:
 
 ```
-gcloud compute firewall-rules create kubernetes-the-hard-way-allow-nginx-service \
-  --allow=tcp:${NODE_PORT} \
-  --network kubernetes-the-hard-way
-```
-
-Retrieve the external IP address of a worker instance:
-
-```
-EXTERNAL_IP=$(gcloud compute instances describe worker-0 \
-  --format 'value(networkInterfaces[0].accessConfigs[0].natIP)')
-```
-
-Make an HTTP request using the external IP address and the `nginx` node port:
-
-```
-curl -I http://${EXTERNAL_IP}:${NODE_PORT}
+curl -I http://${NGINX_SERVICE_PUBLIC_ADDRESS}:${NODE_PORT}
 ```
 
 > output
