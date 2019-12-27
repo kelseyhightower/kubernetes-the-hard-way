@@ -211,4 +211,4 @@ for instance in controller-0 controller-1 controller-2; do
 done
 ```
 
-Next: [Generating the Data Encryption Config and Key](06-data-encryption-keys.md)
+Previous: [Configuration Files](05-kubernetes-configuration-files.md) Next: [Generating the Data Encryption Config and Key](06-data-encryption-keys.md)
