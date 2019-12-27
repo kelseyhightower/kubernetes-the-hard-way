@@ -223,7 +223,7 @@ $USER@controller-0:~$ exit
 
 ```
 logout
-Connection to XX.XXX.XXX.XXX closed
+Connection to XX.XXX.XXX.XXX Compute Resourcesclosed
 ```
 
-Next: [Provisioning a CA and Generating TLS Certificates](04-certificate-authority.md)
+Previous: [Compute Resources](03-compute-resources.md) | Next: [Provisioning a CA and Generating TLS Certificates](04-certificate-authority.md)
