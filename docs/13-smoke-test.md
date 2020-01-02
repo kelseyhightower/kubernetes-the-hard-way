@@ -77,7 +77,7 @@ In this section you will verify the ability to access applications remotely usin
 Retrieve the full name of the `nginx` pod:
 
 ```
-POD_NAME=$(kubectl get pods -l app=nginx -o jsonpath="{.items[0].metadata.name}")
+POD_NAME=$(kubectl get pods -l app=nginx -o name)
 ```
 
 Forward port `8080` on your local machine to port `80` of the `nginx` pod:
@@ -170,7 +170,7 @@ Retrieve the node port assigned to the `nginx` service:
 
 ```
 NODE_PORT=$(kubectl get svc nginx \
-  --output=jsonpath='{range .spec.ports[0]}{.nodePort}')
+  --no-headers -o custom-columns=:.spec.ports[0].nodePort')
 ```
 
 Create a firewall rule that allows remote access to the `nginx` node port:

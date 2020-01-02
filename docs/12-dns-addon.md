@@ -59,7 +59,7 @@ busybox   1/1     Running   0          3s
 Retrieve the full name of the `busybox` pod:
 
 ```
-POD_NAME=$(kubectl get pods -l run=busybox -o jsonpath="{.items[0].metadata.name}")
+POD_NAME=$(kubectl get pods -l run=busybox -o name)
 ```
 
 Execute a DNS lookup for the `kubernetes` service inside the `busybox` pod:
