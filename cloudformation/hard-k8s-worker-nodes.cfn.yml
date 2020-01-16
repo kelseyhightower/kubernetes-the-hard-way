@@ -1,0 +1,197 @@
+Resources:
+  HardK8sWorker0:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: t3.micro
+      SubnetId: !ImportValue hard-k8s-subnet
+      SecurityGroupIds:
+      - !ImportValue hard-k8s-sg
+      ImageId:
+        Fn::FindInMap: [UbuntuAMIs, !Ref "AWS::Region", "id"]
+      KeyName: !Ref ParamKeyName
+      PrivateIpAddress: 10.240.0.20
+      # SourceDestCheck: false
+      UserData:
+        Fn::Base64: |-
+          Content-Type: multipart/mixed; boundary="//"
+          MIME-Version: 1.0
+          
+          --//
+          Content-Type: text/cloud-config; charset="us-ascii"
+          MIME-Version: 1.0
+          Content-Transfer-Encoding: 7bit
+          Content-Disposition: attachment; filename="cloud-config.txt"
+          
+          #cloud-config
+          fqdn: worker-0.k8shardway.local
+          hostname: worker-0
+          runcmd:
+            - echo "preserve_hostname: true" >> /etc/cloud/cloud.cfg
+          write_files:
+            - path: /etc/hosts
+              permissions: '0644'
+              content: |
+                127.0.0.1   localhost localhost.localdomain
+                # Kubernetes the Hard Way - hostnames
+                10.240.0.10 master-0
+                10.240.0.11 master-1
+                10.240.0.12 master-2
+                10.240.0.20 worker-0
+                10.240.0.21 worker-1
+                10.240.0.22 worker-2
+          
+          --//
+          Content-Type: text/x-shellscript; charset="us-ascii"
+          MIME-Version: 1.0
+          Content-Transfer-Encoding: 7bit
+          Content-Disposition: attachment; filename="userdata.txt"
+          
+          #!/bin/bash
+          echo 10.200.0.0/24 > /opt/pod_cidr.txt
+          --//
+      Tags: [ { "Key": "Name", "Value": "worker-0" } ]
+
+  HardK8sWorker1:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: t3.micro
+      SubnetId: !ImportValue hard-k8s-subnet
+      SecurityGroupIds:
+      - !ImportValue hard-k8s-sg
+      ImageId:
+        Fn::FindInMap: [UbuntuAMIs, !Ref "AWS::Region", "id"]
+      KeyName: !Ref ParamKeyName
+      PrivateIpAddress: 10.240.0.21
+      # SourceDestCheck: false
+      UserData:
+        Fn::Base64: |-
+          Content-Type: multipart/mixed; boundary="//"
+          MIME-Version: 1.0
+          
+          --//
+          Content-Type: text/cloud-config; charset="us-ascii"
+          MIME-Version: 1.0
+          Content-Transfer-Encoding: 7bit
+          Content-Disposition: attachment; filename="cloud-config.txt"
+          
+          #cloud-config
+          fqdn: worker-1.k8shardway.local
+          hostname: worker-1
+          runcmd:
+            - echo "preserve_hostname: true" >> /etc/cloud/cloud.cfg
+          write_files:
+            - path: /etc/hosts
+              permissions: '0644'
+              content: |
+                127.0.0.1   localhost localhost.localdomain
+                # Kubernetes the Hard Way - hostnames
+                10.240.0.10 master-0
+                10.240.0.11 master-1
+                10.240.0.12 master-2
+                10.240.0.20 worker-0
+                10.240.0.21 worker-1
+                10.240.0.22 worker-2
+          
+          --//
+          Content-Type: text/x-shellscript; charset="us-ascii"
+          MIME-Version: 1.0
+          Content-Transfer-Encoding: 7bit
+          Content-Disposition: attachment; filename="userdata.txt"
+          
+          #!/bin/bash
+          echo 10.200.1.0/24 > /opt/pod_cidr.txt
+          --//
+      Tags: [ { "Key": "Name", "Value": "worker-1" } ]
+
+  HardK8sWorker2:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: t3.micro
+      SubnetId: !ImportValue hard-k8s-subnet
+      SecurityGroupIds:
+      - !ImportValue hard-k8s-sg
+      ImageId:
+        Fn::FindInMap: [UbuntuAMIs, !Ref "AWS::Region", "id"]
+      KeyName: !Ref ParamKeyName
+      PrivateIpAddress: 10.240.0.22
+      # SourceDestCheck: false
+      UserData:
+        Fn::Base64: |-
+          Content-Type: multipart/mixed; boundary="//"
+          MIME-Version: 1.0
+          
+          --//
+          Content-Type: text/cloud-config; charset="us-ascii"
+          MIME-Version: 1.0
+          Content-Transfer-Encoding: 7bit
+          Content-Disposition: attachment; filename="cloud-config.txt"
+          
+          #cloud-config
+          fqdn: worker-2.k8shardway.local
+          hostname: worker-2
+          runcmd:
+            - echo "preserve_hostname: true" >> /etc/cloud/cloud.cfg
+          write_files:
+            - path: /etc/hosts
+              permissions: '0644'
+              content: |
+                127.0.0.1   localhost localhost.localdomain
+                # Kubernetes the Hard Way - hostnames
+                10.240.0.10 master-0
+                10.240.0.11 master-1
+                10.240.0.12 master-2
+                10.240.0.20 worker-0
+                10.240.0.21 worker-1
+                10.240.0.22 worker-2
+          
+          --//
+          Content-Type: text/x-shellscript; charset="us-ascii"
+          MIME-Version: 1.0
+          Content-Transfer-Encoding: 7bit
+          Content-Disposition: attachment; filename="userdata.txt"
+          
+          #!/bin/bash
+          echo 10.200.2.0/24 > /opt/pod_cidr.txt
+          --//
+      Tags: [ { "Key": "Name", "Value": "worker-2" } ]
+
+Parameters:
+  ParamKeyName:
+    Type: AWS::EC2::KeyPair::KeyName
+    Default: ec2-key
+
+# $ aws ec2 describe-regions --query 'Regions[].RegionName' --output text \
+#   | tr "\t" "\n" | sort \
+#   | xargs -I _R_ aws --region _R_ ec2 describe-images \
+#                      --filters Name=name,Values="ubuntu/images/hvm-ssd/ubuntu-bionic-18.04-amd64-server-20191002" \
+#                      --query 'Images[0].ImageId' --output
+Mappings:
+  UbuntuAMIs:
+    ap-northeast-1: { "id": "ami-0cd744adeca97abb1" }
+    ap-northeast-2: { "id": "ami-00379ec40a3e30f87" }
+    ap-northeast-3: { "id": "ami-0bd42271bb31d96d2" }
+    ap-south-1:     { "id": "ami-0123b531fc646552f" }
+    ap-southeast-1: { "id": "ami-061eb2b23f9f8839c" }
+    ap-southeast-2: { "id": "ami-00a54827eb7ffcd3c" }
+    ca-central-1:   { "id": "ami-0b683aae4ee93ef87" }
+    eu-central-1:   { "id": "ami-0cc0a36f626a4fdf5" }
+    eu-north-1:     { "id": "ami-1dab2163" }
+    eu-west-1:      { "id": "ami-02df9ea15c1778c9c" }
+    eu-west-2:      { "id": "ami-0be057a22c63962cb" }
+    eu-west-3:      { "id": "ami-087855b6c8b59a9e4" }
+    sa-east-1:      { "id": "ami-02c8813f1ea04d4ab" }
+    us-east-1:      { "id": "ami-04b9e92b5572fa0d1" }
+    us-east-2:      { "id": "ami-0d5d9d301c853a04a" }
+    us-west-1:      { "id": "ami-0dd655843c87b6930" }
+    us-west-2:      { "id": "ami-06d51e91cea0dac8d" }
+
+Outputs:
+  Worker0:
+    Value: !Ref HardK8sWorker0
+    Export: { Name: hard-k8s-worker-0 }
+  Worker1:
+    Value: !Ref HardK8sWorker1
+    Export: { Name: hard-k8s-worker-1 }
+  Worker2:
+    Value: !Ref HardK8sWorker2
+    Export: { Name: hard-k8s-worker-2 }

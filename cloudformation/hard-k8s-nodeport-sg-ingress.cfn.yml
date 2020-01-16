@@ -1,0 +1,16 @@
+Parameters:
+  ParamNodePort:
+    Type: Number
+    # ref: https://kubernetes.io/docs/concepts/services-networking/service/#nodeport
+    MinValue: 30000
+    MaxValue: 32767
+
+Resources:
+  HardK8sSmokeIngress:
+    Type: AWS::EC2::SecurityGroupIngress
+    Properties:
+      GroupId: !ImportValue hard-k8s-sg
+      CidrIp: 0.0.0.0/0
+      IpProtocol: tcp
+      FromPort: !Ref ParamNodePort
+      ToPort: !Ref ParamNodePort

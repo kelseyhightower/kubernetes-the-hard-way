@@ -1,0 +1,21 @@
+Resources:
+  RouteWorker0:
+    Type: AWS::EC2::Route
+    Properties:
+      DestinationCidrBlock: 10.200.0.0/24
+      RouteTableId: !ImportValue hard-k8s-rtb
+      InstanceId: !ImportValue  hard-k8s-worker-0
+
+  RouteWorker1:
+    Type: AWS::EC2::Route
+    Properties:
+      DestinationCidrBlock: 10.200.1.0/24
+      RouteTableId: !ImportValue hard-k8s-rtb
+      InstanceId: !ImportValue  hard-k8s-worker-1
+
+  RouteWorker2:
+    Type: AWS::EC2::Route
+    Properties:
+      DestinationCidrBlock: 10.200.2.0/24
+      RouteTableId: !ImportValue hard-k8s-rtb
+      InstanceId: !ImportValue  hard-k8s-worker-2

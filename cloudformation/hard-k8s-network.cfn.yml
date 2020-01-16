@@ -1,0 +1,46 @@
+Resources:
+  HardK8sVpc:
+    Type: AWS::EC2::VPC
+    Properties:
+      CidrBlock: "10.240.0.0/16"
+      EnableDnsHostnames: true
+      EnableDnsSupport: true
+  HardK8sSubnet:
+    Type: AWS::EC2::Subnet
+    Properties:
+      VpcId: !Ref HardK8sVpc
+      CidrBlock: "10.240.0.0/24"
+      MapPublicIpOnLaunch: true
+  HardK8sRtb:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref HardK8sVpc
+  HardK8sRtbAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref HardK8sRtb
+      SubnetId: !Ref HardK8sSubnet
+  HardK8sIgw:
+    Type: AWS::EC2::InternetGateway
+  HardK8sGwAttach:
+    Type: AWS::EC2::VPCGatewayAttachment
+    Properties:
+      VpcId: !Ref HardK8sVpc
+      InternetGatewayId: !Ref HardK8sIgw
+  HardK8sDefaultRoute:
+    Type: AWS::EC2::Route
+    Properties:
+      DestinationCidrBlock: 0.0.0.0/0
+      RouteTableId: !Ref HardK8sRtb
+      GatewayId: !Ref HardK8sIgw
+
+Outputs:
+  VpcId:
+    Value: !Ref HardK8sVpc
+    Export: { Name: hard-k8s-vpc }
+  SubnetId:
+    Value: !Ref HardK8sSubnet
+    Export: { Name: hard-k8s-subnet }
+  RouteTableId:
+    Value: !Ref HardK8sRtb
+    Export: { Name: hard-k8s-rtb }

@@ -1,0 +1,19 @@
+Resources:
+  HardK8sSg:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: security group for Kubernetes the hard way
+      VpcId: !ImportValue hard-k8s-vpc
+      SecurityGroupIngress:
+      # ingress internal traffic - allow all protocols/ports
+      - { "CidrIp": "10.240.0.0/24", "IpProtocol": "-1" } # master/worker nodes cidr range
+      - { "CidrIp": "10.200.0.0/16", "IpProtocol": "-1" } # pod cidr range
+      # ingress external traffic
+      - { "CidrIp": "0.0.0.0/0", "IpProtocol": "tcp",  "FromPort": 6443, "ToPort":  6443 }
+      - { "CidrIp": "0.0.0.0/0", "IpProtocol": "tcp",  "FromPort":   22, "ToPort":    22 } 
+      - { "CidrIp": "0.0.0.0/0", "IpProtocol": "icmp", "FromPort":   -1, "ToPort":    -1 }
+
+Outputs:
+  SgId:
+    Value: !Ref HardK8sSg
+    Export: { Name: hard-k8s-sg }

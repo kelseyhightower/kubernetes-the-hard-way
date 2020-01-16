@@ -1,54 +1,41 @@
 # Prerequisites
 
-## Google Cloud Platform
+## Amazon Web Services (AWS)
 
-This tutorial leverages the [Google Cloud Platform](https://cloud.google.com/) to streamline provisioning of the compute infrastructure required to bootstrap a Kubernetes cluster from the ground up. [Sign up](https://cloud.google.com/free/) for $300 in free credits.
+This tutorial leverages the [Amazon Web Services](https://aws.amazon.com) to streamline provisioning of the compute infrastructure required to bootstrap a Kubernetes cluster from the ground up.
 
-[Estimated cost](https://cloud.google.com/products/calculator/#id=55663256-c384-449c-9306-e39893e23afb) to run this tutorial: $0.23 per hour ($5.46 per day).
+> The compute resources required for this tutorial exceed the Amazon Web Services free tier.
 
-> The compute resources required for this tutorial exceed the Google Cloud Platform free tier.
 
-## Google Cloud Platform SDK
+## CloudFormation - Infrastructure as Code
 
-### Install the Google Cloud SDK
+In this tutorial we use [CloudFormation](https://aws.amazon.com/cloudformation/), which enables you to provision AWS resources as a code (YAML file).
 
-Follow the Google Cloud SDK [documentation](https://cloud.google.com/sdk/) to install and configure the `gcloud` command line utility.
+As a best practice you should consider using [Nested Stacks](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/using-cfn-nested-stacks.html) to combine associated CloudFormation stacks together. However, in this tutorial we provision AWS resources one by one via separated CloudFormation stacks for learning purpose.
 
-Verify the Google Cloud SDK version is 262.0.0 or higher:
+All CloudFormation templates are in [cloudformation directory](../cloudformation/) of this repository.
 
-```
-gcloud version
-```
+## AWS CLI
 
-### Set a Default Compute Region and Zone
+### Install the AWS CLI
 
-This tutorial assumes a default compute region and zone have been configured.
-
-If you are using the `gcloud` command-line tool for the first time `init` is the easiest way to do this:
+Follow the AWS documentation [Installing the AWS CLI version 1](https://docs.aws.amazon.com/cli/latest/userguide/install-cliv1.html) to install and configure the `aws` command line utility.
 
 ```
-gcloud init
+$ aws --version
 ```
 
-Then be sure to authorize gcloud to access the Cloud Platform with your Google user credentials:
+### Set a default region and credentials
+
+This tutorial assumes a default region and credentials. To configure the AWS CLI, you can follow this instruction: [Configuring the AWS CLI - AWS Command Line Interface](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-configure.html)
 
 ```
-gcloud auth login
+$ aws configure
+AWS Access Key ID [None]: AKIxxxxxxxxxxxxxMPLE
+AWS Secret Access Key [None]: wJalrXUxxxxxxxxxxxxxxxxxxxxxxxxxxxxLEKEY
+Default region name [None]: us-west-2
+Default output format [None]: json
 ```
-
-Next set a default compute region and compute zone:
-
-```
-gcloud config set compute/region us-west1
-```
-
-Set a default compute zone:
-
-```
-gcloud config set compute/zone us-west1-c
-```
-
-> Use the `gcloud compute zones list` command to view additional regions and zones.
 
 ## Running Commands in Parallel with tmux
 

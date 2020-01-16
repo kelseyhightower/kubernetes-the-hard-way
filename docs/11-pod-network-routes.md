@@ -1,60 +1,83 @@
 # Provisioning Pod Network Routes
 
-Pods scheduled to a node receive an IP address from the node's Pod CIDR range. At this point pods can not communicate with other pods running on different nodes due to missing network [routes](https://cloud.google.com/compute/docs/vpc/routes).
+Pods scheduled to a node receive an IP address from the node's Pod CIDR range. At this point pods can not communicate with other pods running on different nodes due to missing [network routes](https://docs.aws.amazon.com/vpc/latest/userguide/VPC_Route_Tables.html).
 
-In this lab you will create a route for each worker node that maps the node's Pod CIDR range to the node's internal IP address.
+In this lab, firstly you will create a route for each worker node that maps the node's Pod CIDR range to the node's internal IP address.
 
 > There are [other ways](https://kubernetes.io/docs/concepts/cluster-administration/networking/#how-to-achieve-this) to implement the Kubernetes networking model.
 
+
 ## The Routing Table
 
-In this section you will gather the information required to create routes in the `kubernetes-the-hard-way` VPC network.
+In this section you will gather the information required to create new routes in the VPC network. Remember that we have created a route table for our dedicated subnet for the k8s cluster. What we need to do in this section would be adding new routes resources into the existing route table (which we can refer with `!ImportValue hard-k8s-rtb`)
 
-Print the internal IP address and Pod CIDR range for each worker instance:
+Reference: [cloudformation/hard-k8s-pod-routes.cfn.yml](../cloudformation/hard-k8s-pod-routes.cfn.yml)
+```yaml
+Resources:
+  RouteWorker0:
+    Type: AWS::EC2::Route
+    Properties:
+      DestinationCidrBlock: 10.200.0.0/24
+      RouteTableId: !ImportValue hard-k8s-rtb
+      InstanceId: !ImportValue  hard-k8s-worker-0
 
-```
-for instance in worker-0 worker-1 worker-2; do
-  gcloud compute instances describe ${instance} \
-    --format 'value[separator=" "](networkInterfaces[0].networkIP,metadata.items[0].value)'
-done
-```
+  RouteWorker1:
+    Type: AWS::EC2::Route
+    Properties:
+      DestinationCidrBlock: 10.200.1.0/24
+      RouteTableId: !ImportValue hard-k8s-rtb
+      InstanceId: !ImportValue  hard-k8s-worker-1
 
-> output
-
-```
-10.240.0.20 10.200.0.0/24
-10.240.0.21 10.200.1.0/24
-10.240.0.22 10.200.2.0/24
-```
-
-## Routes
-
-Create network routes for each worker instance:
-
-```
-for i in 0 1 2; do
-  gcloud compute routes create kubernetes-route-10-200-${i}-0-24 \
-    --network kubernetes-the-hard-way \
-    --next-hop-address 10.240.0.2${i} \
-    --destination-range 10.200.${i}.0/24
-done
+  RouteWorker2:
+    Type: AWS::EC2::Route
+    Properties:
+      DestinationCidrBlock: 10.200.2.0/24
+      RouteTableId: !ImportValue hard-k8s-rtb
+      InstanceId: !ImportValue  hard-k8s-worker-2
 ```
 
-List the routes in the `kubernetes-the-hard-way` VPC network:
+Now create network resources via AWS CLI command:
 
 ```
-gcloud compute routes list --filter "network: kubernetes-the-hard-way"
+$ aws cloudformation create-stack \
+  --stack-name hard-k8s-pod-routes \
+  --template-body file://cloudformation/hard-k8s-pod-routes.cfn.yml
 ```
 
-> output
+Verify:
 
 ```
-NAME                            NETWORK                  DEST_RANGE     NEXT_HOP                  PRIORITY
-default-route-081879136902de56  kubernetes-the-hard-way  10.240.0.0/24  kubernetes-the-hard-way   1000
-default-route-55199a5aa126d7aa  kubernetes-the-hard-way  0.0.0.0/0      default-internet-gateway  1000
-kubernetes-route-10-200-0-0-24  kubernetes-the-hard-way  10.200.0.0/24  10.240.0.20               1000
-kubernetes-route-10-200-1-0-24  kubernetes-the-hard-way  10.200.1.0/24  10.240.0.21               1000
-kubernetes-route-10-200-2-0-24  kubernetes-the-hard-way  10.200.2.0/24  10.240.0.22               1000
+$ aws cloudformation describe-stacks \
+  --stack-name hard-k8s-network \
+  --query 'Stacks[0].Outputs' --output table
+-----------------------------------------------------------------
+|                        DescribeStacks                         |
++-----------------+----------------+----------------------------+
+|   ExportName    |   OutputKey    |        OutputValue         |
++-----------------+----------------+----------------------------+
+|  hard-k8s-rtb   |  RouteTableId  |  rtb-sssssssssssssssss     |
+|  hard-k8s-vpc   |  VpcId         |  vpc-ppppppppppppppppp     |
+|  hard-k8s-subnet|  SubnetId      |  subnet-qqqqqqqqqqqqqqqqq  |
++-----------------+----------------+----------------------------+
+
+$ ROUTE_TABLE_ID=$(aws cloudformation describe-stacks \
+  --stack-name hard-k8s-network \
+  --query 'Stacks[0].Outputs[?ExportName==`hard-k8s-rtb`].OutputValue' --output text)
+
+$ aws ec2 describe-route-tables \
+  --route-table-ids $ROUTE_TABLE_ID \
+  --query 'RouteTables[0].Routes[].[DestinationCidrBlock,InstanceId,GatewayId]' --output table
+-------------------------------------------------------------------
+|                       DescribeRouteTables                       |
++---------------+-----------------------+-------------------------+
+|  10.200.0.0/24|  i-aaaaaaaaaaaaaaaaa  |  None                   | # worker-0
+|  10.200.1.0/24|  i-bbbbbbbbbbbbbbbbb  |  None                   | # worker-1
+|  10.200.2.0/24|  i-ccccccccccccccccc  |  None                   | # worker-2
+|  10.240.0.0/16|  None                 |  local                  | # inter-vpc traffic among 10.240.0.0/16 range
+|  0.0.0.0/0    |  None                 |  igw-xxxxxxxxxxxxxxxxx  | # default internet gateway
++---------------+-----------------------+-------------------------+
 ```
+
+So this route table ensure traffic to pods working on worker-0, which has IP CIDR range `10.200.0.0/24`, should be routed to worker-0 node.
 
 Next: [Deploying the DNS Cluster Add-on](12-dns-addon.md)

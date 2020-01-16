@@ -9,7 +9,7 @@ In this lab you will generate an encryption key and an [encryption config](https
 Generate an encryption key:
 
 ```
-ENCRYPTION_KEY=$(head -c 32 /dev/urandom | base64)
+$ ENCRYPTION_KEY=$(head -c 32 /dev/urandom | base64)
 ```
 
 ## The Encryption Config File
@@ -17,7 +17,7 @@ ENCRYPTION_KEY=$(head -c 32 /dev/urandom | base64)
 Create the `encryption-config.yaml` encryption config file:
 
 ```
-cat > encryption-config.yaml <<EOF
+$ cat > encryption-config.yaml <<EOF
 kind: EncryptionConfig
 apiVersion: v1
 resources:
@@ -32,11 +32,20 @@ resources:
 EOF
 ```
 
-Copy the `encryption-config.yaml` encryption config file to each controller instance:
+Copy the `encryption-config.yaml` encryption config file to each master instance:
 
 ```
-for instance in controller-0 controller-1 controller-2; do
-  gcloud compute scp encryption-config.yaml ${instance}:~/
+$ aws ec2 describe-instances --filters Name=vpc-id,Values=vpc-xxxxxxxxxxxxxxxxx \
+  --query 'Reservations[].Instances[].[Tags[?Key==`Name`].Value | [0],InstanceId,Placement.AvailabilityZone,PrivateIpAddress,PublicIpAddress,State.Name]' \
+  --output text | sort | grep master
+master-0        i-xxxxxxxxxxxxxxxxx     ap-northeast-1c 10.240.0.10     xx.xxx.xxx.xxx  running
+master-1        i-yyyyyyyyyyyyyyyyy     ap-northeast-1c 10.240.0.11     yy.yyy.yyy.yy   running
+master-2        i-zzzzzzzzzzzzzzzzz     ap-northeast-1c 10.240.0.12     zz.zzz.z.zzz    running
+
+for masternode in xx.xxx.xxx.xxx yy.yyy.yyy.yy zz.zzz.z.zzz; do
+  scp -i ~/.ssh/your_ssh_key \
+    encryption-config.yaml \
+    ubuntu@${masternode}:~/
 done
 ```
 

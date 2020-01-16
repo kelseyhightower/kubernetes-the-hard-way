@@ -1,0 +1,31 @@
+Resources:
+  HardK8sNLB:
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+    Properties:
+      Type: network
+      Scheme: internet-facing
+      SubnetMappings:
+        - AllocationId: !ImportValue hard-k8s-eipalloc
+          SubnetId: !ImportValue hard-k8s-subnet
+
+  HardK8sListener:
+    Type: AWS::ElasticLoadBalancingV2::Listener
+    Properties:
+      DefaultActions:
+        - TargetGroupArn: !Ref HardK8sTargetGroup
+          Type: forward
+      LoadBalancerArn: !Ref HardK8sNLB
+      Port: 6443
+      Protocol: TCP
+
+  HardK8sTargetGroup:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    Properties:
+      VpcId: !ImportValue hard-k8s-vpc
+      Protocol: TCP
+      Port: 6443
+      Targets:
+        - Id: !ImportValue hard-k8s-master-0
+        - Id: !ImportValue hard-k8s-master-1
+        - Id: !ImportValue hard-k8s-master-2
+      HealthCheckPort: "80" # default is "traffic-port", which means 6443.

@@ -1,0 +1,12 @@
+Resources:
+  HardK8sEIP:
+    Type: AWS::EC2::EIP
+    Properties: 
+      Tags: 
+        - Key: Name
+          Value: eip-kubernetes-the-hard-way
+
+Outputs:
+  EipAllocation:
+    Value: !GetAtt HardK8sEIP.AllocationId
+    Export: { Name: hard-k8s-eipalloc }
