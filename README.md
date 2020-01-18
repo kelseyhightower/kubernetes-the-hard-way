@@ -29,6 +29,8 @@ Kubernetes The Hard Way guides you through bootstrapping a highly available Kube
 
 This tutorial assumes you have access to the [Google Cloud Platform](https://cloud.google.com). While GCP is used for basic infrastructure requirements the lessons learned in this tutorial can be applied to other platforms.
 
+3 hours is a reasonable amount of time to perform the labs. YMMV depending on linux skills and background knowledge on Kubernetes
+
 * [Prerequisites](docs/01-prerequisites.md)
 * [Installing the Client Tools](docs/02-client-tools.md)
 * [Provisioning Compute Resources](docs/03-compute-resources.md)
