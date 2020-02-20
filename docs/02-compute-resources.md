@@ -90,7 +90,7 @@ VirtualBox error:
     VBoxManage.exe: error: Details: code E_FAIL (0x80004005), component SessionMachine, interface IMachine, callee IUnknown
     VBoxManage.exe: error: Context: "SaveSettings()" at line 3105 of file VBoxManageModifyVM.cpp
 
-In such cases delete the VM, then delete teh VM folder and then re-provision
+In such cases delete the VM, then delete the VM folder and then re-provision
 
 `vagrant destroy <vm>`
 
