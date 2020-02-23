@@ -86,8 +86,8 @@ gcloud compute addresses list --filter="name=('kubernetes-the-hard-way')"
 > output
 
 ```
-NAME                     REGION    ADDRESS        STATUS
-kubernetes-the-hard-way  us-west1  XX.XXX.XXX.XX  RESERVED
+NAME  ADDRESS/RANGE  TYPE      PURPOSE  NETWORK  REGION    SUBNET  STATUS
+kubernetes-the-hard-way  XX.XXX.XXX.XX  EXTERNAL                    us-west1          RESERVED
 ```
 
 ## Compute Instances
