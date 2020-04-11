@@ -56,8 +56,8 @@ LOADBALANCER_ADDRESS=192.168.5.30
 ```
 
 Generate a kubeconfig file for the first worker node.
-On master-1:
 
+On master-1:
 ```
 {
   kubectl config set-cluster kubernetes-the-hard-way \
