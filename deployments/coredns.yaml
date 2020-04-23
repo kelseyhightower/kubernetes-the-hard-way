@@ -60,6 +60,7 @@ data:
           pods insecure
           fallthrough in-addr.arpa ip6.arpa
         }
+        forward . 8.8.8.8 8.8.4.4
         prometheus :9153
         cache 30
         loop
