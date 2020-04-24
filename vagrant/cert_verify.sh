@@ -36,6 +36,20 @@ ETCDKEY=/var/lib/kubernetes/etcd-server.key
 SACERT=/var/lib/kubernetes/service-account.crt
 SAKEY=/var/lib/kubernetes/service-account.key
 
+# All kubeconfig locations
+
+# kubeproxy.kubeconfig location
+KPKUBECONFIG=/var/lib/kubernetes/kube-proxy.kubeconfig
+
+# kube-controller-manager.kubeconfig location
+KCMKUBECONFIG=/var/lib/kubernetes/kube-controller-manager.kubeconfig
+
+# kube-scheduler.kubeconfig location
+KSKUBECONFIG=/var/lib/kubernetes/kube-scheduler.kubeconfig
+
+# admin.kubeconfig location
+ADMINKUBECONFIG=/var/lib/kubernetes/admin.kubeconfig
+
 check_cert_ca()
 {
     if [ -z $CACERT ] && [ -z $CAKEY ]
@@ -245,6 +259,115 @@ check_cert_sa()
     fi
 }
 
+
+# Kubeconfig verification
+
+check_cert_kpkubeconfig()
+{
+    if [ -z $KPKUBECONFIG ]
+        then
+            echo "please specify kube-proxy kubeconfig location"
+            exit 1
+        elif [ -f $KPKUBECONFIG ]
+            then
+                echo "kube-proxy kubeconfig file found, verifying the authenticity"
+                KPKUBECONFIG_SUBJECT=$(cat $KPKUBECONFIG | grep "client-certificate-data:" | awk '{print $2}' | base64 --decode | openssl x509 --text | grep "Subject: CN" | tr -d " ")
+                KPKUBECONFIG_ISSUER=$(cat $KPKUBECONFIG | grep "client-certificate-data:" | awk '{print $2}' | base64 --decode | openssl x509 --text | grep "Issuer: CN" | tr -d " ")
+                KPKUBECONFIG_CERT_MD5=$(cat $KPKUBECONFIG | grep "client-certificate-data:" | awk '{print $2}' | base64 --decode | openssl x509 -noout | openssl md5 | awk '{print $2}')
+                KPKUBECONFIG_KEY_MD5=$(cat $KPKUBECONFIG | grep "client-key-data" | awk '{print $2}' | base64 --decode | openssl rsa -noout | openssl md5 | awk '{print $2}')
+                if [ $KPKUBECONFIG_SUBJECT == "Subject:CN=system:kube-proxy" ] && [ $KPKUBECONFIG_ISSUER == "Issuer:CN=KUBERNETES-CA" ] && [ $KPKUBECONFIG_CERT_MD5 == $KPKUBECONFIG_KEY_MD5 ]
+                    then
+                        echo "kube-proxy kubeconfig cert and key are correct"
+                    else
+                        echo "Exiting...Found mismtach in the kube-proxy kubeconfig certificate and keys, check subject"
+                        exit 1
+                fi
+            else
+                echo "kube-proxy kubeconfig file is missing"
+                exit 1
+    fi
+}
+
+check_cert_kcmkubeconfig()
+{
+    if [ -z $KCMKUBECONFIG ]
+        then
+            echo "please specify kube-controller-manager kubeconfig location"
+            exit 1
+        elif [ -f $KCMKUBECONFIG ]
+            then
+                echo "kube-controller-manager kubeconfig file found, verifying the authenticity"
+                KCMKUBECONFIG_SUBJECT=$(cat $KCMKUBECONFIG | grep "client-certificate-data:" | awk '{print $2}' | base64 --decode | openssl x509 --text | grep "Subject: CN" | tr -d " ")
+                KCMKUBECONFIG_ISSUER=$(cat $KCMKUBECONFIG | grep "client-certificate-data:" | awk '{print $2}' | base64 --decode | openssl x509 --text | grep "Issuer: CN" | tr -d " ")
+                KCMKUBECONFIG_CERT_MD5=$(cat $KCMKUBECONFIG | grep "client-certificate-data:" | awk '{print $2}' | base64 --decode | openssl x509 -noout | openssl md5 | awk '{print $2}')
+                KCMKUBECONFIG_KEY_MD5=$(cat $KCMKUBECONFIG | grep "client-key-data" | awk '{print $2}' | base64 --decode | openssl rsa -noout | openssl md5 | awk '{print $2}')
+                if [ $KCMKUBECONFIG_SUBJECT == "Subject:CN=system:kube-controller-manager" ] && [ $KCMKUBECONFIG_ISSUER == "Issuer:CN=KUBERNETES-CA" ] && [ $KCMKUBECONFIG_CERT_MD5 == $KCMKUBECONFIG_KEY_MD5 ]
+                    then
+                        echo "kube-controller-manager kubeconfig cert and key are correct"
+                    else
+                        echo "Exiting...Found mismtach in the kube-controller-manager kubeconfig certificate and keys, check subject"
+                        exit 1
+                fi
+            else
+                echo "kube-controller-manager kubeconfig file is missing"
+                exit 1
+    fi
+}
+
+
+check_cert_kskubeconfig()
+{
+    if [ -z $KSKUBECONFIG ]
+        then
+            echo "please specify kube-scheduler kubeconfig location"
+            exit 1
+        elif [ -f $KSKUBECONFIG ]
+            then
+                echo "kube-scheduler kubeconfig file found, verifying the authenticity"
+                KSKUBECONFIG_SUBJECT=$(cat $KSKUBECONFIG | grep "client-certificate-data:" | awk '{print $2}' | base64 --decode | openssl x509 --text | grep "Subject: CN" | tr -d " ")
+                KSKUBECONFIG_ISSUER=$(cat $KSKUBECONFIG | grep "client-certificate-data:" | awk '{print $2}' | base64 --decode | openssl x509 --text | grep "Issuer: CN" | tr -d " ")
+                KSKUBECONFIG_CERT_MD5=$(cat $KSKUBECONFIG | grep "client-certificate-data:" | awk '{print $2}' | base64 --decode | openssl x509 -noout | openssl md5 | awk '{print $2}')
+                KSKUBECONFIG_KEY_MD5=$(cat $KSKUBECONFIG | grep "client-key-data" | awk '{print $2}' | base64 --decode | openssl rsa -noout | openssl md5 | awk '{print $2}')
+                if [ $KSKUBECONFIG_SUBJECT == "Subject:CN=system:kube-scheduler" ] && [ $KSKUBECONFIG_ISSUER == "Issuer:CN=KUBERNETES-CA" ] && [ $KSKUBECONFIG_CERT_MD5 == $KSKUBECONFIG_KEY_MD5 ]
+                    then
+                        echo "kube-scheduler kubeconfig cert and key are correct"
+                    else
+                        echo "Exiting...Found mismtach in the kube-scheduler kubeconfig certificate and keys, check subject"
+                        exit 1
+                fi
+            else
+                echo "kube-scheduler kubeconfig file is missing"
+                exit 1
+    fi
+}
+
+check_cert_adminkubeconfig()
+{
+    if [ -z $ADMINKUBECONFIG ]
+        then
+            echo "please specify admin kubeconfig location"
+            exit 1
+        elif [ -f $ADMINKUBECONFIG ]
+            then
+                echo "admin kubeconfig file found, verifying the authenticity"
+                ADMINKUBECONFIG_SUBJECT=$(cat $ADMINKUBECONFIG | grep "client-certificate-data:" | awk '{print $2}' | base64 --decode | openssl x509 --text | grep "Subject: CN" | tr -d " ")
+                ADMINKUBECONFIG_ISSUER=$(cat $ADMINKUBECONFIG | grep "client-certificate-data:" | awk '{print $2}' | base64 --decode | openssl x509 --text | grep "Issuer: CN" | tr -d " ")
+                ADMINKUBECONFIG_CERT_MD5=$(cat $ADMINKUBECONFIG | grep "client-certificate-data:" | awk '{print $2}' | base64 --decode | openssl x509 -noout | openssl md5 | awk '{print $2}')
+                ADMINKUBECONFIG_KEY_MD5=$(cat $ADMINKUBECONFIG | grep "client-key-data" | awk '{print $2}' | base64 --decode | openssl rsa -noout | openssl md5 | awk '{print $2}')
+                if [ $ADMINKUBECONFIG_SUBJECT == "Subject:CN=admin,O=system:masters" ] && [ $ADMINKUBECONFIG_ISSUER == "Issuer:CN=KUBERNETES-CA" ] && [ $ADMINKUBECONFIG_CERT_MD5 == $ADMINKUBECONFIG_KEY_MD5 ]
+                    then
+                        echo "admin kubeconfig cert and key are correct"
+                    else
+                        echo "Exiting...Found mismtach in the admin kubeconfig certificate and keys, check subject"
+                        exit 1
+                fi
+            else
+                echo "admin kubeconfig file is missing"
+                exit 1
+    fi
+}
+
+# CRT & KEY verification
 check_cert_ca
 check_cert_admin
 check_cert_kcm
@@ -253,3 +376,9 @@ check_cert_ks
 check_cert_api
 check_cert_sa
 check_cert_etcd
+
+# Kubeconfig verification
+check_cert_kpkubeconfig
+check_cert_kcmkubeconfig
+check_cert_kskubeconfig
+check_cert_adminkubeconfig
