@@ -1,6 +1,6 @@
 #!/bin/bash
 set -e
-set -x
+#set -x
 
 # All Cert Location
 
@@ -57,6 +57,12 @@ SYSTEMD_ETCD_FILE=/etc/systemd/system/etcd.service
 
 # kub-api systemd service
 SYSTEMD_API_FILE=/etc/systemd/system/kube-apiserver.service
+
+# kube-controller-manager systemd service
+SYSTEMD_KCM_FILE=/etc/systemd/system/kube-controller-manager.service
+
+# kube-proxy systemd service
+SYSTEMD_KP_FILE=/etc/systemd/system/kube-scheduler.service
 
 check_cert_ca()
 {
@@ -469,6 +475,60 @@ check_systemd_api()
     fi
 }
 
+check_systemd_kcm()
+{
+    if [ -z $KCMCERT ] && [ -z $KCMKEY ]
+        then
+            echo "please specify cert and key location"
+            exit 1
+        elif [ -f $SYSTEMD_KCM_FILE ]
+            then
+                echo "Systemd for kube-controller-manager service found, verifying the authenticity"
+                CLUSTER_SIGNING_CERT_FILE=$(systemctl cat kube-controller-manager.service | grep "\--cluster-signing-cert-file" | awk '{print $1}' | cut -d "=" -f2)
+                CLUSTER_SIGNING_KEY_FILE=$(systemctl cat kube-controller-manager.service | grep "\--cluster-signing-key-file" | awk '{print $1}' | cut -d "=" -f2)
+                KUBECONFIG=$(systemctl cat kube-controller-manager.service | grep "\--kubeconfig" | awk '{print $1}' | cut -d "=" -f2)
+                ROOT_CA_FILE=$(systemctl cat kube-controller-manager.service | grep "\--root-ca-file" | awk '{print $1}' | cut -d "=" -f2)
+                SERVICE_ACCOUNT_PRIVATE_KEY_FILE=$(systemctl cat kube-controller-manager.service | grep "\--service-account-private-key-file" | awk '{print $1}' | cut -d "=" -f2)
+
+                if [ $CLUSTER_SIGNING_CERT_FILE == $CACERT ] && [ $CLUSTER_SIGNING_KEY_FILE == $CAKEY ] && [ $KUBECONFIG == $KCMKUBECONFIG ] && \
+                   [ $ROOT_CA_FILE == $CACERT ] && [ $SERVICE_ACCOUNT_PRIVATE_KEY_FILE == $SAKEY ]
+                    then
+                        echo "kube-controller-manager cluster-signing-cert-file, cluster-signing-key-file, kubeconfig, root-ca-file, service-account-private-key-file  are correct"
+                    else
+                        echo "Exiting...Found mismtach in the kube-controller-manager cluster-signing-cert-file, cluster-signing-key-file, kubeconfig, root-ca-file, service-account-private-key-file , check /etc/systemd/system/kube-controller-manager.service file"
+                        exit 1
+                fi
+            else
+                echo "kube-controller-manager.crt / kube-controller-manager.key is missing"
+                exit 1
+    fi
+}
+
+check_systemd_kp()
+{
+    if [ -z $KPCERT ] && [ -z $KPKEY ]
+        then
+            echo "please specify cert and key location"
+            exit 1
+        elif [ -f $SYSTEMD_KP_FILE ]
+            then
+                echo "Systemd for kube-proxy  service found, verifying the authenticity"
+
+                KUBECONFIG=$(systemctl cat kube-scheduler.service | grep "\--kubeconfig"| awk '{print $1}'| cut -d "=" -f2)
+                ADDRESS=$(systemctl cat kube-scheduler.service | grep "\--address"| awk '{print $1}'| cut -d "=" -f2)
+
+                if [ $KUBECONFIG == $KSKUBECONFIG ] && [ $ADDRESS == "127.0.0.1" ]
+                    then
+                        echo "kube-proxy --kubeconfig, --address are correct"
+                    else
+                        echo "Exiting...Found mismtach in the kube-proxy --kubeconfig, --address, check /etc/systemd/system/kube-scheduler.service file"
+                        exit 1
+                fi
+            else
+                echo "kube-proxy.crt / kube-proxy.key is missing"
+                exit 1
+    fi
+}
 
 # CRT & KEY verification
 check_cert_ca
@@ -489,3 +549,5 @@ check_cert_adminkubeconfig
 # Systemd verification
 check_systemd_etcd
 check_systemd_api
+check_systemd_kcm
+check_systemd_kp
