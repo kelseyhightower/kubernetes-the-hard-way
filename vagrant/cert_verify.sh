@@ -29,8 +29,8 @@ APICERT=/var/lib/kubernetes/kube-apiserver.crt
 APIKEY=/var/lib/kubernetes/kube-apiserver.key
 
 # ETCD certificate location
-ETCDCERT=/var/lib/kubernetes/etcd-server.crt
-ETCDKEY=/var/lib/kubernetes/etcd-server.key
+ETCDCERT=/etc/etcd/etcd-server.crt
+ETCDKEY=/etc/etcd/etcd-server.key
 
 # Service account certificate location
 SACERT=/var/lib/kubernetes/service-account.crt
@@ -371,6 +371,58 @@ check_cert_adminkubeconfig()
     fi
 }
 
+check_systemd_etcd()
+{
+    if [ -z $ETCDCERT ] && [ -z $ETCDKEY ]
+        then
+            echo "please specify ETCD cert and key location, Exiting...."
+            exit 1
+        elif [ -f $SYSTEMD_ETCD_FILE ]
+            then
+                echo "Systemd for ETCD service found, verifying the authenticity"
+
+                # Systemd cert and key file details
+                ETCD_CA_CERT=/etc/etcd/ca.crt
+                CERT_FILE=$(systemctl cat etcd.service | grep "\--cert-file"| awk '{print $1}'| cut -d "=" -f2)
+                KEY_FILE=$(systemctl cat etcd.service | grep "\--key-file"| awk '{print $1}' | cut -d "=" -f2)
+                PEER_CERT_FILE=$(systemctl cat etcd.service | grep "\--peer-cert-file"| awk '{print $1}'| cut -d "=" -f2)
+                PEER_KEY_FILE=$(systemctl cat etcd.service | grep "\--peer-key-file"| awk '{print $1}'| cut -d "=" -f2)
+                TRUSTED_CA_FILE=$(systemctl cat etcd.service | grep "\--trusted-ca-file"| awk '{print $1}'| cut -d "=" -f2)
+                PEER_TRUSTED_CA_FILE=$(systemctl cat etcd.service | grep "\--peer-trusted-ca-file"| awk '{print $1}'| cut -d "=" -f2)
+
+                # Systemd advertise , client and peer url's
+                INTERNAL_IP=$(ip addr show enp0s8 | grep "inet " | awk '{print $2}' | cut -d / -f 1)
+                IAP_URL=$(systemctl cat etcd.service | grep "\--initial-advertise-peer-urls"| awk '{print $2}')
+                LP_URL=$(systemctl cat etcd.service | grep "\--listen-peer-urls"| awk '{print $2}')
+                LC_URL=$(systemctl cat etcd.service | grep "\--listen-client-urls"| awk '{print $2}')
+                AC_URL=$(systemctl cat etcd.service | grep "\--advertise-client-urls"| awk '{print $2}')
+
+
+                if [ $CERT_FILE == $ETCDCERT ] && [ $KEY_FILE == $ETCDKEY ] && [ $PEER_CERT_FILE == $ETCDCERT ] && [ $PEER_KEY_FILE == $ETCDKEY ] && \
+                   [ $TRUSTED_CA_FILE == $ETCD_CA_CERT ] && [ $PEER_TRUSTED_CA_FILE = $ETCD_CA_CERT ]
+                    then
+                        echo "ETCD certificate, ca and key files are correct under systemd service"
+                    else
+                        echo "Exiting...Found mismtach in the ETCD certificate, ca and keys, check /etc/systemd/system/etcd.service file"
+                        exit 1
+                fi
+
+                if [ $IAP_URL == "https://$INTERNAL_IP:2380" ] && [ $LP_URL == "https://$INTERNAL_IP:2380"  ] && [ $LC_URL == "https://$INTERNAL_IP:2379,https://127.0.0.1:2379" ] && \
+                   [ $AC_URL == "https://$INTERNAL_IP:2379" ]
+                    then
+                        echo "ETCD initial-advertise-peer-urls, listen-peer-urls, listen-client-urls, advertise-client-urls are correct"
+                    else
+                        echo "Exiting...Found mismtach in the ETCD initial-advertise-peer-urls / listen-peer-urls / listen-client-urls / advertise-client-urls, check /etc/systemd/system/etcd.service file"
+                        exit 1
+                fi
+                
+            else
+                echo "etcd-server.crt / etcd-server.key is missing"
+                exit 1
+    fi
+}
+
+
 # CRT & KEY verification
 check_cert_ca
 check_cert_admin
@@ -386,3 +438,6 @@ check_cert_kpkubeconfig
 check_cert_kcmkubeconfig
 check_cert_kskubeconfig
 check_cert_adminkubeconfig
+
+# Systemd verification
+check_systemd_etcd
