@@ -50,6 +50,14 @@ KSKUBECONFIG=/var/lib/kubernetes/kube-scheduler.kubeconfig
 # admin.kubeconfig location
 ADMINKUBECONFIG=/var/lib/kubernetes/admin.kubeconfig
 
+# All systemd service locations
+
+# etcd systemd service
+SYSTEMD_ETCD_FILE=/etc/systemd/system/etcd.service
+
+# kub-api systemd service
+SYSTEMD_API_FILE=/etc/systemd/system/kube-apiserver.service
+
 check_cert_ca()
 {
     if [ -z $CACERT ] && [ -z $CAKEY ]
@@ -422,6 +430,45 @@ check_systemd_etcd()
     fi
 }
 
+check_systemd_api()
+{
+    if [ -z $APICERT ] && [ -z $APIKEY ]
+        then
+            echo "please specify kube-api cert and key location, Exiting...."
+            exit 1
+        elif [ -f $SYSTEMD_API_FILE ]
+            then
+                echo "Systemd for kube-api service found, verifying the authenticity"
+
+                INTERNAL_IP=$(ip addr show enp0s8 | grep "inet " | awk '{print $2}' | cut -d / -f 1)
+                ADVERTISE_ADDRESS=$(systemctl cat kube-apiserver.service | grep "\--advertise-address" | awk '{print $1}' | cut -d "=" -f2)
+                CLIENT_CA_FILE=$(systemctl cat kube-apiserver.service | grep "\--client-ca-file" | awk '{print $1}' | cut -d "=" -f2)
+                ETCD_CA_FILE=$(systemctl cat kube-apiserver.service | grep "\--etcd-cafile" | awk '{print $1}' | cut -d "=" -f2)
+                ETCD_CERT_FILE=$(systemctl cat kube-apiserver.service | grep "\--etcd-certfile" | awk '{print $1}' | cut -d "=" -f2)
+                ETCD_KEY_FILE=$(systemctl cat kube-apiserver.service | grep "\--etcd-keyfile" | awk '{print $1}' | cut -d "=" -f2)
+                KUBELET_CERTIFICATE_AUTHORITY=$(systemctl cat kube-apiserver.service | grep "\--kubelet-certificate-authority" | awk '{print $1}' | cut -d "=" -f2)
+                KUBELET_CLIENT_CERTIFICATE=$(systemctl cat kube-apiserver.service | grep "\--kubelet-client-certificate" | awk '{print $1}' | cut -d "=" -f2)
+                KUBELET_CLIENT_KEY=$(systemctl cat kube-apiserver.service | grep "\--kubelet-client-key" | awk '{print $1}' | cut -d "=" -f2)
+                SERVICE_ACCOUNT_KEY_FILE=$(systemctl cat kube-apiserver.service | grep "\--service-account-key-file" | awk '{print $1}' | cut -d "=" -f2)
+                TLS_CERT_FILE=$(systemctl cat kube-apiserver.service | grep "\--tls-cert-file" | awk '{print $1}' | cut -d "=" -f2)
+                TLS_PRIVATE_KEY_FILE=$(systemctl cat kube-apiserver.service | grep "\--tls-private-key-file" | awk '{print $1}' | cut -d "=" -f2)
+
+                if [ $ADVERTISE_ADDRESS == $INTERNAL_IP ] && [ $CLIENT_CA_FILE == $CACERT ] && [ $ETCD_CA_FILE == $CACERT ] && \
+                   [ $ETCD_CERT_FILE == "/var/lib/kubernetes/etcd-server.crt" ] && [ $ETCD_KEY_FILE == "/var/lib/kubernetes/etcd-server.key" ] && \
+                   [ $KUBELET_CERTIFICATE_AUTHORITY == $CACERT ] && [ $KUBELET_CLIENT_CERTIFICATE == $APICERT ] && [ $KUBELET_CLIENT_KEY == $APIKEY ] && \
+                   [ $SERVICE_ACCOUNT_KEY_FILE == $SACERT ] && [ $TLS_CERT_FILE == $APICERT ] && [ $TLS_PRIVATE_KEY_FILE == $APIKEY ]
+                    then
+                        echo "kube-apiserver advertise-address/ client-ca-file/ etcd-cafile/ etcd-certfile/ etcd-keyfile/ kubelet-certificate-authority/ kubelet-client-certificate/ kubelet-client-key/ service-account-key-file/ tls-cert-file/ tls-private-key-file are correct"
+                    else
+                        echo "Exiting...Found mismtach in the kube-apiserver systemd file, check advertise-address/ client-ca-file/ etcd-cafile/ etcd-certfile/ etcd-keyfile/ kubelet-certificate-authority/ kubelet-client-certificate/ kubelet-client-key/ service-account-key-file/ tls-cert-file/ tls-private-key-file under /etc/systemd/system/kube-apiserver.service"
+                        exit 1
+                fi
+            else
+                echo "kube-apiserver.crt / kube-apiserver.key is missing"
+                exit 1
+    fi
+}
+
 
 # CRT & KEY verification
 check_cert_ca
@@ -441,3 +488,4 @@ check_cert_adminkubeconfig
 
 # Systemd verification
 check_systemd_etcd
+check_systemd_api
