@@ -5,50 +5,50 @@ set -e
 # All Cert Location
 
 # ca certificate location
-CACERT=/var/lib/kubernetes/ca.crt
-CAKEY=/var/lib/kubernetes/ca.key
+CACERT=ca.crt
+CAKEY=ca.key
 
 # admin certificate location
-ADMINCERT=/var/lib/kubernetes/admin.crt
-ADMINKEY=/var/lib/kubernetes/admin.key
+ADMINCERT=admin.crt
+ADMINKEY=admin.key
 
 # Kube controller manager certificate location
-KCMCERT=/var/lib/kubernetes/kube-controller-manager.crt
-KCMKEY=/var/lib/kubernetes/kube-controller-manager.key
+KCMCERT=kube-controller-manager.crt
+KCMKEY=kube-controller-manager.key
 
 # Kube proxy certificate location
-KPCERT=/var/lib/kubernetes/kube-proxy.crt
-KPKEY=/var/lib/kubernetes/kube-proxy.key
+KPCERT=kube-proxy.crt
+KPKEY=kube-proxy.key
 
 # Kube scheduler certificate location
-KSCERT=/var/lib/kubernetes/kube-scheduler.crt
-KSKEY=/var/lib/kubernetes/kube-scheduler.key
+KSCERT=kube-scheduler.crt
+KSKEY=kube-scheduler.key
 
 # Kube api certificate location
-APICERT=/var/lib/kubernetes/kube-apiserver.crt
-APIKEY=/var/lib/kubernetes/kube-apiserver.key
+APICERT=kube-apiserver.crt
+APIKEY=kube-apiserver.key
 
 # ETCD certificate location
-ETCDCERT=/etc/etcd/etcd-server.crt
-ETCDKEY=/etc/etcd/etcd-server.key
+ETCDCERT=etcd-server.crt
+ETCDKEY=etcd-server.key
 
 # Service account certificate location
-SACERT=/var/lib/kubernetes/service-account.crt
-SAKEY=/var/lib/kubernetes/service-account.key
+SACERT=service-account.crt
+SAKEY=service-account.key
 
 # All kubeconfig locations
 
 # kubeproxy.kubeconfig location
-KPKUBECONFIG=/var/lib/kubernetes/kube-proxy.kubeconfig
+KPKUBECONFIG=kube-proxy.kubeconfig
 
 # kube-controller-manager.kubeconfig location
-KCMKUBECONFIG=/var/lib/kubernetes/kube-controller-manager.kubeconfig
+KCMKUBECONFIG=kube-controller-manager.kubeconfig
 
 # kube-scheduler.kubeconfig location
-KSKUBECONFIG=/var/lib/kubernetes/kube-scheduler.kubeconfig
+KSKUBECONFIG=kube-scheduler.kubeconfig
 
 # admin.kubeconfig location
-ADMINKUBECONFIG=/var/lib/kubernetes/admin.kubeconfig
+ADMINKUBECONFIG=admin.kubeconfig
 
 # All systemd service locations
 
@@ -396,7 +396,7 @@ check_systemd_etcd()
                 echo "Systemd for ETCD service found, verifying the authenticity"
 
                 # Systemd cert and key file details
-                ETCD_CA_CERT=/etc/etcd/ca.crt
+                ETCD_CA_CERT=ca.crt
                 CERT_FILE=$(systemctl cat etcd.service | grep "\--cert-file"| awk '{print $1}'| cut -d "=" -f2)
                 KEY_FILE=$(systemctl cat etcd.service | grep "\--key-file"| awk '{print $1}' | cut -d "=" -f2)
                 PEER_CERT_FILE=$(systemctl cat etcd.service | grep "\--peer-cert-file"| awk '{print $1}'| cut -d "=" -f2)
@@ -412,6 +412,9 @@ check_systemd_etcd()
                 AC_URL=$(systemctl cat etcd.service | grep "\--advertise-client-urls"| awk '{print $2}')
 
 
+                   ETCD_CA_CERT=/etc/etcd/ca.crt
+                   ETCDCERT=/etc/etcd/etcd-server.crt
+                   ETCDKEY=/etc/etcd/etcd-server.key
                 if [ $CERT_FILE == $ETCDCERT ] && [ $KEY_FILE == $ETCDKEY ] && [ $PEER_CERT_FILE == $ETCDCERT ] && [ $PEER_KEY_FILE == $ETCDKEY ] && \
                    [ $TRUSTED_CA_FILE == $ETCD_CA_CERT ] && [ $PEER_TRUSTED_CA_FILE = $ETCD_CA_CERT ]
                     then
@@ -429,7 +432,7 @@ check_systemd_etcd()
                         echo "Exiting...Found mismtach in the ETCD initial-advertise-peer-urls / listen-peer-urls / listen-client-urls / advertise-client-urls, check /etc/systemd/system/etcd.service file"
                         exit 1
                 fi
-                
+
             else
                 echo "etcd-server.crt / etcd-server.key is missing"
                 exit 1
@@ -459,6 +462,10 @@ check_systemd_api()
                 TLS_CERT_FILE=$(systemctl cat kube-apiserver.service | grep "\--tls-cert-file" | awk '{print $1}' | cut -d "=" -f2)
                 TLS_PRIVATE_KEY_FILE=$(systemctl cat kube-apiserver.service | grep "\--tls-private-key-file" | awk '{print $1}' | cut -d "=" -f2)
 
+                CACERT=/var/lib/kubernetes/ca.crt
+                APICERT=/var/lib/kubernetes/kube-apiserver.crt
+                APIKEY=/var/lib/kubernetes/kube-apiserver.key
+                SACERT=/var/lib/kubernetes/service-account.crt
                 if [ $ADVERTISE_ADDRESS == $INTERNAL_IP ] && [ $CLIENT_CA_FILE == $CACERT ] && [ $ETCD_CA_FILE == $CACERT ] && \
                    [ $ETCD_CERT_FILE == "/var/lib/kubernetes/etcd-server.crt" ] && [ $ETCD_KEY_FILE == "/var/lib/kubernetes/etcd-server.key" ] && \
                    [ $KUBELET_CERTIFICATE_AUTHORITY == $CACERT ] && [ $KUBELET_CLIENT_CERTIFICATE == $APICERT ] && [ $KUBELET_CLIENT_KEY == $APIKEY ] && \
@@ -477,6 +484,12 @@ check_systemd_api()
 
 check_systemd_kcm()
 {
+    KCMCERT=/var/lib/kubernetes/kube-controller-manager.crt
+    KCMKEY=/var/lib/kubernetes/kube-controller-manager.key
+    CACERT=/var/lib/kubernetes/ca.crt
+    CAKEY=/var/lib/kubernetes/ca.key
+    SAKEY=/var/lib/kubernetes/service-account.key
+    KCMKUBECONFIG=/var/lib/kubernetes/kube-controller-manager.kubeconfig
     if [ -z $KCMCERT ] && [ -z $KCMKEY ]
         then
             echo "please specify cert and key location"
@@ -506,6 +519,9 @@ check_systemd_kcm()
 
 check_systemd_kp()
 {
+    KPCERT=/var/lib/kubernetes/kube-proxy.crt
+    KPKEY=/var/lib/kubernetes/kube-proxy.key
+
     if [ -z $KPCERT ] && [ -z $KPKEY ]
         then
             echo "please specify cert and key location"
