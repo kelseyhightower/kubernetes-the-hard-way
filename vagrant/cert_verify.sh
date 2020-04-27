@@ -547,6 +547,8 @@ check_systemd_ks()
     fi
 }
 
+### MASTER NODES ###
+
 # CRT & KEY verification
 check_cert_ca
 check_cert_admin
@@ -568,3 +570,40 @@ check_systemd_etcd
 check_systemd_api
 check_systemd_kcm
 check_systemd_ks
+
+### END OF MASTER NODES ###
+
+### WORKER NODES ###
+
+# Worker-1 cert details
+WORKER_1_CERT=worker-1.crt
+WORKER_1_KEY=worker-1.key
+
+check_cert_worker_1()
+{
+    if [ -z $WORKER_1_CERT ] && [ -z $WORKER_1_KEY ]
+        then
+            echo "please specify cert and key location of worker-1 node"
+            exit 1
+        elif [ -f $WORKER_1_CERT ] && [ -f $WORKER_1_KEY ]
+            then
+                echo "worker-1 cert and key found, verifying the authenticity"
+                WORKER_1_CERT_SUBJECT=$(openssl x509 -in $WORKER_1_CERT -text | grep "Subject: CN"| tr -d " ")
+                WORKER_1_CERT_ISSUER=$(openssl x509 -in $WORKER_1_CERT -text | grep "Issuer: CN"| tr -d " ")
+                WORKER_1_CERT_MD5=$(openssl x509 -noout -modulus -in $WORKER_1_CERT | openssl md5| awk '{print $2}')
+                WORKER_1_KEY_MD5=$(openssl rsa -noout -modulus -in $WORKER_1_KEY | openssl md5| awk '{print $2}')
+                if [ $WORKER_1_CERT_SUBJECT == "Subject:CN=system:node:worker-1,O=system:nodes" ] && [ $WORKER_1_CERT_ISSUER == "Issuer:CN=KUBERNETES-CA" ] && [ $WORKER_1_CERT_MD5 == $WORKER_1_KEY_MD5 ]
+                    then
+                        echo "worker-1 cert and key are correct"
+                    else
+                        echo "Exiting...Found mismtach in the worker-1 certificate and keys, check subject"
+                        exit 1
+                fi
+            else
+                echo "worker-1.crt / worker-1.key is missing"
+                exit 1
+    fi
+}
+
+
+check_cert_worker_1
