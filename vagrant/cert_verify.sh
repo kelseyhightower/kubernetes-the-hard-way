@@ -61,8 +61,8 @@ SYSTEMD_API_FILE=/etc/systemd/system/kube-apiserver.service
 # kube-controller-manager systemd service
 SYSTEMD_KCM_FILE=/etc/systemd/system/kube-controller-manager.service
 
-# kube-proxy systemd service
-SYSTEMD_KP_FILE=/etc/systemd/system/kube-scheduler.service
+# kube-scheduler systemd service
+SYSTEMD_KS_FILE=/etc/systemd/system/kube-scheduler.service
 
 check_cert_ca()
 {
@@ -517,31 +517,32 @@ check_systemd_kcm()
     fi
 }
 
-check_systemd_kp()
+check_systemd_ks()
 {
-    KPCERT=/var/lib/kubernetes/kube-proxy.crt
-    KPKEY=/var/lib/kubernetes/kube-proxy.key
+    KSCERT=/var/lib/kubernetes/kube-scheduler.crt
+    KSKEY=/var/lib/kubernetes/kube-scheduler.key
+    KSKUBECONFIG=/var/lib/kubernetes/kube-scheduler.kubeconfig
 
-    if [ -z $KPCERT ] && [ -z $KPKEY ]
+    if [ -z $KSCERT ] && [ -z $KSKEY ]
         then
             echo "please specify cert and key location"
             exit 1
-        elif [ -f $SYSTEMD_KP_FILE ]
+        elif [ -f $SYSTEMD_KS_FILE ]
             then
-                echo "Systemd for kube-proxy  service found, verifying the authenticity"
+                echo "Systemd for kube-scheduler service found, verifying the authenticity"
 
                 KUBECONFIG=$(systemctl cat kube-scheduler.service | grep "\--kubeconfig"| awk '{print $1}'| cut -d "=" -f2)
                 ADDRESS=$(systemctl cat kube-scheduler.service | grep "\--address"| awk '{print $1}'| cut -d "=" -f2)
 
                 if [ $KUBECONFIG == $KSKUBECONFIG ] && [ $ADDRESS == "127.0.0.1" ]
                     then
-                        echo "kube-proxy --kubeconfig, --address are correct"
+                        echo "kube-scheduler --kubeconfig, --address are correct"
                     else
-                        echo "Exiting...Found mismtach in the kube-proxy --kubeconfig, --address, check /etc/systemd/system/kube-scheduler.service file"
+                        echo "Exiting...Found mismtach in the kube-scheduler --kubeconfig, --address, check /etc/systemd/system/kube-scheduler.service file"
                         exit 1
                 fi
             else
-                echo "kube-proxy.crt / kube-proxy.key is missing"
+                echo "kube-scheduler.crt / kube-scheduler.key is missing"
                 exit 1
     fi
 }
@@ -566,4 +567,4 @@ check_cert_adminkubeconfig
 check_systemd_etcd
 check_systemd_api
 check_systemd_kcm
-check_systemd_kp
+check_systemd_ks
