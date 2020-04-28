@@ -585,9 +585,12 @@ WORKER_1_KUBECONFIG=/var/lib/kubelet/kubeconfig
 # Worker-1 kubelet config location
 WORKER_1_KUBELET=/var/lib/kubelet/kubelet-config.yaml
 
-# Systemd worker-1 kubelet
+# Systemd worker-1 kubelet location
 SYSTEMD_WORKER_1_KUBELET=/etc/systemd/system/kubelet.service
 
+# kube-proxy worker-1 location
+WORKER_1_KP_KUBECONFIG=/var/lib/kube-proxy/kubeconfig
+SYSTEMD_WORKER_1_KP=/etc/systemd/system/kube-proxy.service
 
 check_cert_worker_1()
 {
@@ -690,6 +693,37 @@ check_cert_worker_1_kubelet()
     fi
 }
 
+check_cert_worker_1_kp()
+{
+
+    WORKER_1_KP_CONFIG_YAML=/var/lib/kube-proxy/kube-proxy-config.yaml
+    
+    if [ -z $WORKER_1_KP_KUBECONFIG ] && [ -z $SYSTEMD_WORKER_1_KP ]
+        then
+            echo "please specify worker-1 kube-proxy config and systemd service path"
+            exit 1
+        elif [ -f $WORKER_1_KP_KUBECONFIG ] && [ -f $SYSTEMD_WORKER_1_KP ] && [ -f $WORKER_1_KP_CONFIG_YAML ]
+            then
+                echo "worker-1 kube-proxy kubeconfig, systemd services and configuration files found, verifying the authenticity"
+
+                KP_CONFIG=$(cat $WORKER_1_KP_CONFIG_YAML | grep "kubeconfig:" | awk '{print $2}' | tr -d " \"")
+                KP_CONFIG_YAML=$(systemctl cat kube-proxy.service | grep "\--config" | awk '{print $1}'| cut -d "=" -f2)
+
+                if [ $KP_CONFIG == $WORKER_1_KP_KUBECONFIG ] && [ $KP_CONFIG_YAML == $WORKER_1_KP_CONFIG_YAML ]
+                    then
+                        echo "worker-1 kube-proxy kubeconfig and configuration files are correct"
+                    else
+                        echo "Exiting...Found mismtach in the worker-1 kube-proxy kubeconfig and configuration files, check /var/lib/kubelet/kubelet-config.yaml & /etc/systemd/system/kube-proxy.service"
+                        exit 1
+                fi
+
+            else
+                echo "worker-1 kube-proxy kubeconfig and configuration files are missing"
+                exit 1
+    fi
+}
+
 check_cert_worker_1
 check_cert_worker_1_kubeconfig
 check_cert_worker_1_kubelet
+check_cert_worker_1_kp
