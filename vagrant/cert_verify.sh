@@ -576,11 +576,11 @@ check_systemd_ks
 ### WORKER NODES ###
 
 # Worker-1 cert details
-WORKER_1_CERT=worker-1.crt
-WORKER_1_KEY=worker-1.key
+WORKER_1_CERT=/var/lib/kubelet/worker-1.crt
+WORKER_1_KEY=/var/lib/kubelet/worker-1.key
 
 # Worker-1 kubeconfig location
-WORKER_1_KUBECONFIG=worker-1.kubeconfig
+WORKER_1_KUBECONFIG=/var/lib/kubelet/kubeconfig
 
 # Worker-1 kubelet config location
 WORKER_1_KUBELET=/var/lib/kubelet/kubelet-config.yaml
@@ -610,7 +610,7 @@ check_cert_worker_1()
                         exit 1
                 fi
             else
-                echo "worker-1.crt / worker-1.key is missing"
+                echo "/var/lib/kubelet/worker-1.crt / /var/lib/kubelet/worker-1.key is missing"
                 exit 1
     fi
 }
@@ -638,7 +638,7 @@ check_cert_worker_1_kubeconfig()
                         exit 1
                 fi
             else
-                echo "worker-1 kubeconfig file is missing"
+                echo "worker-1 /var/lib/kubelet/kubeconfig file is missing"
                 exit 1
     fi
 }
