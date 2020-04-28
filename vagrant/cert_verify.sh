@@ -704,39 +704,60 @@ check_cert_worker_1_kp()
 
 # END OF Function - Worker-1 node #
 
+echo -e "This script will validate the certificates in master as well as worker-1 nodes. Before proceeding, make sure you ssh into the respective node for certificate validation\n"
+echo -e "1. Verify certification in Master Node\n"
+echo -e "2. Verify certification in Worker-1 Node\n"
+echo -e "Please select either the option 1 or 2\n"
+read value
 
-### MASTER NODES ###
+case $value in
 
-# CRT & KEY verification
-check_cert_ca
-check_cert_admin
-check_cert_kcm
-check_cert_kp
-check_cert_ks
-check_cert_api
-check_cert_sa
-check_cert_etcd
+  1)
+    echo -e "The selected option is $value, proceeding the certificate verification of Master node"
 
-# Kubeconfig verification
-check_cert_kpkubeconfig
-check_cert_kcmkubeconfig
-check_cert_kskubeconfig
-check_cert_adminkubeconfig
+    ### MASTER NODES ###
 
-# Systemd verification
-check_systemd_etcd
-check_systemd_api
-check_systemd_kcm
-check_systemd_ks
+    # CRT & KEY verification
+    check_cert_ca
+    check_cert_admin
+    check_cert_kcm
+    check_cert_kp
+    check_cert_ks
+    check_cert_api
+    check_cert_sa
+    check_cert_etcd
 
-### END OF MASTER NODES ###
+    # Kubeconfig verification
+    check_cert_kpkubeconfig
+    check_cert_kcmkubeconfig
+    check_cert_kskubeconfig
+    check_cert_adminkubeconfig
 
+    # Systemd verification
+    check_systemd_etcd
+    check_systemd_api
+    check_systemd_kcm
+    check_systemd_ks
 
-### WORKER-1 NODE ###
+    ### END OF MASTER NODES ###
 
-check_cert_worker_1
-check_cert_worker_1_kubeconfig
-check_cert_worker_1_kubelet
-check_cert_worker_1_kp
+    ;;
 
-### END OF WORKER-1 NODE ###
+  2)
+    echo -e "The selected option is $value, proceeding the certificate verification of Worker-1 node"
+
+    ### WORKER-1 NODE ###
+
+    check_cert_worker_1
+    check_cert_worker_1_kubeconfig
+    check_cert_worker_1_kubelet
+    check_cert_worker_1_kp
+
+    ### END OF WORKER-1 NODE ###
+    ;;
+
+  *)
+    echo -e "Exiting.... Please select the valid option either 1 or 2\n"
+    exit 1
+    ;;
+esac
