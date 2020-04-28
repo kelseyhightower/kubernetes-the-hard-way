@@ -582,6 +582,13 @@ WORKER_1_KEY=worker-1.key
 # Worker-1 kubeconfig location
 WORKER_1_KUBECONFIG=worker-1.kubeconfig
 
+# Worker-1 kubelet config location
+WORKER_1_KUBELET=/var/lib/kubelet/kubelet-config.yaml
+
+# Systemd worker-1 kubelet
+SYSTEMD_WORKER_1_KUBELET=/etc/systemd/system/kubelet.service
+
+
 check_cert_worker_1()
 {
     if [ -z $WORKER_1_CERT ] && [ -z $WORKER_1_KEY ]
@@ -636,5 +643,53 @@ check_cert_worker_1_kubeconfig()
     fi
 }
 
+check_cert_worker_1_kubelet()
+{
+
+    CACERT=/var/lib/kubernetes/ca.crt
+    WORKER_1_TLSCERTFILE=/var/lib/kubelet/${HOSTNAME}.crt
+    WORKER_1_TLSPRIVATEKEY=/var/lib/kubelet/${HOSTNAME}.key
+    
+    if [ -z $WORKER_1_KUBELET ] && [ -z $SYSTEMD_WORKER_1_KUBELET ]
+        then
+            echo "please specify worker-1 kubelet config location"
+            exit 1
+        elif [ -f $WORKER_1_KUBELET ] && [ -f $SYSTEMD_WORKER_1_KUBELET ] && [ -f $WORKER_1_TLSCERTFILE ] && [ -f $WORKER_1_TLSPRIVATEKEY ]
+            then
+                echo "worker-1 kubelet config file, systemd services, tls cert and key found, verifying the authenticity"
+
+                WORKER_1_KUBELET_CA=$(cat kubelet-config.yaml | grep "clientCAFile:" | awk '{print $2}' | tr -d " \"")
+                WORKER_1_KUBELET_DNS=$(cat kubelet-config.yaml | grep "resolvConf:" | awk '{print $2}' | tr -d " \"")
+                WORKER_1_KUBELET_AUTH_MODE=$(cat kubelet-config.yaml | grep "mode:" | awk '{print $2}' | tr -d " \"")
+
+                if [ $WORKER_1_KUBELET_CA == $CACERT ] && [ $WORKER_1_KUBELET_DNS == "/run/systemd/resolve/resolv.conf" ] && \
+                   [ $WORKER_1_KUBELET_AUTH_MODE == "Webhook" ]
+                    then
+                        echo "worker-1 kubelet config CA cert, resolvConf and Auth mode are correct"
+                    else
+                        echo "Exiting...Found mismtach in the worker-1 kubelet config CA cert, resolvConf and Auth mode, check /var/lib/kubelet/kubelet-config.yaml"
+                        exit 1
+                fi
+
+                KUBELETCONFIG=$(systemctl cat kubelet.service | grep "\--config" | awk '{print $1}'| cut -d "=" -f2)
+                TLSCERTFILE=$(systemctl cat kubelet.service | grep "\--tls-cert-file" | awk '{print $1}'| cut -d "=" -f2)
+                TLSPRIVATEKEY=$(systemctl cat kubelet.service | grep "\--tls-private-key-file" | awk '{print $1}'| cut -d "=" -f2)
+
+                if [ $KUBELETCONFIG == $WORKER_1_KUBELET ] && [ $TLSCERTFILE == $WORKER_1_TLSCERTFILE ] && \
+                   [ $TLSPRIVATEKEY == $WORKER_1_TLSPRIVATEKEY ]
+                    then
+                        echo "worker-1 kubelet systemd services are correct"
+                    else
+                        echo "Exiting...Found mismtach in the worker-1 kubelet systemd services, check /etc/systemd/system/kubelet.service"
+                        exit 1
+                fi
+
+            else
+                echo "worker-1 kubelet config, systemd services, tls cert and key file is missing"
+                exit 1
+    fi
+}
+
 check_cert_worker_1
 check_cert_worker_1_kubeconfig
+check_cert_worker_1_kubelet
