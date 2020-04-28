@@ -579,6 +579,9 @@ check_systemd_ks
 WORKER_1_CERT=worker-1.crt
 WORKER_1_KEY=worker-1.key
 
+# Worker-1 kubeconfig location
+WORKER_1_KUBECONFIG=worker-1.kubeconfig
+
 check_cert_worker_1()
 {
     if [ -z $WORKER_1_CERT ] && [ -z $WORKER_1_KEY ]
@@ -605,5 +608,33 @@ check_cert_worker_1()
     fi
 }
 
+check_cert_worker_1_kubeconfig()
+{
+    if [ -z $WORKER_1_KUBECONFIG ]
+        then
+            echo "please specify worker-1 kubeconfig location"
+            exit 1
+        elif [ -f $WORKER_1_KUBECONFIG ]
+            then
+                echo "worker-1 kubeconfig file found, verifying the authenticity"
+                WORKER_1_KUBECONFIG_SUBJECT=$(cat $WORKER_1_KUBECONFIG | grep "client-certificate-data:" | awk '{print $2}' | base64 --decode | openssl x509 --text | grep "Subject: CN" | tr -d " ")
+                WORKER_1_KUBECONFIG_ISSUER=$(cat $WORKER_1_KUBECONFIG | grep "client-certificate-data:" | awk '{print $2}' | base64 --decode | openssl x509 --text | grep "Issuer: CN" | tr -d " ")
+                WORKER_1_KUBECONFIG_CERT_MD5=$(cat $WORKER_1_KUBECONFIG | grep "client-certificate-data:" | awk '{print $2}' | base64 --decode | openssl x509 -noout | openssl md5 | awk '{print $2}')
+                WORKER_1_KUBECONFIG_KEY_MD5=$(cat $WORKER_1_KUBECONFIG | grep "client-key-data" | awk '{print $2}' | base64 --decode | openssl rsa -noout | openssl md5 | awk '{print $2}')
+                WORKER_1_KUBECONFIG_SERVER=$(cat $WORKER_1_KUBECONFIG | grep "server:"| awk '{print $2}')
+                if [ $WORKER_1_KUBECONFIG_SUBJECT == "Subject:CN=system:node:worker-1,O=system:nodes" ] && [ $WORKER_1_KUBECONFIG_ISSUER == "Issuer:CN=KUBERNETES-CA" ] && \
+                   [ $WORKER_1_KUBECONFIG_CERT_MD5 == $WORKER_1_KUBECONFIG_KEY_MD5 ] && [ $WORKER_1_KUBECONFIG_SERVER == "https://192.168.5.30:6443" ]
+                    then
+                        echo "worker-1 kubeconfig cert and key are correct"
+                    else
+                        echo "Exiting...Found mismtach in the worker-1 kubeconfig certificate and keys, check subject"
+                        exit 1
+                fi
+            else
+                echo "worker-1 kubeconfig file is missing"
+                exit 1
+    fi
+}
 
 check_cert_worker_1
+check_cert_worker_1_kubeconfig
