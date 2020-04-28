@@ -658,9 +658,9 @@ check_cert_worker_1_kubelet()
             then
                 echo "worker-1 kubelet config file, systemd services, tls cert and key found, verifying the authenticity"
 
-                WORKER_1_KUBELET_CA=$(cat kubelet-config.yaml | grep "clientCAFile:" | awk '{print $2}' | tr -d " \"")
-                WORKER_1_KUBELET_DNS=$(cat kubelet-config.yaml | grep "resolvConf:" | awk '{print $2}' | tr -d " \"")
-                WORKER_1_KUBELET_AUTH_MODE=$(cat kubelet-config.yaml | grep "mode:" | awk '{print $2}' | tr -d " \"")
+                WORKER_1_KUBELET_CA=$(cat $WORKER_1_KUBELET | grep "clientCAFile:" | awk '{print $2}' | tr -d " \"")
+                WORKER_1_KUBELET_DNS=$(cat $WORKER_1_KUBELET | grep "resolvConf:" | awk '{print $2}' | tr -d " \"")
+                WORKER_1_KUBELET_AUTH_MODE=$(cat $WORKER_1_KUBELET | grep "mode:" | awk '{print $2}' | tr -d " \"")
 
                 if [ $WORKER_1_KUBELET_CA == $CACERT ] && [ $WORKER_1_KUBELET_DNS == "/run/systemd/resolve/resolv.conf" ] && \
                    [ $WORKER_1_KUBELET_AUTH_MODE == "Webhook" ]
