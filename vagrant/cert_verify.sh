@@ -64,6 +64,28 @@ SYSTEMD_KCM_FILE=/etc/systemd/system/kube-controller-manager.service
 # kube-scheduler systemd service
 SYSTEMD_KS_FILE=/etc/systemd/system/kube-scheduler.service
 
+### WORKER NODES ###
+
+# Worker-1 cert details
+WORKER_1_CERT=/var/lib/kubelet/worker-1.crt
+WORKER_1_KEY=/var/lib/kubelet/worker-1.key
+
+# Worker-1 kubeconfig location
+WORKER_1_KUBECONFIG=/var/lib/kubelet/kubeconfig
+
+# Worker-1 kubelet config location
+WORKER_1_KUBELET=/var/lib/kubelet/kubelet-config.yaml
+
+# Systemd worker-1 kubelet location
+SYSTEMD_WORKER_1_KUBELET=/etc/systemd/system/kubelet.service
+
+# kube-proxy worker-1 location
+WORKER_1_KP_KUBECONFIG=/var/lib/kube-proxy/kubeconfig
+SYSTEMD_WORKER_1_KP=/etc/systemd/system/kube-proxy.service
+
+
+# Function - Master node #
+
 check_cert_ca()
 {
     if [ -z $CACERT ] && [ -z $CAKEY ]
@@ -273,8 +295,6 @@ check_cert_sa()
     fi
 }
 
-
-# Kubeconfig verification
 
 check_cert_kpkubeconfig()
 {
@@ -547,50 +567,9 @@ check_systemd_ks()
     fi
 }
 
-### MASTER NODES ###
+# END OF Function - Master node #
 
-# CRT & KEY verification
-check_cert_ca
-check_cert_admin
-check_cert_kcm
-check_cert_kp
-check_cert_ks
-check_cert_api
-check_cert_sa
-check_cert_etcd
-
-# Kubeconfig verification
-check_cert_kpkubeconfig
-check_cert_kcmkubeconfig
-check_cert_kskubeconfig
-check_cert_adminkubeconfig
-
-# Systemd verification
-check_systemd_etcd
-check_systemd_api
-check_systemd_kcm
-check_systemd_ks
-
-### END OF MASTER NODES ###
-
-### WORKER NODES ###
-
-# Worker-1 cert details
-WORKER_1_CERT=/var/lib/kubelet/worker-1.crt
-WORKER_1_KEY=/var/lib/kubelet/worker-1.key
-
-# Worker-1 kubeconfig location
-WORKER_1_KUBECONFIG=/var/lib/kubelet/kubeconfig
-
-# Worker-1 kubelet config location
-WORKER_1_KUBELET=/var/lib/kubelet/kubelet-config.yaml
-
-# Systemd worker-1 kubelet location
-SYSTEMD_WORKER_1_KUBELET=/etc/systemd/system/kubelet.service
-
-# kube-proxy worker-1 location
-WORKER_1_KP_KUBECONFIG=/var/lib/kube-proxy/kubeconfig
-SYSTEMD_WORKER_1_KP=/etc/systemd/system/kube-proxy.service
+# Function - Worker-1 node #
 
 check_cert_worker_1()
 {
@@ -723,7 +702,41 @@ check_cert_worker_1_kp()
     fi
 }
 
+# END OF Function - Worker-1 node #
+
+
+### MASTER NODES ###
+
+# CRT & KEY verification
+check_cert_ca
+check_cert_admin
+check_cert_kcm
+check_cert_kp
+check_cert_ks
+check_cert_api
+check_cert_sa
+check_cert_etcd
+
+# Kubeconfig verification
+check_cert_kpkubeconfig
+check_cert_kcmkubeconfig
+check_cert_kskubeconfig
+check_cert_adminkubeconfig
+
+# Systemd verification
+check_systemd_etcd
+check_systemd_api
+check_systemd_kcm
+check_systemd_ks
+
+### END OF MASTER NODES ###
+
+
+### WORKER-1 NODE ###
+
 check_cert_worker_1
 check_cert_worker_1_kubeconfig
 check_cert_worker_1_kubelet
 check_cert_worker_1_kp
+
+### END OF WORKER-1 NODE ###
