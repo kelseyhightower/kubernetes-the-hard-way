@@ -325,6 +325,7 @@ check_cert_kpkubeconfig()
 
 check_cert_kcmkubeconfig()
 {
+    KCMKUBECONFIG=/var/lib/kubernetes/kube-controller-manager.kubeconfig
     if [ -z $KCMKUBECONFIG ]
         then
             echo "please specify kube-controller-manager kubeconfig location"
@@ -353,6 +354,7 @@ check_cert_kcmkubeconfig()
 
 check_cert_kskubeconfig()
 {
+    KSKUBECONFIG=/var/lib/kubernetes/kube-scheduler.kubeconfig
     if [ -z $KSKUBECONFIG ]
         then
             echo "please specify kube-scheduler kubeconfig location"
@@ -704,7 +706,7 @@ check_cert_worker_1_kp()
 
 # END OF Function - Worker-1 node #
 
-echo -e "This script will validate the certificates in master as well as worker-1 nodes. Before proceeding, make sure you ssh into the respective node for certificate validation\n"
+echo -e "This script will validate the certificates in master as well as worker-1 nodes. Before proceeding, make sure you ssh into the respective node [ Master or Worker-1 ] for certificate validation\n"
 echo -e "1. Verify certification in Master Node\n"
 echo -e "2. Verify certification in Worker-1 Node\n"
 echo -e "Please select either the option 1 or 2\n"
