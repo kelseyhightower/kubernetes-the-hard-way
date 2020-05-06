@@ -718,10 +718,15 @@ case $value in
     echo -e "The selected option is $value, proceeding the certificate verification of Master node"
 
     ### MASTER NODES ###
-
+    master_hostname=$(hostname -s)
     # CRT & KEY verification
     check_cert_ca
-    check_cert_admin
+
+    if [ $master_hostname == "master-1" ]
+      then
+        check_cert_admin
+    fi
+
     check_cert_kcm
     check_cert_kp
     check_cert_ks
