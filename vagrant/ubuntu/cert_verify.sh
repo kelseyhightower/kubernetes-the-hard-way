@@ -725,11 +725,11 @@ case $value in
     if [ $master_hostname == "master-1" ]
       then
         check_cert_admin
+        check_cert_kcm
+        check_cert_kp
+        check_cert_ks
+        check_cert_adminkubeconfig
     fi
-
-    check_cert_kcm
-    check_cert_kp
-    check_cert_ks
     check_cert_api
     check_cert_sa
     check_cert_etcd
@@ -738,7 +738,6 @@ case $value in
     check_cert_kpkubeconfig
     check_cert_kcmkubeconfig
     check_cert_kskubeconfig
-    check_cert_adminkubeconfig
 
     # Systemd verification
     check_systemd_etcd
