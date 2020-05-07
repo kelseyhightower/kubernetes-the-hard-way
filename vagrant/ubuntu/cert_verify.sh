@@ -595,11 +595,11 @@ check_cert_worker_1()
                     then
                         printf "${SUCCESS}worker-1 cert and key are correct\n"
                     else
-                        printf "${FAILED}Exiting...Found mismtach in the worker-1 certificate and keys, check subject\n"
+                        printf "${FAILED}Exiting...Found mismtach in the worker-1 certificate and keys, More details: https://github.com/mmumshad/kubernetes-the-hard-way/blob/master/docs/09-bootstrapping-kubernetes-workers.md#provisioning--kubelet-client-certificates\n"
                         exit 1
                 fi
             else
-                printf "${FAILED}/var/lib/kubelet/worker-1.crt / /var/lib/kubelet/worker-1.key is missing\n"
+                printf "${FAILED}/var/lib/kubelet/worker-1.crt / /var/lib/kubelet/worker-1.key is missing. More details: https://github.com/mmumshad/kubernetes-the-hard-way/blob/master/docs/09-bootstrapping-kubernetes-workers.md#provisioning--kubelet-client-certificates\n"
                 exit 1
     fi
 }
@@ -623,11 +623,11 @@ check_cert_worker_1_kubeconfig()
                     then
                         printf "${SUCCESS}worker-1 kubeconfig cert and key are correct\n"
                     else
-                        printf "${FAILED}Exiting...Found mismtach in the worker-1 kubeconfig certificate and keys, check subject\n"
+                        printf "${FAILED}Exiting...Found mismtach in the worker-1 kubeconfig certificate and keys, More details: https://github.com/mmumshad/kubernetes-the-hard-way/blob/master/docs/09-bootstrapping-kubernetes-workers.md#the-kubelet-kubernetes-configuration-file\n"
                         exit 1
                 fi
             else
-                printf "${FAILED}worker-1 /var/lib/kubelet/kubeconfig file is missing\n"
+                printf "${FAILED}worker-1 /var/lib/kubelet/kubeconfig file is missing. More details: https://github.com/mmumshad/kubernetes-the-hard-way/blob/master/docs/09-bootstrapping-kubernetes-workers.md#the-kubelet-kubernetes-configuration-file\n"
                 exit 1
     fi
 }
@@ -656,7 +656,7 @@ check_cert_worker_1_kubelet()
                     then
                         printf "${SUCCESS}worker-1 kubelet config CA cert, resolvConf and Auth mode are correct\n"
                     else
-                        printf "${FAILED}Exiting...Found mismtach in the worker-1 kubelet config CA cert, resolvConf and Auth mode, check /var/lib/kubelet/kubelet-config.yaml\n"
+                        printf "${FAILED}Exiting...Found mismtach in the worker-1 kubelet config CA cert, resolvConf and Auth mode, More details: https://github.com/mmumshad/kubernetes-the-hard-way/blob/master/docs/09-bootstrapping-kubernetes-workers.md#configure-the-kubelet\n"
                         exit 1
                 fi
 
@@ -669,12 +669,12 @@ check_cert_worker_1_kubelet()
                     then
                         printf "${SUCCESS}worker-1 kubelet systemd services are correct\n"
                     else
-                        printf "${FAILED}Exiting...Found mismtach in the worker-1 kubelet systemd services, check /etc/systemd/system/kubelet.service\n"
+                        printf "${FAILED}Exiting...Found mismtach in the worker-1 kubelet systemd services, More details: https://github.com/mmumshad/kubernetes-the-hard-way/blob/master/docs/09-bootstrapping-kubernetes-workers.md#configure-the-kubelet\n"
                         exit 1
                 fi
 
             else
-                printf "${FAILED}worker-1 kubelet config, systemd services, tls cert and key file is missing\n"
+                printf "${FAILED}worker-1 kubelet config, systemd services, tls cert and key file is missing. More details: https://github.com/mmumshad/kubernetes-the-hard-way/blob/master/docs/09-bootstrapping-kubernetes-workers.md\n"
                 exit 1
     fi
 }
@@ -699,12 +699,12 @@ check_cert_worker_1_kp()
                     then
                         printf "${SUCCESS}worker-1 kube-proxy kubeconfig and configuration files are correct\n"
                     else
-                        printf "${FAILED}Exiting...Found mismtach in the worker-1 kube-proxy kubeconfig and configuration files, check /var/lib/kubelet/kubelet-config.yaml & /etc/systemd/system/kube-proxy.service\n"
+                        printf "${FAILED}Exiting...Found mismtach in the worker-1 kube-proxy kubeconfig and configuration files, More details: https://github.com/mmumshad/kubernetes-the-hard-way/blob/master/docs/09-bootstrapping-kubernetes-workers.md#configure-the-kubernetes-proxy\n"
                         exit 1
                 fi
 
             else
-                printf "${FAILED}worker-1 kube-proxy kubeconfig and configuration files are missing\n"
+                printf "${FAILED}worker-1 kube-proxy kubeconfig and configuration files are missing. More details: https://github.com/mmumshad/kubernetes-the-hard-way/blob/master/docs/09-bootstrapping-kubernetes-workers.md#configure-the-kubernetes-proxy\n"
                 exit 1
     fi
 }
