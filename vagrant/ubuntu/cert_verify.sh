@@ -734,13 +734,13 @@ case $value in
         check_cert_kp
         check_cert_ks
         check_cert_adminkubeconfig
+        check_cert_kpkubeconfig
     fi
     check_cert_api
     check_cert_sa
     check_cert_etcd
 
     # Kubeconfig verification
-    check_cert_kpkubeconfig
     check_cert_kcmkubeconfig
     check_cert_kskubeconfig
 
