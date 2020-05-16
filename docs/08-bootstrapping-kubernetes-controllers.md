@@ -116,7 +116,7 @@ EOF
 
 ### Configure the Kubernetes Controller Manager
 
-Move the `kube-controller-manager` kubeconfig into place:
+Copy the `kube-controller-manager` kubeconfig into place:
 
 ```
 sudo cp kube-controller-manager.kubeconfig /var/lib/kubernetes/
@@ -154,7 +154,7 @@ EOF
 
 ### Configure the Kubernetes Scheduler
 
-Move the `kube-scheduler` kubeconfig into place:
+Copy the `kube-scheduler` kubeconfig into place:
 
 ```
 sudo cp kube-scheduler.kubeconfig /var/lib/kubernetes/
