@@ -330,7 +330,6 @@ check_cert_kpkubeconfig()
 
 check_cert_kcmkubeconfig()
 {
-    KCMKUBECONFIG=/var/lib/kubernetes/kube-controller-manager.kubeconfig
     if [ -z $KCMKUBECONFIG ]
         then
             printf "${FAILED}please specify kube-controller-manager kubeconfig location\n"
@@ -359,7 +358,6 @@ check_cert_kcmkubeconfig()
 
 check_cert_kskubeconfig()
 {
-    KSKUBECONFIG=/var/lib/kubernetes/kube-scheduler.kubeconfig
     if [ -z $KSKUBECONFIG ]
         then
             printf "${FAILED}please specify kube-scheduler kubeconfig location\n"
