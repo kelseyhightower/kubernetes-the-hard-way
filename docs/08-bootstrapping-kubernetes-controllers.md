@@ -218,6 +218,8 @@ In this section you will provision an external load balancer to front the Kubern
 
 ### Provision a Network Load Balancer
 
+Login to `loadbalancer` instance using SSH Terminal.
+
 ```
 #Install HAProxy
 loadbalancer# sudo apt-get update && sudo apt-get install -y haproxy
