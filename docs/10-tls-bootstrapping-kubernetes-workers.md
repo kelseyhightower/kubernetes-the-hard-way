@@ -40,7 +40,7 @@ So let's get started!
 Copy the ca certificate to the worker node:
 
 ```
-scp ca.crt worker-2:~/
+scp /var/lib/kubernetes/ca.crt worker-2:~/
 ```
 
 ## Step 1 Configure the Binaries on the Worker node
