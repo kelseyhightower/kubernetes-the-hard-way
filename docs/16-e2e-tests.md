@@ -13,23 +13,23 @@ export PATH=$PATH:/usr/local/go/bin:$GOPATH/bin
 ## Install kubetest
 
 ```
-go get -v -u k8s.io/test-infra/kubetest
+git clone https://github.com/kubernetes/test-infra.git
+cd test-infra/
+GO111MODULE=on go install ./kubetest
 ```
 
 > Note: This may take a few minutes depending on your network speed
 
-## Extract the Version
+## Use the version specific to your cluster
 
 ```
-kubetest --extract=v1.13.0
+K8S_VERSION=$(kubectl version -o json | jq -r '.serverVersion.gitVersion')
+export KUBERNETES_CONFORMANCE_TEST=y
+export KUBECONFIG="$HOME/.kube/config"
 
-cd kubernetes
 
-export KUBE_MASTER_IP="192.168.5.11:6443"
 
-export KUBE_MASTER=master-1
-
-kubetest --test --provider=skeleton --test_args="--ginkgo.focus=\[Conformance\]" | tee test.out
+kubetest --provider=skeleton --test --test_args=”--ginkgo.focus=\[Conformance\]” --extract ${K8S_VERSION} | tee test.out
 
 ```
 
