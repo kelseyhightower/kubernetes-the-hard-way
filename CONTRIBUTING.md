@@ -11,6 +11,7 @@ This project uses an [Apache license](LICENSE). Be sure you're comfortable with 
 Review and merge duties are managed by [@kelseyhightower](https://github.com/kelseyhightower). Expect some burden of proof for demonstrating the marginal value of adding new content to the tutorial.
 
 Here are some examples of the review and justification process:
+
 - [#208](https://github.com/kelseyhightower/kubernetes-the-hard-way/pull/208)
 - [#282](https://github.com/kelseyhightower/kubernetes-the-hard-way/pull/282)
 
