@@ -10,7 +10,7 @@ Each kubeconfig requires a Kubernetes API Server to connect to. To support high 
 
 Generate a kubeconfig file suitable for authenticating as the `admin` user:
 
-```
+```bash
 {
   KUBERNETES_PUBLIC_ADDRESS=$(gcloud compute addresses describe kubernetes-the-hard-way \
     --region $(gcloud config get-value compute/region) \
@@ -37,13 +37,13 @@ Generate a kubeconfig file suitable for authenticating as the `admin` user:
 
 Check the health of the remote Kubernetes cluster:
 
-```
+```bash
 kubectl get componentstatuses
 ```
 
 > output
 
-```
+```bash
 NAME                 STATUS    MESSAGE             ERROR
 controller-manager   Healthy   ok
 scheduler            Healthy   ok
@@ -54,13 +54,13 @@ etcd-0               Healthy   {"health":"true"}
 
 List the nodes in the remote Kubernetes cluster:
 
-```
+```bash
 kubectl get nodes
 ```
 
 > output
 
-```
+```bash
 NAME       STATUS   ROLES    AGE    VERSION
 worker-0   Ready    <none>   2m9s   v1.15.3
 worker-1   Ready    <none>   2m9s   v1.15.3
