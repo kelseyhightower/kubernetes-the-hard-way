@@ -63,7 +63,7 @@ List the pod created by the `nginx` deployment:
 kubectl get pods -l app=nginx
 ```
 
-> output
+> Output:
 
 ```bash
 NAME                     READY   STATUS    RESTARTS   AGE
@@ -86,7 +86,7 @@ Forward port `8080` on your local machine to port `80` of the `nginx` pod:
 kubectl port-forward $POD_NAME 8080:80
 ```
 
-> output
+> Output:
 
 ```bash
 Forwarding from 127.0.0.1:8080 -> 80
@@ -99,7 +99,7 @@ In a new terminal make an HTTP request using the forwarding address:
 curl --head http://127.0.0.1:8080
 ```
 
-> output
+> Output:
 
 ```bash
 HTTP/1.1 200 OK
@@ -132,7 +132,7 @@ Print the `nginx` pod logs:
 kubectl logs $POD_NAME
 ```
 
-> output
+> Output:
 
 ```bash
 127.0.0.1 - - [14/Sep/2019:21:10:11 +0000] "HEAD / HTTP/1.1" 200 0 "-" "curl/7.52.1" "-"
@@ -148,7 +148,7 @@ Print the nginx version by executing the `nginx -v` command in the `nginx` conta
 kubectl exec -ti $POD_NAME -- nginx -v
 ```
 
-> output
+> Output:
 
 ```bash
 nginx version: nginx/1.17.3
@@ -187,7 +187,7 @@ Make an HTTP request using the external IP address and the `nginx` node port:
 curl -I http://${EXTERNAL_IP}:${NODE_PORT}
 ```
 
-> output
+> Output:
 
 ```bash
 HTTP/1.1 200 OK
