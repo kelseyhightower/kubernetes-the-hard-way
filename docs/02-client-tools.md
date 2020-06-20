@@ -6,30 +6,7 @@ In this lab you will install the command line utilities required to complete thi
 
 The `cfssl` and `cfssljson` command line utilities will be used to provision a [PKI Infrastructure](https://en.wikipedia.org/wiki/Public_key_infrastructure) and generate TLS certificates.
 
-Download and install `cfssl` and `cfssljson`:
-
-### OS X
-
-```bash
-curl -o cfssl https://storage.googleapis.com/kubernetes-the-hard-way/cfssl/darwin/cfssl
-curl -o cfssljson https://storage.googleapis.com/kubernetes-the-hard-way/cfssl/darwin/cfssljson
-```
-
-```bash
-chmod +x cfssl cfssljson
-```
-
-```bash
-sudo mv cfssl cfssljson /usr/local/bin/
-```
-
-Some OS X users may experience problems using the pre-built binaries in which case [Homebrew](https://brew.sh) might be a better option:
-
-```bash
-brew install cfssl
-```
-
-### Linux
+On the **gateway-01** VM, download and install `cfssl` and `cfssljson`:
 
 ```bash
 wget -q --show-progress --https-only --timestamping \
@@ -73,23 +50,7 @@ Runtime: go1.13
 
 ## Install kubectl
 
-The `kubectl` command line utility is used to interact with the Kubernetes API Server. Download and install `kubectl` from the official release binaries:
-
-### Install on OS X
-
-```bash
-curl -o kubectl https://storage.googleapis.com/kubernetes-release/release/v1.15.3/bin/darwin/amd64/kubectl
-```
-
-```bash
-chmod +x kubectl
-```
-
-```bash
-sudo mv kubectl /usr/local/bin/
-```
-
-### Install on Linux
+The `kubectl` command line utility is used to interact with the Kubernetes API Server. On the **gateway-01** VM, download and install `kubectl` from the official release binaries:
 
 ```bash
 wget https://storage.googleapis.com/kubernetes-release/release/v1.15.3/bin/linux/amd64/kubectl
