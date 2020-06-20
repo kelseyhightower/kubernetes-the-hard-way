@@ -16,16 +16,16 @@ kubectl create secret generic kubernetes-the-hard-way \
 Print a hexdump of the `kubernetes-the-hard-way` secret stored in etcd:
 
 ```bash
-gcloud compute ssh controller-0 \
-  --command "sudo ETCDCTL_API=3 etcdctl get \
+ssh root@controller-0 \
+  sudo ETCDCTL_API=3 etcdctl get \
   --endpoints=https://127.0.0.1:2379 \
   --cacert=/etc/etcd/ca.pem \
   --cert=/etc/etcd/kubernetes.pem \
   --key=/etc/etcd/kubernetes-key.pem\
-  /registry/secrets/default/kubernetes-the-hard-way | hexdump -C"
+  /registry/secrets/default/kubernetes-the-hard-way | hexdump -C
 ```
 
-> output
+> Output:
 
 ```bash
 00000000  2f 72 65 67 69 73 74 72  79 2f 73 65 63 72 65 74  |/registry/secret|
@@ -164,7 +164,7 @@ Expose the `nginx` deployment using a [NodePort](https://kubernetes.io/docs/conc
 kubectl expose deployment nginx --port 80 --type NodePort
 ```
 
-> The LoadBalancer service type can not be used because your cluster is not configured with [cloud provider integration](https://kubernetes.io/docs/getting-started-guides/scratch/#cloud-provider). Setting up cloud provider integration is out of scope for this tutorial.
+> The LoadBalancer service type can not be used because your cluster is not configured with. It is out of scope for this tutorial.
 
 Retrieve the node port assigned to the `nginx` service:
 
@@ -173,20 +173,13 @@ NODE_PORT=$(kubectl get svc nginx \
   --output=jsonpath='{range .spec.ports[0]}{.nodePort}')
 ```
 
-Create a firewall rule that allows remote access to the `nginx` node port:
+Define the Kubernetes network IP address of a worker instance (replace MY_WORKER_IP with the private IP defined on a worker):
 
 ```bash
-gcloud compute firewall-rules create kubernetes-the-hard-way-allow-nginx-service \
-  --allow=tcp:${NODE_PORT} \
-  --network kubernetes-the-hard-way
+EXTERNAL_IP=MY_WORKER_IP
 ```
 
-Retrieve the external IP address of a worker instance:
-
-```bash
-EXTERNAL_IP=$(gcloud compute instances describe worker-0 \
-  --format 'value(networkInterfaces[0].accessConfigs[0].natIP)')
-```
+> Example for worker-0: 192.168.8.20
 
 Make an HTTP request using the external IP address and the `nginx` node port:
 
