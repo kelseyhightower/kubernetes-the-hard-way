@@ -68,7 +68,7 @@ Execute a DNS lookup for the `kubernetes` service inside the `busybox` pod:
 kubectl exec -ti $POD_NAME -- nslookup kubernetes
 ```
 
-> output
+> Output:
 
 ```bash
 Server:    10.32.0.10
