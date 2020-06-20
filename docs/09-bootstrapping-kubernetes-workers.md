@@ -4,10 +4,10 @@ In this lab you will bootstrap three Kubernetes worker nodes. The following comp
 
 ## Prerequisites
 
-The commands in this lab must be run on each worker instance: `worker-0`, `worker-1`, and `worker-2`. Login to each worker instance using the `gcloud` command. Example:
+The commands in this lab must be run on each worker instance: `worker-0`, `worker-1`, and `worker-2`. Login to each worker instance using the `ssh` command. Example:
 
 ```bash
-gcloud compute ssh worker-0
+ssh worker-0
 ```
 
 ### Running commands in parallel with tmux
@@ -19,10 +19,8 @@ gcloud compute ssh worker-0
 Install the OS dependencies:
 
 ```bash
-{
-  sudo apt-get update
-  sudo apt-get -y install socat conntrack ipset
-}
+sudo apt-get update
+sudo apt-get -y install socat conntrack ipset
 ```
 
 > The socat binary enables support for the `kubectl port-forward` command.
@@ -73,26 +71,25 @@ sudo mkdir -p \
 Install the worker binaries:
 
 ```bash
-{
-  mkdir containerd
-  tar -xvf crictl-v1.15.0-linux-amd64.tar.gz
-  tar -xvf containerd-1.2.9.linux-amd64.tar.gz -C containerd
-  sudo tar -xvf cni-plugins-linux-amd64-v0.8.2.tgz -C /opt/cni/bin/
-  sudo mv runc.amd64 runc
-  chmod +x crictl kubectl kube-proxy kubelet runc
-  sudo mv crictl kubectl kube-proxy kubelet runc /usr/local/bin/
-  sudo mv containerd/bin/* /bin/
-}
+mkdir containerd
+tar -xvf crictl-v1.15.0-linux-amd64.tar.gz
+tar -xvf containerd-1.2.9.linux-amd64.tar.gz -C containerd
+sudo tar -xvf cni-plugins-linux-amd64-v0.8.2.tgz -C /opt/cni/bin/
+sudo mv runc.amd64 runc
+chmod +x crictl kubectl kube-proxy kubelet runc
+sudo mv crictl kubectl kube-proxy kubelet runc /usr/local/bin/
+sudo mv containerd/bin/* /bin/
 ```
 
 ### Configure CNI Networking
 
-Retrieve the Pod CIDR range for the current compute instance:
+Define the Pod CIDR range for the current node (different for each worker). Replace THE_POD_CIDR by the CIDR network for this node (see network architecture):
 
 ```bash
-POD_CIDR=$(curl -s -H "Metadata-Flavor: Google" \
-  http://metadata.google.internal/computeMetadata/v1/instance/attributes/pod-cidr)
+POD_CIDR=THE_POD_CIDR
 ```
+
+> Example for worker-0: 10.200.0.0/24
 
 Create the `bridge` network configuration file:
 
@@ -177,11 +174,9 @@ EOF
 ### Configure the Kubelet
 
 ```bash
-{
-  sudo mv ${HOSTNAME}-key.pem ${HOSTNAME}.pem /var/lib/kubelet/
-  sudo mv ${HOSTNAME}.kubeconfig /var/lib/kubelet/kubeconfig
-  sudo mv ca.pem /var/lib/kubernetes/
-}
+sudo mv ${HOSTNAME}-key.pem ${HOSTNAME}.pem /var/lib/kubelet/
+sudo mv ${HOSTNAME}.kubeconfig /var/lib/kubelet/kubeconfig
+sudo mv ca.pem /var/lib/kubernetes/
 ```
 
 Create the `kubelet-config.yaml` configuration file:
@@ -281,27 +276,22 @@ EOF
 ### Start the Worker Services
 
 ```bash
-{
-  sudo systemctl daemon-reload
-  sudo systemctl enable containerd kubelet kube-proxy
-  sudo systemctl start containerd kubelet kube-proxy
-}
+sudo systemctl daemon-reload
+sudo systemctl enable containerd kubelet kube-proxy
+sudo systemctl start containerd kubelet kube-proxy
 ```
 
 > Remember to run the above commands on each worker node: `worker-0`, `worker-1`, and `worker-2`.
 
 ## Verification
 
-> The compute instances created in this tutorial will not have permission to complete this section. Run the following commands from the same machine used to create the compute instances.
-
 List the registered Kubernetes nodes:
 
 ```bash
-gcloud compute ssh controller-0 \
-  --command "kubectl get nodes --kubeconfig admin.kubeconfig"
+ssh root@controller-0 kubectl get nodes --kubeconfig admin.kubeconfig
 ```
 
-> output
+> Output:
 
 ```bash
 NAME       STATUS   ROLES    AGE   VERSION
