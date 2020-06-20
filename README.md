@@ -8,7 +8,7 @@ Kubernetes The Hard Way is optimized for learning, which means taking the long r
 
 ## Overview of the Network Architecture
 
-![architecture network](docs/images/architecture-network.PNG)
+![architecture network](docs/images/architecture-network.png)
 
 ## Copyright
 

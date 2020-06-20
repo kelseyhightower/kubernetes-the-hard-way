@@ -47,7 +47,7 @@ The reverse proxy / client tools / gateway VM need to have 2 network interfaces,
 
 This diagram represents the network design:
 
-![architecture network](images/architecture-network.PNG)
+![architecture network](images/architecture-network.png)
 
 > If you want, you can define the IPv6 stack configuration.
 
