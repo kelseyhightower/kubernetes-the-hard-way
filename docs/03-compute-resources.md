@@ -10,11 +10,11 @@ The Kubernetes [networking model](https://kubernetes.io/docs/concepts/cluster-ad
 
 ### Virtual Private Cloud Network
 
-We provisioned this network in the 01-prerequisites part: `192.168.8.0/24` which can host up to 253 Kubernetes nodes (254 - 1 for gateway). This is our "VPC-like" network with private IP addresses.
+We provisioned this network in the `01-prerequisites` part: `192.168.8.0/24` which can host up to `253` Kubernetes nodes (`254 - 1` for gateway). This is our "VPC-like" network with private IP addresses.
 
 ### Pods Network Ranges
 
-Containers running on each workers need networks to communicate with other ressources. We will use the `10.200.0.0/16` private range to create Pods subnetworks:
+Containers/Pods running on each workers need networks to communicate with other ressources. We will use the `10.200.0.0/16` private range to create Pods subnetworks:
 
 * 10.200.0.0/24 : worker-0
 * 10.200.1.0/24 : worker-1
@@ -22,7 +22,7 @@ Containers running on each workers need networks to communicate with other resso
 
 ### Firewall Rules
 
-All the flows are allowed inside the Kubernetes private network (`vmbr8`). In the 01-prerequisites part, the `gateway-01` VM firewall has been configured to use NAT and allow the following INPUT protocols (from external): `icmp`, `tcp/22`, `tcp/80`, `tcp/443` and `tcp/6443`.
+All the flows are allowed inside the Kubernetes private network (`vmbr8`). In the `01-prerequisites` part, the `gateway-01` VM firewall has been configured to use NAT and allow the following INPUT protocols (from external): `icmp`, `tcp/22`, `tcp/80`, `tcp/443` and `tcp/6443`.
 
 Check the rules on the `gateway-01` VM (example if `ens18` is the public network interface):
 
@@ -42,7 +42,7 @@ Chain INPUT (policy ACCEPT 0 packets, 0 bytes)
 
 ### Kubernetes Public IP Address
 
-A public IP address need to be defined on the public network interface of the `gateway-01` VM (done in the 01-prerequisites part).
+A public IP address need to be defined on the public network interface of the `gateway-01` VM (done in the `01-prerequisites` part).
 
 ### Verification
 
@@ -52,7 +52,7 @@ On each VM, check the active IP address(es) with the following command:
 ip a
 ```
 
-> Output (example with controller-0)
+> Output (example with controller-0):
 
 ```bash
 1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000
@@ -137,7 +137,7 @@ Enter same passphrase again:
 Your identification has been saved in /home/nemo/.ssh/id_rsa.
 Your public key has been saved in /home/nemo/.ssh/id_rsa.pub.
 The key fingerprint is:
-SHA256:QIhkUeJWxh9lJRwfpJpkYXiuHjgE7icWVjo8dQzh+2Q root@gateway-01
+SHA256:QIhkUeJWxh9lJRwfpJpkYXiuHjgE7icWVjo8dQzh+2Q nemo@gateway-01
 The key's randomart image is:
 +---[RSA 2048]----+
 | .=BBo+o=++      |
@@ -164,11 +164,11 @@ cat /home/nemo/.ssh/id_rsa.pub
 ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDZwdkThm90GKiBPcECnxqPfPIy0jz3KAVxS5i1GcfdOMmj947/iYlKrYVqXmPqHOy1vDRJQHD1KpkADSnXREoUJp6RpugR+qei962udVY+Y/eNV2JZRt/dcTlGwqSwKjjE8a5n84fu4zgJcvIIZYG/vJpN3ock189IuSjSeLSBAPU/UQzTDAcNnHEeHDv7Yo2wxGoDziM7sRGQyFLVHKJKtA28+OZT8DKaE4XY78ovmsMJuMDMF+YLKm12/f79xS0AYw0KXb97TAb9PhFMqqOKknN+mvzbccAih6gJEwB646Ju6VlBRBky7c6ZMsDR9l99uQtlXcv8lwiheYE4nJmF nemo@gateway-01
 ```
 
-On the controllers and workers, create the `/root/.ssh` folder and create the file `/root/.ssh/.authorized_keys` to paste the previously copied public key:
+On the controllers and workers nodes, create the `/root/.ssh` folder and create the file `/root/.ssh/authorized_keys` to paste the previously copied public key:
 
 ```bash
 mkdir -p /root/.ssh
-vi /root/.ssh/.authorized_keys
+vi /root/.ssh/authorized_keys
 ```
 
 From the `gateway-01`, check if you can connect to the `root` account of all controllers and workers (example for controller-0):
@@ -199,6 +199,7 @@ exit
 ```bash
 logout
 Connection to controller-0 closed.
+nemo@gateway-01:~$
 ```
 
 Next: [Provisioning a CA and Generating TLS Certificates](04-certificate-authority.md)
