@@ -33,6 +33,8 @@ For this tutorial, you need 2 networks on your Proxmox hypervisor :
 
 ![proxmox network](images/proxmox-network.PNG)
 
+> Note: the pods networks will be defined later.
+
 All the Kubernetes nodes (workers and controllers) only need one network interface linked to the private Kubernetes network (`vmbr8`).
 
 ![proxmox vm hardware](images/proxmox-vm-hardware.PNG)
@@ -139,6 +141,7 @@ COMMIT
 -A INPUT -i ens18 -p tcp -m tcp --dport 22 -j ACCEPT
 -A INPUT -i ens18 -p tcp -m tcp --dport 80 -j ACCEPT
 -A INPUT -i ens18 -p tcp -m tcp --dport 443 -j ACCEPT
+-A INPUT -i ens18 -p tcp -m tcp --dport 6443 -j ACCEPT
 -A INPUT -i ens18 -p icmp -j ACCEPT
 # allow incoming traffic to the outgoing connections,
 # et al for clients from the private network
