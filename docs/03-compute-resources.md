@@ -1,8 +1,6 @@
 # Provisioning Compute Resources
 
-Kubernetes requires a set of machines to host the Kubernetes control plane and the worker nodes where containers are ultimately run. In this lab you will provision the compute resources required for running a secure and highly available Kubernetes cluster across a single [compute zone](https://cloud.google.com/compute/docs/regions-zones/regions-zones).
-
-> Ensure a default compute zone and region have been set as described in the [Prerequisites](01-prerequisites.md#set-a-default-compute-region-and-zone) lab.
+Kubernetes requires a set of machines to host the Kubernetes control plane and the worker nodes where containers are ultimately run. In this lab you will check and eventually adjust the configuration defined in the `01-prerequisites` part.
 
 ## Networking
 
@@ -12,219 +10,195 @@ The Kubernetes [networking model](https://kubernetes.io/docs/concepts/cluster-ad
 
 ### Virtual Private Cloud Network
 
-In this section a dedicated [Virtual Private Cloud](https://cloud.google.com/compute/docs/networks-and-firewalls#networks) (VPC) network will be setup to host the Kubernetes cluster.
+We provisioned this network in the 01-prerequisites part: `192.168.8.0/24` which can host up to 253 Kubernetes nodes (254 - 1 for gateway). This is our "VPC-like" network with private IP addresses.
 
-Create the `kubernetes-the-hard-way` custom VPC network:
+### Pods Network Ranges
 
-```bash
-gcloud compute networks create kubernetes-the-hard-way --subnet-mode custom
-```
+Containers running on each workers need networks to communicate with other ressources. We will use the `10.200.0.0/16` private range to create Pods subnetworks:
 
-A [subnet](https://cloud.google.com/compute/docs/vpc/#vpc_networks_and_subnets) must be provisioned with an IP address range large enough to assign a private IP address to each node in the Kubernetes cluster.
-
-Create the `kubernetes` subnet in the `kubernetes-the-hard-way` VPC network:
-
-```bash
-gcloud compute networks subnets create kubernetes \
-  --network kubernetes-the-hard-way \
-  --range 10.240.0.0/24
-```
-
-> The `10.240.0.0/24` IP address range can host up to 254 compute instances.
+* 10.200.0.0/24 : worker-0
+* 10.200.1.0/24 : worker-1
+* 10.200.2.0/24 : worker-2
 
 ### Firewall Rules
 
-Create a firewall rule that allows internal communication across all protocols:
+All the flows are allowed inside the Kubernetes private network (`vmbr8`). In the 01-prerequisites part, the `gateway-01` VM firewall has been configured to use NAT and allow the following INPUT protocols (from external): `icmp`, `tcp/22`, `tcp/80`, `tcp/443` and `tcp/6443`.
+
+Check the rules on the `gateway-01` VM (example if `ens18` is the public network interface):
 
 ```bash
-gcloud compute firewall-rules create kubernetes-the-hard-way-allow-internal \
-  --allow tcp,udp,icmp \
-  --network kubernetes-the-hard-way \
-  --source-ranges 10.240.0.0/24,10.200.0.0/16
-```
-
-Create a firewall rule that allows external SSH, ICMP, and HTTPS:
-
-```bash
-gcloud compute firewall-rules create kubernetes-the-hard-way-allow-external \
-  --allow tcp:22,tcp:6443,icmp \
-  --network kubernetes-the-hard-way \
-  --source-ranges 0.0.0.0/0
-```
-
-> An [external load balancer](https://cloud.google.com/compute/docs/load-balancing/network/) will be used to expose the Kubernetes API Servers to remote clients.
-
-List the firewall rules in the `kubernetes-the-hard-way` VPC network:
-
-```bash
-gcloud compute firewall-rules list --filter="network:kubernetes-the-hard-way"
-```
-
-> output
-
-```bash
-NAME                                    NETWORK                  DIRECTION  PRIORITY  ALLOW                 DENY
-kubernetes-the-hard-way-allow-external  kubernetes-the-hard-way  INGRESS    1000      tcp:22,tcp:6443,icmp
-kubernetes-the-hard-way-allow-internal  kubernetes-the-hard-way  INGRESS    1000      tcp,udp,icmp
+root@gateway-01:~# iptables -L INPUT -v -n
+Chain INPUT (policy ACCEPT 0 packets, 0 bytes)
+ pkts bytes target     prot opt in     out     source               destination
+ 2062  905K ACCEPT     all  --  lo     *       0.0.0.0/0            0.0.0.0/0
+ 150K   21M ACCEPT     tcp  --  ens18  *       0.0.0.0/0            0.0.0.0/0            tcp dpt:22
+ 7259  598K ACCEPT     tcp  --  ens18  *       0.0.0.0/0            0.0.0.0/0            tcp dpt:80
+  772 32380 ACCEPT     tcp  --  ens18  *       0.0.0.0/0            0.0.0.0/0            tcp dpt:443
+  772 32380 ACCEPT     tcp  --  ens18  *       0.0.0.0/0            0.0.0.0/0            tcp dpt:6443
+23318 1673K ACCEPT     icmp --  ens18  *       0.0.0.0/0            0.0.0.0/0
+  36M 6163M ACCEPT     all  --  *      *       0.0.0.0/0            0.0.0.0/0            state RELATED,ESTABLISHED
+ 113K 5899K DROP       all  --  ens18  *       0.0.0.0/0            0.0.0.0/0
 ```
 
 ### Kubernetes Public IP Address
 
-Allocate a static IP address that will be attached to the external load balancer fronting the Kubernetes API Servers:
-
-```bash
-gcloud compute addresses create kubernetes-the-hard-way \
-  --region $(gcloud config get-value compute/region)
-```
-
-Verify the `kubernetes-the-hard-way` static IP address was created in your default compute region:
-
-```bash
-gcloud compute addresses list --filter="name=('kubernetes-the-hard-way')"
-```
-
-> output
-
-```bash
-NAME                     REGION    ADDRESS        STATUS
-kubernetes-the-hard-way  us-west1  XX.XXX.XXX.XX  RESERVED
-```
-
-## Compute Instances
-
-The compute instances in this lab will be provisioned using [Ubuntu Server](https://www.ubuntu.com/server) 18.04, which has good support for the [containerd container runtime](https://github.com/containerd/containerd). Each compute instance will be provisioned with a fixed private IP address to simplify the Kubernetes bootstrapping process.
-
-### Kubernetes Controllers
-
-Create three compute instances which will host the Kubernetes control plane:
-
-```bash
-for i in 0 1 2; do
-  gcloud compute instances create controller-${i} \
-    --async \
-    --boot-disk-size 200GB \
-    --can-ip-forward \
-    --image-family ubuntu-1804-lts \
-    --image-project ubuntu-os-cloud \
-    --machine-type n1-standard-1 \
-    --private-network-ip 10.240.0.1${i} \
-    --scopes compute-rw,storage-ro,service-management,service-control,logging-write,monitoring \
-    --subnet kubernetes \
-    --tags kubernetes-the-hard-way,controller
-done
-```
-
-### Kubernetes Workers
-
-Each worker instance requires a pod subnet allocation from the Kubernetes cluster CIDR range. The pod subnet allocation will be used to configure container networking in a later exercise. The `pod-cidr` instance metadata will be used to expose pod subnet allocations to compute instances at runtime.
-
-> The Kubernetes cluster CIDR range is defined by the Controller Manager's `--cluster-cidr` flag. In this tutorial the cluster CIDR range will be set to `10.200.0.0/16`, which supports 254 subnets.
-
-Create three compute instances which will host the Kubernetes worker nodes:
-
-```bash
-for i in 0 1 2; do
-  gcloud compute instances create worker-${i} \
-    --async \
-    --boot-disk-size 200GB \
-    --can-ip-forward \
-    --image-family ubuntu-1804-lts \
-    --image-project ubuntu-os-cloud \
-    --machine-type n1-standard-1 \
-    --metadata pod-cidr=10.200.${i}.0/24 \
-    --private-network-ip 10.240.0.2${i} \
-    --scopes compute-rw,storage-ro,service-management,service-control,logging-write,monitoring \
-    --subnet kubernetes \
-    --tags kubernetes-the-hard-way,worker
-done
-```
+A public IP address need to be defined on the public network interface of the `gateway-01` VM (done in the 01-prerequisites part).
 
 ### Verification
 
-List the compute instances in your default compute zone:
+On each VM, check the active IP address(es) with the following command:
 
 ```bash
-gcloud compute instances list
+ip a
 ```
 
-> output
+> Output (example with controller-0)
 
 ```bash
-NAME          ZONE        MACHINE_TYPE   PREEMPTIBLE  INTERNAL_IP  EXTERNAL_IP     STATUS
-controller-0  us-west1-c  n1-standard-1               10.240.0.10  XX.XXX.XXX.XXX  RUNNING
-controller-1  us-west1-c  n1-standard-1               10.240.0.11  XX.XXX.X.XX     RUNNING
-controller-2  us-west1-c  n1-standard-1               10.240.0.12  XX.XXX.XXX.XX   RUNNING
-worker-0      us-west1-c  n1-standard-1               10.240.0.20  XXX.XXX.XXX.XX  RUNNING
-worker-1      us-west1-c  n1-standard-1               10.240.0.21  XX.XXX.XX.XXX   RUNNING
-worker-2      us-west1-c  n1-standard-1               10.240.0.22  XXX.XXX.XX.XX   RUNNING
+1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+    inet 127.0.0.1/8 scope host lo
+       valid_lft forever preferred_lft forever
+    inet6 ::1/128 scope host
+       valid_lft forever preferred_lft forever
+2: ens18: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc fq_codel state UP group default qlen 1000
+    link/ether e6:27:6e:8c:d6:7b brd ff:ff:ff:ff:ff:ff
+    inet 192.168.8.10/24 brd 192.168.8.255 scope global ens18
+       valid_lft forever preferred_lft forever
+    inet6 fe80::e427:6eff:fe8c:d67b/64 scope link
+       valid_lft forever preferred_lft forever
+```
+
+From the gateway-01 VM, try to ping all controllers and workers VM:
+
+```bash
+for i in 0 1 2; do ping -c1 controller-$i; ping -c1 worker-$i; done
+```
+
+> Output (example with controller-0)
+
+```bash
+PING controller-0 (192.168.8.10) 56(84) bytes of data.
+64 bytes from controller-0 (192.168.8.10): icmp_seq=1 ttl=64 time=0.598 ms
+
+--- controller-0 ping statistics ---
+1 packets transmitted, 1 received, 0% packet loss, time 0ms
+rtt min/avg/max/mdev = 0.598/0.598/0.598/0.000 ms
+PING worker-0 (192.168.8.20) 56(84) bytes of data.
+64 bytes from worker-0 (192.168.8.20): icmp_seq=1 ttl=64 time=0.474 ms
+
+--- worker-0 ping statistics ---
+1 packets transmitted, 1 received, 0% packet loss, time 0ms
+rtt min/avg/max/mdev = 0.474/0.474/0.474/0.000 ms
+PING controller-1 (192.168.8.11) 56(84) bytes of data.
+64 bytes from controller-1 (192.168.8.11): icmp_seq=1 ttl=64 time=0.546 ms
+
+--- controller-1 ping statistics ---
+1 packets transmitted, 1 received, 0% packet loss, time 0ms
+rtt min/avg/max/mdev = 0.546/0.546/0.546/0.000 ms
+PING worker-1 (192.168.8.21) 56(84) bytes of data.
+64 bytes from worker-1 (192.168.8.21): icmp_seq=1 ttl=64 time=1.10 ms
+
+--- worker-1 ping statistics ---
+1 packets transmitted, 1 received, 0% packet loss, time 0ms
+rtt min/avg/max/mdev = 1.101/1.101/1.101/0.000 ms
+PING controller-2 (192.168.8.12) 56(84) bytes of data.
+64 bytes from controller-2 (192.168.8.12): icmp_seq=1 ttl=64 time=0.483 ms
+
+--- controller-2 ping statistics ---
+1 packets transmitted, 1 received, 0% packet loss, time 0ms
+rtt min/avg/max/mdev = 0.483/0.483/0.483/0.000 ms
+PING worker-2 (192.168.8.22) 56(84) bytes of data.
+64 bytes from worker-2 (192.168.8.22): icmp_seq=1 ttl=64 time=0.650 ms
+
+--- worker-2 ping statistics ---
+1 packets transmitted, 1 received, 0% packet loss, time 0ms
+rtt min/avg/max/mdev = 0.650/0.650/0.650/0.000 ms
 ```
 
 ## Configuring SSH Access
 
-SSH will be used to configure the controller and worker instances. When connecting to compute instances for the first time SSH keys will be generated for you and stored in the project or instance metadata as described in the [connecting to instances](https://cloud.google.com/compute/docs/instances/connecting-to-instance) documentation.
+SSH will be used to configure the controller and worker instances.
 
-Test SSH access to the `controller-0` compute instances:
+On the `gateway-01` VM, generate SSH key for your working user:
 
 ```bash
-gcloud compute ssh controller-0
+ssh-keygen
 ```
 
-If this is your first time connecting to a compute instance SSH keys will be generated for you. Enter a passphrase at the prompt to continue:
+> Output (example for the user nemo):
 
 ```bash
-WARNING: The public SSH key file for gcloud does not exist.
-WARNING: The private SSH key file for gcloud does not exist.
-WARNING: You do not have an SSH key for gcloud.
-WARNING: SSH keygen will be executed to generate a key.
 Generating public/private rsa key pair.
+Enter file in which to save the key (/home/nemo/.ssh/id_rsa):
+Created directory '/home/nemo/.ssh'.
 Enter passphrase (empty for no passphrase):
 Enter same passphrase again:
-```
-
-At this point the generated SSH keys will be uploaded and stored in your project:
-
-```bash
-Your identification has been saved in /home/$USER/.ssh/google_compute_engine.
-Your public key has been saved in /home/$USER/.ssh/google_compute_engine.pub.
+Your identification has been saved in /home/nemo/.ssh/id_rsa.
+Your public key has been saved in /home/nemo/.ssh/id_rsa.pub.
 The key fingerprint is:
-SHA256:nz1i8jHmgQuGt+WscqP5SeIaSy5wyIJeL71MuV+QruE $USER@$HOSTNAME
+SHA256:QIhkUeJWxh9lJRwfpJpkYXiuHjgE7icWVjo8dQzh+2Q root@gateway-01
 The key's randomart image is:
 +---[RSA 2048]----+
+| .=BBo+o=++      |
+|.oo*+=oo.+ .     |
+|o.*..++.. .      |
+| X. .oo+         |
+|o.+o Eo S        |
+| +o.*            |
+|. oo o           |
+|    .            |
 |                 |
-|                 |
-|                 |
-|        .        |
-|o.     oS        |
-|=... .o .o o     |
-|+.+ =+=.+.X o    |
-|.+ ==O*B.B = .   |
-| .+.=EB++ o      |
 +----[SHA256]-----+
-Updating project ssh metadata...-Updated [https://www.googleapis.com/compute/v1/projects/$PROJECT_ID].
-Updating project ssh metadata...done.
-Waiting for SSH key to propagate.
 ```
 
-After the SSH keys have been updated you'll be logged into the `controller-0` instance:
+Print the public key and copy it:
 
 ```bash
-Welcome to Ubuntu 18.04.3 LTS (GNU/Linux 4.15.0-1042-gcp x86_64)
+cat /home/nemo/.ssh/id_rsa.pub
+```
+
+> Output (example for the user nemo):
+
+```bash
+ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDZwdkThm90GKiBPcECnxqPfPIy0jz3KAVxS5i1GcfdOMmj947/iYlKrYVqXmPqHOy1vDRJQHD1KpkADSnXREoUJp6RpugR+qei962udVY+Y/eNV2JZRt/dcTlGwqSwKjjE8a5n84fu4zgJcvIIZYG/vJpN3ock189IuSjSeLSBAPU/UQzTDAcNnHEeHDv7Yo2wxGoDziM7sRGQyFLVHKJKtA28+OZT8DKaE4XY78ovmsMJuMDMF+YLKm12/f79xS0AYw0KXb97TAb9PhFMqqOKknN+mvzbccAih6gJEwB646Ju6VlBRBky7c6ZMsDR9l99uQtlXcv8lwiheYE4nJmF nemo@gateway-01
+```
+
+On the controllers and workers, create the `/root/.ssh` folder and create the file `/root/.ssh/.authorized_keys` to paste the previously copied public key:
+
+```bash
+mkdir -p /root/.ssh
+vi /root/.ssh/.authorized_keys
+```
+
+From the `gateway-01`, check if you can connect to the `root` account of all controllers and workers (example for controller-0):
+
+```bash
+ssh root@controller-0
+```
+
+> Output:
+
+```bash
+Welcome to Ubuntu 18.04.4 LTS (GNU/Linux 4.15.0-101-generic x86_64)
+
 ...
 
-Last login: Sun Sept 14 14:34:27 2019 from XX.XXX.XXX.XX
+Last login: Sat Jun 20 11:03:45 2020 from 192.168.8.1
+root@controller-0:~#
 ```
 
-Type `exit` at the prompt to exit the `controller-0` compute instance:
+Now, you can logout:
 
 ```bash
-$USER@controller-0:~$ exit
+exit
 ```
 
-> output
+> Output:
 
 ```bash
 logout
-Connection to XX.XXX.XXX.XXX closed
+Connection to controller-0 closed.
 ```
 
 Next: [Provisioning a CA and Generating TLS Certificates](04-certificate-authority.md)
