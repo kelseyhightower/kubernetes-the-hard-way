@@ -4,19 +4,19 @@
 
 This tutorial is intended to be performed with a [Proxmox](https://proxmox.com/en/) hypervisor, but you can also use it with ESXi, KVM, Virtualbox or other hypervisor.
 
-> The compute resources required for this tutorial is 26GB of RAM and 100GB HDD (or SSD).
+> The compute resources required for this tutorial is 25GB of RAM and 140GB HDD (or SSD).
 
 List of the VM used in this tutorial :
 
 |Name|Role|vCPU|RAM|Storage (thin)|IP|OS|
 |--|--|--|--|--|--|--|
-|controller-0|controller|2|4GB|40GB|192.168.8.10/24|Ubuntu|
-|controller-1|controller|2|4GB|40GB|192.168.8.11/24|Ubuntu|
-|controller-2|controller|2|4GB|40GB|192.168.8.12/24|Ubuntu|
-|worker-0|worker|2|4GB|40GB|192.168.8.20/24|Ubuntu|
-|worker-1|worker|2|4GB|40GB|192.168.8.21/24|Ubuntu|
-|worker-2|worker|2|4GB|40GB|192.168.8.22/24|Ubuntu|
-|gateway-01|Reverse Proxy, client tools, gateway|2|4GB|40GB|192.168.8.22/24|Debian|
+|controller-0|controller|2|4GB|20GB|192.168.8.10/24|Ubuntu|
+|controller-1|controller|2|4GB|20GB|192.168.8.11/24|Ubuntu|
+|controller-2|controller|2|4GB|20GB|192.168.8.12/24|Ubuntu|
+|worker-0|worker|2|4GB|20GB|192.168.8.20/24|Ubuntu|
+|worker-1|worker|2|4GB|20GB|192.168.8.21/24|Ubuntu|
+|worker-2|worker|2|4GB|20GB|192.168.8.22/24|Ubuntu|
+|gateway-01|Reverse Proxy, client tools, gateway|1|1GB|20GB|192.168.8.1/24<br>+ PUBLIC IP|Debian|
 
 On the Proxmox hypervisor, I just added the `k8s-` prefix in the VM names.
 
@@ -49,22 +49,23 @@ This diagram represents the network design:
 
 ![architecture network](images/architecture-network.PNG)
 
-> If you want, you can define the configuration for the IPv6 stack.
+> If you want, you can define the IPv6 stack configuration.
 
 ### Gateway VM installation
 
 > The basic VM installation process is not the purpose of this tutorial.
+>
 > Because it's just a tutorial, the IPv6 stack is not configured, but you can configure it if you want.
 
 This VM is used as a NAT gateway for the private Kubernetes network, as a reverse proxy and as a client tools.
 
-This means all the client steps like certificates generation will be done on this VM (in the next part of this tutorial).
+This means all the client steps like certificates generation will be done on this VM (in the next parts of this tutorial).
 
 You have to:
 
 * Install the latest [amd64 Debian netinst image](https://www.debian.org/CD/netinst/) on this VM.
 
-* Configure the network interfaces (see the network architecture). Example of `/etc/network/interfaces` file if ens18 is your public interface and ens19 is your private interface (you need to replace `PUBLIC_IP_ADDRESS`, `MASK` and `PUBLIC_IP_GATEWAY` with you values):
+* Configure the network interfaces (see the network architecture). Example of `/etc/network/interfaces` file if your public interface is ens18 and your private interface is ens19 (you need to replace `PUBLIC_IP_ADDRESS`, `MASK` and `PUBLIC_IP_GATEWAY` with your values):
 
 ```bash
 source /etc/network/interfaces.d/*
@@ -89,7 +90,9 @@ iface ens19 inet static
         dns-nameservers 9.9.9.9
 ```
 
-> If you want, you can define the configuration for the IPv6 stack.
+> If you want, you can define the IPv6 stack configuration.
+>
+> If you want, you can use another DNS resolver.
 
 * Define the VM hostname:
 
@@ -125,7 +128,7 @@ echo 'net.ipv4.ip_forward=1' >> /etc/sysctl.conf
 echo '1' > /proc/sys/net/ipv4/ip_forward
 ```
 
-> If you want, you can define the configuration for the IPv6 stack.
+> If you want, you can define the IPv6 stack configuration.
 
 * Configure the iptables firewall (allow some ports and configure NAT). Example of `/etc/iptables/rules.v4` file if ens18 is your public interface and ens19 is your private interface:
 
@@ -152,15 +155,15 @@ COMMIT
 # Completed on Fri Jun  5 16:45:02 2020
 ```
 
-> If you want, you can define the configuration for the IPv6 stack.
+> If you want, you can define the IPv6 stack configuration.
 
-* If you want to restore iptables rules:
+* If you want to restore/active iptables rules:
 
 ```bash
 iptables-restore < /etc/iptables/rules.v4
 ```
 
-* Configure /etc/hosts file. Example for controller-0 (need to replace `PUBLIC_GW_IP`):
+* Configure the /etc/hosts file (you need to replace `PUBLIC_GW_IP`):
 
 ```bash
 127.0.0.1       localhost
@@ -189,11 +192,12 @@ sudo reboot
 ### Kubernetes nodes VM installation
 
 > The basic VM installation process is not the purpose of this tutorial.
+>
 > Because it's just a tutorial, the IPv6 stack is not configured, but you can configure it if you want.
 
 These VM are used as Kubernetes node (controllers or workers).
 
-The basic VM configuration process is the same of the 6 VM (you can also configure one, clone it and change IP address and hostname for each clone).
+The basic VM configuration process is the same for the 6 VM (you can also configure one, clone it and change IP address and hostname for each clone).
 
 You have to:
 
@@ -215,7 +219,9 @@ network:
   version: 2
 ```
 
-> If you want, you can define the configuration for the IPv6 stack.
+> If you want, you can define the IPv6 stack configuration.
+>
+> If you want, you can use another DNS resolver.
 
 * Define the VM hostname (example for controller-0):
 
@@ -244,7 +250,7 @@ sudo systemctl enable ssh
 sudo systemctl start ssh
 ```
 
-* Configure /etc/hosts file. Example for controller-0 (need to replace `PUBLIC_GW_IP` and adapt this sample config on each VM):
+* Configure /etc/hosts file. Example for controller-0 (need to replace `PUBLIC_GW_IP` and adapt this sample config for each VM):
 
 ```bash
 127.0.0.1 localhost
@@ -268,7 +274,7 @@ PUBLIC_GW_IP    gateway-01.external
 192.168.8.22    worker-2
 ```
 
-* To confirm the network configuration, reboot the VM and check the active IP addresses:
+* To confirm the network configuration, reboot the VM and check the active IP address:
 
 ```bash
 sudo reboot

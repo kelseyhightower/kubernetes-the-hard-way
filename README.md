@@ -6,6 +6,10 @@ Kubernetes The Hard Way is optimized for learning, which means taking the long r
 
 > The results of this tutorial should not be viewed as production ready, and may receive limited support from the community, but don't let that stop you from learning!
 
+## Overview of the Network Architecture
+
+![architecture network](docs/images/architecture-network.PNG)
+
 ## Copyright
 
 <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png" /></a><br />This work is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/">Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License</a>.
@@ -26,7 +30,7 @@ Kubernetes The Hard Way guides you through bootstrapping a highly available Kube
 
 ## Labs
 
-This tutorial assumes you have access to a Proxmox hypervisor with at least 26GB free RAM and 100GB free HDD/SSD. While a Proxmox server is used for basic infrastructure requirements the lessons learned in this tutorial can be applied to other platforms (ESXi, KVM, VirtualBox, ...).
+This tutorial assumes you have access to a Proxmox hypervisor with at least 25GB free RAM and 140GB free HDD/SSD. While a Proxmox server is used for basic infrastructure requirements the lessons learned in this tutorial can be applied to other platforms (ESXi, KVM, VirtualBox, ...).
 
 * [Prerequisites](docs/01-prerequisites.md)
 * [Installing the Client Tools](docs/02-client-tools.md)
