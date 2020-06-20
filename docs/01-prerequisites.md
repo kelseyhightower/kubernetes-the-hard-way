@@ -16,7 +16,7 @@ List of the VM used in this tutorial :
 |worker-0|worker|2|4GB|20GB|192.168.8.20/24|Ubuntu|
 |worker-1|worker|2|4GB|20GB|192.168.8.21/24|Ubuntu|
 |worker-2|worker|2|4GB|20GB|192.168.8.22/24|Ubuntu|
-|gateway-01|Reverse Proxy, client tools, gateway|1|1GB|20GB|192.168.8.1/24<br>+ PUBLIC IP|Debian|
+|gateway-01|Reverse Proxy, client tools, gateway|1|1GB|20GB|192.168.8.1/24 + PUBLIC IP|Debian|
 
 On the Proxmox hypervisor, I just added the `k8s-` prefix in the VM names.
 
