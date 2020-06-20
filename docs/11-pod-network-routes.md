@@ -29,7 +29,6 @@ ip route
 ```bash
 default via 192.168.8.1 dev ens18 proto static
 10.200.0.0/24 dev cnio0 proto kernel scope link src 10.200.0.1 linkdown
-10.200.0.0/24 via 192.168.8.20 dev ens18
 10.200.1.0/24 via 192.168.8.21 dev ens18
 10.200.2.0/24 via 192.168.8.22 dev ens18
 192.168.8.0/24 dev ens18 proto kernel scope link src 192.168.8.21
