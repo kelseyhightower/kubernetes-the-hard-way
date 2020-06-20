@@ -69,13 +69,13 @@ ip a
        valid_lft forever preferred_lft forever
 ```
 
-From the gateway-01 VM, try to ping all controllers and workers VM:
+From the `gateway-01` VM, try to ping all controllers and workers VM:
 
 ```bash
 for i in 0 1 2; do ping -c1 controller-$i; ping -c1 worker-$i; done
 ```
 
-> Output (example with controller-0)
+> Output:
 
 ```bash
 PING controller-0 (192.168.8.10) 56(84) bytes of data.
