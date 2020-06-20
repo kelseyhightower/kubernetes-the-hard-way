@@ -10,7 +10,7 @@ Deploy the `coredns` cluster add-on:
 kubectl apply -f https://storage.googleapis.com/kubernetes-the-hard-way/coredns.yaml
 ```
 
-> output
+> Output:
 
 ```bash
 serviceaccount/coredns created
@@ -27,7 +27,7 @@ List the pods created by the `kube-dns` deployment:
 kubectl get pods -l k8s-app=kube-dns -n kube-system
 ```
 
-> output
+> Output:
 
 ```bash
 NAME                       READY   STATUS    RESTARTS   AGE
@@ -49,7 +49,7 @@ List the pod created by the `busybox` deployment:
 kubectl get pods -l run=busybox
 ```
 
-> output
+> Output:
 
 ```bash
 NAME      READY   STATUS    RESTARTS   AGE
