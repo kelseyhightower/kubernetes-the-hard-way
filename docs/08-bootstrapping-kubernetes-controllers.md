@@ -7,7 +7,7 @@ In this lab you will bootstrap the Kubernetes control plane across three VM inst
 The commands in this lab must be run on each controller instance: `controller-0`, `controller-1`, and `controller-2`. Login to each controller instance using the `ssh` command. Example:
 
 ```bash
-ssh controller-0
+ssh root@controller-0
 ```
 
 ### Running commands in parallel with tmux
@@ -209,20 +209,18 @@ etcd-0               Healthy   {"health": "true"}
 etcd-1               Healthy   {"health": "true"}
 ```
 
-Test the nginx HTTP health check proxy:
+Test the HTTPS health check :
 
 ```bash
-curl -H "Host: kubernetes.default.svc.cluster.local" -i http://127.0.0.1/healthz
+curl -kH "Host: kubernetes.default.svc.cluster.local" -i https://127.0.0.1:6443/healthz
 ```
 
 ```bash
-HTTP/1.1 200 OK
-Server: nginx/1.14.0 (Ubuntu)
-Date: Sat, 14 Sep 2019 18:34:11 GMT
-Content-Type: text/plain; charset=utf-8
-Content-Length: 2
-Connection: keep-alive
-X-Content-Type-Options: nosniff
+HTTP/2 200
+content-type: text/plain; charset=utf-8
+x-content-type-options: nosniff
+content-length: 2
+date: Mon, 22 Jun 2020 09:44:42 GMT
 
 ok
 ```
@@ -238,7 +236,7 @@ In this section you will configure RBAC permissions to allow the Kubernetes API 
 The commands in this section will effect the entire cluster and only need to be run once from one of the controller nodes.
 
 ```bash
-ssh controller-0
+ssh root@controller-0
 ```
 
 Create the `system:kube-apiserver-to-kubelet` [ClusterRole](https://kubernetes.io/docs/admin/authorization/rbac/#role-and-clusterrole) with permissions to access the Kubelet API and perform most common tasks associated with managing pods:
@@ -291,7 +289,7 @@ EOF
 
 ## The Kubernetes Frontend Load Balancer
 
-In this section you will provision an Nginx load balancer to front the Kubernetes API Servers. The load balancer will listen on the public IP address (on the `gateway-01` VM).
+In this section you will provision an Nginx load balancer to front the Kubernetes API Servers. The load balancer will listen on the private and the public IP address (on the `gateway-01` VM).
 
 ### Provision an Nginx Load Balancer
 
@@ -302,7 +300,7 @@ sudo apt-get update
 sudo apt-get install -y nginx
 ```
 
-Create the Nginx load balancer network configuration:
+As **root** user, Create the Nginx load balancer network configuration:
 
 ```bash
 cat <<EOF >> /etc/nginx/nginx.conf
@@ -315,7 +313,7 @@ stream {
     server {
         listen     6443;
         proxy_pass controller_backend;
-        health_check;
+        # health_check; # Only Nginx commercial subscription can use this directive...
     }
 }
 EOF

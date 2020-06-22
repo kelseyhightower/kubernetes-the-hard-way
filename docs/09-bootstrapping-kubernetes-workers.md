@@ -7,7 +7,7 @@ In this lab you will bootstrap three Kubernetes worker nodes. The following comp
 The commands in this lab must be run on each worker instance: `worker-0`, `worker-1`, and `worker-2`. Login to each worker instance using the `ssh` command. Example:
 
 ```bash
-ssh worker-0
+ssh root@worker-0
 ```
 
 ### Running commands in parallel with tmux
@@ -41,7 +41,7 @@ If output is empthy then swap is not enabled. If swap is enabled run the followi
 sudo swapoff -a
 ```
 
-> To ensure swap remains off after reboot consult your Linux distro documentation.
+> To ensure swap remains off after reboot consult your Linux distro documentation. You may need to comment the Swap line in the `/etc/fstab` file.
 
 ### Download and Install Worker Binaries
 

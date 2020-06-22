@@ -24,14 +24,43 @@ List the routes in the `kubernetes-the-hard-way` VPC network:
 ip route
 ```
 
-> Output:
+> Output (example for worker-0):
 
 ```bash
 default via 192.168.8.1 dev ens18 proto static
-10.200.0.0/24 dev cnio0 proto kernel scope link src 10.200.0.1 linkdown
+10.200.0.0/24 via 192.168.8.20 dev ens18
 10.200.1.0/24 via 192.168.8.21 dev ens18
 10.200.2.0/24 via 192.168.8.22 dev ens18
 192.168.8.0/24 dev ens18 proto kernel scope link src 192.168.8.21
+```
+
+To make it persistent (if reboot), you need to edit your network configuration (depends on your Linux distribution).
+
+Example for **Ubuntu 18.04** and higher:
+
+```bash
+vi /etc/netplan/00-installer-config.yaml
+```
+
+> Content (example for worker-0, **don't specify the POD CIDR associated with the current node**):
+
+```bash
+# This is the network config written by 'subiquity'
+network:
+  ethernets:
+    ens18:
+      addresses:
+      - 192.168.8.10/24
+      gateway4: 192.168.8.1
+      nameservers:
+        addresses:
+        - 9.9.9.9
+      routes:
+      - to: 10.200.1.0/24
+        via: 192.168.8.21
+      - to: 10.200.2.0/24
+        via: 192.168.8.22
+  version: 2
 ```
 
 Next: [Deploying the DNS Cluster Add-on](12-dns-addon.md)

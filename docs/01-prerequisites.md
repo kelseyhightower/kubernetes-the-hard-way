@@ -39,7 +39,7 @@ All the Kubernetes nodes (workers and controllers) only need one network interfa
 
 ![proxmox vm hardware](images/proxmox-vm-hardware.PNG)
 
-The reverse proxy / client tools / gateway VM need to have 2 network interfaces, one linked to the private Kubernetes network (`vmbr8`) and the other linked to the public network (`vmbr0`).
+The reverse proxy / client tools / gateway VM needs 2 network interfaces, one linked to the private Kubernetes network (`vmbr8`) and the other linked to the public network (`vmbr0`).
 
 ![proxmox vm hardware](images/proxmox-vm-hardware-gw.PNG)
 
@@ -97,7 +97,7 @@ iface ens19 inet static
 * Define the VM hostname:
 
 ```bash
-hostnamectl set-hostname gateway-01
+sudo hostnamectl set-hostname gateway-01
 ```
 
 * Update the packages list and update the system:
@@ -106,10 +106,10 @@ hostnamectl set-hostname gateway-01
 sudo apt-get update && sudo apt-get upgrade -y
 ```
 
-* Install SSH, vim, tmux, NTP and iptables-persistent:
+* Install SSH, vim, tmux, curl, NTP and iptables-persistent:
 
 ```bash
-sudo apt-get install ssh vim tmux ntp iptables-persistent -y
+sudo apt-get install ssh vim tmux curl ntp iptables-persistent -y
 ```
 
 * Enable and start the SSH and NTP services:
@@ -124,8 +124,8 @@ sudo systemctl start ssh
 * Enable IP routing:
 
 ```bash
-echo 'net.ipv4.ip_forward=1' >> /etc/sysctl.conf
-echo '1' > /proc/sys/net/ipv4/ip_forward
+sudo echo 'net.ipv4.ip_forward=1' >> /etc/sysctl.conf
+sudo echo '1' > /proc/sys/net/ipv4/ip_forward
 ```
 
 > If you want, you can define the IPv6 stack configuration.
@@ -160,10 +160,10 @@ COMMIT
 * If you want to restore/active iptables rules:
 
 ```bash
-iptables-restore < /etc/iptables/rules.v4
+sudo iptables-restore < /etc/iptables/rules.v4
 ```
 
-* Configure the /etc/hosts file (you need to replace `PUBLIC_GW_IP`):
+* Configure the `/etc/hosts` file (you need to replace `PUBLIC_GW_IP`):
 
 ```bash
 127.0.0.1       localhost
@@ -226,7 +226,7 @@ network:
 * Define the VM hostname (example for controller-0):
 
 ```bash
-hostnamectl set-hostname controller-0
+sudo hostnamectl set-hostname controller-0
 ```
 
 * Update the packages list and update the system:
@@ -250,7 +250,7 @@ sudo systemctl enable ssh
 sudo systemctl start ssh
 ```
 
-* Configure /etc/hosts file. Example for controller-0 (need to replace `PUBLIC_GW_IP` and adapt this sample config for each VM):
+* Configure `/etc/hosts` file. Example for controller-0 (need to replace `PUBLIC_GW_IP` and adapt this sample config for each VM):
 
 ```bash
 127.0.0.1 localhost

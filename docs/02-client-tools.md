@@ -30,7 +30,7 @@ Verify `cfssl` and `cfssljson` version 1.3.4 or higher is installed:
 cfssl version
 ```
 
-> output
+> Output:
 
 ```bash
 Version: 1.3.4
@@ -41,6 +41,8 @@ Runtime: go1.13
 ```bash
 cfssljson --version
 ```
+
+> Output:
 
 ```bash
 Version: 1.3.4
@@ -72,7 +74,7 @@ Verify `kubectl` version 1.15.3 or higher is installed:
 kubectl version --client
 ```
 
-> output
+> Output:
 
 ```bash
 Client Version: version.Info{Major:"1", Minor:"15", GitVersion:"v1.15.3", GitCommit:"2d3c76f9091b6bec110a5e63777c332469e0cba2", GitTreeState:"clean", BuildDate:"2019-08-19T11:13:54Z", GoVersion:"go1.12.9", Compiler:"gc", Platform:"linux/amd64"}

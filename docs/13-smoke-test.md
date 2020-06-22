@@ -63,7 +63,7 @@ List the pod created by the `nginx` deployment:
 kubectl get pods -l app=nginx
 ```
 
-> Output:
+> Output (you may need to wait a few seconds to see the pod "READY"):
 
 ```bash
 NAME                     READY   STATUS    RESTARTS   AGE
@@ -103,13 +103,13 @@ curl --head http://127.0.0.1:8080
 
 ```bash
 HTTP/1.1 200 OK
-Server: nginx/1.17.3
-Date: Sat, 14 Sep 2019 21:10:11 GMT
+Server: nginx/1.19.0
+Date: Mon, 22 Jun 2020 10:34:51 GMT
 Content-Type: text/html
 Content-Length: 612
-Last-Modified: Tue, 13 Aug 2019 08:50:00 GMT
+Last-Modified: Tue, 26 May 2020 15:00:20 GMT
 Connection: keep-alive
-ETag: "5d5279b8-264"
+ETag: "5ecd2f04-264"
 Accept-Ranges: bytes
 ```
 
@@ -135,7 +135,7 @@ kubectl logs $POD_NAME
 > Output:
 
 ```bash
-127.0.0.1 - - [14/Sep/2019:21:10:11 +0000] "HEAD / HTTP/1.1" 200 0 "-" "curl/7.52.1" "-"
+127.0.0.1 - - [22/Jun/2020:10:34:51 +0000] "HEAD / HTTP/1.1" 200 0 "-" "curl/7.64.0" "-"
 ```
 
 ### Exec
@@ -151,7 +151,7 @@ kubectl exec -ti $POD_NAME -- nginx -v
 > Output:
 
 ```bash
-nginx version: nginx/1.17.3
+nginx version: nginx/1.19.0
 ```
 
 ## Services
@@ -176,7 +176,7 @@ NODE_PORT=$(kubectl get svc nginx \
 Define the Kubernetes network IP address of a worker instance (replace MY_WORKER_IP with the private IP defined on a worker):
 
 ```bash
-EXTERNAL_IP=MY_WORKER_IP
+NODE_IP=MY_WORKER_IP
 ```
 
 > Example for worker-0: 192.168.8.20
@@ -184,20 +184,20 @@ EXTERNAL_IP=MY_WORKER_IP
 Make an HTTP request using the external IP address and the `nginx` node port:
 
 ```bash
-curl -I http://${EXTERNAL_IP}:${NODE_PORT}
+curl -I http://${NODE_IP}:${NODE_PORT}
 ```
 
 > Output:
 
 ```bash
 HTTP/1.1 200 OK
-Server: nginx/1.17.3
-Date: Sat, 14 Sep 2019 21:12:35 GMT
+Server: nginx/1.19.0
+Date: Mon, 22 Jun 2020 10:38:31 GMT
 Content-Type: text/html
 Content-Length: 612
-Last-Modified: Tue, 13 Aug 2019 08:50:00 GMT
+Last-Modified: Tue, 26 May 2020 15:00:20 GMT
 Connection: keep-alive
-ETag: "5d5279b8-264"
+ETag: "5ecd2f04-264"
 Accept-Ranges: bytes
 ```
 

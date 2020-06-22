@@ -27,7 +27,7 @@ List the pods created by the `kube-dns` deployment:
 kubectl get pods -l k8s-app=kube-dns -n kube-system
 ```
 
-> Output:
+> Output (you may need to wait a few seconds to see the pods "READY"):
 
 ```bash
 NAME                       READY   STATUS    RESTARTS   AGE
@@ -49,7 +49,7 @@ List the pod created by the `busybox` deployment:
 kubectl get pods -l run=busybox
 ```
 
-> Output:
+> Output (you may need to wait a few seconds to see the pod "READY"):
 
 ```bash
 NAME      READY   STATUS    RESTARTS   AGE

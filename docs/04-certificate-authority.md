@@ -104,6 +104,8 @@ Kubernetes uses a [special-purpose authorization mode](https://kubernetes.io/doc
 On the `gateway-01` VM, generate a certificate and private key for each Kubernetes worker node (you need to replace YOUR_EXTERNAL_IP by your external IP address):
 
 ```bash
+EXTERNAL_IP=YOUR_EXTERNAL_IP
+
 for id_instance in 0 1 2; do
 cat > worker-${id_instance}-csr.json <<EOF
 {
@@ -123,8 +125,6 @@ cat > worker-${id_instance}-csr.json <<EOF
   ]
 }
 EOF
-
-EXTERNAL_IP=YOUR_EXTERNAL_IP
 
 INTERNAL_IP=192.168.8.2${id_instance}
 
@@ -361,7 +361,7 @@ Copy the appropriate certificates and private keys to each worker instance:
 
 ```bash
 for instance in worker-0 worker-1 worker-2; do
-  scp ca.pem ${instance}-key.pem ${instance}.pem $root@{instance}:~/
+  scp ca.pem ${instance}-key.pem ${instance}.pem root@${instance}:~/
 done
 ```
 
