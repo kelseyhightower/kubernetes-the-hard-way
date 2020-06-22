@@ -10,10 +10,12 @@ In this lab you will create a route for each worker node that maps the node's Po
 
 **On each worker node**, add the following routes:
 
+> **WARNING**: don't add the route associated to the POD CIDR for the current node (ex: don't add the 10.200.0.0/24 route if you are on the worker-0 node).
+
 ```bash
-ip route add 10.200.0.0/24 via 192.168.8.20
-ip route add 10.200.1.0/24 via 192.168.8.21
-ip route add 10.200.2.0/24 via 192.168.8.22
+ip route add 10.200.0.0/24 via 192.168.8.20 # Don't add on worker-0
+ip route add 10.200.1.0/24 via 192.168.8.21 # Don't add on worker-1
+ip route add 10.200.2.0/24 via 192.168.8.22 # Don't add on worker-2
 ```
 
 > Don't take care of the `RTNETLINK answers: File exists` message, it appears just when you try to add an existing route, not a real problem.
@@ -28,7 +30,6 @@ ip route
 
 ```bash
 default via 192.168.8.1 dev ens18 proto static
-10.200.0.0/24 via 192.168.8.20 dev ens18
 10.200.1.0/24 via 192.168.8.21 dev ens18
 10.200.2.0/24 via 192.168.8.22 dev ens18
 192.168.8.0/24 dev ens18 proto kernel scope link src 192.168.8.21
