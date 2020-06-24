@@ -104,7 +104,7 @@ curl --head http://127.0.0.1:8080
 ```bash
 HTTP/1.1 200 OK
 Server: nginx/1.19.0
-Date: Mon, 22 Jun 2020 10:34:51 GMT
+Date: Wed, 24 Jun 2020 12:55:15 GMT
 Content-Type: text/html
 Content-Length: 612
 Last-Modified: Tue, 26 May 2020 15:00:20 GMT
@@ -135,7 +135,7 @@ kubectl logs $POD_NAME
 > Output:
 
 ```bash
-127.0.0.1 - - [22/Jun/2020:10:34:51 +0000] "HEAD / HTTP/1.1" 200 0 "-" "curl/7.64.0" "-"
+127.0.0.1 - - [24/Jun/2020:12:55:15 +0000] "HEAD / HTTP/1.1" 200 0 "-" "curl/7.64.0" "-"
 ```
 
 ### Exec
@@ -192,7 +192,7 @@ curl -I http://${NODE_IP}:${NODE_PORT}
 ```bash
 HTTP/1.1 200 OK
 Server: nginx/1.19.0
-Date: Mon, 22 Jun 2020 10:38:31 GMT
+Date: Wed, 24 Jun 2020 12:57:37 GMT
 Content-Type: text/html
 Content-Length: 612
 Last-Modified: Tue, 26 May 2020 15:00:20 GMT
