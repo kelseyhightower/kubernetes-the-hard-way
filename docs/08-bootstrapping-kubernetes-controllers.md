@@ -28,10 +28,10 @@ Download the official Kubernetes release binaries:
 
 ```bash
 wget -q --show-progress --https-only --timestamping \
-  "https://storage.googleapis.com/kubernetes-release/release/v1.15.3/bin/linux/amd64/kube-apiserver" \
-  "https://storage.googleapis.com/kubernetes-release/release/v1.15.3/bin/linux/amd64/kube-controller-manager" \
-  "https://storage.googleapis.com/kubernetes-release/release/v1.15.3/bin/linux/amd64/kube-scheduler" \
-  "https://storage.googleapis.com/kubernetes-release/release/v1.15.3/bin/linux/amd64/kubectl"
+  "https://storage.googleapis.com/kubernetes-release/release/v1.18.4/bin/linux/amd64/kube-apiserver" \
+  "https://storage.googleapis.com/kubernetes-release/release/v1.18.4/bin/linux/amd64/kube-controller-manager" \
+  "https://storage.googleapis.com/kubernetes-release/release/v1.18.4/bin/linux/amd64/kube-scheduler" \
+  "https://storage.googleapis.com/kubernetes-release/release/v1.18.4/bin/linux/amd64/kubectl"
 ```
 
 Install the Kubernetes binaries:
@@ -90,7 +90,7 @@ ExecStart=/usr/local/bin/kube-apiserver \\
   --kubelet-client-certificate=/var/lib/kubernetes/kubernetes.pem \\
   --kubelet-client-key=/var/lib/kubernetes/kubernetes-key.pem \\
   --kubelet-https=true \\
-  --runtime-config=api/all \\
+  --runtime-config=api/all=true \\
   --service-account-key-file=/var/lib/kubernetes/service-account.pem \\
   --service-cluster-ip-range=10.32.0.0/24 \\
   --service-node-port-range=30000-32767 \\
@@ -220,7 +220,7 @@ HTTP/2 200
 content-type: text/plain; charset=utf-8
 x-content-type-options: nosniff
 content-length: 2
-date: Mon, 22 Jun 2020 09:44:42 GMT
+date: Wed, 24 Jun 2020 12:24:52 GMT
 
 ok
 ```
@@ -350,12 +350,12 @@ curl --cacert ca.pem https://${KUBERNETES_PUBLIC_ADDRESS}:6443/version
 ```bash
 {
   "major": "1",
-  "minor": "15",
-  "gitVersion": "v1.15.3",
-  "gitCommit": "2d3c76f9091b6bec110a5e63777c332469e0cba2",
+  "minor": "18",
+  "gitVersion": "v1.18.4",
+  "gitCommit": "c96aede7b5205121079932896c4ad89bb93260af",
   "gitTreeState": "clean",
-  "buildDate": "2019-08-19T11:05:50Z",
-  "goVersion": "go1.12.9",
+  "buildDate": "2020-06-17T11:33:59Z",
+  "goVersion": "go1.13.9",
   "compiler": "gc",
   "platform": "linux/amd64"
 }
