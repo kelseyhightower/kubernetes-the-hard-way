@@ -4,10 +4,22 @@ In this lab you will deploy the [DNS add-on](https://kubernetes.io/docs/concepts
 
 ## The DNS Cluster Add-on
 
+Get the CoreDNS yaml:
+
+```bash
+wget https://storage.googleapis.com/kubernetes-the-hard-way/coredns.yaml
+```
+
+Edit the `coredns.yaml` file to change CoreDNS configuration to enable DNS resolution for external name:
+
+```bash
+sed '/.*prometheus :9153/a \ \ \ \ \ \ \ \ forward . /etc/resolv.conf' coredns.yaml
+```
+
 Deploy the `coredns` cluster add-on:
 
 ```bash
-kubectl apply -f https://storage.googleapis.com/kubernetes-the-hard-way/coredns.yaml
+kubectl apply -f coredns.yaml
 ```
 
 > Output:
