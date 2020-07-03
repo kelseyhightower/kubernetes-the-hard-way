@@ -51,7 +51,7 @@ done
 
 Results:
 
-```
+```plain
 worker-0.kubeconfig
 worker-1.kubeconfig
 worker-2.kubeconfig
@@ -86,7 +86,7 @@ Generate a kubeconfig file for the `kube-proxy` service:
 
 Results:
 
-```
+```plain
 kube-proxy.kubeconfig
 ```
 
@@ -119,7 +119,7 @@ Generate a kubeconfig file for the `kube-controller-manager` service:
 
 Results:
 
-```
+```plain
 kube-controller-manager.kubeconfig
 ```
 
@@ -153,7 +153,7 @@ Generate a kubeconfig file for the `kube-scheduler` service:
 
 Results:
 
-```
+```plain
 kube-scheduler.kubeconfig
 ```
 
@@ -186,7 +186,7 @@ Generate a kubeconfig file for the `admin` user:
 
 Results:
 
-```
+```plain
 admin.kubeconfig
 ```
 

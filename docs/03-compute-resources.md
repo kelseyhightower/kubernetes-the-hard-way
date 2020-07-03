@@ -62,7 +62,7 @@ gcloud compute firewall-rules list --filter="network:kubernetes-the-hard-way"
 
 > output
 
-```
+```plain
 NAME                                    NETWORK                  DIRECTION  PRIORITY  ALLOW                 DENY
 kubernetes-the-hard-way-allow-external  kubernetes-the-hard-way  INGRESS    1000      tcp:22,tcp:6443,icmp
 kubernetes-the-hard-way-allow-internal  kubernetes-the-hard-way  INGRESS    1000      tcp,udp,icmp
@@ -85,7 +85,7 @@ gcloud compute addresses list --filter="name=('kubernetes-the-hard-way')"
 
 > output
 
-```
+```plain
 NAME                     REGION    ADDRESS        STATUS
 kubernetes-the-hard-way  us-west1  XX.XXX.XXX.XX  RESERVED
 ```
@@ -149,7 +149,7 @@ gcloud compute instances list
 
 > output
 
-```
+```plain
 NAME          ZONE        MACHINE_TYPE   PREEMPTIBLE  INTERNAL_IP  EXTERNAL_IP     STATUS
 controller-0  us-west1-c  n1-standard-1               10.240.0.10  XX.XXX.XXX.XXX  RUNNING
 controller-1  us-west1-c  n1-standard-1               10.240.0.11  XX.XXX.X.XX     RUNNING
@@ -171,7 +171,7 @@ gcloud compute ssh controller-0
 
 If this is your first time connecting to a compute instance SSH keys will be generated for you. Enter a passphrase at the prompt to continue:
 
-```
+```plain
 WARNING: The public SSH key file for gcloud does not exist.
 WARNING: The private SSH key file for gcloud does not exist.
 WARNING: You do not have an SSH key for gcloud.
@@ -183,7 +183,7 @@ Enter same passphrase again:
 
 At this point the generated SSH keys will be uploaded and stored in your project:
 
-```
+```plain
 Your identification has been saved in /home/$USER/.ssh/google_compute_engine.
 Your public key has been saved in /home/$USER/.ssh/google_compute_engine.pub.
 The key fingerprint is:
@@ -207,7 +207,7 @@ Waiting for SSH key to propagate.
 
 After the SSH keys have been updated you'll be logged into the `controller-0` instance:
 
-```
+```plain
 Welcome to Ubuntu 18.04.3 LTS (GNU/Linux 4.15.0-1042-gcp x86_64)
 ...
 
@@ -221,7 +221,7 @@ $USER@controller-0:~$ exit
 ```
 > output
 
-```
+```plain
 logout
 Connection to XX.XXX.XXX.XXX closed
 ```

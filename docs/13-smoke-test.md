@@ -27,7 +27,7 @@ gcloud compute ssh controller-0 \
 
 > output
 
-```
+```plain
 00000000  2f 72 65 67 69 73 74 72  79 2f 73 65 63 72 65 74  |/registry/secret|
 00000010  73 2f 64 65 66 61 75 6c  74 2f 6b 75 62 65 72 6e  |s/default/kubern|
 00000020  65 74 65 73 2d 74 68 65  2d 68 61 72 64 2d 77 61  |etes-the-hard-wa|
@@ -65,7 +65,7 @@ kubectl get pods -l app=nginx
 
 > output
 
-```
+```plain
 NAME                     READY   STATUS    RESTARTS   AGE
 nginx-554b9c67f9-vt5rn   1/1     Running   0          10s
 ```
@@ -88,7 +88,7 @@ kubectl port-forward $POD_NAME 8080:80
 
 > output
 
-```
+```plain
 Forwarding from 127.0.0.1:8080 -> 80
 Forwarding from [::1]:8080 -> 80
 ```
@@ -101,7 +101,7 @@ curl --head http://127.0.0.1:8080
 
 > output
 
-```
+```plain
 HTTP/1.1 200 OK
 Server: nginx/1.17.3
 Date: Sat, 14 Sep 2019 21:10:11 GMT
@@ -115,7 +115,7 @@ Accept-Ranges: bytes
 
 Switch back to the previous terminal and stop the port forwarding to the `nginx` pod:
 
-```
+```plain
 Forwarding from 127.0.0.1:8080 -> 80
 Forwarding from [::1]:8080 -> 80
 Handling connection for 8080
@@ -134,7 +134,7 @@ kubectl logs $POD_NAME
 
 > output
 
-```
+```plain
 127.0.0.1 - - [14/Sep/2019:21:10:11 +0000] "HEAD / HTTP/1.1" 200 0 "-" "curl/7.52.1" "-"
 ```
 
@@ -150,7 +150,7 @@ kubectl exec -ti $POD_NAME -- nginx -v
 
 > output
 
-```
+```plain
 nginx version: nginx/1.17.3
 ```
 
@@ -196,7 +196,7 @@ curl -I http://${EXTERNAL_IP}:${NODE_PORT}
 
 > output
 
-```
+```plain
 HTTP/1.1 200 OK
 Server: nginx/1.17.3
 Date: Sat, 14 Sep 2019 21:12:35 GMT

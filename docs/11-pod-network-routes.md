@@ -21,7 +21,7 @@ done
 
 > output
 
-```
+```plain
 10.240.0.20 10.200.0.0/24
 10.240.0.21 10.200.1.0/24
 10.240.0.22 10.200.2.0/24
@@ -48,7 +48,7 @@ gcloud compute routes list --filter "network: kubernetes-the-hard-way"
 
 > output
 
-```
+```plain
 NAME                            NETWORK                  DEST_RANGE     NEXT_HOP                  PRIORITY
 default-route-081879136902de56  kubernetes-the-hard-way  10.240.0.0/24  kubernetes-the-hard-way   1000
 default-route-55199a5aa126d7aa  kubernetes-the-hard-way  0.0.0.0/0      default-internet-gateway  1000

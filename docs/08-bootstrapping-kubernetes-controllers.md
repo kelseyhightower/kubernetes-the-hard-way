@@ -249,7 +249,7 @@ sudo systemctl enable nginx
 kubectl get componentstatuses --kubeconfig admin.kubeconfig
 ```
 
-```
+```plain
 NAME                 STATUS    MESSAGE              ERROR
 controller-manager   Healthy   ok
 scheduler            Healthy   ok
@@ -264,7 +264,7 @@ Test the nginx HTTP health check proxy:
 curl -H "Host: kubernetes.default.svc.cluster.local" -i http://127.0.0.1/healthz
 ```
 
-```
+```plain
 HTTP/1.1 200 OK
 Server: nginx/1.14.0 (Ubuntu)
 Date: Sat, 14 Sep 2019 18:34:11 GMT

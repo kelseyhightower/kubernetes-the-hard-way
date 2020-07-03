@@ -53,7 +53,7 @@ cfssl gencert -initca ca-csr.json | cfssljson -bare ca
 
 Results:
 
-```
+```plain
 ca-key.pem
 ca.pem
 ```
@@ -100,7 +100,7 @@ cfssl gencert \
 
 Results:
 
-```
+```plain
 admin-key.pem
 admin.pem
 ```
@@ -150,7 +150,7 @@ done
 
 Results:
 
-```
+```plain
 worker-0-key.pem
 worker-0.pem
 worker-1-key.pem
@@ -197,7 +197,7 @@ cfssl gencert \
 
 Results:
 
-```
+```plain
 kube-controller-manager-key.pem
 kube-controller-manager.pem
 ```
@@ -241,7 +241,7 @@ cfssl gencert \
 
 Results:
 
-```
+```plain
 kube-proxy-key.pem
 kube-proxy.pem
 ```
@@ -284,7 +284,7 @@ cfssl gencert \
 
 Results:
 
-```
+```plain
 kube-scheduler-key.pem
 kube-scheduler.pem
 ```
@@ -339,7 +339,7 @@ cfssl gencert \
 
 Results:
 
-```
+```plain
 kubernetes-key.pem
 kubernetes.pem
 ```
@@ -384,7 +384,7 @@ cfssl gencert \
 
 Results:
 
-```
+```plain
 service-account-key.pem
 service-account.pem
 ```

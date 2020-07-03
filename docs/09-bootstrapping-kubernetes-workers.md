@@ -303,7 +303,7 @@ gcloud compute ssh controller-0 \
 
 > output
 
-```
+```plain
 NAME       STATUS   ROLES    AGE   VERSION
 worker-0   Ready    <none>   15s   v1.15.3
 worker-1   Ready    <none>   15s   v1.15.3
