@@ -12,7 +12,7 @@ kubectl apply -f https://storage.googleapis.com/kubernetes-the-hard-way/coredns.
 
 > output
 
-```plain
+```plaintext
 serviceaccount/coredns created
 clusterrole.rbac.authorization.k8s.io/system:coredns created
 clusterrolebinding.rbac.authorization.k8s.io/system:coredns created
@@ -29,7 +29,7 @@ kubectl get pods -l k8s-app=kube-dns -n kube-system
 
 > output
 
-```plain
+```plaintext
 NAME                       READY   STATUS    RESTARTS   AGE
 coredns-699f8ddd77-94qv9   1/1     Running   0          20s
 coredns-699f8ddd77-gtcgb   1/1     Running   0          20s
@@ -51,7 +51,7 @@ kubectl get pods -l run=busybox
 
 > output
 
-```plain
+```plaintext
 NAME      READY   STATUS    RESTARTS   AGE
 busybox   1/1     Running   0          3s
 ```
@@ -70,7 +70,7 @@ kubectl exec -ti $POD_NAME -- nslookup kubernetes
 
 > output
 
-```plain
+```plaintext
 Server:    10.32.0.10
 Address 1: 10.32.0.10 kube-dns.kube-system.svc.cluster.local
 

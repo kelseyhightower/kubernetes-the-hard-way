@@ -43,7 +43,7 @@ kubectl get componentstatuses
 
 > output
 
-```plain
+```plaintext
 NAME                 STATUS    MESSAGE             ERROR
 controller-manager   Healthy   ok
 scheduler            Healthy   ok
@@ -60,7 +60,7 @@ kubectl get nodes
 
 > output
 
-```plain
+```plaintext
 NAME       STATUS   ROLES    AGE    VERSION
 worker-0   Ready    <none>   2m9s   v1.15.3
 worker-1   Ready    <none>   2m9s   v1.15.3
