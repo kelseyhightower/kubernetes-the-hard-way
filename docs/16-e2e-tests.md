@@ -35,3 +35,7 @@ kubetest --provider=skeleton --test --test_args=”--ginkgo.focus=\[Conformance\
 
 
 This could take about 1.5 to 2 hours. The number of tests run and passed will be displayed at the end.
+
+  
+
+Next: [Dynamic Kubelet configuration](17-extra-dynamic-kubelet-configuration.md)

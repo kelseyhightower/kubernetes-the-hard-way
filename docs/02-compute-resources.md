@@ -97,3 +97,6 @@ In such cases delete the VM, then delete the VM folder and then re-provision
 `rmdir "<path-to-vm-folder>\kubernetes-ha-worker-2"`
 
 `vagrant up`
+  
+
+Next: [Client Tools](03-client-tools.md)
