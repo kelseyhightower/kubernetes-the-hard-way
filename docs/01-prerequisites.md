@@ -4,7 +4,7 @@
 
 This tutorial leverages the [Google Cloud Platform](https://cloud.google.com/) to streamline provisioning of the compute infrastructure required to bootstrap a Kubernetes cluster from the ground up. [Sign up](https://cloud.google.com/free/) for $300 in free credits.
 
-[Estimated cost](https://cloud.google.com/products/calculator/#id=55663256-c384-449c-9306-e39893e23afb) to run this tutorial: $0.23 per hour ($5.46 per day).
+[Estimated cost](https://cloud.google.com/products/calculator#id=873932bc-0840-4176-b0fa-a8cfd4ca61ae) to run this tutorial: $0.23 per hour ($5.50 per day).
 
 > The compute resources required for this tutorial exceed the Google Cloud Platform free tier.
 
@@ -14,7 +14,7 @@ This tutorial leverages the [Google Cloud Platform](https://cloud.google.com/) t
 
 Follow the Google Cloud SDK [documentation](https://cloud.google.com/sdk/) to install and configure the `gcloud` command line utility.
 
-Verify the Google Cloud SDK version is 262.0.0 or higher:
+Verify the Google Cloud SDK version is 301.0.0 or higher:
 
 ```
 gcloud version

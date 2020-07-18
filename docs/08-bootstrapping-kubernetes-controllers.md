@@ -28,10 +28,10 @@ Download the official Kubernetes release binaries:
 
 ```
 wget -q --show-progress --https-only --timestamping \
-  "https://storage.googleapis.com/kubernetes-release/release/v1.15.3/bin/linux/amd64/kube-apiserver" \
-  "https://storage.googleapis.com/kubernetes-release/release/v1.15.3/bin/linux/amd64/kube-controller-manager" \
-  "https://storage.googleapis.com/kubernetes-release/release/v1.15.3/bin/linux/amd64/kube-scheduler" \
-  "https://storage.googleapis.com/kubernetes-release/release/v1.15.3/bin/linux/amd64/kubectl"
+  "https://storage.googleapis.com/kubernetes-release/release/v1.18.6/bin/linux/amd64/kube-apiserver" \
+  "https://storage.googleapis.com/kubernetes-release/release/v1.18.6/bin/linux/amd64/kube-controller-manager" \
+  "https://storage.googleapis.com/kubernetes-release/release/v1.18.6/bin/linux/amd64/kube-scheduler" \
+  "https://storage.googleapis.com/kubernetes-release/release/v1.18.6/bin/linux/amd64/kubectl"
 ```
 
 Install the Kubernetes binaries:
@@ -93,7 +93,7 @@ ExecStart=/usr/local/bin/kube-apiserver \\
   --kubelet-client-certificate=/var/lib/kubernetes/kubernetes.pem \\
   --kubelet-client-key=/var/lib/kubernetes/kubernetes-key.pem \\
   --kubelet-https=true \\
-  --runtime-config=api/all \\
+  --runtime-config='api/all=true' \\
   --service-account-key-file=/var/lib/kubernetes/service-account.pem \\
   --service-cluster-ip-range=10.32.0.0/24 \\
   --service-node-port-range=30000-32767 \\
@@ -126,7 +126,7 @@ Documentation=https://github.com/kubernetes/kubernetes
 
 [Service]
 ExecStart=/usr/local/bin/kube-controller-manager \\
-  --address=0.0.0.0 \\
+  --bind-address=0.0.0.0 \\
   --cluster-cidr=10.200.0.0/16 \\
   --cluster-name=kubernetes \\
   --cluster-signing-cert-file=/var/lib/kubernetes/ca.pem \\
@@ -250,12 +250,12 @@ kubectl get componentstatuses --kubeconfig admin.kubeconfig
 ```
 
 ```
-NAME                 STATUS    MESSAGE              ERROR
-controller-manager   Healthy   ok
+NAME                 STATUS    MESSAGE             ERROR
 scheduler            Healthy   ok
-etcd-2               Healthy   {"health": "true"}
-etcd-0               Healthy   {"health": "true"}
-etcd-1               Healthy   {"health": "true"}
+controller-manager   Healthy   ok
+etcd-0               Healthy   {"health":"true"}
+etcd-1               Healthy   {"health":"true"}
+etcd-2               Healthy   {"health":"true"}
 ```
 
 Test the nginx HTTP health check proxy:
@@ -266,11 +266,12 @@ curl -H "Host: kubernetes.default.svc.cluster.local" -i http://127.0.0.1/healthz
 
 ```
 HTTP/1.1 200 OK
-Server: nginx/1.14.0 (Ubuntu)
-Date: Sat, 14 Sep 2019 18:34:11 GMT
+Server: nginx/1.18.0 (Ubuntu)
+Date: Sat, 18 Jul 2020 06:20:48 GMT
 Content-Type: text/plain; charset=utf-8
 Content-Length: 2
 Connection: keep-alive
+Cache-Control: no-cache, private
 X-Content-Type-Options: nosniff
 
 ok
@@ -402,12 +403,12 @@ curl --cacert ca.pem https://${KUBERNETES_PUBLIC_ADDRESS}:6443/version
 ```
 {
   "major": "1",
-  "minor": "15",
-  "gitVersion": "v1.15.3",
-  "gitCommit": "2d3c76f9091b6bec110a5e63777c332469e0cba2",
+  "minor": "18",
+  "gitVersion": "v1.18.6",
+  "gitCommit": "dff82dc0de47299ab66c83c626e08b245ab19037",
   "gitTreeState": "clean",
-  "buildDate": "2019-08-19T11:05:50Z",
-  "goVersion": "go1.12.9",
+  "buildDate": "2020-07-15T16:51:04Z",
+  "goVersion": "go1.13.9",
   "compiler": "gc",
   "platform": "linux/amd64"
 }

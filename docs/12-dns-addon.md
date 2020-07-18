@@ -7,7 +7,7 @@ In this lab you will deploy the [DNS add-on](https://kubernetes.io/docs/concepts
 Deploy the `coredns` cluster add-on:
 
 ```
-kubectl apply -f https://storage.googleapis.com/kubernetes-the-hard-way/coredns.yaml
+kubectl apply -f https://storage.googleapis.com/kubernetes-the-hard-way/coredns-1.7.0.yaml
 ```
 
 > output
@@ -17,7 +17,7 @@ serviceaccount/coredns created
 clusterrole.rbac.authorization.k8s.io/system:coredns created
 clusterrolebinding.rbac.authorization.k8s.io/system:coredns created
 configmap/coredns created
-deployment.extensions/coredns created
+deployment.apps/coredns created
 service/kube-dns created
 ```
 
@@ -31,8 +31,8 @@ kubectl get pods -l k8s-app=kube-dns -n kube-system
 
 ```
 NAME                       READY   STATUS    RESTARTS   AGE
-coredns-699f8ddd77-94qv9   1/1     Running   0          20s
-coredns-699f8ddd77-gtcgb   1/1     Running   0          20s
+coredns-5677dc4cdb-d8rtv   1/1     Running   0          30s
+coredns-5677dc4cdb-m8n69   1/1     Running   0          30s
 ```
 
 ## Verification
@@ -40,7 +40,7 @@ coredns-699f8ddd77-gtcgb   1/1     Running   0          20s
 Create a `busybox` deployment:
 
 ```
-kubectl run --generator=run-pod/v1 busybox --image=busybox:1.28 --command -- sleep 3600
+kubectl run busybox --image=busybox:1.28 --command -- sleep 3600
 ```
 
 List the pod created by the `busybox` deployment:
