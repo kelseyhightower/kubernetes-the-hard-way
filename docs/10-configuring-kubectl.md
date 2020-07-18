@@ -45,11 +45,11 @@ kubectl get componentstatuses
 
 ```
 NAME                 STATUS    MESSAGE             ERROR
-controller-manager   Healthy   ok
 scheduler            Healthy   ok
+controller-manager   Healthy   ok
+etcd-0               Healthy   {"health":"true"}
 etcd-1               Healthy   {"health":"true"}
 etcd-2               Healthy   {"health":"true"}
-etcd-0               Healthy   {"health":"true"}
 ```
 
 List the nodes in the remote Kubernetes cluster:
@@ -61,10 +61,10 @@ kubectl get nodes
 > output
 
 ```
-NAME       STATUS   ROLES    AGE    VERSION
-worker-0   Ready    <none>   2m9s   v1.15.3
-worker-1   Ready    <none>   2m9s   v1.15.3
-worker-2   Ready    <none>   2m9s   v1.15.3
+NAME       STATUS   ROLES    AGE     VERSION
+worker-0   Ready    <none>   2m30s   v1.18.6
+worker-1   Ready    <none>   2m30s   v1.18.6
+worker-2   Ready    <none>   2m30s   v1.18.6
 ```
 
 Next: [Provisioning Pod Network Routes](11-pod-network-routes.md)
