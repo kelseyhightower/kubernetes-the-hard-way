@@ -184,7 +184,7 @@ az network lb rule create \
 
 ## Compute Instances
 
-The compute instances in this lab will be provisioned using [Ubuntu Server](https://www.ubuntu.com/server) 18.04, which has good support for the [containerd container runtime](https://github.com/containerd/containerd). Each compute instance will be provisioned with a fixed private IP address to simplify the Kubernetes bootstrapping process.
+The compute instances in this lab will be provisioned using [Ubuntu Server](https://www.ubuntu.com/server) 20.04, which has good support for the [containerd container runtime](https://github.com/containerd/containerd). Each compute instance will be provisioned with a fixed private IP address to simplify the Kubernetes bootstrapping process.
 
 ### Kubernetes Controllers
 
@@ -224,7 +224,7 @@ for i in 0 1 2; do
     --availability-set kubernetes-the-hard-way-as \
     --no-wait \
     --nics controller-${i}-nic \
-    --image Canonical:UbuntuServer:18.04-LTS:latest \
+    --image Canonical:UbuntuServer:20.04-LTS:latest \
     --admin-username azureuser \
     --generate-ssh-keys \
     --size Standard_B2s \
@@ -269,7 +269,7 @@ for i in 0 1 2; do
     --resource-group kubernetes-the-hard-way \
     --no-wait \
     --nics worker-${i}-nic \
-    --image Canonical:UbuntuServer:18.04-LTS:latest \
+    --image Canonical:UbuntuServer:20.04-LTS:latest \
     --admin-username azureuser \
     --generate-ssh-keys \
     --size Standard_B2s \
