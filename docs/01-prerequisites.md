@@ -2,7 +2,7 @@
 
 ## VM Hardware Requirements
 
-8 GB of RAM (Preferebly 16 GB)
+8 GB of RAM (Preferably 16 GB)
 50 GB Disk space
 
 ## Virtual Box
