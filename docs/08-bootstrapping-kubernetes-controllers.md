@@ -79,6 +79,7 @@ ExecStart=/usr/local/bin/kube-apiserver \\
   --audit-log-maxbackup=3 \\
   --audit-log-maxsize=100 \\
   --audit-log-path=/var/log/audit.log \\
+  --authentication-kubeconfig=/var/lib/kubernetes/kube-controller-manager.kubeconfig \\
   --authorization-mode=Node,RBAC \\
   --bind-address=0.0.0.0 \\
   --client-ca-file=/var/lib/kubernetes/ca.pem \\
@@ -344,7 +345,6 @@ EOF
 In this section you will provision an external load balancer to front the Kubernetes API Servers. The `kubernetes-the-hard-way` static IP address will be attached to the resulting load balancer.
 
 > The compute instances created in this tutorial will not have permission to complete this section. **Run the following commands from the same machine used to create the compute instances**.
-
 
 ### Provision a Network Load Balancer
 
