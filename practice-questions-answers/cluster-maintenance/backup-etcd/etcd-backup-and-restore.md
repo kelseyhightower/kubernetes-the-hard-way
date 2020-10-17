@@ -5,7 +5,7 @@
 Reference: https://github.com/etcd-io/etcd/releases
 
 ```
-ETCD_VER=v3.3.13
+ETCD_VER=v3.4.9
 
 # choose either URL
 GOOGLE_URL=https://storage.googleapis.com/etcd
@@ -41,41 +41,19 @@ ETCDCTL_API=3 etcdctl --endpoints=https://[127.0.0.1]:2379 --cacert=/etc/kuberne
 
 ```
 ETCDCTL_API=3 etcdctl --endpoints=https://[127.0.0.1]:2379 --cacert=/etc/kubernetes/pki/etcd/ca.crt \
-     --name=master \
      --cert=/etc/kubernetes/pki/etcd/server.crt --key=/etc/kubernetes/pki/etcd/server.key \
      --data-dir /var/lib/etcd-from-backup \
-     --initial-cluster=master=https://127.0.0.1:2380 \
-     --initial-cluster-token=etcd-cluster-1 \
-     --initial-advertise-peer-urls=https://127.0.0.1:2380 \
      snapshot restore /opt/snapshot-pre-boot.db
 ```
 
 # 4. Modify /etc/kubernetes/manifests/etcd.yaml
 
-Update ETCD POD to use the new data directory and cluster token by modifying the pod definition file at `/etc/kubernetes/manifests/etcd.yaml`. When this file is updated, the ETCD pod is automatically re-created as this is a static pod placed under the `/etc/kubernetes/manifests` directory.
+Update ETCD POD to use the new hostPath directory `/var/lib/etcd-from-backup` by modifying the pod definition file at `/etc/kubernetes/manifests/etcd.yaml`. When this file is updated, the ETCD pod is automatically re-created as this is a static pod placed under the `/etc/kubernetes/manifests` directory.
 
-Update --data-dir to use new target location
-
-```
---data-dir=/var/lib/etcd-from-backup
-```
-
-Update new initial-cluster-token to specify new cluster
-
-```
---initial-cluster-token=etcd-cluster-1
-```
 
 Update volumes and volume mounts to point to new path
 
 ```
-    volumeMounts:
-    - mountPath: /var/lib/etcd-from-backup
-      name: etcd-data
-    - mountPath: /etc/kubernetes/pki/etcd
-      name: etcd-certs
-  hostNetwork: true
-  priorityClassName: system-cluster-critical
   volumes:
   - hostPath:
       path: /var/lib/etcd-from-backup
@@ -87,4 +65,6 @@ Update volumes and volume mounts to point to new path
     name: etcd-certs
 ```
 
-> Note: You don't really need to update data directory and volumeMounts.mountPath path above. You could simply just update the hostPath.path in the volumes section to point to the new directory. But if you are not working with a kubeadm deployed cluster, then you might have to update the data directory. That's why I left it as is. 
+> Note: as the ETCD pod has changed it will automatically restart, and also kube-controller-manager and kube-scheduler. Wait 1-2 to mins for this pods to restart. You can make a `watch "docker ps | grep etcd"` to see when the ETCD pod is restarted.
+
+> Note2: If the etcd pod is not getting `Ready 1/1`, then restart it by `kubectl delete pod -n kube-system etcd-controlplane` and wait 1 minute.
