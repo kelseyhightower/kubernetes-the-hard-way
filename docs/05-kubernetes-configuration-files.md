@@ -45,10 +45,9 @@ Results:
 
 ```
 kube-proxy.kubeconfig
-
+```
 
 Reference docs for kube-proxy [here](https://kubernetes.io/docs/reference/command-line-tools-reference/kube-proxy/)
-```
 
 ### The kube-controller-manager Kubernetes Configuration File
 
