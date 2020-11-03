@@ -74,6 +74,7 @@ Documentation=https://github.com/kubernetes/kubernetes
 ExecStart=/usr/local/bin/kube-apiserver \\
   --advertise-address=${INTERNAL_IP} \\
   --allow-privileged=true \\
+  --anonymous-auth=false \\
   --apiserver-count=3 \\
   --audit-log-maxage=30 \\
   --audit-log-maxbackup=3 \\
