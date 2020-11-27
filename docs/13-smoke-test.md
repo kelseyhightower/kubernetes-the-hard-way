@@ -159,7 +159,7 @@ kubectl exec -ti $POD_NAME -- nginx -v
 > output
 
 ```
-nginx version: nginx/1.19.1
+nginx version: nginx/1.19.5
 ```
 
 ## Services

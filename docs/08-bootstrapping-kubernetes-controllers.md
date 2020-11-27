@@ -28,10 +28,10 @@ Download the official Kubernetes release binaries:
 
 ```
 wget -q --show-progress --https-only --timestamping \
-  "https://storage.googleapis.com/kubernetes-release/release/v1.18.6/bin/linux/amd64/kube-apiserver" \
-  "https://storage.googleapis.com/kubernetes-release/release/v1.18.6/bin/linux/amd64/kube-controller-manager" \
-  "https://storage.googleapis.com/kubernetes-release/release/v1.18.6/bin/linux/amd64/kube-scheduler" \
-  "https://storage.googleapis.com/kubernetes-release/release/v1.18.6/bin/linux/amd64/kubectl"
+  "https://storage.googleapis.com/kubernetes-release/release/v1.19.4/bin/linux/amd64/kube-apiserver" \
+  "https://storage.googleapis.com/kubernetes-release/release/v1.19.4/bin/linux/amd64/kube-controller-manager" \
+  "https://storage.googleapis.com/kubernetes-release/release/v1.19.4/bin/linux/amd64/kube-scheduler" \
+  "https://storage.googleapis.com/kubernetes-release/release/v1.19.4/bin/linux/amd64/kubectl"
 ```
 
 Install the Kubernetes binaries:
@@ -158,7 +158,7 @@ Create the `kube-scheduler.yaml` configuration file:
 
 ```
 cat <<EOF | sudo tee /etc/kubernetes/config/kube-scheduler.yaml
-apiVersion: kubescheduler.config.k8s.io/v1alpha1
+apiVersion: kubescheduler.config.k8s.io/v1beta1
 kind: KubeSchedulerConfiguration
 clientConnection:
   kubeconfig: "/var/lib/kubernetes/kube-scheduler.kubeconfig"
@@ -244,6 +244,13 @@ sudo systemctl enable nginx
 ```
 
 ### Verification
+---
+**NOTE**
+
+Although the `kubectl get componentstatues` still "works", the API has been deprecated as of Kubernetes v1.19
+
+[Release Notes](https://kubernetes.io/docs/setup/release/notes/#deprecation-1)
+---
 
 ```
 kubectl get componentstatuses --kubeconfig admin.kubeconfig
@@ -258,7 +265,7 @@ etcd-1               Healthy   {"health":"true"}
 etcd-2               Healthy   {"health":"true"}
 ```
 
-Test the nginx HTTP health check proxy:
+Test the nginx HTTP health check proxy of the kubernetes-api:
 
 ```
 curl -H "Host: kubernetes.default.svc.cluster.local" -i http://127.0.0.1/healthz
@@ -276,6 +283,25 @@ X-Content-Type-Options: nosniff
 
 ok
 ```
+
+Test the health check of the kube-scheduler:
+
+
+```
+curl -i http://127.0.0.1:10251/healthz
+```
+
+```
+HTTP/1.1 200 OK
+Cache-Control: no-cache, private
+Content-Type: text/plain; charset=utf-8
+X-Content-Type-Options: nosniff
+Date: Fri, 27 Nov 2020 17:48:26 GMT
+Content-Length: 2
+
+ok
+```
+
 
 > Remember to run the above commands on each controller node: `controller-0`, `controller-1`, and `controller-2`.
 
@@ -295,7 +321,7 @@ Create the `system:kube-apiserver-to-kubelet` [ClusterRole](https://kubernetes.i
 
 ```
 cat <<EOF | kubectl apply --kubeconfig admin.kubeconfig -f -
-apiVersion: rbac.authorization.k8s.io/v1beta1
+apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
   annotations:
@@ -323,7 +349,7 @@ Bind the `system:kube-apiserver-to-kubelet` ClusterRole to the `kubernetes` user
 
 ```
 cat <<EOF | kubectl apply --kubeconfig admin.kubeconfig -f -
-apiVersion: rbac.authorization.k8s.io/v1beta1
+apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
   name: system:kube-apiserver
@@ -403,12 +429,12 @@ curl --cacert ca.pem https://${KUBERNETES_PUBLIC_ADDRESS}:6443/version
 ```
 {
   "major": "1",
-  "minor": "18",
-  "gitVersion": "v1.18.6",
-  "gitCommit": "dff82dc0de47299ab66c83c626e08b245ab19037",
+  "minor": "19",
+  "gitVersion": "v1.19.4",
+  "gitCommit": "d360454c9bcd1634cf4cc52d1867af5491dc9c5f",
   "gitTreeState": "clean",
-  "buildDate": "2020-07-15T16:51:04Z",
-  "goVersion": "go1.13.9",
+  "buildDate": "2020-11-11T13:09:17Z",
+  "goVersion": "go1.15.2",
   "compiler": "gc",
   "platform": "linux/amd64"
 }

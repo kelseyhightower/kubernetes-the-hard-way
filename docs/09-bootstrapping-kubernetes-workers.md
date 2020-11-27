@@ -49,13 +49,13 @@ sudo swapoff -a
 
 ```
 wget -q --show-progress --https-only --timestamping \
-  https://github.com/kubernetes-sigs/cri-tools/releases/download/v1.18.0/crictl-v1.18.0-linux-amd64.tar.gz \
-  https://github.com/opencontainers/runc/releases/download/v1.0.0-rc91/runc.amd64 \
-  https://github.com/containernetworking/plugins/releases/download/v0.8.6/cni-plugins-linux-amd64-v0.8.6.tgz \
-  https://github.com/containerd/containerd/releases/download/v1.3.6/containerd-1.3.6-linux-amd64.tar.gz \
-  https://storage.googleapis.com/kubernetes-release/release/v1.18.6/bin/linux/amd64/kubectl \
-  https://storage.googleapis.com/kubernetes-release/release/v1.18.6/bin/linux/amd64/kube-proxy \
-  https://storage.googleapis.com/kubernetes-release/release/v1.18.6/bin/linux/amd64/kubelet
+  https://github.com/kubernetes-sigs/cri-tools/releases/download/v1.19.0/crictl-v1.19.0-linux-amd64.tar.gz \
+  https://github.com/opencontainers/runc/releases/download/v1.0.0-rc92/runc.amd64 \
+  https://github.com/containernetworking/plugins/releases/download/v0.8.7/cni-plugins-linux-amd64-v0.8.7.tgz \
+  https://github.com/containerd/containerd/releases/download/v1.4.2/containerd-1.4.2-linux-amd64.tar.gz \
+  https://storage.googleapis.com/kubernetes-release/release/v1.19.4/bin/linux/amd64/kubectl \
+  https://storage.googleapis.com/kubernetes-release/release/v1.19.4/bin/linux/amd64/kube-proxy \
+  https://storage.googleapis.com/kubernetes-release/release/v1.19.4/bin/linux/amd64/kubelet
 ```
 
 Create the installation directories:
@@ -75,9 +75,9 @@ Install the worker binaries:
 ```
 {
   mkdir containerd
-  tar -xvf crictl-v1.18.0-linux-amd64.tar.gz
-  tar -xvf containerd-1.3.6-linux-amd64.tar.gz -C containerd
-  sudo tar -xvf cni-plugins-linux-amd64-v0.8.6.tgz -C /opt/cni/bin/
+  tar -xvf crictl-v1.19.0-linux-amd64.tar.gz
+  tar -xvf containerd-1.4.2-linux-amd64.tar.gz -C containerd
+  sudo tar -xvf cni-plugins-linux-amd64-v0.8.7.tgz -C /opt/cni/bin/
   sudo mv runc.amd64 runc
   chmod +x crictl kubectl kube-proxy kubelet runc 
   sudo mv crictl kubectl kube-proxy kubelet runc /usr/local/bin/
@@ -304,10 +304,10 @@ gcloud compute ssh controller-0 \
 > output
 
 ```
-NAME       STATUS   ROLES    AGE   VERSION
-worker-0   Ready    <none>   24s   v1.18.6
-worker-1   Ready    <none>   24s   v1.18.6
-worker-2   Ready    <none>   24s   v1.18.6
+NAME       STATUS   ROLES    AGE     VERSION
+worker-0   Ready    <none>   3m      v1.19.4
+worker-1   Ready    <none>   3m      v1.19.4
+worker-2   Ready    <none>   2m58s   v1.19.4
 ```
 
 Next: [Configuring kubectl for Remote Access](10-configuring-kubectl.md)

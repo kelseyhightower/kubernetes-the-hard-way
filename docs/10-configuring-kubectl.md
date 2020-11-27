@@ -34,6 +34,12 @@ Generate a kubeconfig file suitable for authenticating as the `admin` user:
 ```
 
 ## Verification
+---
+**NOTE**
+
+Although the `kubectl get componentstatues` still "works", the API has been deprecated as of Kubernetes v1.19
+> [Release Notes](https://kubernetes.io/docs/setup/release/notes/#deprecation-1)
+---
 
 Check the health of the remote Kubernetes cluster:
 
@@ -52,6 +58,7 @@ etcd-1               Healthy   {"health":"true"}
 etcd-2               Healthy   {"health":"true"}
 ```
 
+
 List the nodes in the remote Kubernetes cluster:
 
 ```
@@ -62,9 +69,9 @@ kubectl get nodes
 
 ```
 NAME       STATUS   ROLES    AGE     VERSION
-worker-0   Ready    <none>   2m30s   v1.18.6
-worker-1   Ready    <none>   2m30s   v1.18.6
-worker-2   Ready    <none>   2m30s   v1.18.6
+worker-0   Ready    <none>   6m34s   v1.19.4
+worker-1   Ready    <none>   6m34s   v1.19.4
+worker-2   Ready    <none>   6m32s   v1.19.4
 ```
 
 Next: [Provisioning Pod Network Routes](11-pod-network-routes.md)
