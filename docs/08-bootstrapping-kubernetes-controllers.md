@@ -249,7 +249,7 @@ sudo systemctl enable nginx
 
 Although the `kubectl get componentstatues` still "works", the API has been deprecated as of Kubernetes v1.19
 
-[Release Notes](https://kubernetes.io/docs/setup/release/notes/#deprecation-1)
+> [Release Notes](https://kubernetes.io/docs/setup/release/notes/#deprecation-1)
 ---
 
 ```
