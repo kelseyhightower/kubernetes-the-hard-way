@@ -33,11 +33,11 @@ ETCDCTL_API=3 etcdctl --endpoints=https://[127.0.0.1]:2379 --cacert=/etc/kuberne
      snapshot save /opt/snapshot-pre-boot.db
 ```
 
-Note: In this case, the **ETCD** is running on the same server where we are running the commands (which is the *controlplane* node). As a result, the **--endpoint **argument is optional and can be ignored. 
+Note: In this case, the **ETCD** is running on the same server where we are running the commands (which is the *controlplane* node). As a result, the **--endpoint** argument is optional and can be ignored. 
 
 The options **--cert, --cacert and --key** are mandatory to authenticate to the ETCD server to take the backup.
 
-If you want to take a backup of the ETCD service running on a different machine, you will have to provide the correct endpoint to that server (which is the IP Address and port of the etcd server with the **--endpoint **argument)
+If you want to take a backup of the ETCD service running on a different machine, you will have to provide the correct endpoint to that server (which is the IP Address and port of the etcd server with the **--endpoint** argument)
 
 # -----------------------------
 # Disaster Happens
