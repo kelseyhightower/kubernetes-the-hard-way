@@ -33,6 +33,12 @@ ETCDCTL_API=3 etcdctl --endpoints=https://[127.0.0.1]:2379 --cacert=/etc/kuberne
      snapshot save /opt/snapshot-pre-boot.db
 ```
 
+Note: In this case, the **ETCD** is running on the same server where we are running the commands (which is the *controlplane* node). As a result, the **--endpoint **argument is optional and can be ignored. 
+
+The options **--cert, --cacert and --key** are mandatory to authenticate to the ETCD server to take the backup.
+
+If you want to take a backup of the ETCD service running on a different machine, you will have to provide the correct endpoint to that server (which is the IP Address and port of the etcd server with the **--endpoint **argument)
+
 # -----------------------------
 # Disaster Happens
 # -----------------------------
@@ -40,12 +46,12 @@ ETCDCTL_API=3 etcdctl --endpoints=https://[127.0.0.1]:2379 --cacert=/etc/kuberne
 # 3. Restore ETCD Snapshot to a new folder
 
 ```
-ETCDCTL_API=3 etcdctl --endpoints=https://[127.0.0.1]:2379 --cacert=/etc/kubernetes/pki/etcd/ca.crt \
-     --cert=/etc/kubernetes/pki/etcd/server.crt --key=/etc/kubernetes/pki/etcd/server.key \
-     --data-dir /var/lib/etcd-from-backup \
+ETCDCTL_API=3 etcdctl  --data-dir /var/lib/etcd-from-backup \
      snapshot restore /opt/snapshot-pre-boot.db
 ```
 
+Note: In this case, we are restoring the snapshot to a different directory but in the same server where we took the backup (**the controlplane node)**
+As a result, the only required option for the restore command is the **--data-dir**.  
 # 4. Modify /etc/kubernetes/manifests/etcd.yaml
 
 Update ETCD POD to use the new hostPath directory `/var/lib/etcd-from-backup` by modifying the pod definition file at `/etc/kubernetes/manifests/etcd.yaml`. When this file is updated, the ETCD pod is automatically re-created as this is a static pod placed under the `/etc/kubernetes/manifests` directory.
