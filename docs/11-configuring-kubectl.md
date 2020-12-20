@@ -29,9 +29,9 @@ Generate a kubeconfig file suitable for authenticating as the `admin` user:
 
   kubectl config use-context kubernetes-the-hard-way
 }
+```
 
 Reference doc for kubectl config [here](https://kubernetes.io/docs/tasks/access-application-cluster/configure-access-multiple-clusters/)
-```
 
 ## Verification
 
