@@ -4,15 +4,30 @@ Kubernetes components are stateless and store cluster state in [etcd](https://gi
 
 ## Prerequisites
 
-The commands in this lab must be run on each controller instance: `controller-0`, `controller-1`, and `controller-2`. Login to each controller instance using the `gcloud` command. Example:
+The commands in this lab must be run on each controller instance: `controller-0`, `controller-1`, and `controller-2`. Login to each controller instance using our `oci-ssh` shell function. Example:
 
 ```
-gcloud compute ssh controller-0
+oci-ssh controller-0
 ```
 
 ### Running commands in parallel with tmux
 
 [tmux](https://github.com/tmux/tmux/wiki) can be used to run commands on multiple compute instances at the same time. See the [Running commands in parallel with tmux](01-prerequisites.md#running-commands-in-parallel-with-tmux) section in the Prerequisites lab.
+
+**Note**: please import the shell functions defined [here](02-client-tools.md#shell-functions) in each tmux window/pane, as we will make use of them.
+
+## Required Tools
+
+### Install JQ
+
+Install JQ on each controller instance:
+
+```
+{
+  sudo apt-get update
+  sudo apt-get -y install jq
+}
+```
 
 ## Bootstrapping an etcd Cluster Member
 
@@ -47,8 +62,7 @@ Extract and install the `etcd` server and the `etcdctl` command line utility:
 The instance internal IP address will be used to serve client requests and communicate with etcd cluster peers. Retrieve the internal IP address for the current compute instance:
 
 ```
-INTERNAL_IP=$(curl -s -H "Metadata-Flavor: Google" \
-  http://metadata.google.internal/computeMetadata/v1/instance/network-interfaces/0/ip)
+INTERNAL_IP=$(curl -H "Authorization: Bearer Oracle" -L http://169.254.169.254/opc/v2/vnics | jq -r .[0].privateIp)  
 ```
 
 Each etcd member must have a unique name within an etcd cluster. Set the etcd name to match the hostname of the current compute instance:
@@ -68,7 +82,7 @@ Documentation=https://github.com/coreos
 [Service]
 Type=notify
 ExecStart=/usr/local/bin/etcd \\
-  --name ${ETCD_NAME} \\
+  --name ${ETCD_NAME}.subnet.vcn.oraclevcn.com \\
   --cert-file=/etc/etcd/kubernetes.pem \\
   --key-file=/etc/etcd/kubernetes-key.pem \\
   --peer-cert-file=/etc/etcd/kubernetes.pem \\
@@ -82,7 +96,7 @@ ExecStart=/usr/local/bin/etcd \\
   --listen-client-urls https://${INTERNAL_IP}:2379,https://127.0.0.1:2379 \\
   --advertise-client-urls https://${INTERNAL_IP}:2379 \\
   --initial-cluster-token etcd-cluster-0 \\
-  --initial-cluster controller-0=https://10.240.0.10:2380,controller-1=https://10.240.0.11:2380,controller-2=https://10.240.0.12:2380 \\
+  --initial-cluster controller-0.subnet.vcn.oraclevcn.com=https://10.240.0.10:2380,controller-1.subnet.vcn.oraclevcn.com=https://10.240.0.11:2380,controller-2.subnet.vcn.oraclevcn.com=https://10.240.0.12:2380 \\
   --initial-cluster-state new \\
   --data-dir=/var/lib/etcd
 Restart=on-failure

@@ -10,107 +10,81 @@ The Kubernetes [networking model](https://kubernetes.io/docs/concepts/cluster-ad
 
 > Setting up network policies is out of scope for this tutorial.
 
-### Virtual Private Cloud Network
+### Virtual Cloud Network
 
-In this section a dedicated [Virtual Private Cloud](https://cloud.google.com/compute/docs/networks-and-firewalls#networks) (VPC) network will be setup to host the Kubernetes cluster.
+In this section a dedicated [Virtual Cloud Network](https://www.oracle.com/cloud/networking/virtual-cloud-network/) (VCN) network will be setup to host the Kubernetes cluster.
 
-Create the `kubernetes-the-hard-way` custom VPC network:
-
-```
-gcloud compute networks create kubernetes-the-hard-way --subnet-mode custom
-```
-
-A [subnet](https://cloud.google.com/compute/docs/vpc/#vpc_networks_and_subnets) must be provisioned with an IP address range large enough to assign a private IP address to each node in the Kubernetes cluster.
-
-Create the `kubernetes` subnet in the `kubernetes-the-hard-way` VPC network:
+Create the `kubernetes-the-hard-way` custom VCN:
 
 ```
-gcloud compute networks subnets create kubernetes \
-  --network kubernetes-the-hard-way \
-  --range 10.240.0.0/24
+VCN_ID=$(oci network vcn create --display-name kubernetes-the-hard-way --dns-label vcn --cidr-block 10.240.0.0/24 | jq -r .data.id)
+```
+
+A [subnet](https://docs.oracle.com/en-us/iaas/Content/Network/Tasks/managingVCNs_topic-Overview_of_VCNs_and_Subnets.htm#Overview) must be provisioned with an IP address range large enough to assign a private IP address to each node in the Kubernetes cluster.
+
+Create the `kubernetes` subnet in the `kubernetes-the-hard-way` VCN, along with a Route Table and Internet Gateway allowing traffic to the internet.
+
+```
+INTERNET_GATEWAY_ID=$(oci network internet-gateway create --vcn-id $VCN_ID --is-enabled true \
+ --display-name kubernetes-the-hard-way | jq -r .data.id)
+ROUTE_TABLE_ID=$(oci network route-table create --vcn-id $VCN_ID --display-name kubernetes-the-hard-way \
+  --route-rules  "[{\"cidrBlock\":\"0.0.0.0/0\",\"networkEntityId\":\"$INTERNET_GATEWAY_ID\"}]"  | jq -r .data.id)
+SUBNET_ID=$(oci network subnet create --display-name kubernetes --dns-label subnet --vcn-id $VCN_ID \
+  --cidr-block 10.240.0.0/24 --route-table-id $ROUTE_TABLE_ID | jq -r .data.id)
 ```
 
 > The `10.240.0.0/24` IP address range can host up to 254 compute instances.
 
-### Firewall Rules
-
-Create a firewall rule that allows internal communication across all protocols:
-
-```
-gcloud compute firewall-rules create kubernetes-the-hard-way-allow-internal \
-  --allow tcp,udp,icmp \
-  --network kubernetes-the-hard-way \
-  --source-ranges 10.240.0.0/24,10.200.0.0/16
-```
-
-Create a firewall rule that allows external SSH, ICMP, and HTTPS:
-
-```
-gcloud compute firewall-rules create kubernetes-the-hard-way-allow-external \
-  --allow tcp:22,tcp:6443,icmp \
-  --network kubernetes-the-hard-way \
-  --source-ranges 0.0.0.0/0
-```
-
-> An [external load balancer](https://cloud.google.com/compute/docs/load-balancing/network/) will be used to expose the Kubernetes API Servers to remote clients.
-
-List the firewall rules in the `kubernetes-the-hard-way` VPC network:
-
-```
-gcloud compute firewall-rules list --filter="network:kubernetes-the-hard-way"
-```
-
-> output
-
-```
-NAME                                    NETWORK                  DIRECTION  PRIORITY  ALLOW                 DENY  DISABLED
-kubernetes-the-hard-way-allow-external  kubernetes-the-hard-way  INGRESS    1000      tcp:22,tcp:6443,icmp        False
-kubernetes-the-hard-way-allow-internal  kubernetes-the-hard-way  INGRESS    1000      tcp,udp,icmp                Fals
-```
-
-### Kubernetes Public IP Address
-
-Allocate a static IP address that will be attached to the external load balancer fronting the Kubernetes API Servers:
-
-```
-gcloud compute addresses create kubernetes-the-hard-way \
-  --region $(gcloud config get-value compute/region)
-```
-
-Verify the `kubernetes-the-hard-way` static IP address was created in your default compute region:
-
-```
-gcloud compute addresses list --filter="name=('kubernetes-the-hard-way')"
-```
-
-> output
-
-```
-NAME                     ADDRESS/RANGE   TYPE      PURPOSE  NETWORK  REGION    SUBNET  STATUS
-kubernetes-the-hard-way  XX.XXX.XXX.XXX  EXTERNAL                    us-west1          RESERVED
-```
+:warning: **Note**: For simplicity and to stay close to the original kubernetes-the-hard-way, we will be using a single subnet, shared between the Kubernetes worker nodes, controller plane nodes, and LoadBalancer.  A production-caliber setup would consist of at least:
+- A dedicated public subnet for the public LoadBalancer.
+- A dedicated private subnet for controller plan nodes.
+- A dedicated private subnet for worker nodes.  This setup would not allow NodePort access to services.
 
 ## Compute Instances
 
 The compute instances in this lab will be provisioned using [Ubuntu Server](https://www.ubuntu.com/server) 20.04, which has good support for the [containerd container runtime](https://github.com/containerd/containerd). Each compute instance will be provisioned with a fixed private IP address to simplify the Kubernetes bootstrapping process.
+
+:warning: **Note**: For simplicity in this tutorial, we will be accessing controller and worker nodes over SSH, using public addresses.  A production-caliber setup would instead run controller and worker nodes in _private_ subnets, with any direct SSH access done via [Bastions](https://docs.oracle.com/en-us/iaas/Content/Resources/Assets/whitepapers/bastion-hosts.pdf) when required. 
+
+### Create SSH Keys
+
+Generate an RSA key pair, which we'll use for SSH access to our compute nodes:
+
+```
+ssh-keygen -b 2048 -t rsa -f kubernetes_ssh_rsa
+```
+
+Enter a passphrase at the prompt to continue:
+```
+Generating public/private rsa key pair.
+Enter passphrase (empty for no passphrase):
+Enter same passphrase again:
+```
+
+Results:
+```
+kubernetes_ssh_rsa
+kubernetes_ssh_rsa.pub
+```
 
 ### Kubernetes Controllers
 
 Create three compute instances which will host the Kubernetes control plane:
 
 ```
+IMAGE_ID=$(oci compute image list --operating-system "Canonical Ubuntu" --operating-system-version "20.04" | jq -r .data[0].id)
 for i in 0 1 2; do
-  gcloud compute instances create controller-${i} \
-    --async \
-    --boot-disk-size 200GB \
-    --can-ip-forward \
-    --image-family ubuntu-2004-lts \
-    --image-project ubuntu-os-cloud \
-    --machine-type e2-standard-2 \
-    --private-network-ip 10.240.0.1${i} \
-    --scopes compute-rw,storage-ro,service-management,service-control,logging-write,monitoring \
-    --subnet kubernetes \
-    --tags kubernetes-the-hard-way,controller
+  # Rudimentary spreading of nodes across Availability Domains and Fault Domains
+  NUM_ADS=$(oci iam availability-domain list | jq -r .data | jq length)
+  AD_NAME=$(oci iam availability-domain list | jq -r .data[$((i % NUM_ADS))].name)
+  NUM_FDS=$(oci iam fault-domain list --availability-domain $AD_NAME | jq -r .data | jq length)
+  FD_NAME=$(oci iam fault-domain list --availability-domain $AD_NAME | jq -r .data[$((i % NUM_FDS))].name)  
+  
+  oci compute instance launch --display-name controller-${i} --assign-public-ip true \
+    --subnet-id $SUBNET_ID --shape VM.Standard.E3.Flex --availability-domain $AD_NAME \
+    --fault-domain $FD_NAME --image-id $IMAGE_ID --shape-config '{"memoryInGBs": 8.0, "ocpus": 2.0}' \
+    --private-ip 10.240.0.1${i} --freeform-tags \'{"project": "kubernetes-the-hard-way","role":"controller"}' \
+     --metadata "{\"ssh_authorized_keys\":\"$(cat kubernetes_ssh_rsa.pub)\"}"
 done
 ```
 
@@ -123,99 +97,86 @@ Each worker instance requires a pod subnet allocation from the Kubernetes cluste
 Create three compute instances which will host the Kubernetes worker nodes:
 
 ```
+IMAGE_ID=$(oci compute image list --operating-system "Canonical Ubuntu" --operating-system-version "20.04" | jq -r .data[0].id)
 for i in 0 1 2; do
-  gcloud compute instances create worker-${i} \
-    --async \
-    --boot-disk-size 200GB \
-    --can-ip-forward \
-    --image-family ubuntu-2004-lts \
-    --image-project ubuntu-os-cloud \
-    --machine-type e2-standard-2 \
-    --metadata pod-cidr=10.200.${i}.0/24 \
-    --private-network-ip 10.240.0.2${i} \
-    --scopes compute-rw,storage-ro,service-management,service-control,logging-write,monitoring \
-    --subnet kubernetes \
-    --tags kubernetes-the-hard-way,worker
+  # Rudimentary spreading of nodes across Availability Domains and Fault Domains
+  NUM_ADS=$(oci iam availability-domain list | jq -r .data | jq length)
+  AD_NAME=$(oci iam availability-domain list | jq -r .data[$((i % NUM_ADS))].name)
+  NUM_FDS=$(oci iam fault-domain list --availability-domain $AD_NAME | jq -r .data | jq length)
+  FD_NAME=$(oci iam fault-domain list --availability-domain $AD_NAME | jq -r .data[$((i % NUM_FDS))].name)
+
+  oci compute instance launch --display-name worker-${i} --assign-public-ip true \
+    --subnet-id $SUBNET_ID --shape VM.Standard.E3.Flex --availability-domain $AD_NAME \
+    --fault-domain $FD_NAME --image-id $IMAGE_ID --shape-config '{"memoryInGBs": 8.0, "ocpus": 2.0}' \
+    --private-ip 10.240.0.2${i} --freeform-tags '{"project": "kubernetes-the-hard-way","role":"worker"}' \
+    --metadata "{\"ssh_authorized_keys\":\"$(cat kubernetes_ssh_rsa.pub)\",\"pod-cidr\":\"10.200.${i}.0/24\"}" \
+    --skip-source-dest-check true
 done
 ```
 
 ### Verification
 
-List the compute instances in your default compute zone:
+List the compute instances in our compartment:
 
 ```
-gcloud compute instances list --filter="tags.items=kubernetes-the-hard-way"
+oci compute instance list --sort-by DISPLAYNAME --lifecycle-state RUNNING --all | jq -r .data[] | jq '{"display-name","lifecycle-state"}'
 ```
 
 > output
 
 ```
-NAME          ZONE        MACHINE_TYPE   PREEMPTIBLE  INTERNAL_IP  EXTERNAL_IP    STATUS
-controller-0  us-west1-c  e2-standard-2               10.240.0.10  XX.XX.XX.XXX   RUNNING
-controller-1  us-west1-c  e2-standard-2               10.240.0.11  XX.XXX.XXX.XX  RUNNING
-controller-2  us-west1-c  e2-standard-2               10.240.0.12  XX.XXX.XX.XXX  RUNNING
-worker-0      us-west1-c  e2-standard-2               10.240.0.20  XX.XX.XXX.XXX  RUNNING
-worker-1      us-west1-c  e2-standard-2               10.240.0.21  XX.XX.XX.XXX   RUNNING
-worker-2      us-west1-c  e2-standard-2               10.240.0.22  XX.XXX.XX.XX   RUNNING
+{
+  "display-name": "controller-0",
+  "lifecycle-state": "RUNNING"
+}
+{
+  "display-name": "controller-1",
+  "lifecycle-state": "RUNNING"
+}
+{
+  "display-name": "controller-2",
+  "lifecycle-state": "RUNNING"
+}
+{
+  "display-name": "worker-0",
+  "lifecycle-state": "RUNNING"
+}
+{
+  "display-name": "worker-1",
+  "lifecycle-state": "RUNNING"
+}
+{
+  "display-name": "worker-2",
+  "lifecycle-state": "RUNNING"
+}
 ```
 
-## Configuring SSH Access
+Rerun the above command until all of the compute instances we created are listed above as "Running".
 
-SSH will be used to configure the controller and worker instances. When connecting to compute instances for the first time SSH keys will be generated for you and stored in the project or instance metadata as described in the [connecting to instances](https://cloud.google.com/compute/docs/instances/connecting-to-instance) documentation.
+## Verifying SSH Access
 
-Test SSH access to the `controller-0` compute instances:
-
-```
-gcloud compute ssh controller-0
-```
-
-If this is your first time connecting to a compute instance SSH keys will be generated for you. Enter a passphrase at the prompt to continue:
+Our subnet was created with a default Security List that allows public SSH access, so we can verify at this point that SSH is working:
 
 ```
-WARNING: The public SSH key file for gcloud does not exist.
-WARNING: The private SSH key file for gcloud does not exist.
-WARNING: You do not have an SSH key for gcloud.
-WARNING: SSH keygen will be executed to generate a key.
-Generating public/private rsa key pair.
-Enter passphrase (empty for no passphrase):
-Enter same passphrase again:
+oci-ssh controller-0
 ```
 
-At this point the generated SSH keys will be uploaded and stored in your project:
-
+The first time SSHing into a node, you'll see something like the following, at which point enter "yes":
 ```
-Your identification has been saved in /home/$USER/.ssh/google_compute_engine.
-Your public key has been saved in /home/$USER/.ssh/google_compute_engine.pub.
-The key fingerprint is:
-SHA256:nz1i8jHmgQuGt+WscqP5SeIaSy5wyIJeL71MuV+QruE $USER@$HOSTNAME
-The key's randomart image is:
-+---[RSA 2048]----+
-|                 |
-|                 |
-|                 |
-|        .        |
-|o.     oS        |
-|=... .o .o o     |
-|+.+ =+=.+.X o    |
-|.+ ==O*B.B = .   |
-| .+.=EB++ o      |
-+----[SHA256]-----+
-Updating project ssh metadata...-Updated [https://www.googleapis.com/compute/v1/projects/$PROJECT_ID].
-Updating project ssh metadata...done.
-Waiting for SSH key to propagate.
+The authenticity of host 'XX.XX.XX.XXX (XX.XX.XX.XXX )' can't be established.
+ECDSA key fingerprint is SHA256:xxxxxxxxxxxxxxxxxxxx/xxxxxxxxxxxxxxxxxxxxxx.
+Are you sure you want to continue connecting (yes/no/[fingerprint])? 
 ```
 
-After the SSH keys have been updated you'll be logged into the `controller-0` instance:
-
 ```
-Welcome to Ubuntu 20.04 LTS (GNU/Linux 5.4.0-1019-gcp x86_64)
+Welcome to Ubuntu 20.04.1 LTS (GNU/Linux 5.4.0-1029-oracle x86_64)
 ...
 ```
 
 Type `exit` at the prompt to exit the `controller-0` compute instance:
 
 ```
-$USER@controller-0:~$ exit
+ubuntu@controller-0:~$ exit
 ```
 > output
 
@@ -223,5 +184,122 @@ $USER@controller-0:~$ exit
 logout
 Connection to XX.XX.XX.XXX closed
 ```
+
+### Security Lists
+
+For use in later steps of the tutorial, we'll create Security Lists to allow:
+- Intra-VCN communication between worker and controller nodes.
+- Public access to the NodePort range.
+- Public access to the LoadBalancer port.
+
+```
+INTRA_VCN_SECURITY_LIST_ID=$(oci network security-list create --vcn-id $VCN_ID --display-name intra-vcn --ingress-security-rules '[
+{
+  "icmp-options": null,
+  "is-stateless": true,
+  "protocol": "all",
+  "source": "10.240.0.0/24",
+  "source-type": "CIDR_BLOCK",
+  "tcp-options": null,
+  "udp-options": null
+}]' --egress-security-rules '[]' | jq -r .data.id)
+
+WORKER_SECURITY_LIST_ID=$(oci network security-list create --vcn-id $VCN_ID --display-name worker --ingress-security-rules '[
+{
+  "icmp-options": null,
+  "is-stateless": false,
+  "protocol": "6",
+  "source": "0.0.0.0/0",
+  "source-type": "CIDR_BLOCK",
+  "tcp-options": {
+    "destination-port-range": {
+      "max": 32767,
+      "min": 30000
+    },
+    "source-port-range": null
+  },
+  "udp-options": null
+}]' --egress-security-rules '[]' | jq -r .data.id)
+
+LB_SECURITY_LIST_ID=$(oci network security-list create --vcn-id $VCN_ID --display-name load-balancer --ingress-security-rules '[
+{
+  "icmp-options": null,
+  "is-stateless": false,
+  "protocol": "6",
+  "source": "0.0.0.0/0",
+  "source-type": "CIDR_BLOCK",
+  "tcp-options": {
+    "destination-port-range": {
+      "max": 6443,
+      "min": 6443
+    },
+    "source-port-range": null
+  },
+  "udp-options": null
+}]' --egress-security-rules '[]' | jq -r .data.id)
+```
+
+We'll add these Security Lists to our subnet:
+```
+DEFAULT_SECURITY_LIST_ID=$(oci network security-list list --display-name "Default Security List for kubernetes-the-hard-way" | jq -r .data[0].id)
+oci network subnet update --subnet-id $SUBNET_ID --security-list-ids  \
+ "[\"$DEFAULT_SECURITY_LIST_ID\",\"$INTRA_VCN_SECURITY_LIST_ID\",\"$WORKER_SECURITY_LIST_ID\",\"$LB_SECURITY_LIST_ID\"]" --force
+```
+
+### Firewall Rules
+
+And similarly, we'll open up the firewall of the worker and controller nodes to allow intra-VCN traffic.
+
+```
+for instance in controller-0 controller-1 controller-2; do
+  oci-ssh ${instance} "sudo ufw allow from 10.240.0.0/24;sudo iptables -A INPUT -i ens3 -s 10.240.0.0/24 -j ACCEPT;sudo iptables -F"
+done
+for instance in worker-0 worker-1 worker-2; do
+  oci-ssh ${instance} "sudo ufw allow from 10.240.0.0/24;sudo iptables -A INPUT -i ens3 -s 10.240.0.0/24 -j ACCEPT;sudo iptables -F"
+done
+```
+
+### Provision a Network Load Balancer
+
+> An [OCI Load Balancer](https://docs.oracle.com/en-us/iaas/Content/Balance/Concepts/balanceoverview.htm) will be used to expose the Kubernetes API Servers to remote clients.
+
+Create the Load Balancer:
+
+```
+LOADBALANCER_ID=$(oci lb load-balancer create --display-name  kubernetes-the-hard-way \
+  --shape-name 100Mbps --wait-for-state SUCCEEDED --subnet-ids "[\"$SUBNET_ID\"]" | jq -r .data.id)
+```
+
+Create a Backend Set, with Backends for the our 3 controller nodes:
+```
+cat > backends.json <<EOF
+[
+    {
+        "ipAddress": "10.240.0.10",
+        "port": 6443,
+        "weight": 1
+    },
+    {
+        "ipAddress": "10.240.0.11",
+        "port": 6443,
+        "weight": 1
+    },
+    {
+        "ipAddress": "10.240.0.12",
+        "port": 6443,
+        "weight": 1
+    }            
+]
+EOF
+oci lb backend-set create --name controller-backend-set --load-balancer-id $LOADBALANCER_ID --backends file://backends.json \
+  --health-checker-interval-in-ms 10000 --health-checker-port 8888 --health-checker-protocol HTTP \
+  --health-checker-retries 3 --health-checker-return-code 200 --health-checker-timeout-in-ms 3000 \
+  --health-checker-url-path "/healthz" --policy "ROUND_ROBIN" --wait-for-state SUCCEEDED 
+  
+oci lb listener create --name controller-listener --default-backend-set-name controller-backend-set \
+  --port 6443 --protocol TCP --load-balancer-id $LOADBALANCER_ID  --wait-for-state SUCCEEDED 
+```
+
+At this point, the Load Balancer will be shown as in a "Critical" state. This will be case until we configure the API server on the controller nodes in subsequent steps.
 
 Next: [Provisioning a CA and Generating TLS Certificates](04-certificate-authority.md)

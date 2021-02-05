@@ -4,15 +4,17 @@ In this lab you will bootstrap three Kubernetes worker nodes. The following comp
 
 ## Prerequisites
 
-The commands in this lab must be run on each worker instance: `worker-0`, `worker-1`, and `worker-2`. Login to each worker instance using the `gcloud` command. Example:
+The commands in this lab must be run on each worker instance: `worker-0`, `worker-1`, and `worker-2`. Login to each worker instance using our `oci-ssh` shell function. Example:
 
 ```
-gcloud compute ssh worker-0
+oci-ssh worker-0
 ```
 
 ### Running commands in parallel with tmux
 
 [tmux](https://github.com/tmux/tmux/wiki) can be used to run commands on multiple compute instances at the same time. See the [Running commands in parallel with tmux](01-prerequisites.md#running-commands-in-parallel-with-tmux) section in the Prerequisites lab.
+
+**Note**: please import the shell functions defined [here](02-client-tools.md#shell-functions) in each tmux window/pane, as we will make use of them.
 
 ## Provisioning a Kubernetes Worker Node
 
@@ -21,7 +23,7 @@ Install the OS dependencies:
 ```
 {
   sudo apt-get update
-  sudo apt-get -y install socat conntrack ipset
+  sudo apt-get -y install socat conntrack ipset jq
 }
 ```
 
@@ -37,13 +39,24 @@ Verify if swap is enabled:
 sudo swapon --show
 ```
 
-If output is empthy then swap is not enabled. If swap is enabled run the following command to disable swap immediately:
+If output is empty then swap is not enabled. If swap is enabled run the following command to disable swap immediately:
 
 ```
 sudo swapoff -a
 ```
 
 > To ensure swap remains off after reboot consult your Linux distro documentation.
+
+### Set net.bridge.bridge-nf-call-iptables=1
+
+To allow pods to access service endpoints whose backend pods run on the same node, run: 
+
+```
+sudo modprobe br-netfilter
+sudo sysctl -w net.bridge.bridge-nf-call-iptables=1
+```
+
+See [here](https://github.com/kelseyhightower/kubernetes-the-hard-way/issues/561) for reference.
 
 ### Download and Install Worker Binaries
 
@@ -90,8 +103,7 @@ Install the worker binaries:
 Retrieve the Pod CIDR range for the current compute instance:
 
 ```
-POD_CIDR=$(curl -s -H "Metadata-Flavor: Google" \
-  http://metadata.google.internal/computeMetadata/v1/instance/attributes/pod-cidr)
+POD_CIDR=$(curl -H "Authorization: Bearer Oracle" -L http://169.254.169.254/opc/v2/instance | jq -r '.metadata["pod-cidr"]')
 ```
 
 Create the `bridge` network configuration file:
@@ -224,6 +236,7 @@ Requires=containerd.service
 
 [Service]
 ExecStart=/usr/local/bin/kubelet \\
+  --hostname-override=${HOSTNAME}.subnet.vcn.oraclevcn.com \\
   --config=/var/lib/kubelet/kubelet-config.yaml \\
   --container-runtime=remote \\
   --container-runtime-endpoint=unix:///var/run/containerd/containerd.sock \\
@@ -297,8 +310,7 @@ EOF
 List the registered Kubernetes nodes:
 
 ```
-gcloud compute ssh controller-0 \
-  --command "kubectl get nodes --kubeconfig admin.kubeconfig"
+oci-ssh controller-0 "kubectl get nodes --kubeconfig admin.kubeconfig"
 ```
 
 > output

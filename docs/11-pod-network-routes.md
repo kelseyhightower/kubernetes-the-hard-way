@@ -8,14 +8,16 @@ In this lab you will create a route for each worker node that maps the node's Po
 
 ## The Routing Table
 
-In this section you will gather the information required to create routes in the `kubernetes-the-hard-way` VPC network.
+In this section you will gather the information required to create routes in the `kubernetes-the-hard-way` VCN.
 
 Print the internal IP address and Pod CIDR range for each worker instance:
 
 ```
 for instance in worker-0 worker-1 worker-2; do
-  gcloud compute instances describe ${instance} \
-    --format 'value[separator=" "](networkInterfaces[0].networkIP,metadata.items[0].value)'
+  NODE_ID=$(oci compute instance list --lifecycle-state RUNNING --display-name $instance | jq -r .data[0].id)
+  PRIVATE_IP=$(oci compute instance list-vnics --instance-id $NODE_ID | jq -r '.data[0]["private-ip"]')
+  POD_CIDR=$(oci compute instance list --lifecycle-state RUNNING --display-name $instance | jq -r '.data[0].metadata["pod-cidr"]')
+  echo "$PRIVATE_IP $POD_CIDR"
 done
 ```
 
@@ -29,32 +31,50 @@ done
 
 ## Routes
 
-Create network routes for each worker instance:
+Here, we'll update our Route Table to include, for each worker node, a route from the worker node's pod CIDR to the worker node's private address:
 
 ```
-for i in 0 1 2; do
-  gcloud compute routes create kubernetes-route-10-200-${i}-0-24 \
-    --network kubernetes-the-hard-way \
-    --next-hop-address 10.240.0.2${i} \
-    --destination-range 10.200.${i}.0/24
-done
-```
+{
+  ROUTE_TABLE_ID=$(oci network route-table list --display-name kubernetes-the-hard-way --vcn-id $VCN_ID | jq -r .data[0].id)
 
-List the routes in the `kubernetes-the-hard-way` VPC network:
-
-```
-gcloud compute routes list --filter "network: kubernetes-the-hard-way"
-```
-
-> output
-
-```
-NAME                            NETWORK                  DEST_RANGE     NEXT_HOP                  PRIORITY
-default-route-6be823b741087623  kubernetes-the-hard-way  0.0.0.0/0      default-internet-gateway  1000
-default-route-cebc434ce276fafa  kubernetes-the-hard-way  10.240.0.0/24  kubernetes-the-hard-way   0
-kubernetes-route-10-200-0-0-24  kubernetes-the-hard-way  10.200.0.0/24  10.240.0.20               1000
-kubernetes-route-10-200-1-0-24  kubernetes-the-hard-way  10.200.1.0/24  10.240.0.21               1000
-kubernetes-route-10-200-2-0-24  kubernetes-the-hard-way  10.200.2.0/24  10.240.0.22               1000
+  # Fetch worker-0's private IP OCID 
+  NODE_ID=$(oci compute instance list --lifecycle-state RUNNING --display-name worker-0 | jq -r .data[0].id)
+  VNIC_ID=$(oci compute instance list-vnics --instance-id $NODE_ID | jq -r '.data[0]["id"]')
+  PRIVATE_IP_WORKER_0=$(oci network private-ip list --vnic-id $VNIC_ID | jq -r '.data[0]["id"]')
+  # Fetch worker-1's private IP OCID  
+  NODE_ID=$(oci compute instance list --lifecycle-state RUNNING --display-name worker-1 | jq -r .data[0].id)
+  VNIC_ID=$(oci compute instance list-vnics --instance-id $NODE_ID | jq -r '.data[0]["id"]')
+  PRIVATE_IP_WORKER_1=$(oci network private-ip list --vnic-id $VNIC_ID | jq -r '.data[0]["id"]')
+  # Fetch worker-2's private IP OCID  
+  NODE_ID=$(oci compute instance list --lifecycle-state RUNNING --display-name worker-2 | jq -r .data[0].id)
+  VNIC_ID=$(oci compute instance list-vnics --instance-id $NODE_ID | jq -r '.data[0]["id"]')
+  PRIVATE_IP_WORKER_2=$(oci network private-ip list --vnic-id $VNIC_ID | jq -r '.data[0]["id"]')    
+  
+  INTERNET_GATEWAY_ID=$(oci network internet-gateway list --vcn-id $VCN_ID | jq -r '.data[0]["id"]')    
+  
+  oci network route-table update --rt-id $ROUTE_TABLE_ID --force --route-rules "[
+  {
+    \"destination\": \"0.0.0.0/0\",
+    \"destination-type\": \"CIDR_BLOCK\",
+    \"network-entity-id\": \"$INTERNET_GATEWAY_ID\"
+  },
+  {
+    \"destination\": \"10.200.0.0/24\",
+    \"destination-type\": \"CIDR_BLOCK\",
+    \"network-entity-id\": \"$PRIVATE_IP_WORKER_0\"
+  },
+  {
+    \"destination\": \"10.200.1.0/24\",
+    \"destination-type\": \"CIDR_BLOCK\",
+    \"network-entity-id\": \"$PRIVATE_IP_WORKER_1\"
+  },
+  {
+    \"destination\": \"10.200.2.0/24\",
+    \"destination-type\": \"CIDR_BLOCK\",
+    \"network-entity-id\": \"$PRIVATE_IP_WORKER_2\"
+  }    
+]"
+}
 ```
 
 Next: [Deploying the DNS Cluster Add-on](12-dns-addon.md)

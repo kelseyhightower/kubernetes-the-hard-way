@@ -1,54 +1,75 @@
 # Prerequisites
 
-## Google Cloud Platform
+## Oracle Cloud Infrastructure
 
-This tutorial leverages the [Google Cloud Platform](https://cloud.google.com/) to streamline provisioning of the compute infrastructure required to bootstrap a Kubernetes cluster from the ground up. [Sign up](https://cloud.google.com/free/) for $300 in free credits.
+This tutorial leverages [OCI](https://www.oracle.com/cloud/) to streamline provisioning of the compute infrastructure required to bootstrap a Kubernetes cluster from the ground up. [Sign up](https://www.oracle.com/cloud/free/) for $300 in free credits.
 
-[Estimated cost](https://cloud.google.com/products/calculator#id=873932bc-0840-4176-b0fa-a8cfd4ca61ae) to run this tutorial: $0.23 per hour ($5.50 per day).
+[Estimated cost](https://www.oracle.com/cloud/cost-estimator.html) to run this tutorial: $0.38 per hour ($9.23 per day).
 
-> The compute resources required for this tutorial exceed the Google Cloud Platform free tier.
+> The compute resources required for this tutorial exceed the OCI free tier.
 
-## Google Cloud Platform SDK
+## OCI CLI
 
-### Install the Google Cloud SDK
+### Install the OCI SDK
 
-Follow the Google Cloud SDK [documentation](https://cloud.google.com/sdk/) to install and configure the `gcloud` command line utility.
+Follow the OCI CLI [documentation](https://docs.oracle.com/en-us/iaas/Content/API/SDKDocs/cliinstall.htm) to install and configure the `oci` command line utility.
 
-Verify the Google Cloud SDK version is 301.0.0 or higher:
-
-```
-gcloud version
-```
-
-### Set a Default Compute Region and Zone
-
-This tutorial assumes a default compute region and zone have been configured.
-
-If you are using the `gcloud` command-line tool for the first time `init` is the easiest way to do this:
+Verify the OCI CLI version is 2.17.0 or higher:
 
 ```
-gcloud init
+oci --version
 ```
 
-Then be sure to authorize gcloud to access the Cloud Platform with your Google user credentials:
+### Capture OCIDs and Generate Required Keys 
+
+Follow the documentation [here](https://docs.oracle.com/en-us/iaas/Content/API/Concepts/apisigningkey.htm) to fetch your tenancy and user OCIDs and generate an RSA key pair, which are necessary to use the OCI CLI. 
+
+### Create OCI Config File
+
+Follow the documentation [here](https://docs.oracle.com/en-us/iaas/Content/API/Concepts/sdkconfig.htm) to create an OCI config file `~/.oci/config`.  Here's an example of what it will look like:
 
 ```
-gcloud auth login
+[DEFAULT]
+user=ocid1.user.oc1..<unique_ID>
+fingerprint=<your_fingerprint>
+key_file=~/.oci/oci_api_key.pem
+tenancy=ocid1.tenancy.oc1..<unique_ID>
+region=us-ashburn-1
 ```
 
-Next set a default compute region and compute zone:
+### Set a Default Region
+
+The above example uses "us-ashburn-1" as the region, but you can replace this with any available region.  For best
+performance running the commands from this tutorial, pick a region close to your physical location.  To list 
+the available regions:
 
 ```
-gcloud config set compute/region us-west1
+oci iam region list
 ```
 
-Set a default compute zone:
+### Create a Compartment
+
+Create yourself an OCI compartment, within which we'll create all the resources in this tutorial.  In the 
+following command, you will need to fill in your tenancy OCID and your OCI [Home Region](https://docs.oracle.com/en-us/iaas/Content/Identity/Tasks/managingregions.htm#The).
+Your Home Region will be indicated to you when you first create your tenancy.  You can also determine it
+like [this](https://docs.oracle.com/en-us/iaas/Content/GSG/Reference/faq.htm#How).
 
 ```
-gcloud config set compute/zone us-west1-c
+oci iam compartment create --name kubernetes-the-hard-way --description "Kubernetes the Hard Way" \
+  --compartment-id <tenancy_ocid> --region <home_region>
 ```
 
-> Use the `gcloud compute zones list` command to view additional regions and zones.
+### Set this Compartment as the Default
+
+Note the compartment `id` from the output of the above command, and create a file `~/.oci/oci_cli_rc` with 
+the following content:
+
+```
+[DEFAULT]
+compartment-id=<compartment_id>
+```
+
+From this point on, all `oci` commands we run will target the above compartment.
 
 ## Running Commands in Parallel with tmux
 

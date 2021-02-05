@@ -115,7 +115,7 @@ Generate a certificate and private key for each Kubernetes worker node:
 for instance in worker-0 worker-1 worker-2; do
 cat > ${instance}-csr.json <<EOF
 {
-  "CN": "system:node:${instance}",
+  "CN": "system:node:${instance}.subnet.vcn.oraclevcn.com",
   "key": {
     "algo": "rsa",
     "size": 2048
@@ -132,17 +132,14 @@ cat > ${instance}-csr.json <<EOF
 }
 EOF
 
-EXTERNAL_IP=$(gcloud compute instances describe ${instance} \
-  --format 'value(networkInterfaces[0].accessConfigs[0].natIP)')
-
-INTERNAL_IP=$(gcloud compute instances describe ${instance} \
-  --format 'value(networkInterfaces[0].networkIP)')
+EXTERNAL_IP=$(oci compute instance list-vnics --instance-id $ocid | jq -r '.data[0]["public-ip"]')
+INTERNAL_IP=$(oci compute instance list-vnics --instance-id $ocid | jq -r '.data[0]["private-ip"]')
 
 cfssl gencert \
   -ca=ca.pem \
   -ca-key=ca-key.pem \
   -config=ca-config.json \
-  -hostname=${instance},${EXTERNAL_IP},${INTERNAL_IP} \
+  -hostname=${instance},${instance}.subnet.vcn.oraclevcn.com,${EXTERNAL_IP},${INTERNAL_IP} \
   -profile=kubernetes \
   ${instance}-csr.json | cfssljson -bare ${instance}
 done
@@ -292,17 +289,13 @@ kube-scheduler.pem
 
 ### The Kubernetes API Server Certificate
 
-The `kubernetes-the-hard-way` static IP address will be included in the list of subject alternative names for the Kubernetes API Server certificate. This will ensure the certificate can be validated by remote clients.
+The `kubernetes-the-hard-way` Load Balancer public IP address will be included in the list of subject alternative names for the Kubernetes API Server certificate. This will ensure the certificate can be validated by remote clients.
 
 Generate the Kubernetes API Server certificate and private key:
 
 ```
 {
-
-KUBERNETES_PUBLIC_ADDRESS=$(gcloud compute addresses describe kubernetes-the-hard-way \
-  --region $(gcloud config get-value compute/region) \
-  --format 'value(address)')
-
+KUBERNETES_PUBLIC_ADDRESS=$(oci lb load-balancer list --all | jq '.data[] | select(."display-name"=="kubernetes-the-hard-way")' | jq -r '."ip-addresses"[0]."ip-address"')
 KUBERNETES_HOSTNAMES=kubernetes,kubernetes.default,kubernetes.default.svc,kubernetes.default.svc.cluster,kubernetes.svc.cluster.local
 
 cat > kubernetes-csr.json <<EOF
@@ -396,7 +389,7 @@ Copy the appropriate certificates and private keys to each worker instance:
 
 ```
 for instance in worker-0 worker-1 worker-2; do
-  gcloud compute scp ca.pem ${instance}-key.pem ${instance}.pem ${instance}:~/
+  oci-scp ca.pem ${instance}-key.pem ${instance}.pem ${instance} '~/'
 done
 ```
 
@@ -404,8 +397,8 @@ Copy the appropriate certificates and private keys to each controller instance:
 
 ```
 for instance in controller-0 controller-1 controller-2; do
-  gcloud compute scp ca.pem ca-key.pem kubernetes-key.pem kubernetes.pem \
-    service-account-key.pem service-account.pem ${instance}:~/
+  oci-scp ca.pem ca-key.pem kubernetes-key.pem kubernetes.pem \
+    service-account-key.pem service-account.pem ${instance} '~/'
 done
 ```
 
