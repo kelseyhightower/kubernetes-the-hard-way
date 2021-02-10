@@ -157,15 +157,35 @@ Client Version: version.Info{Major:"1", Minor:"18", GitVersion:"v1.18.6", GitCom
 In your terminal, run the following to define a few shell helper functions that we'll use throughout the tutorial:
 
 ```
+function oci-fetch-public-ip(){
+  # Helper function to fetch and stash the public IP for the given OCI compute instance
+  if [ -z "$1" ]
+  then
+    echo "Usage: oci-fetch-public-ip <compute_instance_name> <optional_command>"
+  else
+    file=.kubernetes-the-hard-way/$1/public_ip
+    if [ ! -f "$file" ] || [ ! -s "$file" ];
+    then
+        # Fetch the public IP and stash it for quick lookup by later commands
+        echo "Fetching $1 Public IP..."
+        mkdir -p .kubernetes-the-hard-way/$1
+        ocid=$(oci compute instance list --lifecycle-state RUNNING --display-name $1 \
+          | jq -r .data[0].id)
+        oci compute instance list-vnics --instance-id $ocid | jq -r '.data[0]["public-ip"]' \
+          > .kubernetes-the-hard-way/$1/public_ip 
+    fi      
+  fi
+}
+
 function oci-ssh(){
   # Helper function to ssh into a named OCI compute instance
   if [ -z "$1" ]
   then
     echo "Usage: oci-ssh <compute_instance_name> <optional_command>"
   else
-    ocid=$(oci compute instance list --lifecycle-state RUNNING --display-name $1 | jq -r .data[0].id)
-    ip=$(oci compute instance list-vnics --instance-id $ocid | jq -r '.data[0]["public-ip"]')
-    ssh -i kubernetes_ssh_rsa ubuntu@$ip $2
+    oci-fetch-public-ip $1
+    public_ip=$(cat .kubernetes-the-hard-way/$1/public_ip)   
+    ssh -i kubernetes_ssh_rsa ubuntu@$public_ip $2
   fi
 }
 
@@ -175,11 +195,17 @@ function oci-scp(){
   then
     echo "Usage: oci-scp <local_file_list> <compute_instance_name> <destination>"
   else
-    ocid=$(oci compute instance list --lifecycle-state RUNNING --display-name ${@: (-2):1} | jq -r .data[0].id)
-    ip=$(oci compute instance list-vnics --instance-id $ocid | jq -r '.data[0]["public-ip"]')
-    scp -i kubernetes_ssh_rsa "${@:1:$#-2}" ubuntu@$ip:${@: -1}
+    oci-fetch-public-ip ${@: (-2):1}
+    public_ip=$(cat .kubernetes-the-hard-way/${@: (-2):1}/public_ip)   
+    scp -i kubernetes_ssh_rsa "${@:1:$#-2}" ubuntu@$public_ip:${@: -1}
   fi
 }
+```
+
+For convenience throughout the rest of this tutorial, you can copy the above functions into your shell's profile, to avoid having to redefine them in each of the various tmux terminals we'll create.  For example, for Bash shell, copy and past the above functions into `~/.bashrc`, then refresh the profile from your current terminal session with: 
+
+````
+. ~/.bashrc
 ```
 
 Next: [Provisioning Compute Resources](03-compute-resources.md)

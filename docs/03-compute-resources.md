@@ -17,7 +17,8 @@ In this section a dedicated [Virtual Cloud Network](https://www.oracle.com/cloud
 Create the `kubernetes-the-hard-way` custom VCN:
 
 ```
-VCN_ID=$(oci network vcn create --display-name kubernetes-the-hard-way --dns-label vcn --cidr-block 10.240.0.0/24 | jq -r .data.id)
+VCN_ID=$(oci network vcn create --display-name kubernetes-the-hard-way --dns-label vcn --cidr-block \
+  10.240.0.0/24 | jq -r .data.id)
 ```
 
 A [subnet](https://docs.oracle.com/en-us/iaas/Content/Network/Tasks/managingVCNs_topic-Overview_of_VCNs_and_Subnets.htm#Overview) must be provisioned with an IP address range large enough to assign a private IP address to each node in the Kubernetes cluster.
@@ -25,11 +26,12 @@ A [subnet](https://docs.oracle.com/en-us/iaas/Content/Network/Tasks/managingVCNs
 Create the `kubernetes` subnet in the `kubernetes-the-hard-way` VCN, along with a Route Table and Internet Gateway allowing traffic to the internet.
 
 ```
-INTERNET_GATEWAY_ID=$(oci network internet-gateway create --vcn-id $VCN_ID --is-enabled true \
- --display-name kubernetes-the-hard-way | jq -r .data.id)
-ROUTE_TABLE_ID=$(oci network route-table create --vcn-id $VCN_ID --display-name kubernetes-the-hard-way \
-  --route-rules  "[{\"cidrBlock\":\"0.0.0.0/0\",\"networkEntityId\":\"$INTERNET_GATEWAY_ID\"}]"  | jq -r .data.id)
-SUBNET_ID=$(oci network subnet create --display-name kubernetes --dns-label subnet --vcn-id $VCN_ID \
+INTERNET_GATEWAY_ID=$(oci network internet-gateway create --display-name kubernetes-the-hard-way \ 
+  --vcn-id $VCN_ID --is-enabled true | jq -r .data.id)
+ROUTE_TABLE_ID=$(oci network route-table create --display-name kubernetes-the-hard-way --vcn-id $VCN_ID \
+  --route-rules  "[{\"cidrBlock\":\"0.0.0.0/0\",\"networkEntityId\":\"$INTERNET_GATEWAY_ID\"}]" \
+   | jq -r .data.id)
+SUBNET_ID=$(oci network subnet create --display-name kubernetes --vcn-id $VCN_ID --dns-label subnet \
   --cidr-block 10.240.0.0/24 --route-table-id $ROUTE_TABLE_ID | jq -r .data.id)
 ```
 
@@ -72,10 +74,11 @@ kubernetes_ssh_rsa.pub
 Create three compute instances which will host the Kubernetes control plane:
 
 ```
-IMAGE_ID=$(oci compute image list --operating-system "Canonical Ubuntu" --operating-system-version "20.04" | jq -r .data[0].id)
+IMAGE_ID=$(oci compute image list --operating-system "Canonical Ubuntu" --operating-system-version \
+  "20.04" | jq -r .data[0].id)  
+NUM_ADS=$(oci iam availability-domain list | jq -r .data | jq length)  
 for i in 0 1 2; do
-  # Rudimentary spreading of nodes across Availability Domains and Fault Domains
-  NUM_ADS=$(oci iam availability-domain list | jq -r .data | jq length)
+  # Rudimentary distributing of nodes across Availability Domains and Fault Domains
   AD_NAME=$(oci iam availability-domain list | jq -r .data[$((i % NUM_ADS))].name)
   NUM_FDS=$(oci iam fault-domain list --availability-domain $AD_NAME | jq -r .data | jq length)
   FD_NAME=$(oci iam fault-domain list --availability-domain $AD_NAME | jq -r .data[$((i % NUM_FDS))].name)  
@@ -83,7 +86,8 @@ for i in 0 1 2; do
   oci compute instance launch --display-name controller-${i} --assign-public-ip true \
     --subnet-id $SUBNET_ID --shape VM.Standard.E3.Flex --availability-domain $AD_NAME \
     --fault-domain $FD_NAME --image-id $IMAGE_ID --shape-config '{"memoryInGBs": 8.0, "ocpus": 2.0}' \
-    --private-ip 10.240.0.1${i} --freeform-tags \'{"project": "kubernetes-the-hard-way","role":"controller"}' \
+    --private-ip 10.240.0.1${i} \
+    --freeform-tags '{"project": "kubernetes-the-hard-way","role":"controller"}' \
      --metadata "{\"ssh_authorized_keys\":\"$(cat kubernetes_ssh_rsa.pub)\"}"
 done
 ```
@@ -97,10 +101,11 @@ Each worker instance requires a pod subnet allocation from the Kubernetes cluste
 Create three compute instances which will host the Kubernetes worker nodes:
 
 ```
-IMAGE_ID=$(oci compute image list --operating-system "Canonical Ubuntu" --operating-system-version "20.04" | jq -r .data[0].id)
+IMAGE_ID=$(oci compute image list --operating-system "Canonical Ubuntu" --operating-system-version \
+  "20.04" | jq -r .data[0].id)  
+NUM_ADS=$(oci iam availability-domain list | jq -r .data | jq length)
 for i in 0 1 2; do
-  # Rudimentary spreading of nodes across Availability Domains and Fault Domains
-  NUM_ADS=$(oci iam availability-domain list | jq -r .data | jq length)
+  # Rudimentary distributing of nodes across Availability Domains and Fault Domains
   AD_NAME=$(oci iam availability-domain list | jq -r .data[$((i % NUM_ADS))].name)
   NUM_FDS=$(oci iam fault-domain list --availability-domain $AD_NAME | jq -r .data | jq length)
   FD_NAME=$(oci iam fault-domain list --availability-domain $AD_NAME | jq -r .data[$((i % NUM_FDS))].name)
@@ -108,7 +113,8 @@ for i in 0 1 2; do
   oci compute instance launch --display-name worker-${i} --assign-public-ip true \
     --subnet-id $SUBNET_ID --shape VM.Standard.E3.Flex --availability-domain $AD_NAME \
     --fault-domain $FD_NAME --image-id $IMAGE_ID --shape-config '{"memoryInGBs": 8.0, "ocpus": 2.0}' \
-    --private-ip 10.240.0.2${i} --freeform-tags '{"project": "kubernetes-the-hard-way","role":"worker"}' \
+    --private-ip 10.240.0.2${i} \
+    --freeform-tags '{"project": "kubernetes-the-hard-way","role":"worker"}' \
     --metadata "{\"ssh_authorized_keys\":\"$(cat kubernetes_ssh_rsa.pub)\",\"pod-cidr\":\"10.200.${i}.0/24\"}" \
     --skip-source-dest-check true
 done
@@ -119,7 +125,8 @@ done
 List the compute instances in our compartment:
 
 ```
-oci compute instance list --sort-by DISPLAYNAME --lifecycle-state RUNNING --all | jq -r .data[] | jq '{"display-name","lifecycle-state"}'
+oci compute instance list --sort-by DISPLAYNAME --lifecycle-state RUNNING --all | jq -r .data[] \
+  | jq '{"display-name","lifecycle-state"}'
 ```
 
 > output
@@ -193,57 +200,65 @@ For use in later steps of the tutorial, we'll create Security Lists to allow:
 - Public access to the LoadBalancer port.
 
 ```
-INTRA_VCN_SECURITY_LIST_ID=$(oci network security-list create --vcn-id $VCN_ID --display-name intra-vcn --ingress-security-rules '[
 {
-  "icmp-options": null,
-  "is-stateless": true,
-  "protocol": "all",
-  "source": "10.240.0.0/24",
-  "source-type": "CIDR_BLOCK",
-  "tcp-options": null,
-  "udp-options": null
-}]' --egress-security-rules '[]' | jq -r .data.id)
-
-WORKER_SECURITY_LIST_ID=$(oci network security-list create --vcn-id $VCN_ID --display-name worker --ingress-security-rules '[
-{
-  "icmp-options": null,
-  "is-stateless": false,
-  "protocol": "6",
-  "source": "0.0.0.0/0",
-  "source-type": "CIDR_BLOCK",
-  "tcp-options": {
-    "destination-port-range": {
-      "max": 32767,
-      "min": 30000
+  INTRA_VCN_SECURITY_LIST_ID=$(oci network security-list create --display-name intra-vcn \
+    --vcn-id $VCN_ID  --ingress-security-rules '[
+  {
+    "icmp-options": null,
+    "is-stateless": true,
+    "protocol": "all",
+    "source": "10.240.0.0/24",
+    "source-type": "CIDR_BLOCK",
+    "tcp-options": null,
+    "udp-options": null
+  }]' --egress-security-rules '[]' | jq -r .data.id)
+  
+  WORKER_SECURITY_LIST_ID=$(oci network security-list create --display-name worker \
+    --vcn-id $VCN_ID --ingress-security-rules '[
+  {
+    "icmp-options": null,
+    "is-stateless": false,
+    "protocol": "6",
+    "source": "0.0.0.0/0",
+    "source-type": "CIDR_BLOCK",
+    "tcp-options": {
+      "destination-port-range": {
+        "max": 32767,
+        "min": 30000
+      },
+      "source-port-range": null
     },
-    "source-port-range": null
-  },
-  "udp-options": null
-}]' --egress-security-rules '[]' | jq -r .data.id)
-
-LB_SECURITY_LIST_ID=$(oci network security-list create --vcn-id $VCN_ID --display-name load-balancer --ingress-security-rules '[
-{
-  "icmp-options": null,
-  "is-stateless": false,
-  "protocol": "6",
-  "source": "0.0.0.0/0",
-  "source-type": "CIDR_BLOCK",
-  "tcp-options": {
-    "destination-port-range": {
-      "max": 6443,
-      "min": 6443
+    "udp-options": null
+  }]' --egress-security-rules '[]' | jq -r .data.id)
+  
+  LB_SECURITY_LIST_ID=$(oci network security-list create --display-name load-balancer \
+    --vcn-id $VCN_ID  --ingress-security-rules '[
+  {
+    "icmp-options": null,
+    "is-stateless": false,
+    "protocol": "6",
+    "source": "0.0.0.0/0",
+    "source-type": "CIDR_BLOCK",
+    "tcp-options": {
+      "destination-port-range": {
+        "max": 6443,
+        "min": 6443
+      },
+      "source-port-range": null
     },
-    "source-port-range": null
-  },
-  "udp-options": null
-}]' --egress-security-rules '[]' | jq -r .data.id)
+    "udp-options": null
+  }]' --egress-security-rules '[]' | jq -r .data.id)
+}
 ```
 
 We'll add these Security Lists to our subnet:
 ```
-DEFAULT_SECURITY_LIST_ID=$(oci network security-list list --display-name "Default Security List for kubernetes-the-hard-way" | jq -r .data[0].id)
-oci network subnet update --subnet-id $SUBNET_ID --security-list-ids  \
- "[\"$DEFAULT_SECURITY_LIST_ID\",\"$INTRA_VCN_SECURITY_LIST_ID\",\"$WORKER_SECURITY_LIST_ID\",\"$LB_SECURITY_LIST_ID\"]" --force
+{
+  DEFAULT_SECURITY_LIST_ID=$(oci network security-list list --display-name \
+    "Default Security List for kubernetes-the-hard-way" | jq -r .data[0].id)
+  oci network subnet update --subnet-id $SUBNET_ID --force --security-list-ids \
+   "[\"$DEFAULT_SECURITY_LIST_ID\",\"$INTRA_VCN_SECURITY_LIST_ID\",\"$WORKER_SECURITY_LIST_ID\",\"$LB_SECURITY_LIST_ID\"]"
+}
 ```
 
 ### Firewall Rules
@@ -272,6 +287,7 @@ LOADBALANCER_ID=$(oci lb load-balancer create --display-name  kubernetes-the-har
 
 Create a Backend Set, with Backends for the our 3 controller nodes:
 ```
+{
 cat > backends.json <<EOF
 [
     {
@@ -297,9 +313,10 @@ oci lb backend-set create --name controller-backend-set --load-balancer-id $LOAD
   --health-checker-url-path "/healthz" --policy "ROUND_ROBIN" --wait-for-state SUCCEEDED 
   
 oci lb listener create --name controller-listener --default-backend-set-name controller-backend-set \
-  --port 6443 --protocol TCP --load-balancer-id $LOADBALANCER_ID  --wait-for-state SUCCEEDED 
+  --port 6443 --protocol TCP --load-balancer-id $LOADBALANCER_ID  --wait-for-state SUCCEEDED
+}
 ```
 
-At this point, the Load Balancer will be shown as in a "Critical" state. This will be case until we configure the API server on the controller nodes in subsequent steps.
+At this point, the Load Balancer will be shown as in a "Critical" state - that's ok.  This will be case until we configure the API server on the controller nodes in subsequent steps.
 
 Next: [Provisioning a CA and Generating TLS Certificates](04-certificate-authority.md)

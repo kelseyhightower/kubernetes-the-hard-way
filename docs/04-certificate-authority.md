@@ -295,7 +295,9 @@ Generate the Kubernetes API Server certificate and private key:
 
 ```
 {
-KUBERNETES_PUBLIC_ADDRESS=$(oci lb load-balancer list --all | jq '.data[] | select(."display-name"=="kubernetes-the-hard-way")' | jq -r '."ip-addresses"[0]."ip-address"')
+KUBERNETES_PUBLIC_ADDRESS=$(oci lb load-balancer list --all \
+  | jq '.data[] | select(."display-name"=="kubernetes-the-hard-way")' \
+  | jq -r '."ip-addresses"[0]."ip-address"')
 KUBERNETES_HOSTNAMES=kubernetes,kubernetes.default,kubernetes.default.svc,kubernetes.default.svc.cluster,kubernetes.svc.cluster.local
 
 cat > kubernetes-csr.json <<EOF

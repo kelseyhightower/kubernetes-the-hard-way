@@ -14,7 +14,7 @@ oci-ssh controller-0
 
 [tmux](https://github.com/tmux/tmux/wiki) can be used to run commands on multiple compute instances at the same time. See the [Running commands in parallel with tmux](01-prerequisites.md#running-commands-in-parallel-with-tmux) section in the Prerequisites lab.
 
-**Note**: please import the shell functions defined [here](02-client-tools.md#shell-functions) in each tmux window/pane, as we will make use of them.
+**Note**: Please ensure you've imported the shell functions defined [here](02-client-tools.md#shell-functions), either within your shell profile or explicitly within each tmux window/pane.
 
 ## Required Tools
 

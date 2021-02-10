@@ -350,7 +350,9 @@ Now we'll verify external connectivity to our cluster via the external Load Bala
 Retrieve the `kubernetes-the-hard-way` Load Balancer public IP address:
 
 ```
-KUBERNETES_PUBLIC_ADDRESS=$(oci lb load-balancer list --all | jq '.data[] | select(."display-name"=="kubernetes-the-hard-way")' | jq -r '."ip-addresses"[0]."ip-address"')
+KUBERNETES_PUBLIC_ADDRESS=$(oci lb load-balancer list --all \
+  | jq '.data[] | select(."display-name"=="kubernetes-the-hard-way")' \
+  | jq -r '."ip-addresses"[0]."ip-address"')
 ```
 
 Make a HTTP request for the Kubernetes version info:

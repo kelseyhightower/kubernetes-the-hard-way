@@ -14,9 +14,12 @@ Print the internal IP address and Pod CIDR range for each worker instance:
 
 ```
 for instance in worker-0 worker-1 worker-2; do
-  NODE_ID=$(oci compute instance list --lifecycle-state RUNNING --display-name $instance | jq -r .data[0].id)
-  PRIVATE_IP=$(oci compute instance list-vnics --instance-id $NODE_ID | jq -r '.data[0]["private-ip"]')
-  POD_CIDR=$(oci compute instance list --lifecycle-state RUNNING --display-name $instance | jq -r '.data[0].metadata["pod-cidr"]')
+  NODE_ID=$(oci compute instance list --display-name $instance --lifecycle-state RUNNING \
+    | jq -r .data[0].id)
+  PRIVATE_IP=$(oci compute instance list-vnics --instance-id $NODE_ID \
+    | jq -r '.data[0]["private-ip"]')
+  POD_CIDR=$(oci compute instance list --display-name $instance --lifecycle-state RUNNING \
+    | jq -r '.data[0].metadata["pod-cidr"]')
   echo "$PRIVATE_IP $POD_CIDR"
 done
 ```
@@ -35,16 +38,19 @@ Here, we'll update our Route Table to include, for each worker node, a route fro
 
 ```
 {
-  ROUTE_TABLE_ID=$(oci network route-table list --display-name kubernetes-the-hard-way --vcn-id $VCN_ID | jq -r .data[0].id)
+  ROUTE_TABLE_ID=$(oci network route-table list --display-name kubernetes-the-hard-way \
+    --vcn-id $VCN_ID | jq -r .data[0].id)
 
   # Fetch worker-0's private IP OCID 
   NODE_ID=$(oci compute instance list --lifecycle-state RUNNING --display-name worker-0 | jq -r .data[0].id)
   VNIC_ID=$(oci compute instance list-vnics --instance-id $NODE_ID | jq -r '.data[0]["id"]')
   PRIVATE_IP_WORKER_0=$(oci network private-ip list --vnic-id $VNIC_ID | jq -r '.data[0]["id"]')
+  
   # Fetch worker-1's private IP OCID  
   NODE_ID=$(oci compute instance list --lifecycle-state RUNNING --display-name worker-1 | jq -r .data[0].id)
   VNIC_ID=$(oci compute instance list-vnics --instance-id $NODE_ID | jq -r '.data[0]["id"]')
   PRIVATE_IP_WORKER_1=$(oci network private-ip list --vnic-id $VNIC_ID | jq -r '.data[0]["id"]')
+  
   # Fetch worker-2's private IP OCID  
   NODE_ID=$(oci compute instance list --lifecycle-state RUNNING --display-name worker-2 | jq -r .data[0].id)
   VNIC_ID=$(oci compute instance list-vnics --instance-id $NODE_ID | jq -r '.data[0]["id"]')

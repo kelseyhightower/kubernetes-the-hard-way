@@ -13,7 +13,9 @@ Each kubeconfig requires a Kubernetes API Server to connect to. To support high 
 Retrieve the `kubernetes-the-hard-way` Load Balancer public IP address:
 
 ```
-KUBERNETES_PUBLIC_ADDRESS=$(oci lb load-balancer list --all | jq '.data[] | select(."display-name"=="kubernetes-the-hard-way")' | jq -r '."ip-addresses"[0]."ip-address"')
+KUBERNETES_PUBLIC_ADDRESS=$(oci lb load-balancer list --all \
+  | jq '.data[] | select(."display-name"=="kubernetes-the-hard-way")' \
+  | jq -r '."ip-addresses"[0]."ip-address"')
 ```
 
 ### The kubelet Kubernetes Configuration File
