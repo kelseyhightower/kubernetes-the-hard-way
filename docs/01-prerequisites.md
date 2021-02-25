@@ -59,6 +59,9 @@ oci iam compartment create --name kubernetes-the-hard-way --description "Kuberne
   --compartment-id <tenancy_ocid> --region <home_region>
 ```
 
+Note that by specifying your tenancy OCID as the `--compartment-id` in the above command, you will be
+creating your compartment under the _root_ compartment of your tenancy.
+
 ### Set this Compartment as the Default
 
 Note the compartment `id` from the output of the above command, and create a file `~/.oci/oci_cli_rc` with 

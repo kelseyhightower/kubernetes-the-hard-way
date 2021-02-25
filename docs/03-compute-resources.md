@@ -1,6 +1,6 @@
 # Provisioning Compute Resources
 
-Kubernetes requires a set of machines to host the Kubernetes control plane and the worker nodes where containers are ultimately run. In this lab you will provision the compute resources required for running a secure and highly available Kubernetes cluster across a single [compute zone](https://cloud.google.com/compute/docs/regions-zones/regions-zones).
+Kubernetes requires a set of machines to host the Kubernetes control plane and the worker nodes where containers are ultimately run. In this lab you will provision the compute resources required for running a secure and highly available Kubernetes cluster, spread across the [Availability Domains and Fault Domains](https://docs.oracle.com/en-us/iaas/Content/General/Concepts/regions.htm) of a single OCI [Region](https://docs.oracle.com/en-us/iaas/Content/General/Concepts/regions.htm).
 
 > Ensure a default compute zone and region have been set as described in the [Prerequisites](01-prerequisites.md#set-a-default-compute-region-and-zone) lab.
 
@@ -12,7 +12,7 @@ The Kubernetes [networking model](https://kubernetes.io/docs/concepts/cluster-ad
 
 ### Virtual Cloud Network
 
-In this section a dedicated [Virtual Cloud Network](https://www.oracle.com/cloud/networking/virtual-cloud-network/) (VCN) network will be setup to host the Kubernetes cluster.
+In this section a dedicated [Virtual Cloud Network](https://www.oracle.com/cloud/networking/virtual-cloud-network/) (VCN) will be setup to host the Kubernetes cluster.
 
 Create the `kubernetes-the-hard-way` custom VCN:
 
@@ -158,7 +158,7 @@ oci compute instance list --sort-by DISPLAYNAME --lifecycle-state RUNNING --all 
 }
 ```
 
-Rerun the above command until all of the compute instances we created are listed above as "Running".
+Rerun the above command until all of the compute instances we created are listed as "Running", before continuing on to the next section.
 
 ## Verifying SSH Access
 

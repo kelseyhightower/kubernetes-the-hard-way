@@ -204,7 +204,7 @@ function oci-scp(){
 
 For convenience throughout the rest of this tutorial, you can copy the above functions into your shell's profile, to avoid having to redefine them in each of the various tmux terminals we'll create.  For example, for Bash shell, copy and past the above functions into `~/.bashrc`, then refresh the profile from your current terminal session with: 
 
-````
+```
 . ~/.bashrc
 ```
 
