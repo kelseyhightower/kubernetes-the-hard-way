@@ -55,7 +55,7 @@ As a result, the only required option for the restore command is the **--data-di
 
 # 4. Modify /etc/kubernetes/manifests/etcd.yaml
 
-We have now restored the etcd snapshot  to a new path on the controlplane - **/var/lib/etcd-from-backup**, so the only change to be made in the YAML file is to change the hostPath for the volume called **etcd-data** from old directory (/var/lib/etcd) to the new directory **/var/lib/etcd-from-backup**.
+We have now restored the etcd snapshot  to a new path on the controlplane - **/var/lib/etcd-from-backup**, so, the only change to be made in the YAML file, is to change the hostPath for the volume called **etcd-data** from old directory (/var/lib/etcd) to the new directory **/var/lib/etcd-from-backup**.
 
 ```
   volumes:
