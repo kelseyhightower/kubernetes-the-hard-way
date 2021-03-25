@@ -64,7 +64,7 @@ We have now restored the etcd snapshot  to a new path on the controlplane - **/v
       type: DirectoryOrCreate
     name: etcd-data
 ```
-With this change, /var/lib/etcd on the **container** points to /var/lib/etcd-from-backup on the host (which is what we want)
+With this change, /var/lib/etcd on the **container** points to /var/lib/etcd-from-backup on the **controlplane** (which is what we want)
 
 
 When this file is updated, the ETCD pod is automatically re-created as this is a static pod placed under the `/etc/kubernetes/manifests` directory.
@@ -75,4 +75,5 @@ When this file is updated, the ETCD pod is automatically re-created as this is a
 > Note2: If the etcd pod is not getting `Ready 1/1`, then restart it by `kubectl delete pod -n kube-system etcd-controlplane` and wait 1 minute.
 
 > Note3: This is the simplest way to make sure that ETCD uses the restored data after the ETCD pod is recreated. You **don't** have to change anything else.
+  
   **If** you change **--data-dir** to **/var/lib/etcd-from-backup** in the YAML file, make sure that the **volumeMounts** for **etcd-data** is updated as well, with the mountPath pointing to /var/lib/etcd-from-backup (THIS COMPLETE STEP IS OPTIONAL AND NEED NOT BE DONE FOR COMPLETING THE RESTORE)
