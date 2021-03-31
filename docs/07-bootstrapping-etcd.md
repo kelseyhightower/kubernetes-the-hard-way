@@ -107,7 +107,7 @@ EOF
 
 ## Verification
 
-List the etcd cluster members:
+Reboot the controller nodes, and then SSH into one of the nodes. List the etcd cluster members:
 
 ```
 sudo ETCDCTL_API=3 etcdctl member list \
