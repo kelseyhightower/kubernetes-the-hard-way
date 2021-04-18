@@ -71,6 +71,7 @@ Vagrant.configure("2") do |config|
         end
 
         node.vm.provision "setup-dns", type: "shell", :path => "ubuntu/update-dns.sh"
+        node.vm.provision "file", source: "./ubuntu/cert_verify.sh", destination: "$HOME/"
 
       end
   end
@@ -111,8 +112,9 @@ Vagrant.configure("2") do |config|
         end
 
         node.vm.provision "setup-dns", type: "shell", :path => "ubuntu/update-dns.sh"
-        node.vm.provision "install-docker", type: "shell", :path => "ubuntu/install-docker.sh"
+        node.vm.provision "install-docker", type: "shell", :path => "ubuntu/install-docker-2.sh"
         node.vm.provision "allow-bridge-nf-traffic", :type => "shell", :path => "ubuntu/allow-bridge-nf-traffic.sh"
+        node.vm.provision "file", source: "./ubuntu/cert_verify.sh", destination: "$HOME/"
 
     end
   end

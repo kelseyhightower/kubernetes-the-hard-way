@@ -51,6 +51,6 @@ This repository contains answers for the practice tests hosted on the course [Ce
 # Contributing Guide
 
 1. The folder structure for all topics and associated practice tests are created already. Use the same pattern to create one if it doesn't exist.
-2. Create a file with your answers. If you have a different answer than the one that is already there, create a new answer file with yoru name in it.
+2. Create a file with your answers. If you have a different answer than the one that is already there, create a new answer file with your name in it.
 4. Do not post the entire question. Only post the question number.
 3. Send in a pull request

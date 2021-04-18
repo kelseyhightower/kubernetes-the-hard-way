@@ -1,11 +1,5 @@
 > This tutorial is a modified version of the original developed by [Kelsey Hightower](https://github.com/kelseyhightower/kubernetes-the-hard-way).
 
-This repository holds the supporting material for the [Certified Kubernetes Administrators Course](https://kodekloud.com/p/certified-kubernetes-administrator-with-practice-tests). There are two major sections. 
-
-- [Kubernetes The Hard Way on VirtualBox](#kubernetes-the-hard-way-on-virtualbox)
-- [Answers to Practice Tests hosted on KodeKloud](/practice-questions-answers)
-
-
 # Kubernetes The Hard Way On VirtualBox
 
 This tutorial walks you through setting up Kubernetes the hard way on a local machine using VirtualBox.
@@ -55,3 +49,4 @@ Kubernetes The Hard Way guides you through bootstrapping a highly available Kube
 * [Smoke Test](docs/15-smoke-test.md)
 * [E2E Test](docs/16-e2e-tests.md)
 * [Extra - Dynamic Kubelet Configuration](docs/17-extra-dynamic-kubelet-configuration.md)
+* [Extra - Certificate Verification](docs/verify-certificates.md)

@@ -18,7 +18,9 @@ Run Vagrant up
 This does the below:
 
 - Deploys 5 VMs - 2 Master, 2 Worker and 1 Loadbalancer with the name 'kubernetes-ha-* '
-    > This is the default settings. This can be changed at the top of the Vagrant file
+    > This is the default settings. This can be changed at the top of the Vagrant file.
+    > If you choose to change these settings, please also update vagrant/ubuntu/vagrant/setup-hosts.sh
+    > to add the additional hosts to the /etc/hosts default before running "vagrant up".
 
 - Set's IP addresses in the range 192.168.5
 
@@ -73,7 +75,7 @@ Vagrant generates a private key for each of these VMs. It is placed under the .v
 
 ## Troubleshooting Tips
 
-If any of the VMs failed to provision, or is not configured correct, delete the vm using the command:
+1. If any of the VMs failed to provision, or is not configured correct, delete the vm using the command:
 
 `vagrant destroy <vm>`
 
@@ -90,10 +92,18 @@ VirtualBox error:
     VBoxManage.exe: error: Details: code E_FAIL (0x80004005), component SessionMachine, interface IMachine, callee IUnknown
     VBoxManage.exe: error: Context: "SaveSettings()" at line 3105 of file VBoxManageModifyVM.cpp
 
-In such cases delete the VM, then delete teh VM folder and then re-provision
+In such cases delete the VM, then delete the VM folder and then re-provision
 
 `vagrant destroy <vm>`
 
 `rmdir "<path-to-vm-folder>\kubernetes-ha-worker-2"`
 
 `vagrant up`
+
+2. When you try "sysctl net.bridge.bridge-nf-call-iptables=1", it would sometimes return "sysctl: cannot stat /proc/sys/net/bridge/bridge-nf-call-iptables: No such file or directory" error. The below would resolve the issue.
+
+`modprobe br_netfilter`
+
+`sysctl -p /etc/sysctl.conf`
+
+`net.bridge.bridge-nf-call-iptables=1`

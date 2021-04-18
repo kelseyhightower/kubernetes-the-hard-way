@@ -8,7 +8,8 @@ We will now install the kubernetes components
 
 ## Prerequisites
 
-The commands in this lab must be run on first worker instance: `worker-1`. Login to first worker instance using SSH Terminal.
+The Certificates and Configuration are created on `master-1` node and then copied over to workers using `scp`. 
+Once this is done, the commands are to be run on first worker instance: `worker-1`. Login to first worker instance using SSH Terminal.
 
 ### Provisioning  Kubelet Client Certificates
 
@@ -16,7 +17,7 @@ Kubernetes uses a [special-purpose authorization mode](https://kubernetes.io/doc
 
 Generate a certificate and private key for one worker node:
 
-Worker1:
+On master-1:
 
 ```
 master-1$ cat > openssl-worker-1.cnf <<EOF
@@ -54,8 +55,9 @@ Get the kub-api server load-balancer IP.
 LOADBALANCER_ADDRESS=192.168.5.30
 ```
 
-Generate a kubeconfig file for the first worker node:
+Generate a kubeconfig file for the first worker node.
 
+On master-1:
 ```
 {
   kubectl config set-cluster kubernetes-the-hard-way \
@@ -86,7 +88,7 @@ worker-1.kubeconfig
 ```
 
 ### Copy certificates, private keys and kubeconfig files to the worker node:
-
+On master-1:
 ```
 master-1$ scp ca.crt worker-1.crt worker-1.key worker-1.kubeconfig worker-1:~/
 ```
@@ -95,6 +97,7 @@ master-1$ scp ca.crt worker-1.crt worker-1.key worker-1.kubeconfig worker-1:~/
 
 Going forward all activities are to be done on the `worker-1` node.
 
+On worker-1:
 ```
 worker-1$ wget -q --show-progress --https-only --timestamping \
   https://storage.googleapis.com/kubernetes-release/release/v1.13.0/bin/linux/amd64/kubectl \
@@ -126,7 +129,7 @@ Install the worker binaries:
 ```
 
 ### Configure the Kubelet
-
+On worker-1:
 ```
 {
   sudo mv ${HOSTNAME}.key ${HOSTNAME}.crt /var/lib/kubelet/
@@ -189,7 +192,7 @@ EOF
 ```
 
 ### Configure the Kubernetes Proxy
-
+On worker-1:
 ```
 worker-1$ sudo mv kube-proxy.kubeconfig /var/lib/kube-proxy/kubeconfig
 ```
@@ -227,7 +230,7 @@ EOF
 ```
 
 ### Start the Worker Services
-
+On worker-1:
 ```
 {
   sudo systemctl daemon-reload
@@ -239,7 +242,7 @@ EOF
 > Remember to run the above commands on worker node: `worker-1`
 
 ## Verification
-
+On master-1:
 
 List the registered Kubernetes nodes from the master node:
 
@@ -256,5 +259,7 @@ worker-1   NotReady   <none>   93s   v1.13.0
 
 > Note: It is OK for the worker node to be in a NotReady state.
   That is because we haven't configured Networking yet.
+
+Optional: At this point you may run the certificate verification script to make sure all certificates are configured correctly. Follow the instructions [here](verify-certificates.md)
 
 Next: [TLS Bootstrapping Kubernetes Workers](10-tls-bootstrapping-kubernetes-workers.md)

@@ -78,7 +78,7 @@ Documentation=https://github.com/kubernetes/kubernetes
 ExecStart=/usr/local/bin/kube-apiserver \\
   --advertise-address=${INTERNAL_IP} \\
   --allow-privileged=true \\
-  --apiserver-count=3 \\
+  --apiserver-count=2 \\
   --audit-log-maxage=30 \\
   --audit-log-maxbackup=3 \\
   --audit-log-maxsize=100 \\
@@ -99,7 +99,7 @@ ExecStart=/usr/local/bin/kube-apiserver \\
   --kubelet-client-certificate=/var/lib/kubernetes/kube-apiserver.crt \\
   --kubelet-client-key=/var/lib/kubernetes/kube-apiserver.key \\
   --kubelet-https=true \\
-  --runtime-config=api/all \\
+  --runtime-config=api/all=true \\
   --service-account-key-file=/var/lib/kubernetes/service-account.crt \\
   --service-cluster-ip-range=10.96.0.0/24 \\
   --service-node-port-range=30000-32767 \\
@@ -116,10 +116,10 @@ EOF
 
 ### Configure the Kubernetes Controller Manager
 
-Move the `kube-controller-manager` kubeconfig into place:
+Copy the `kube-controller-manager` kubeconfig into place:
 
 ```
-sudo mv kube-controller-manager.kubeconfig /var/lib/kubernetes/
+sudo cp kube-controller-manager.kubeconfig /var/lib/kubernetes/
 ```
 
 Create the `kube-controller-manager.service` systemd unit file:
@@ -154,10 +154,10 @@ EOF
 
 ### Configure the Kubernetes Scheduler
 
-Move the `kube-scheduler` kubeconfig into place:
+Copy the `kube-scheduler` kubeconfig into place:
 
 ```
-sudo mv kube-scheduler.kubeconfig /var/lib/kubernetes/
+sudo cp kube-scheduler.kubeconfig /var/lib/kubernetes/
 ```
 
 Create the `kube-scheduler.service` systemd unit file:
@@ -217,6 +217,8 @@ In this section you will provision an external load balancer to front the Kubern
 
 
 ### Provision a Network Load Balancer
+
+Login to `loadbalancer` instance using SSH Terminal.
 
 ```
 #Install HAProxy
