@@ -14,7 +14,11 @@ This is not a practical approach when you have 1000s of nodes in the cluster, an
 - The Nodes can retrieve the signed certificate from the Kubernetes CA
 - The Nodes can generate a kube-config file using this certificate by themselves
 - The Nodes can start and join the cluster by themselves
-- The Nodes can renew certificates when they expire by themselves
+- The Nodes can request new certificates via a CSR, but the CSR must be manually approved by a cluster administrator
+
+In Kubernetes 1.11 a patch was merged to require administrator or Controller approval of node serving CSRs for security reasons.
+
+Reference: https://kubernetes.io/docs/reference/command-line-tools-reference/kubelet-tls-bootstrapping/#certificate-rotation
 
 So let's get started!
 
@@ -312,7 +316,6 @@ ExecStart=/usr/local/bin/kubelet \\
   --kubeconfig=/var/lib/kubelet/kubeconfig \\
   --cert-dir=/var/lib/kubelet/pki/ \\
   --rotate-certificates=true \\
-  --rotate-server-certificates=true \\
   --network-plugin=cni \\
   --register-node=true \\
   --v=2
@@ -328,7 +331,6 @@ Things to note here:
 - **bootstrap-kubeconfig**: Location of the bootstrap-kubeconfig file.
 - **cert-dir**: The directory where the generated certificates are stored.
 - **rotate-certificates**: Rotates client certificates when they expire.
-- **rotate-server-certificates**: Requests for server certificates on bootstrap and rotates them when they expire.
 
 ## Step 7 Configure the Kubernetes Proxy
 
@@ -395,6 +397,8 @@ csr-95bv6                                              20s   system:node:worker-
 Approve
 
 `kubectl certificate approve csr-95bv6`
+
+Note: In the event your cluster persists for longer than 365 days, you will need to manually approve the replacement CSR.
 
 Reference: https://kubernetes.io/docs/reference/command-line-tools-reference/kubelet-tls-bootstrapping/#kubectl-approval
 
