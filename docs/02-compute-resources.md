@@ -18,7 +18,9 @@ Run Vagrant up
 This does the below:
 
 - Deploys 5 VMs - 2 Master, 2 Worker and 1 Loadbalancer with the name 'kubernetes-ha-* '
-    > This is the default settings. This can be changed at the top of the Vagrant file
+    > This is the default settings. This can be changed at the top of the Vagrant file.
+    > If you choose to change these settings, please also update vagrant/ubuntu/vagrant/setup-hosts.sh
+    > to add the additional hosts to the /etc/hosts default before running "vagrant up".
 
 - Set's IP addresses in the range 192.168.5
 
