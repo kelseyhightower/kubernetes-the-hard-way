@@ -5,7 +5,7 @@
 Reference: https://github.com/etcd-io/etcd/releases
 
 ```
-ETCD_VER=v3.3.13
+ETCD_VER=v3.4.9
 
 # choose either URL
 GOOGLE_URL=https://storage.googleapis.com/etcd
@@ -30,8 +30,14 @@ mv /tmp/etcd-download-test/etcdctl /usr/bin
 ```
 ETCDCTL_API=3 etcdctl --endpoints=https://[127.0.0.1]:2379 --cacert=/etc/kubernetes/pki/etcd/ca.crt \
      --cert=/etc/kubernetes/pki/etcd/server.crt --key=/etc/kubernetes/pki/etcd/server.key \
-     snapshot save /tmp/snapshot-pre-boot.db
+     snapshot save /opt/snapshot-pre-boot.db
 ```
+
+Note: In this case, the **ETCD** is running on the same server where we are running the commands (which is the *controlplane* node). As a result, the **--endpoint** argument is optional and can be ignored. 
+
+The options **--cert, --cacert and --key** are mandatory to authenticate to the ETCD server to take the backup.
+
+If you want to take a backup of the ETCD service running on a different machine, you will have to provide the correct endpoint to that server (which is the IP Address and port of the etcd server with the **--endpoint** argument)
 
 # -----------------------------
 # Disaster Happens
@@ -40,51 +46,34 @@ ETCDCTL_API=3 etcdctl --endpoints=https://[127.0.0.1]:2379 --cacert=/etc/kuberne
 # 3. Restore ETCD Snapshot to a new folder
 
 ```
-ETCDCTL_API=3 etcdctl --endpoints=https://[127.0.0.1]:2379 --cacert=/etc/kubernetes/pki/etcd/ca.crt \
-     --name=master \
-     --cert=/etc/kubernetes/pki/etcd/server.crt --key=/etc/kubernetes/pki/etcd/server.key \
-     --data-dir /var/lib/etcd-from-backup \
-     --initial-cluster=master=https://127.0.0.1:2380 \
-     --initial-cluster-token=etcd-cluster-1 \
-     --initial-advertise-peer-urls=https://127.0.0.1:2380 \
-     snapshot restore /tmp/snapshot-pre-boot.db
+ETCDCTL_API=3 etcdctl  --data-dir /var/lib/etcd-from-backup \
+     snapshot restore /opt/snapshot-pre-boot.db
 ```
+
+Note: In this case, we are restoring the snapshot to a different directory but in the same server where we took the backup (**the controlplane node)**
+As a result, the only required option for the restore command is the **--data-dir**.  
 
 # 4. Modify /etc/kubernetes/manifests/etcd.yaml
 
-Update ETCD POD to use the new data directory and cluster token by modifying the pod definition file at `/etc/kubernetes/manifests/etcd.yaml`. When this file is updated, the ETCD pod is automatically re-created as this is a static pod placed under the `/etc/kubernetes/manifests` directory.
-
-Update --data-dir to use new target location
+We have now restored the etcd snapshot  to a new path on the controlplane - **/var/lib/etcd-from-backup**, so, the only change to be made in the YAML file, is to change the hostPath for the volume called **etcd-data** from old directory (/var/lib/etcd) to the new directory **/var/lib/etcd-from-backup**.
 
 ```
---data-dir=/var/lib/etcd-from-backup
-```
-
-Update new initial-cluster-token to specify new cluster
-
-```
---initial-cluster-token=etcd-cluster-1
-```
-
-Update volumes and volume mounts to point to new path
-
-```
-    volumeMounts:
-    - mountPath: /var/lib/etcd-from-backup
-      name: etcd-data
-    - mountPath: /etc/kubernetes/pki/etcd
-      name: etcd-certs
-  hostNetwork: true
-  priorityClassName: system-cluster-critical
   volumes:
   - hostPath:
       path: /var/lib/etcd-from-backup
       type: DirectoryOrCreate
     name: etcd-data
-  - hostPath:
-      path: /etc/kubernetes/pki/etcd
-      type: DirectoryOrCreate
-    name: etcd-certs
 ```
+With this change, /var/lib/etcd on the **container** points to /var/lib/etcd-from-backup on the **controlplane** (which is what we want)
 
-> Note: You don't really need to update data directory and volumeMounts.mountPath path above. You could simply just update the hostPath.path in the volumes section to point to the new directory. But if you are not working with a kubeadm deployed cluster, then you might have to update the data directory. That's why I left it as is. 
+
+When this file is updated, the ETCD pod is automatically re-created as this is a static pod placed under the `/etc/kubernetes/manifests` directory.
+
+
+> Note: as the ETCD pod has changed it will automatically restart, and also kube-controller-manager and kube-scheduler. Wait 1-2 to mins for this pods to restart. You can make a `watch "docker ps | grep etcd"` to see when the ETCD pod is restarted.
+
+> Note2: If the etcd pod is not getting `Ready 1/1`, then restart it by `kubectl delete pod -n kube-system etcd-controlplane` and wait 1 minute.
+
+> Note3: This is the simplest way to make sure that ETCD uses the restored data after the ETCD pod is recreated. You **don't** have to change anything else.
+  
+  **If** you do change **--data-dir** to **/var/lib/etcd-from-backup** in the YAML file, make sure that the **volumeMounts** for **etcd-data** is updated as well, with the mountPath pointing to /var/lib/etcd-from-backup (**THIS COMPLETE STEP IS OPTIONAL AND NEED NOT BE DONE FOR COMPLETING THE RESTORE**)
