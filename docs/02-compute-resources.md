@@ -100,10 +100,3 @@ In such cases delete the VM, then delete the VM folder and then re-provision
 
 `vagrant up`
 
-2. When you try "sysctl net.bridge.bridge-nf-call-iptables=1", it would sometimes return "sysctl: cannot stat /proc/sys/net/bridge/bridge-nf-call-iptables: No such file or directory" error. The below would resolve the issue.
-
-`modprobe br_netfilter`
-
-`sysctl -p /etc/sysctl.conf`
-
-`net.bridge.bridge-nf-call-iptables=1`
