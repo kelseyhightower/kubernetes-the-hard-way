@@ -27,3 +27,4 @@ Download and Install [Vagrant](https://www.vagrantup.com/) on your platform.
 - Linux
 - macOS
 - Arch Linux
+
