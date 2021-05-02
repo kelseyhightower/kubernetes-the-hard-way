@@ -35,21 +35,17 @@ Generate a kubeconfig file suitable for authenticating as the `admin` user:
 
 ## Verification
 
-Check the health of the remote Kubernetes cluster:
+Check the version of the remote Kubernetes cluster:
 
 ```
-kubectl get componentstatuses
+kubectl version
 ```
 
 > output
 
 ```
-NAME                 STATUS    MESSAGE             ERROR
-scheduler            Healthy   ok
-controller-manager   Healthy   ok
-etcd-0               Healthy   {"health":"true"}
-etcd-1               Healthy   {"health":"true"}
-etcd-2               Healthy   {"health":"true"}
+Client Version: version.Info{Major:"1", Minor:"21", GitVersion:"v1.21.0", GitCommit:"cb303e613a121a29364f75cc67d3d580833a7479", GitTreeState:"clean", BuildDate:"2021-04-08T16:31:21Z", GoVersion:"go1.16.1", Compiler:"gc", Platform:"linux/amd64"}
+Server Version: version.Info{Major:"1", Minor:"21", GitVersion:"v1.21.0", GitCommit:"cb303e613a121a29364f75cc67d3d580833a7479", GitTreeState:"clean", BuildDate:"2021-04-08T16:25:06Z", GoVersion:"go1.16.1", Compiler:"gc", Platform:"linux/amd64"}
 ```
 
 List the nodes in the remote Kubernetes cluster:
@@ -62,9 +58,9 @@ kubectl get nodes
 
 ```
 NAME       STATUS   ROLES    AGE     VERSION
-worker-0   Ready    <none>   2m30s   v1.18.6
-worker-1   Ready    <none>   2m30s   v1.18.6
-worker-2   Ready    <none>   2m30s   v1.18.6
+worker-0   Ready    <none>   2m35s   v1.21.0
+worker-1   Ready    <none>   2m35s   v1.21.0
+worker-2   Ready    <none>   2m35s   v1.21.0
 ```
 
 Next: [Provisioning Pod Network Routes](11-pod-network-routes.md)

@@ -28,10 +28,10 @@ Download the official Kubernetes release binaries:
 
 ```
 wget -q --show-progress --https-only --timestamping \
-  "https://storage.googleapis.com/kubernetes-release/release/v1.18.6/bin/linux/amd64/kube-apiserver" \
-  "https://storage.googleapis.com/kubernetes-release/release/v1.18.6/bin/linux/amd64/kube-controller-manager" \
-  "https://storage.googleapis.com/kubernetes-release/release/v1.18.6/bin/linux/amd64/kube-scheduler" \
-  "https://storage.googleapis.com/kubernetes-release/release/v1.18.6/bin/linux/amd64/kubectl"
+  "https://storage.googleapis.com/kubernetes-release/release/v1.21.0/bin/linux/amd64/kube-apiserver" \
+  "https://storage.googleapis.com/kubernetes-release/release/v1.21.0/bin/linux/amd64/kube-controller-manager" \
+  "https://storage.googleapis.com/kubernetes-release/release/v1.21.0/bin/linux/amd64/kube-scheduler" \
+  "https://storage.googleapis.com/kubernetes-release/release/v1.21.0/bin/linux/amd64/kubectl"
 ```
 
 Install the Kubernetes binaries:
@@ -60,6 +60,17 @@ The instance internal IP address will be used to advertise the API Server to mem
 ```
 INTERNAL_IP=$(curl -s -H "Metadata-Flavor: Google" \
   http://metadata.google.internal/computeMetadata/v1/instance/network-interfaces/0/ip)
+```
+
+```
+REGION=$(curl -s -H "Metadata-Flavor: Google" \
+  http://metadata.google.internal/computeMetadata/v1/project/attributes/google-compute-default-region)
+```
+
+```
+KUBERNETES_PUBLIC_ADDRESS=$(gcloud compute addresses describe kubernetes-the-hard-way \
+  --region $REGION \
+  --format 'value(address)')
 ```
 
 Create the `kube-apiserver.service` systemd unit file:
@@ -92,9 +103,10 @@ ExecStart=/usr/local/bin/kube-apiserver \\
   --kubelet-certificate-authority=/var/lib/kubernetes/ca.pem \\
   --kubelet-client-certificate=/var/lib/kubernetes/kubernetes.pem \\
   --kubelet-client-key=/var/lib/kubernetes/kubernetes-key.pem \\
-  --kubelet-https=true \\
   --runtime-config='api/all=true' \\
   --service-account-key-file=/var/lib/kubernetes/service-account.pem \\
+  --service-account-signing-key-file=/var/lib/kubernetes/service-account-key.pem \\
+  --service-account-issuer=https://${KUBERNETES_PUBLIC_ADDRESS}:6443 \\
   --service-cluster-ip-range=10.32.0.0/24 \\
   --service-node-port-range=30000-32767 \\
   --tls-cert-file=/var/lib/kubernetes/kubernetes.pem \\
@@ -158,7 +170,7 @@ Create the `kube-scheduler.yaml` configuration file:
 
 ```
 cat <<EOF | sudo tee /etc/kubernetes/config/kube-scheduler.yaml
-apiVersion: kubescheduler.config.k8s.io/v1alpha1
+apiVersion: kubescheduler.config.k8s.io/v1beta1
 kind: KubeSchedulerConfiguration
 clientConnection:
   kubeconfig: "/var/lib/kubernetes/kube-scheduler.kubeconfig"
@@ -246,16 +258,11 @@ sudo systemctl enable nginx
 ### Verification
 
 ```
-kubectl get componentstatuses --kubeconfig admin.kubeconfig
+kubectl cluster-info --kubeconfig admin.kubeconfig
 ```
 
 ```
-NAME                 STATUS    MESSAGE             ERROR
-scheduler            Healthy   ok
-controller-manager   Healthy   ok
-etcd-0               Healthy   {"health":"true"}
-etcd-1               Healthy   {"health":"true"}
-etcd-2               Healthy   {"health":"true"}
+Kubernetes control plane is running at https://127.0.0.1:6443
 ```
 
 Test the nginx HTTP health check proxy:
@@ -267,12 +274,14 @@ curl -H "Host: kubernetes.default.svc.cluster.local" -i http://127.0.0.1/healthz
 ```
 HTTP/1.1 200 OK
 Server: nginx/1.18.0 (Ubuntu)
-Date: Sat, 18 Jul 2020 06:20:48 GMT
+Date: Sun, 02 May 2021 04:19:29 GMT
 Content-Type: text/plain; charset=utf-8
 Content-Length: 2
 Connection: keep-alive
 Cache-Control: no-cache, private
 X-Content-Type-Options: nosniff
+X-Kubernetes-Pf-Flowschema-Uid: c43f32eb-e038-457f-9474-571d43e5c325
+X-Kubernetes-Pf-Prioritylevel-Uid: 8ba5908f-5569-4330-80fd-c643e7512366
 
 ok
 ```
@@ -295,7 +304,7 @@ Create the `system:kube-apiserver-to-kubelet` [ClusterRole](https://kubernetes.i
 
 ```
 cat <<EOF | kubectl apply --kubeconfig admin.kubeconfig -f -
-apiVersion: rbac.authorization.k8s.io/v1beta1
+apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
   annotations:
@@ -323,7 +332,7 @@ Bind the `system:kube-apiserver-to-kubelet` ClusterRole to the `kubernetes` user
 
 ```
 cat <<EOF | kubectl apply --kubeconfig admin.kubeconfig -f -
-apiVersion: rbac.authorization.k8s.io/v1beta1
+apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
   name: system:kube-apiserver
@@ -403,12 +412,12 @@ curl --cacert ca.pem https://${KUBERNETES_PUBLIC_ADDRESS}:6443/version
 ```
 {
   "major": "1",
-  "minor": "18",
-  "gitVersion": "v1.18.6",
-  "gitCommit": "dff82dc0de47299ab66c83c626e08b245ab19037",
+  "minor": "21",
+  "gitVersion": "v1.21.0",
+  "gitCommit": "cb303e613a121a29364f75cc67d3d580833a7479",
   "gitTreeState": "clean",
-  "buildDate": "2020-07-15T16:51:04Z",
-  "goVersion": "go1.13.9",
+  "buildDate": "2021-04-08T16:25:06Z",
+  "goVersion": "go1.16.1",
   "compiler": "gc",
   "platform": "linux/amd64"
 }

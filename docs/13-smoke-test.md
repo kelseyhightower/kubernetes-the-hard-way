@@ -32,24 +32,25 @@ gcloud compute ssh controller-0 \
 00000010  73 2f 64 65 66 61 75 6c  74 2f 6b 75 62 65 72 6e  |s/default/kubern|
 00000020  65 74 65 73 2d 74 68 65  2d 68 61 72 64 2d 77 61  |etes-the-hard-wa|
 00000030  79 0a 6b 38 73 3a 65 6e  63 3a 61 65 73 63 62 63  |y.k8s:enc:aescbc|
-00000040  3a 76 31 3a 6b 65 79 31  3a 8c 7b 16 f3 26 59 d5  |:v1:key1:.{..&Y.|
-00000050  c9 65 1c f0 3a 04 e7 66  2a f6 50 93 4e d4 d7 8c  |.e..:..f*.P.N...|
-00000060  ca 24 ab 68 54 5f 31 f6  5c e5 5c c6 29 1d cc da  |.$.hT_1.\.\.)...|
-00000070  22 fc c9 be 23 8a 26 b4  9b 38 1d 57 65 87 2a ac  |"...#.&..8.We.*.|
-00000080  70 11 ea 06 93 b7 de ba  12 83 42 94 9d 27 8f ee  |p.........B..'..|
-00000090  95 05 b0 77 31 ab 66 3d  d9 e2 38 85 f9 a5 59 3a  |...w1.f=..8...Y:|
-000000a0  90 c1 46 ae b4 9d 13 05  82 58 71 4e 5b cb ac e2  |..F......XqN[...|
-000000b0  3b 6e d7 10 ab 7c fc fe  dd f0 e6 0a 7b 24 2e 68  |;n...|......{$.h|
-000000c0  5e 78 98 5f 33 40 f8 d2  10 30 1f de 17 3f 06 a1  |^x._3@...0...?..|
-000000d0  81 bd 1f 2e be e9 35 26  2c be 39 16 cf ac c2 6d  |......5&,.9....m|
-000000e0  32 56 05 7d 80 39 5d c0  a4 43 46 75 96 0c 87 49  |2V.}.9]..CFu...I|
-000000f0  3c 17 1a 1c 8e 52 b1 e8  42 6b a5 e8 b2 b3 27 bc  |<....R..Bk....'.|
-00000100  80 a6 53 2a 9f 57 d2 de  a3 f8 7f 84 2c 01 c9 d9  |..S*.W......,...|
-00000110  4f e0 3f e7 a7 1e 46 b7  47 dc f0 53 d2 d2 e1 99  |O.?...F.G..S....|
-00000120  0b b7 b3 49 d0 3c a5 e8  26 ce 2c 51 42 2c 0f 48  |...I.<..&.,QB,.H|
-00000130  b1 9a 1a dd 24 d1 06 d8  34 bf 09 2e 20 cc 3d 3d  |....$...4... .==|
-00000140  e2 5a e5 e4 44 b7 ae 57  49 0a                    |.Z..D..WI.|
-0000014a
+00000040  3a 76 31 3a 6b 65 79 31  3a 97 d1 2c cd 89 0d 08  |:v1:key1:..,....|
+00000050  29 3c 7d 19 41 cb ea d7  3d 50 45 88 82 a3 1f 11  |)<}.A...=PE.....|
+00000060  26 cb 43 2e c8 cf 73 7d  34 7e b1 7f 9f 71 d2 51  |&.C...s}4~...q.Q|
+00000070  45 05 16 e9 07 d4 62 af  f8 2e 6d 4a cf c8 e8 75  |E.....b...mJ...u|
+00000080  6b 75 1e b7 64 db 7d 7f  fd f3 96 62 e2 a7 ce 22  |ku..d.}....b..."|
+00000090  2b 2a 82 01 c3 f5 83 ae  12 8b d5 1d 2e e6 a9 90  |+*..............|
+000000a0  bd f0 23 6c 0c 55 e2 52  18 78 fe bf 6d 76 ea 98  |..#l.U.R.x..mv..|
+000000b0  fc 2c 17 36 e3 40 87 15  25 13 be d6 04 88 68 5b  |.,.6.@..%.....h[|
+000000c0  a4 16 81 f6 8e 3b 10 46  cb 2c ba 21 35 0c 5b 49  |.....;.F.,.!5.[I|
+000000d0  e5 27 20 4c b3 8e 6b d0  91 c2 28 f1 cc fa 6a 1b  |.' L..k...(...j.|
+000000e0  31 19 74 e7 a5 66 6a 99  1c 84 c7 e0 b0 fc 32 86  |1.t..fj.......2.|
+000000f0  f3 29 5a a4 1c d5 a4 e3  63 26 90 95 1e 27 d0 14  |.)Z.....c&...'..|
+00000100  94 f0 ac 1a cd 0d b9 4b  ae 32 02 a0 f8 b7 3f 0b  |.......K.2....?.|
+00000110  6f ad 1f 4d 15 8a d6 68  95 63 cf 7d 04 9a 52 71  |o..M...h.c.}..Rq|
+00000120  75 ff 87 6b c5 42 e1 72  27 b5 e9 1a fe e8 c0 3f  |u..k.B.r'......?|
+00000130  d9 04 5e eb 5d 43 0d 90  ce fa 04 a8 4a b0 aa 01  |..^.]C......J...|
+00000140  cf 6d 5b 80 70 5b 99 3c  d6 5c c0 dc d1 f5 52 4a  |.m[.p[.<.\....RJ|
+00000150  2c 2d 28 5a 63 57 8e 4f  df 0a                    |,-(ZcW.O..|
+0000015a
 ```
 
 The etcd key should be prefixed with `k8s:enc:aescbc:v1:key1`, which indicates the `aescbc` provider was used to encrypt the data with the `key1` encryption key.
@@ -110,13 +111,13 @@ curl --head http://127.0.0.1:8080
 
 ```
 HTTP/1.1 200 OK
-Server: nginx/1.19.1
-Date: Sat, 18 Jul 2020 07:14:00 GMT
+Server: nginx/1.19.10
+Date: Sun, 02 May 2021 05:29:25 GMT
 Content-Type: text/html
 Content-Length: 612
-Last-Modified: Tue, 07 Jul 2020 15:52:25 GMT
+Last-Modified: Tue, 13 Apr 2021 15:13:59 GMT
 Connection: keep-alive
-ETag: "5f049a39-264"
+ETag: "6075b537-264"
 Accept-Ranges: bytes
 ```
 
@@ -143,7 +144,7 @@ kubectl logs $POD_NAME
 
 ```
 ...
-127.0.0.1 - - [18/Jul/2020:07:14:00 +0000] "HEAD / HTTP/1.1" 200 0 "-" "curl/7.64.0" "-"
+127.0.0.1 - - [02/May/2021:05:29:25 +0000] "HEAD / HTTP/1.1" 200 0 "-" "curl/7.64.0" "-"
 ```
 
 ### Exec
@@ -159,7 +160,7 @@ kubectl exec -ti $POD_NAME -- nginx -v
 > output
 
 ```
-nginx version: nginx/1.19.1
+nginx version: nginx/1.19.10
 ```
 
 ## Services
@@ -206,13 +207,13 @@ curl -I http://${EXTERNAL_IP}:${NODE_PORT}
 
 ```
 HTTP/1.1 200 OK
-Server: nginx/1.19.1
-Date: Sat, 18 Jul 2020 07:16:41 GMT
+Server: nginx/1.19.10
+Date: Sun, 02 May 2021 05:31:52 GMT
 Content-Type: text/html
 Content-Length: 612
-Last-Modified: Tue, 07 Jul 2020 15:52:25 GMT
+Last-Modified: Tue, 13 Apr 2021 15:13:59 GMT
 Connection: keep-alive
-ETag: "5f049a39-264"
+ETag: "6075b537-264"
 Accept-Ranges: bytes
 ```
 
