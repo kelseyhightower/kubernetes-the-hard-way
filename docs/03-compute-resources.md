@@ -208,7 +208,7 @@ Waiting for SSH key to propagate.
 After the SSH keys have been updated you'll be logged into the `controller-0` instance:
 
 ```
-Welcome to Ubuntu 20.04 LTS (GNU/Linux 5.4.0-1019-gcp x86_64)
+Welcome to Ubuntu 20.04.2 LTS (GNU/Linux 5.4.0-1042-gcp x86_64)
 ...
 ```
 

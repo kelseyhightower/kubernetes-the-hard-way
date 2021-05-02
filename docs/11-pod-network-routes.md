@@ -50,8 +50,8 @@ gcloud compute routes list --filter "network: kubernetes-the-hard-way"
 
 ```
 NAME                            NETWORK                  DEST_RANGE     NEXT_HOP                  PRIORITY
-default-route-6be823b741087623  kubernetes-the-hard-way  0.0.0.0/0      default-internet-gateway  1000
-default-route-cebc434ce276fafa  kubernetes-the-hard-way  10.240.0.0/24  kubernetes-the-hard-way   0
+default-route-1606ba68df692422  kubernetes-the-hard-way  10.240.0.0/24  kubernetes-the-hard-way   0
+default-route-615e3652a8b74e4d  kubernetes-the-hard-way  0.0.0.0/0      default-internet-gateway  1000
 kubernetes-route-10-200-0-0-24  kubernetes-the-hard-way  10.200.0.0/24  10.240.0.20               1000
 kubernetes-route-10-200-1-0-24  kubernetes-the-hard-way  10.200.1.0/24  10.240.0.21               1000
 kubernetes-route-10-200-2-0-24  kubernetes-the-hard-way  10.200.2.0/24  10.240.0.22               1000
