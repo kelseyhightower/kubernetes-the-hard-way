@@ -220,8 +220,10 @@ A [Google Network Load Balancer](https://cloud.google.com/compute/docs/load-bala
 Install a basic web server to handle HTTP health checks:
 
 ```
-sudo apt-get update
-sudo apt-get install -y nginx
+{
+  sudo apt-get update
+  sudo apt-get install -y nginx
+}
 ```
 
 ```
