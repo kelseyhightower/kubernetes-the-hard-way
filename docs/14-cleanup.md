@@ -54,10 +54,3 @@ Delete the `kubernetes-the-hard-way` network VPC:
   gcloud -q compute networks delete kubernetes-the-hard-way
 }
 ```
-
-Delete the `kubernetes-the-hard-way` compute address:
-
-```
-gcloud -q compute addresses delete kubernetes-the-hard-way \
-  --region $(gcloud config get-value compute/region)
-```
