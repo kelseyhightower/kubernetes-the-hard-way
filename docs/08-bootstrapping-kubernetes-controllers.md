@@ -221,12 +221,12 @@ In this section you will provision an external load balancer to front the Kubern
 Login to `loadbalancer` instance using SSH Terminal.
 
 ```
-loadbalancer# sudo apt-get update && sudo apt-get install -y haproxy
+sudo apt-get update && sudo apt-get install -y haproxy
 
 ```
 
 ```
-loadbalancer# cat <<EOF | sudo tee /etc/haproxy/haproxy.cfg 
+cat <<EOF | sudo tee /etc/haproxy/haproxy.cfg 
 frontend kubernetes
     bind 192.168.5.30:6443
     option tcplog
