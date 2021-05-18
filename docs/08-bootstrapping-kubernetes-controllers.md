@@ -222,7 +222,6 @@ Login to `loadbalancer` instance using SSH Terminal.
 
 ```
 sudo apt-get update && sudo apt-get install -y haproxy
-
 ```
 
 ```
@@ -243,7 +242,7 @@ EOF
 ```
 
 ```
-loadbalancer# sudo service haproxy restart
+sudo service haproxy restart
 ```
 
 ### Verification
