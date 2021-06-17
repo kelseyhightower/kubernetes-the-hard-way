@@ -39,16 +39,23 @@ gcloud auth login
 Next set a default compute region and compute zone:
 
 ```
-gcloud config set compute/region us-west1
+REGION=us-west1
+gcloud config set compute/region ${REGION}
 ```
+> Use the `gcloud compute zones list` command to view additional regions and zones.
 
 Set a default compute zone:
 
 ```
-gcloud config set compute/zone us-west1-c
+gcloud config set compute/zone ${REGION}-c
 ```
 
-> Use the `gcloud compute zones list` command to view additional regions and zones.
+Set the same default region & zone in the metadata server accessible to all VMs in the project
+```
+gcloud compute project-info add-metadata \
+  --metadata google-compute-default-region=${REGION},google-compute-default-zone=${REGION}-c
+```
+> This step is necessary for when we access the default the region from within the compute instances that we create later in the lab
 
 ## Running Commands in Parallel with tmux
 
