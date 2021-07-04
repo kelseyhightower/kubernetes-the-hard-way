@@ -38,6 +38,10 @@ gcloud auth login
 
 Next set a default compute region and compute zone:
 
+> **Note**: If you are using a free tier account. Please select the region after checking the Quotas in GCP console. Some regions will have a limit of running only 8 
+> vCPUs whereas for this tutorial you need to configure total of six e2-standard-2 (2 vCPUs, 8 GB memory) VMs i.e 12 vCPUs.
+>
+> Please check [Working with quotas](https://cloud.google.com/docs/quota) for better understanding
 ```
 gcloud config set compute/region us-west1
 ```
