@@ -4,7 +4,7 @@
 
 This tutorial leverages the [Google Cloud Platform](https://cloud.google.com/) to streamline provisioning of the compute infrastructure required to bootstrap a Kubernetes cluster from the ground up. [Sign up](https://cloud.google.com/free/) for $300 in free credits.
 
-[Estimated cost](https://cloud.google.com/products/calculator#id=873932bc-0840-4176-b0fa-a8cfd4ca61ae) to run this tutorial: $0.23 per hour ($5.50 per day).
+[Estimated cost](https://cloud.google.com/products/calculator#id=7f37dfb3-b201-4283-acc8-d751540ab41d) to run this tutorial: $0.49 per hour ($11.83 per day).
 
 > The compute resources required for this tutorial exceed the Google Cloud Platform free tier.
 
