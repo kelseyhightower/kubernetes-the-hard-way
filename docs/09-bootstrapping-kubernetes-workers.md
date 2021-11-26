@@ -138,13 +138,29 @@ sudo mkdir -p /etc/containerd/
 
 ```
 cat << EOF | sudo tee /etc/containerd/config.toml
-[plugins]
-  [plugins.cri.containerd]
-    snapshotter = "overlayfs"
-    [plugins.cri.containerd.default_runtime]
-      runtime_type = "io.containerd.runtime.v1.linux"
-      runtime_engine = "/usr/local/bin/runc"
-      runtime_root = ""
+version = 2
+[plugins."io.containerd.grpc.v1.cri".containerd]
+  # save disk space when using a single snapshotter
+  discard_unpacked_layers = true
+  # explicitly use default snapshotter so we can sed it in entrypoint
+  snapshotter = "overlayfs"
+  # explicit default here, as we're configuring it below
+  default_runtime_name = "runc"
+[plugins."io.containerd.grpc.v1.cri".containerd.runtimes.runc]
+  # set default runtime handler to v2, which has a per-pod shim
+  runtime_type = "io.containerd.runc.v2"
+# Setup a runtime with the magic name ("test-handler") used for Kubernetes
+# runtime class tests ...
+[plugins."io.containerd.grpc.v1.cri".containerd.runtimes.test-handler]
+  runtime_type = "io.containerd.runc.v2"
+[plugins."io.containerd.grpc.v1.cri"]
+  # use fixed sandbox image
+  sandbox_image = "k8s.gcr.io/pause:3.5"
+  # allow hugepages controller to be missing
+  # see https://github.com/containerd/cri/pull/1501
+  tolerate_missing_hugepages_controller = true
+  # restrict_oom_score_adj needs to be true when running inside UserNS (rootless)
+  restrict_oom_score_adj = false
 EOF
 ```
 
@@ -227,11 +243,11 @@ ExecStart=/usr/local/bin/kubelet \\
   --config=/var/lib/kubelet/kubelet-config.yaml \\
   --container-runtime=remote \\
   --container-runtime-endpoint=unix:///var/run/containerd/containerd.sock \\
-  --image-pull-progress-deadline=2m \\
   --kubeconfig=/var/lib/kubelet/kubeconfig \\
-  --network-plugin=cni \\
   --register-node=true \\
-  --v=2
+  --v=2 \\
+  --fail-swap-on=false \\
+  --pod-infra-container-image=k8s.gcr.io/pause:3.4.1
 Restart=on-failure
 RestartSec=5
 
