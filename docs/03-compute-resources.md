@@ -47,7 +47,7 @@ Create a firewall rule that allows external SSH, ICMP, and HTTPS:
 
 ```
 gcloud compute firewall-rules create kubernetes-the-hard-way-allow-external \
-  --allow tcp:22,tcp:6443,icmp \
+  --allow tcp:22,tcp:443,icmp \
   --network kubernetes-the-hard-way \
   --source-ranges 0.0.0.0/0
 ```
