@@ -1,72 +1,56 @@
 # Installing the Client Tools
 
-In this lab you will install the command line utilities required to complete this tutorial: [cfssl](https://github.com/cloudflare/cfssl), [cfssljson](https://github.com/cloudflare/cfssl), and [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl).
+In this lab you will install the command line utilities required to complete this tutorial: [step](https://github.com/smallstep/cli), and [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl).
 
 
 ## Install CFSSL
 
-The `cfssl` and `cfssljson` command line utilities will be used to provision a [PKI Infrastructure](https://en.wikipedia.org/wiki/Public_key_infrastructure) and generate TLS certificates.
+The `step` command line utility will be used to provision a [PKI Infrastructure](https://en.wikipedia.org/wiki/Public_key_infrastructure) and generate TLS certificates.
 
-Download and install `cfssl` and `cfssljson`:
+Download and install `step`:
 
 ### OS X
 
-```
-curl -o cfssl https://storage.googleapis.com/kubernetes-the-hard-way/cfssl/1.4.1/darwin/cfssl
-curl -o cfssljson https://storage.googleapis.com/kubernetes-the-hard-way/cfssl/1.4.1/darwin/cfssljson
-```
+For Intel chips:
 
 ```
-chmod +x cfssl cfssljson
+curl -L https://dl.step.sm/gh-release/cli/gh-release-header/v0.18.0/step_darwin_0.18.0_amd64.tar.gz | tar xz
+sudo mv step_0.18.0/bin/step /usr/local/bin/
 ```
 
-```
-sudo mv cfssl cfssljson /usr/local/bin/
-```
-
-Some OS X users may experience problems using the pre-built binaries in which case [Homebrew](https://brew.sh) might be a better option:
+For Apple Silicon:
 
 ```
-brew install cfssl
+curl -L https://dl.step.sm/gh-release/cli/gh-release-header/v0.18.0/step_darwin_0.18.0_arm64.tar.gz | tar xz
+sudo mv step_0.18.0/bin/step /usr/local/bin/
+```
+
+Or, if you'd like to use [Homebrew](https://brew.sh):
+
+```
+brew install step
 ```
 
 ### Linux
 
 ```
-wget -q --show-progress --https-only --timestamping \
-  https://storage.googleapis.com/kubernetes-the-hard-way/cfssl/1.4.1/linux/cfssl \
-  https://storage.googleapis.com/kubernetes-the-hard-way/cfssl/1.4.1/linux/cfssljson
-```
-
-```
-chmod +x cfssl cfssljson
-```
-
-```
-sudo mv cfssl cfssljson /usr/local/bin/
+curl -L https://dl.step.sm/gh-release/cli/gh-release-header/v0.18.0/step_linux_0.18.0_amd64.tar.gz
+sudo mv step_0.18.0/bin/step /usr/local/bin/
 ```
 
 ### Verification
 
-Verify `cfssl` and `cfssljson` version 1.4.1 or higher is installed:
+Verify `step` version 0.18.0 or higher is installed:
 
 ```
-cfssl version
+step version
 ```
 
 > output
 
 ```
-Version: 1.4.1
-Runtime: go1.12.12
-```
-
-```
-cfssljson --version
-```
-```
-Version: 1.4.1
-Runtime: go1.12.12
+Smallstep CLI/0.18.0 (linux/amd64)
+Release Date: 2021-11-17 21:15 UTC
 ```
 
 ## Install kubectl
