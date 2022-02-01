@@ -300,7 +300,12 @@ EXTERNAL_IP=$(gcloud compute instances describe ${instance} \
 INTERNAL_IP=$(gcloud compute instances describe ${instance} \
   --format 'value(networkInterfaces[0].networkIP)')
 
-step ca certificate "system:node:${instance}" ${instance}.pem ${instance}-key.pem --san "${instance}" --san "${EXTERNAL_IP}" --san "${INTERNAL_IP}" --provisioner "kubernetes" --provisioner-password-file "provisioner-password"
+step ca certificate "system:node:${instance}" ${instance}.pem ${instance}-key.pem \
+  --san "${instance}" \
+  --san "${EXTERNAL_IP}" \
+  --san "${INTERNAL_IP}" \
+  --provisioner "kubernetes" \
+  --provisioner-password-file "provisioner-password"
 done
 ```
 
@@ -315,51 +320,24 @@ worker-2-key.pem
 worker-2.pem
 ```
 
-
-
-
-
-
-
-
-
-
-
-
-
 ### The Controller Manager Client Certificate
 
-Generate the `kube-controller-manager` client certificate and private key:
+Generate the `kube-controller-manager`, `kube-proxy`, and `kube-scheduler` client certificates and private keys:
 
 ```
 {
-
-cat > kube-controller-manager-csr.json <<EOF
-{
-  "CN": "system:kube-controller-manager",
-  "key": {
-    "algo": "rsa",
-    "size": 2048
-  },
-  "names": [
-    {
-      "C": "US",
-      "L": "Portland",
-      "O": "system:kube-controller-manager",
-      "OU": "Kubernetes The Hard Way",
-      "ST": "Oregon"
-    }
-  ]
-}
-EOF
-
-cfssl gencert \
-  -ca=ca.pem \
-  -ca-key=ca-key.pem \
-  -config=ca-config.json \
-  -profile=kubernetes \
-  kube-controller-manager-csr.json | cfssljson -bare kube-controller-manager
-
+step ca certificate "system:kube-controller-manager" kube-controller-manager.pem kube-controller-manager-key.pem \
+  --kty RSA \
+  --provisioner "kubernetes" \
+  --provisioner-password-file "provisioner-password"
+step ca certificate "system:kube-proxy" kube-proxy.pem kube-proxy-key.pem \
+  --kty RSA \
+  --provisioner "kubernetes" \
+  --provisioner-password-file "provisioner-password" 
+step ca certificate "system:kube-scheduler" kube-scheduler.pem kube-scheduler-key.pem \
+  --kty RSA \
+  --provisioner "kubernetes" \
+  --provisioner-password-file "provisioner-password" 
 }
 ```
 
@@ -368,95 +346,11 @@ Results:
 ```
 kube-controller-manager-key.pem
 kube-controller-manager.pem
-```
-
-
-### The Kube Proxy Client Certificate
-
-Generate the `kube-proxy` client certificate and private key:
-
-```
-{
-
-cat > kube-proxy-csr.json <<EOF
-{
-  "CN": "system:kube-proxy",
-  "key": {
-    "algo": "rsa",
-    "size": 2048
-  },
-  "names": [
-    {
-      "C": "US",
-      "L": "Portland",
-      "O": "system:node-proxier",
-      "OU": "Kubernetes The Hard Way",
-      "ST": "Oregon"
-    }
-  ]
-}
-EOF
-
-cfssl gencert \
-  -ca=ca.pem \
-  -ca-key=ca-key.pem \
-  -config=ca-config.json \
-  -profile=kubernetes \
-  kube-proxy-csr.json | cfssljson -bare kube-proxy
-
-}
-```
-
-Results:
-
-```
 kube-proxy-key.pem
 kube-proxy.pem
-```
-
-### The Scheduler Client Certificate
-
-Generate the `kube-scheduler` client certificate and private key:
-
-```
-{
-
-cat > kube-scheduler-csr.json <<EOF
-{
-  "CN": "system:kube-scheduler",
-  "key": {
-    "algo": "rsa",
-    "size": 2048
-  },
-  "names": [
-    {
-      "C": "US",
-      "L": "Portland",
-      "O": "system:kube-scheduler",
-      "OU": "Kubernetes The Hard Way",
-      "ST": "Oregon"
-    }
-  ]
-}
-EOF
-
-cfssl gencert \
-  -ca=ca.pem \
-  -ca-key=ca-key.pem \
-  -config=ca-config.json \
-  -profile=kubernetes \
-  kube-scheduler-csr.json | cfssljson -bare kube-scheduler
-
-}
-```
-
-Results:
-
-```
 kube-scheduler-key.pem
 kube-scheduler.pem
 ```
-
 
 ### The Kubernetes API Server Certificate
 
@@ -466,40 +360,24 @@ Generate the Kubernetes API Server certificate and private key:
 
 ```
 {
-
 KUBERNETES_PUBLIC_ADDRESS=$(gcloud compute addresses describe kubernetes-the-hard-way \
   --region $(gcloud config get-value compute/region) \
   --format 'value(address)')
-
-KUBERNETES_HOSTNAMES=kubernetes,kubernetes.default,kubernetes.default.svc,kubernetes.default.svc.cluster,kubernetes.svc.cluster.local
-
-cat > kubernetes-csr.json <<EOF
-{
-  "CN": "kubernetes",
-  "key": {
-    "algo": "rsa",
-    "size": 2048
-  },
-  "names": [
-    {
-      "C": "US",
-      "L": "Portland",
-      "O": "Kubernetes",
-      "OU": "Kubernetes The Hard Way",
-      "ST": "Oregon"
-    }
-  ]
-}
-EOF
-
-cfssl gencert \
-  -ca=ca.pem \
-  -ca-key=ca-key.pem \
-  -config=ca-config.json \
-  -hostname=10.32.0.1,10.240.0.10,10.240.0.11,10.240.0.12,${KUBERNETES_PUBLIC_ADDRESS},127.0.0.1,${KUBERNETES_HOSTNAMES} \
-  -profile=kubernetes \
-  kubernetes-csr.json | cfssljson -bare kubernetes
-
+step ca certificate "kubernetes" kubernetes.pem kubernetes-key.pem \
+  --kty RSA \
+  --san kubernetes \
+  --san kubernetes.default \
+  --san kubernetes.default.svc \
+  --san kubernetes.default.svc.cluster \
+  --san kubernetes.default.svc.cluster.local \
+  --san 10.32.0.1 \
+  --san 10.240.0.10 \
+  --san 10.240.0.11 \
+  --san 10.240.0.12 \
+  --san ${KUBERNETES_PUBLIC_ADDRESS} \
+  --san 127.0.0.1 \
+  --provisioner "kubernetes" \
+  --provisioner-password-file "provisioner-password"
 }
 ```
 
@@ -520,33 +398,10 @@ Generate the `service-account` certificate and private key:
 
 ```
 {
-
-cat > service-account-csr.json <<EOF
-{
-  "CN": "service-accounts",
-  "key": {
-    "algo": "rsa",
-    "size": 2048
-  },
-  "names": [
-    {
-      "C": "US",
-      "L": "Portland",
-      "O": "Kubernetes",
-      "OU": "Kubernetes The Hard Way",
-      "ST": "Oregon"
-    }
-  ]
-}
-EOF
-
-cfssl gencert \
-  -ca=ca.pem \
-  -ca-key=ca-key.pem \
-  -config=ca-config.json \
-  -profile=kubernetes \
-  service-account-csr.json | cfssljson -bare service-account
-
+step ca certificate "service-accounts" service-account.pem service-account-key.pem \
+  --kty RSA \
+  --provisioner "kubernetes" \
+  --provisioner-password-file "provisioner-password" 
 }
 ```
 
@@ -572,7 +427,7 @@ Copy the appropriate certificates and private keys to each controller instance:
 
 ```
 for instance in controller-0 controller-1 controller-2; do
-  gcloud compute scp ca.pem ca-key.pem kubernetes-key.pem kubernetes.pem \
+  gcloud compute scp ca.pem kubernetes-key.pem kubernetes.pem \
     service-account-key.pem service-account.pem ${instance}:~/
 done
 ```
