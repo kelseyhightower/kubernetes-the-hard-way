@@ -51,6 +51,9 @@ Install the Kubernetes binaries:
 
   sudo mv ca.pem kubernetes-key.pem kubernetes.pem \
     service-account-key.pem service-account.pem \
+    kube-proxy.pem kube-proxy-key.pem \
+    kube-controller-manager.pem kube-controller-manager-key.pem \
+    kube-scheduler.pem kube-scheduler-key.pem \
     encryption-config.yaml /var/lib/kubernetes/
 }
 ```

@@ -18,9 +18,7 @@ Download the `step` client and `step-ca` server binaries, and the `jq` command:
 {
 wget -q --show-progress --https-only --timestamping \
   "https://dl.step.sm/gh-release/certificates/gh-release-header/v0.18.0/step-ca_linux_0.18.0_amd64.tar.gz" \
-  "https://dl.step.sm/gh-release/cli/gh-release-header/v0.18.0/step_linux_0.18.0_amd64.tar.gz" \
-  "https://raw.githubusercontent.com/smallstep/cli/master/systemd/cert-renewer%40.service" \
-  "https://raw.githubusercontent.com/smallstep/cli/master/systemd/cert-renewer%40.timer"
+  "https://dl.step.sm/gh-release/cli/gh-release-header/v0.18.0/step_linux_0.18.0_amd64.tar.gz"
 sudo apt update
 sudo apt install -y jq
 }
@@ -31,9 +29,9 @@ Install the binaries:
 ```
 {
 tar -xvf step-ca_linux_0.18.0_amd64.tar.gz
-sudo mv step-ca_0.18.0/bin/* /usr/local/bin/
+sudo mv step-ca_0.18.0/bin/step-ca /usr/local/bin/
 tar -xvf step_linux_0.18.0_amd64.tar.gz
-sudo mv step_0.18.0/bin/* /usr/local/bin/
+sudo mv step_0.18.0/bin/step /usr/local/bin/
 }
 ```
 
@@ -441,7 +439,10 @@ Copy the appropriate certificates and private keys to each controller instance:
 ```
 for instance in controller-0 controller-1 controller-2; do
   gcloud compute scp ca.pem kubernetes-key.pem kubernetes.pem \
-    service-account-key.pem service-account.pem ${instance}:~/
+    service-account-key.pem service-account.pem \
+    kube-controller-manager-key.pem kube-controller-manager.pem \
+    kube-proxy-key.pem kube-proxy.pem kube-scheduler-key.pem \
+    kube-scheduler.pem ${instance}:~/
 done
 ```
 
