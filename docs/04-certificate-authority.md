@@ -17,9 +17,10 @@ Download the `step` client and `step-ca` server binaries, and the `jq` command:
 ```
 {
 wget -q --show-progress --https-only --timestamping \
-  "https://dl.step.sm/gh-release/certificates/gh-release-header/v0.18.0/step-ca_linux_0.18.0_amd64.tar.gz"
-wget -q --show-progress --https-only --timestamping \
-  "https://dl.step.sm/gh-release/cli/gh-release-header/v0.18.0/step_linux_0.18.0_amd64.tar.gz"
+  "https://dl.step.sm/gh-release/certificates/gh-release-header/v0.18.0/step-ca_linux_0.18.0_amd64.tar.gz" \
+  "https://dl.step.sm/gh-release/cli/gh-release-header/v0.18.0/step_linux_0.18.0_amd64.tar.gz" \
+  "https://raw.githubusercontent.com/smallstep/cli/master/systemd/cert-renewer%40.service" \
+  "https://raw.githubusercontent.com/smallstep/cli/master/systemd/cert-renewer%40.timer"
 sudo apt update
 sudo apt install -y jq
 }
@@ -70,21 +71,53 @@ sudo -E step ca init --name="admin" \
    --address=":4443" --provisioner="kubernetes" \
    --password-file="$(step path)/password" \
    --provisioner-password-file="provisioner-password"
-sudo -E step ca provisioner add acme --type ACME
 }
+```
+
+Add an X509 certificate template file:
+
+```
+mkdir -p /etc/step-ca/templates/x509
+
+# Server cert template.
+cat <<EOF > /etc/step-ca/templates/x509/kubernetes.tpl
+{
+    "subject": {
+{{- if .Insecure.User.Organization }}
+        "organization": {{ toJson .Insecure.User.Organization }},
+{{- end }}
+        "commonName": {{ toJson .Subject.CommonName }},
+        "organizationalUnit": {{ toJson .OrganizationalUnit }}
+    },
+    "sans": {{ toJson .SANs }},
+{{- if typeIs "*rsa.PublicKey" .Insecure.CR.PublicKey }}
+	  "keyUsage": ["keyEncipherment", "digitalSignature"],
+{{- else }}
+  	"keyUsage": ["digitalSignature"],
+{{- end }}
+    "extKeyUsage": ["serverAuth", "clientAuth"]
+}
+EOF
 ```
 
 Configure the CA provisioner to issue 90-day certificates:
 
 ```
 {
-sudo jq '(.authority.provisioners[]) += {
+cat <<< $(jq '(.authority.provisioners[] | select(.name == "kubernetes")) += {
             "claims": {
                "maxTLSCertDuration": "2160h",
                "defaultTLSCertDuration": "2160h"
+        },
+        "options": {
+                "x509": {
+                        "templateFile": "templates/x509/kubernetes.tpl",
+                        "templateData": {
+                                "OrganizationalUnit": "Kubernetes The Hard Way"
+                        }
+                }
         }
-}' /etc/step-ca/config/ca.json > ca-new.json
-sudo mv ca-new.json /etc/step-ca/config/ca.json
+    }' /etc/step-ca/config/ca.json) > /etc/step-ca/config/ca.json
 }
 ```
 
@@ -234,34 +267,6 @@ Output:
 Updated [https://www.googleapis.com/compute/v1/projects/project-id-xxxxxx].
 ```
 
-### Bootstrapping remote instances
-
-
-Run each command on every node:
-
-```
-{
-for i in 0 1 2; do
-  gcloud compute ssh worker-${i} -- \
-    step ca bootstrap \
-        --ca-url "$(curl -s -H "Metadata-Flavor: Google" http://metadata.google.internal/computeMetadata/v1/project/attributes/STEP_CA_URL)" \
-        --fingerprint "$(curl -s -H "Metadata-Flavor: Google" http://metadata.google.internal/computeMetadata/v1/project/attributes/STEP_CA_FINGERPRINT)"
-  gcloud compute ssh worker-${i} -- \
-    step ca bootstrap \
-        --ca-url "$(curl -s -H "Metadata-Flavor: Google" http://metadata.google.internal/computeMetadata/v1/project/attributes/STEP_CA_URL)" \
-        --fingerprint "$(curl -s -H "Metadata-Flavor: Google" http://metadata.google.internal/computeMetadata/v1/project/attributes/STEP_CA_FINGERPRINT)"
-done
-}
-```
-
-Output:
-
-```
-The root certificate has been saved in /home/carl/.step/certs/root_ca.crt.
-The authority configuration has been saved in /home/carl/.step/config/defaults.json.
-```
-
-
 ## Client and Server Certificates
 
 In this section you will generate client and server certificates for each Kubernetes component and a client certificate for the Kubernetes `admin` user.
@@ -272,9 +277,11 @@ On your local machine, generate the `admin` client certificate and private key:
 
 ```
 {
-step ca certificate admin admin.pem admin-key.pem \
-  --provisioner="kubernetes" \
-  --provisioner-password-file="provisioner-password"
+ step ca certificate admin admin.pem admin-key.pem \
+    --provisioner="kubernetes" \
+    --provisioner-password-file="provisioner-password" \
+    --set "Organization=system:masters" \
+    --kty RSA
 }
 ```
 
@@ -304,6 +311,7 @@ step ca certificate "system:node:${instance}" ${instance}.pem ${instance}-key.pe
   --san "${instance}" \
   --san "${EXTERNAL_IP}" \
   --san "${INTERNAL_IP}" \
+  --set "Organization=system:nodes" \
   --provisioner "kubernetes" \
   --provisioner-password-file "provisioner-password"
 done
@@ -328,14 +336,17 @@ Generate the `kube-controller-manager`, `kube-proxy`, and `kube-scheduler` clien
 {
 step ca certificate "system:kube-controller-manager" kube-controller-manager.pem kube-controller-manager-key.pem \
   --kty RSA \
+  --set "Organization=system:kube-controller-manager" \
   --provisioner "kubernetes" \
   --provisioner-password-file "provisioner-password"
 step ca certificate "system:kube-proxy" kube-proxy.pem kube-proxy-key.pem \
   --kty RSA \
+  --set "Organization=system:node-proxier" \
   --provisioner "kubernetes" \
   --provisioner-password-file "provisioner-password" 
 step ca certificate "system:kube-scheduler" kube-scheduler.pem kube-scheduler-key.pem \
   --kty RSA \
+  --set "Organization=system:kube-scheduler" \
   --provisioner "kubernetes" \
   --provisioner-password-file "provisioner-password" 
 }
@@ -376,6 +387,7 @@ step ca certificate "kubernetes" kubernetes.pem kubernetes-key.pem \
   --san 10.240.0.12 \
   --san ${KUBERNETES_PUBLIC_ADDRESS} \
   --san 127.0.0.1 \
+  --set "Organization=Kubernetes" \
   --provisioner "kubernetes" \
   --provisioner-password-file "provisioner-password"
 }
@@ -400,6 +412,7 @@ Generate the `service-account` certificate and private key:
 {
 step ca certificate "service-accounts" service-account.pem service-account-key.pem \
   --kty RSA \
+  --set "Organization=Kubernetes" \
   --provisioner "kubernetes" \
   --provisioner-password-file "provisioner-password" 
 }
