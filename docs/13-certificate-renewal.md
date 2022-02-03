@@ -26,7 +26,7 @@ tar -xvf step_linux_0.18.0_amd64.tar.gz
 sudo mv step_0.18.0/bin/step /usr/local/bin/
 ```
 
-### Bootstrapping with the CA
+## Bootstrap with the CA
 
 Configure the host to trust your Certificate Authority:
 
