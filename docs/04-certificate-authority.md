@@ -428,7 +428,8 @@ Copy the appropriate certificates and private keys to each worker instance:
 
 ```
 for instance in worker-0 worker-1 worker-2; do
-  gcloud compute scp ca.pem ${instance}-key.pem ${instance}.pem ${instance}:~/
+  gcloud compute scp ca.pem ${instance}-key.pem ${instance}.pem \
+  kube-proxy-key.pem kube-proxy.pem ${instance}:~/
 done
 ```
 
@@ -439,8 +440,7 @@ for instance in controller-0 controller-1 controller-2; do
   gcloud compute scp ca.pem kubernetes-key.pem kubernetes.pem \
     service-account-key.pem service-account.pem \
     kube-controller-manager-key.pem kube-controller-manager.pem \
-    kube-proxy-key.pem kube-proxy.pem kube-scheduler-key.pem \
-    kube-scheduler.pem ${instance}:~/
+    kube-scheduler-key.pem kube-scheduler.pem ${instance}:~/
 done
 ```
 

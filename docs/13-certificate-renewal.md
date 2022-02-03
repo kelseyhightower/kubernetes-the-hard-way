@@ -237,7 +237,7 @@ gcloud compute ssh worker-0
 
 ## Configure Certificate Renewal for `kubelet.service`
 
-Run:
+Install the a renewal service that will restart `kubelet.service` when the certificate is renewed:
 
 ```
 sudo mkdir /etc/systemd/system/cert-renewer@kubelet.service.d
@@ -254,5 +254,31 @@ EOF
 sudo systemctl daemon-reload
 sudo systemctl enable --now cert-renewer@kubelet.timer
 ```
+
+## Configure Certificate Renewal for `kube-proxy.service`
+
+Install a renewal service that will rebuild the kubeconfig file and restart kube-proxy when the certificate is renewed:
+
+```
+sudo mkdir /etc/systemd/system/cert-renewer@kube-proxy.service.d
+cat <<EOF | sudo tee /etc/systemd/system/cert-renewer@kube-proxy.service.d/override.conf
+[Service]
+Environment=STEPPATH=/root/.step \\
+            CERT_LOCATION=/var/lib/kube-proxy/kube-proxy.pem
+ \\
+            KEY_LOCATION=/var/lib/kube-proxy/kube-proxy.pem
+
+ExecStartPost=kubectl config set-credentials system:kube-proxy \\
+    --client-certificate=\${CERT_LOCATION} \\
+    --client-key=\${KEY_LOCATION} \\
+    --embed-certs=true \\
+    --kubeconfig=/var/lib/kube-proxy/kubeconfig
+
+ExecStartPost=systemctl restart kube-proxy.service
+EOF
+sudo systemctl daemon-reload
+sudo systemctl enable --now cert-renewer@kube-proxy.timer
+```
+
 
 > Remember to run the above commands on each controller node: `worker-0`, `worker-1`, and `worker-2`.
