@@ -1,6 +1,8 @@
+# Configuring Certificate Renewal
+
 ## Prerequisites
 
-The commands in this lab must be run on each controller instance: `controller-0`, `controller-1`, and `controller-2`. Login to each controller instance using the `gcloud` command. Example:
+The commands in this section must be run on every instance: `controller-0`, `controller-1`, `controller-2`, `worker-0`, `worker-1`, and `worker-2`. Login to each instance using the `gcloud` command. Example:
 
 ```
 gcloud compute ssh controller-0
@@ -8,26 +10,25 @@ gcloud compute ssh controller-0
 
 ## Download certificate management tools
 
-Download the `step` CLI binary and renewal utility for systemd:
+Run each command on every node.
+
+Download the `step` CLI binary:
 
 ```
 wget -q --show-progress --https-only --timestamping \
-  "https://dl.step.sm/gh-release/cli/gh-release-header/v0.18.0/step_linux_0.18.0_amd64.tar.gz" \
-  "https://files.smallstep.com/cert-renewer%40.service" \
-  "https://files.smallstep.com/cert-renewer%40.timer"
+  "https://dl.step.sm/gh-release/cli/gh-release-header/v0.18.0/step_linux_0.18.0_amd64.tar.gz"
 ```
 
-Install the binary and renewal utility files:
+Install the binary:
 
 ```
 tar -xvf step_linux_0.18.0_amd64.tar.gz
 sudo mv step_0.18.0/bin/step /usr/local/bin/
-sudo systemctl daemon-reload
 ```
 
-### Bootstrapping the CA on your controllers
+### Bootstrapping with the CA
 
-Run each command on every node:
+Configure the host to trust your Certificate Authority:
 
 ```
 {
@@ -64,17 +65,17 @@ StartLimitIntervalSec=0
 Type=oneshot
 User=root
 
-Environment=STEPPATH=/etc/step-ca \
-            CERT_LOCATION=/etc/step/certs/%i.crt \
+Environment=STEPPATH=/etc/step-ca \\
+            CERT_LOCATION=/etc/step/certs/%i.crt \\
             KEY_LOCATION=/etc/step/certs/%i.key
 
 ; ExecCondition checks if the certificate is ready for renewal,
 ; based on the exit status of the command.
 ; (In systemd <242, you can use ExecStartPre= here.)
-ExecCondition=/usr/local/bin/step certificate needs-renewal ${CERT_LOCATION}
+ExecCondition=/usr/local/bin/step certificate needs-renewal \${CERT_LOCATION}
 
 ; ExecStart renews the certificate, if ExecStartPre was successful.
-ExecStart=/usr/local/bin/step ca renew --force ${CERT_LOCATION} ${KEY_LOCATION}
+ExecStart=/usr/local/bin/step ca renew --force \${CERT_LOCATION} \${KEY_LOCATION}
 
 [Install]
 WantedBy=multi-user.target
@@ -104,6 +105,16 @@ RandomizedDelaySec=5m
 [Install]
 WantedBy=timers.target
 EOF
+```
+
+# Controller Certificate Renewal
+
+## Prerequisites
+
+The commands in this section must be run on every controller: `controller-0`, `controller-1`, `controller-2`. Login to each instance using the `gcloud` command. Example:
+
+```
+gcloud compute ssh controller-0
 ```
 
 ## Configure certificate renewal for etcd
@@ -194,6 +205,8 @@ sudo systemctl enable --now cert-renewer@kube-apiserver.timer
 
 ## Configure service account certificate renewal timer
 
+The service account certificate and key is used by the API server, so we will need to restart it when the certificate file is updated:
+
 ```
 sudo mkdir /etc/systemd/system/cert-renewer@kube-service-account.service.d
 cat <<EOF | sudo tee /etc/systemd/system/cert-renewer@kube-service-account.service.d/override.conf
@@ -204,11 +217,42 @@ Environment=STEPPATH=/root/.step \\
             KEY_LOCATION=/var/lib/kubernetes/service-account-key.pem
 
 ; Restart services that use the service account certificate or key
-ExecStartPost=systemctl restart kube-controller-manager.service
 ExecStartPost=systemctl restart kube-apiserver.service
+EOF
 sudo systemctl daemon-reload
 sudo systemctl enable --now cert-renewer@kube-service-account.timer
-EOF
 ```
 
 > Remember to run the above commands on each controller node: `controller-0`, `controller-1`, and `controller-2`.
+
+# Worker Certificate Renewal
+
+## Prerequisites
+
+The commands in this section must be run on every worker: `worker-0`, `worker-1`, and `worker-2`. Login to each instance using the `gcloud` command. Example:
+
+```
+gcloud compute ssh worker-0
+```
+
+## Configure Certificate Renewal for `kubelet.service`
+
+Run:
+
+```
+sudo mkdir /etc/systemd/system/cert-renewer@kubelet.service.d
+cat <<EOF | sudo tee /etc/systemd/system/cert-renewer@kubelet.service.d/override.conf
+[Service]
+Environment=STEPPATH=/root/.step \\
+            CERT_LOCATION=/var/lib/kubelet/${HOSTNAME}.pem
+ \\
+            KEY_LOCATION=/var/lib/kubelet/${HOSTNAME}-key.pem
+
+; Restart services that use the service account certificate or key
+ExecStartPost=systemctl restart kubelet.service
+EOF
+sudo systemctl daemon-reload
+sudo systemctl enable --now cert-renewer@kubelet.timer
+```
+
+> Remember to run the above commands on each controller node: `worker-0`, `worker-1`, and `worker-2`.

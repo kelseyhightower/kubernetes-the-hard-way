@@ -38,9 +38,7 @@ sudo mv step_0.18.0/bin/step /usr/local/bin/
 Now create a `step` user and the paths for `step-ca`:
 
 ```
-{
 sudo useradd --system --home /etc/step-ca --shell /bin/false step
-}
 ```
 
 Create a CA configuration folder and generate passwords for the CA root key and the CA provisioner:
