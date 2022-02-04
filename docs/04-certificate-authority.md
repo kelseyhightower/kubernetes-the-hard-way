@@ -17,8 +17,8 @@ Download the `step` client and `step-ca` server binaries, and the `jq` command:
 ```
 {
 wget -q --show-progress --https-only --timestamping \
-  "https://dl.step.sm/gh-release/certificates/gh-release-header/v0.18.0/step-ca_linux_0.18.0_amd64.tar.gz" \
-  "https://dl.step.sm/gh-release/cli/gh-release-header/v0.18.0/step_linux_0.18.0_amd64.tar.gz"
+  "https://dl.step.sm/gh-release/certificates/gh-release-header/v0.18.1/step-ca_linux_0.18.1_amd64.tar.gz" \
+  "https://dl.step.sm/gh-release/cli/gh-release-header/v0.18.1/step_linux_0.18.1_amd64.tar.gz"
 sudo apt update
 sudo apt install -y jq
 }
@@ -28,10 +28,10 @@ Install the binaries:
 
 ```
 {
-tar -xvf step-ca_linux_0.18.0_amd64.tar.gz
-sudo mv step-ca_0.18.0/bin/step-ca /usr/local/bin/
-tar -xvf step_linux_0.18.0_amd64.tar.gz
-sudo mv step_0.18.0/bin/step /usr/local/bin/
+tar -xvf step-ca_linux_0.18.1_amd64.tar.gz
+sudo mv step-ca_0.18.1/bin/step-ca /usr/local/bin/
+tar -xvf step_linux_0.18.1_amd64.tar.gz
+sudo mv step_0.18.1/bin/step /usr/local/bin/
 }
 ```
 
@@ -47,7 +47,6 @@ Create a CA configuration folder and generate passwords for the CA root key and 
 {
 export STEPPATH=/etc/step-ca
 umask 077
-sudo mkdir -p $(step path)/db
 < /dev/urandom tr -dc A-Za-z0-9 | head -c40 | sudo tee $(step path)/password > /dev/null
 < /dev/urandom tr -dc A-Za-z0-9 | head -c40  > provisioner-password
 umask 002

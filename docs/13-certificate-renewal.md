@@ -16,14 +16,14 @@ Download the `step` CLI binary:
 
 ```
 wget -q --show-progress --https-only --timestamping \
-  "https://dl.step.sm/gh-release/cli/gh-release-header/v0.18.0/step_linux_0.18.0_amd64.tar.gz"
+  "https://dl.step.sm/gh-release/cli/gh-release-header/v0.18.1/step_linux_0.18.1_amd64.tar.gz"
 ```
 
 Install the binary:
 
 ```
-tar -xvf step_linux_0.18.0_amd64.tar.gz
-sudo mv step_0.18.0/bin/step /usr/local/bin/
+tar -xvf step_linux_0.18.1_amd64.tar.gz
+sudo mv step_0.18.1/bin/step /usr/local/bin/
 ```
 
 ## Bootstrap with the CA
