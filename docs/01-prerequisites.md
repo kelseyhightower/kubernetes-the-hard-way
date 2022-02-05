@@ -48,6 +48,13 @@ Set a default compute zone:
 gcloud config set compute/zone us-west1-c
 ```
 
+Set the default compute region and compute zone on the project itself:
+
+```
+gcloud compute project-info add-metadata \
+    --metadata google-compute-default-region=us-west1,google-compute-default-zone=us-west1-c
+```
+
 > Use the `gcloud compute zones list` command to view additional regions and zones.
 
 ## Running Commands in Parallel with tmux
