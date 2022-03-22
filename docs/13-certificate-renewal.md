@@ -142,8 +142,7 @@ sudo mkdir /etc/systemd/system/cert-renewer@kube-controller-manager.service.d
 cat <<EOF | sudo tee /etc/systemd/system/cert-renewer@kube-controller-manager.service.d/override.conf
 [Service]
 Environment=STEPPATH=/root/.step \\
-            CERT_LOCATION=/var/lib/kubernetes/kube-controller-manager.pem
- \\
+            CERT_LOCATION=/var/lib/kubernetes/kube-controller-manager.pem \\
             KEY_LOCATION=/var/lib/kubernetes/kube-controller-manager-key.pem
 
 ExecStartPost=kubectl config set-credentials system:kube-controller-manager \\
@@ -167,8 +166,7 @@ sudo mkdir /etc/systemd/system/cert-renewer@kube-scheduler.service.d
 cat <<EOF | sudo tee /etc/systemd/system/cert-renewer@kube-scheduler.service.d/override.conf
 [Service]
 Environment=STEPPATH=/root/.step \\
-            CERT_LOCATION=/var/lib/kubernetes/kube-scheduler.pem
- \\
+            CERT_LOCATION=/var/lib/kubernetes/kube-scheduler.pem \\
             KEY_LOCATION=/var/lib/kubernetes/kube-scheduler-key.pem
 
 ExecStartPost=kubectl config set-credentials system:kube-scheduler \\
@@ -212,8 +210,7 @@ sudo mkdir /etc/systemd/system/cert-renewer@kube-service-account.service.d
 cat <<EOF | sudo tee /etc/systemd/system/cert-renewer@kube-service-account.service.d/override.conf
 [Service]
 Environment=STEPPATH=/root/.step \\
-            CERT_LOCATION=/var/lib/kubernetes/service-account.pem
- \\
+            CERT_LOCATION=/var/lib/kubernetes/service-account.pem \\
             KEY_LOCATION=/var/lib/kubernetes/service-account-key.pem
 
 ; Restart services that use the service account certificate or key
@@ -244,8 +241,7 @@ sudo mkdir /etc/systemd/system/cert-renewer@kubelet.service.d
 cat <<EOF | sudo tee /etc/systemd/system/cert-renewer@kubelet.service.d/override.conf
 [Service]
 Environment=STEPPATH=/root/.step \\
-            CERT_LOCATION=/var/lib/kubelet/${HOSTNAME}.pem
- \\
+            CERT_LOCATION=/var/lib/kubelet/${HOSTNAME}.pem \\
             KEY_LOCATION=/var/lib/kubelet/${HOSTNAME}-key.pem
 
 ; Restart services that use the service account certificate or key
@@ -264,8 +260,7 @@ sudo mkdir /etc/systemd/system/cert-renewer@kube-proxy.service.d
 cat <<EOF | sudo tee /etc/systemd/system/cert-renewer@kube-proxy.service.d/override.conf
 [Service]
 Environment=STEPPATH=/root/.step \\
-            CERT_LOCATION=/var/lib/kube-proxy/kube-proxy.pem
- \\
+            CERT_LOCATION=/var/lib/kube-proxy/kube-proxy.pem \\
             KEY_LOCATION=/var/lib/kube-proxy/kube-proxy.pem
 
 ExecStartPost=kubectl config set-credentials system:kube-proxy \\
