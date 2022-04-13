@@ -12,7 +12,7 @@ This tutorial leverages the [Google Cloud Platform](https://cloud.google.com/) t
 
 ### Install the Google Cloud SDK
 
-Follow the Google Cloud SDK [documentation](https://cloud.google.com/sdk/) to install and configure the `gcloud` command line utility.
+Follow the Google Cloud SDK [documentation](https://cloud.google.com/sdk/docs/install) to install and configure the `gcloud` command line utility.
 
 Verify the Google Cloud SDK version is 338.0.0 or higher:
 
