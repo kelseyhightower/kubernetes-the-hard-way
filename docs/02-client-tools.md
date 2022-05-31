@@ -14,15 +14,15 @@ Download and install `step`:
 For Intel chips:
 
 ```
-curl -L https://dl.step.sm/gh-release/cli/gh-release-header/v0.18.0/step_darwin_0.18.0_amd64.tar.gz | tar xz
-sudo mv step_0.18.0/bin/step /usr/local/bin/
+curl -L https://dl.step.sm/gh-release/cli/gh-release-header/v0.20.0/step_darwin_0.20.0_amd64.tar.gz | tar xz
+sudo mv step_0.20.0/bin/step /usr/local/bin/
 ```
 
 For Apple Silicon:
 
 ```
-curl -L https://dl.step.sm/gh-release/cli/gh-release-header/v0.18.0/step_darwin_0.18.0_arm64.tar.gz | tar xz
-sudo mv step_0.18.0/bin/step /usr/local/bin/
+curl -L https://dl.step.sm/gh-release/cli/gh-release-header/v0.20.0/step_darwin_0.20.0_arm64.tar.gz | tar xz
+sudo mv step_0.20.0/bin/step /usr/local/bin/
 ```
 
 Or, if you'd like to use [Homebrew](https://brew.sh):
@@ -34,13 +34,13 @@ brew install step
 ### Linux
 
 ```
-curl -L https://dl.step.sm/gh-release/cli/gh-release-header/v0.18.0/step_linux_0.18.0_amd64.tar.gz
-sudo mv step_0.18.0/bin/step /usr/local/bin/
+curl -L https://dl.step.sm/gh-release/cli/gh-release-header/v0.20.0/step_linux_0.20.0_amd64.tar.gz | tar xz
+sudo mv step_0.20.0/bin/step /usr/local/bin/
 ```
 
 ### Verification
 
-Verify `step` version 0.18.0 or higher is installed:
+Verify `step` version 0.20.0 or higher is installed:
 
 ```
 step version
@@ -49,8 +49,8 @@ step version
 > output
 
 ```
-Smallstep CLI/0.18.0 (linux/amd64)
-Release Date: 2021-11-17 21:15 UTC
+Smallstep CLI/0.20.0 (darwin/arm64)
+Release Date: 2022-05-26 19:31 UTC
 ```
 
 ## Install kubectl
