@@ -244,6 +244,7 @@ EOF
 
 ```
 sudo mv kube-proxy.kubeconfig /var/lib/kube-proxy/kubeconfig
+sudo mv kube-proxy.pem kube-proxy-key.pem /var/lib/kube-proxy
 ```
 
 Create the `kube-proxy-config.yaml` configuration file:
