@@ -64,7 +64,7 @@ INTERNAL_IP=$(curl -s -H "Metadata-Flavor: Google" \
 
 ```
 REGION=$(curl -s -H "Metadata-Flavor: Google" \
-  http://metadata.google.internal/computeMetadata/v1/project/attributes/google-compute-default-region)
+  http://metadata.google.internal/computeMetadata/v1/instance/zone | cut -d/ -f 4 | sed 's/.\{2\}$//')
 ```
 
 ```
