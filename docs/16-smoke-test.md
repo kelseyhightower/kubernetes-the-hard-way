@@ -4,18 +4,20 @@ In this lab you will complete a series of tasks to ensure your Kubernetes cluste
 
 ## Data Encryption
 
+[//]: # (host:master-1)
+
 In this section you will verify the ability to [encrypt secret data at rest](https://kubernetes.io/docs/tasks/administer-cluster/encrypt-data/#verifying-that-data-is-encrypted).
 
 Create a generic secret:
 
-```
+```bash
 kubectl create secret generic kubernetes-the-hard-way \
   --from-literal="mykey=mydata"
 ```
 
 Print a hexdump of the `kubernetes-the-hard-way` secret stored in etcd:
 
-```
+```bash
 sudo ETCDCTL_API=3 etcdctl get \
   --endpoints=https://127.0.0.1:2379 \
   --cacert=/etc/etcd/ca.crt \
@@ -48,7 +50,9 @@ sudo ETCDCTL_API=3 etcdctl get \
 The etcd key should be prefixed with `k8s:enc:aescbc:v1:key1`, which indicates the `aescbc` provider was used to encrypt the data with the `key1` encryption key.
 
 Cleanup:
-`kubectl delete secret kubernetes-the-hard-way`
+```bash
+kubectl delete secret kubernetes-the-hard-way
+```
 
 ## Deployments
 
@@ -56,13 +60,15 @@ In this section you will verify the ability to create and manage [Deployments](h
 
 Create a deployment for the [nginx](https://nginx.org/en/) web server:
 
+```bash
+kubectl create deployment nginx --image=nginx:1.23.1
 ```
-kubectl create deployment nginx --image=nginx
-```
+
+[//]: # (sleep:15)
 
 List the pod created by the `nginx` deployment:
 
-```
+```bash
 kubectl get pods -l app=nginx
 ```
 
@@ -79,18 +85,18 @@ In this section you will verify the ability to access applications remotely usin
 
 Create a service to expose deployment nginx on node ports.
 
-```
+```bash
 kubectl expose deploy nginx --type=NodePort --port 80
 ```
 
 
-```
+```bash
 PORT_NUMBER=$(kubectl get svc -l app=nginx -o jsonpath="{.items[0].spec.ports[0].nodePort}")
 ```
 
 Test to view NGINX page
 
-```
+```bash
 curl http://worker-1:$PORT_NUMBER
 curl http://worker-2:$PORT_NUMBER
 ```
@@ -112,13 +118,13 @@ In this section you will verify the ability to [retrieve container logs](https:/
 
 Retrieve the full name of the `nginx` pod:
 
-```
+```bash
 POD_NAME=$(kubectl get pods -l app=nginx -o jsonpath="{.items[0].metadata.name}")
 ```
 
 Print the `nginx` pod logs:
 
-```
+```bash
 kubectl logs $POD_NAME
 ```
 
@@ -135,14 +141,15 @@ In this section you will verify the ability to [execute commands in a container]
 
 Print the nginx version by executing the `nginx -v` command in the `nginx` container:
 
-```
+```bash
 kubectl exec -ti $POD_NAME -- nginx -v
 ```
 
 > output
 
 ```
-nginx version: nginx/1.15.9
+nginx version: nginx/1.23.1
 ```
 
-Next: [End to End Tests](16-e2e-tests.md)
+Prev: [DNS Addon](15-dns-addon.md)</br>
+Next: [End to End Tests](17-e2e-tests.md)

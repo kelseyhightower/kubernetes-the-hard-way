@@ -4,9 +4,13 @@ In this lab you will deploy the [DNS add-on](https://kubernetes.io/docs/concepts
 
 ## The DNS Cluster Add-on
 
+[//]: # (host:master-1)
+
 Deploy the `coredns` cluster add-on:
 
-```
+Note that if you have [changed the service CIDR range](./01-prerequisites.md#service-network) and thus this file, you will need to save your copy onto `master-1` (paste to vi, then save) and apply that.
+
+```bash
 kubectl apply -f https://raw.githubusercontent.com/mmumshad/kubernetes-the-hard-way/master/deployments/coredns.yaml
 ```
 
@@ -23,7 +27,9 @@ service/kube-dns created
 
 List the pods created by the `kube-dns` deployment:
 
-```
+[//]: # (sleep:15)
+
+```bash
 kubectl get pods -l k8s-app=kube-dns -n kube-system
 ```
 
@@ -39,15 +45,18 @@ Reference: https://kubernetes.io/docs/tasks/administer-cluster/coredns/#installi
 
 ## Verification
 
-Create a `busybox` deployment:
+Create a `busybox` pod:
 
-```
-kubectl run --generator=run-pod/v1  busybox --image=busybox:1.28 --command -- sleep 3600
+```bash
+kubectl run busybox --image=busybox:1.28 --command -- sleep 3600
 ```
 
-List the pod created by the `busybox` deployment:
+[//]: # (sleep:10)
 
-```
+
+List the pod created by the `busybox` pod:
+
+```bash
 kubectl get pods -l run=busybox
 ```
 
@@ -60,7 +69,7 @@ busybox-bd8fb7cbd-vflm9   1/1     Running   0          10s
 
 Execute a DNS lookup for the `kubernetes` service inside the `busybox` pod:
 
-```
+```bash
 kubectl exec -ti busybox -- nslookup kubernetes
 ```
 
@@ -74,4 +83,5 @@ Name:      kubernetes
 Address 1: 10.96.0.1 kubernetes.default.svc.cluster.local
 ```
 
-Next: [Smoke Test](15-smoke-test.md)
+Prev: [Kube API Server to Kubelet Connectivity](14-kube-apiserver-to-kubelet.md)</br>
+Next: [Smoke Test](16-smoke-test.md)

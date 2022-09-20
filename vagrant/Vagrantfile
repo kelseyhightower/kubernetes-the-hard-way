@@ -6,10 +6,36 @@
 NUM_MASTER_NODE = 2
 NUM_WORKER_NODE = 2
 
-IP_NW = "192.168.5."
+IP_NW = "192.168.56."
 MASTER_IP_START = 10
 NODE_IP_START = 20
 LB_IP_START = 30
+
+# Sets up hosts file and DNS
+def setup_dns(node)
+  # Set up /etc/hosts
+  node.vm.provision "setup-hosts", :type => "shell", :path => "ubuntu/vagrant/setup-hosts.sh" do |s|
+    s.args = ["enp0s8", node.vm.hostname]
+  end
+  # Set up DNS resolution
+  node.vm.provision "setup-dns", type: "shell", :path => "ubuntu/update-dns.sh"
+end
+
+# Runs provisioning steps that are required by masters and workers
+def provision_kubernetes_node(node)
+  # Set up kernel parameters, modules and tunables
+  node.vm.provision "setup-kernel", :type => "shell", :path => "ubuntu/setup-kernel.sh"
+  # Restart
+  node.vm.provision :shell do |shell|
+    shell.privileged = true
+    shell.inline = "echo Rebooting"
+    shell.reboot = true
+  end
+  # Set up DNS
+  setup_dns node
+  # Install cert verification script
+  node.vm.provision "shell", inline: "ln -s /vagrant/ubuntu/cert_verify.sh /home/vagrant/cert_verify.sh"
+end
 
 # All Vagrant configuration is done below. The "2" in Vagrant.configure
 # configures the configuration version (we support older styles for
@@ -23,99 +49,63 @@ Vagrant.configure("2") do |config|
   # Every Vagrant development environment requires a box. You can search for
   # boxes at https://vagrantcloud.com/search.
   # config.vm.box = "base"
-  config.vm.box = "ubuntu/bionic64"
+  config.vm.box = "ubuntu/jammy64"
 
   # Disable automatic box update checking. If you disable this, then
   # boxes will only be checked for updates when the user runs
   # `vagrant box outdated`. This is not recommended.
   config.vm.box_check_update = false
 
-  # Create a public network, which generally matched to bridged network.
-  # Bridged networks make the machine appear as another physical device on
-  # your network.
-  # config.vm.network "public_network"
-
-  # Share an additional folder to the guest VM. The first argument is
-  # the path on the host to the actual folder. The second argument is
-  # the path on the guest to mount the folder. And the optional third
-  # argument is a set of non-required options.
-  # config.vm.synced_folder "../data", "/vagrant_data"
-
-  # Provider-specific configuration so you can fine-tune various
-  # backing providers for Vagrant. These expose provider-specific options.
-  # Example for VirtualBox:
-  #
-  # config.vm.provider "virtualbox" do |vb|
-  #   # Customize the amount of memory on the VM:
-  #   vb.memory = "1024"
-  # end
-  #
-  # View the documentation for the provider you are using for more
-  # information on available options.
-
   # Provision Master Nodes
   (1..NUM_MASTER_NODE).each do |i|
-      config.vm.define "master-#{i}" do |node|
-        # Name shown in the GUI
-        node.vm.provider "virtualbox" do |vb|
-            vb.name = "kubernetes-ha-master-#{i}"
-            vb.memory = 2048
-            vb.cpus = 2
+    config.vm.define "master-#{i}" do |node|
+      # Name shown in the GUI
+      node.vm.provider "virtualbox" do |vb|
+        vb.name = "kubernetes-ha-master-#{i}"
+        if i == 1
+          vb.memory = 2048    # More needed to run e2e tests at end
+        else
+          vb.memory = 1024
         end
-        node.vm.hostname = "master-#{i}"
-        node.vm.network :private_network, ip: IP_NW + "#{MASTER_IP_START + i}"
-        node.vm.network "forwarded_port", guest: 22, host: "#{2710 + i}"
-
-        node.vm.provision "setup-hosts", :type => "shell", :path => "ubuntu/vagrant/setup-hosts.sh" do |s|
-          s.args = ["enp0s8"]
-        end
-
-        node.vm.provision "setup-dns", type: "shell", :path => "ubuntu/update-dns.sh"
-        node.vm.provision "file", source: "./ubuntu/cert_verify.sh", destination: "$HOME/"
-
+        vb.cpus = 2
       end
+      node.vm.hostname = "master-#{i}"
+      node.vm.network :private_network, ip: IP_NW + "#{MASTER_IP_START + i}"
+      node.vm.network "forwarded_port", guest: 22, host: "#{2710 + i}"
+      provision_kubernetes_node node
+      if i == 1
+        # Install (opinionated) configs for vim and tmux on master-1. These used by the author for CKA exam.
+        node.vm.provision "file", source: "./ubuntu/tmux.conf", destination: "$HOME/.tmux.conf"
+        node.vm.provision "file", source: "./ubuntu/vimrc", destination: "$HOME/.vimrc"
+      end
+    end
   end
 
   # Provision Load Balancer Node
   config.vm.define "loadbalancer" do |node|
     node.vm.provider "virtualbox" do |vb|
-        vb.name = "kubernetes-ha-lb"
-        vb.memory = 512
-        vb.cpus = 1
+      vb.name = "kubernetes-ha-lb"
+      vb.memory = 512
+      vb.cpus = 1
     end
     node.vm.hostname = "loadbalancer"
     node.vm.network :private_network, ip: IP_NW + "#{LB_IP_START}"
-	node.vm.network "forwarded_port", guest: 22, host: 2730
-
-    node.vm.provision "setup-hosts", :type => "shell", :path => "ubuntu/vagrant/setup-hosts.sh" do |s|
-      s.args = ["enp0s8"]
-    end
-
-    node.vm.provision "setup-dns", type: "shell", :path => "ubuntu/update-dns.sh"
-
+    node.vm.network "forwarded_port", guest: 22, host: 2730
+    setup_dns node
   end
 
   # Provision Worker Nodes
   (1..NUM_WORKER_NODE).each do |i|
     config.vm.define "worker-#{i}" do |node|
-        node.vm.provider "virtualbox" do |vb|
-            vb.name = "kubernetes-ha-worker-#{i}"
-            vb.memory = 512
-            vb.cpus = 1
-        end
-        node.vm.hostname = "worker-#{i}"
-        node.vm.network :private_network, ip: IP_NW + "#{NODE_IP_START + i}"
-		node.vm.network "forwarded_port", guest: 22, host: "#{2720 + i}"
-
-        node.vm.provision "setup-hosts", :type => "shell", :path => "ubuntu/vagrant/setup-hosts.sh" do |s|
-          s.args = ["enp0s8"]
-        end
-
-        node.vm.provision "setup-dns", type: "shell", :path => "ubuntu/update-dns.sh"
-        node.vm.provision "install-docker", type: "shell", :path => "ubuntu/install-docker-2.sh"
-        node.vm.provision "allow-bridge-nf-traffic", :type => "shell", :path => "ubuntu/allow-bridge-nf-traffic.sh"
-        node.vm.provision "file", source: "./ubuntu/cert_verify.sh", destination: "$HOME/"
-
+      node.vm.provider "virtualbox" do |vb|
+        vb.name = "kubernetes-ha-worker-#{i}"
+        vb.memory = 1024
+        vb.cpus = 1
+      end
+      node.vm.hostname = "worker-#{i}"
+      node.vm.network :private_network, ip: IP_NW + "#{NODE_IP_START + i}"
+      node.vm.network "forwarded_port", guest: 22, host: "#{2720 + i}"
+      provision_kubernetes_node node
     end
   end
 end

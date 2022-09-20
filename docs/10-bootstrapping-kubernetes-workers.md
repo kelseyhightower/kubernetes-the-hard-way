@@ -1,6 +1,6 @@
 # Bootstrapping the Kubernetes Worker Nodes
 
-In this lab you will bootstrap 2 Kubernetes worker nodes. We already have [Docker](https://www.docker.com) installed on these nodes.
+In this lab you will bootstrap 2 Kubernetes worker nodes. We already installed `containerd` and its dependencies on these nodes in the previous lab.
 
 We will now install the kubernetes components
 - [kubelet](https://kubernetes.io/docs/admin/kubelet)
@@ -8,7 +8,7 @@ We will now install the kubernetes components
 
 ## Prerequisites
 
-The Certificates and Configuration are created on `master-1` node and then copied over to workers using `scp`. 
+The Certificates and Configuration are created on `master-1` node and then copied over to workers using `scp`.
 Once this is done, the commands are to be run on first worker instance: `worker-1`. Login to first worker instance using SSH Terminal.
 
 ### Provisioning Kubelet Client Certificates
@@ -17,9 +17,15 @@ Kubernetes uses a [special-purpose authorization mode](https://kubernetes.io/doc
 
 Generate a certificate and private key for one worker node:
 
-On master-1:
+On `master-1`:
 
+[//]: # (host:master-1)
+
+```bash
+WORKER_1=$(dig +short worker-1)
 ```
+
+```bash
 cat > openssl-worker-1.cnf <<EOF
 [req]
 req_extensions = v3_req
@@ -31,7 +37,7 @@ keyUsage = nonRepudiation, digitalSignature, keyEncipherment
 subjectAltName = @alt_names
 [alt_names]
 DNS.1 = worker-1
-IP.1 = 192.168.5.21
+IP.1 = ${WORKER_1}
 EOF
 
 openssl genrsa -out worker-1.key 2048
@@ -51,25 +57,24 @@ worker-1.crt
 When generating kubeconfig files for Kubelets the client certificate matching the Kubelet's node name must be used. This will ensure Kubelets are properly authorized by the Kubernetes [Node Authorizer](https://kubernetes.io/docs/admin/authorization/node/).
 
 Get the kub-api server load-balancer IP.
-```
-LOADBALANCER_ADDRESS=192.168.5.30
+
+```bash
+LOADBALANCER=$(dig +short loadbalancer)
 ```
 
 Generate a kubeconfig file for the first worker node.
 
-On master-1:
-```
+On `master-1`:
+```bash
 {
   kubectl config set-cluster kubernetes-the-hard-way \
-    --certificate-authority=ca.crt \
-    --embed-certs=true \
-    --server=https://${LOADBALANCER_ADDRESS}:6443 \
+    --certificate-authority=/var/lib/kubernetes/pki/ca.crt \
+    --server=https://${LOADBALANCER}:6443 \
     --kubeconfig=worker-1.kubeconfig
 
   kubectl config set-credentials system:node:worker-1 \
-    --client-certificate=worker-1.crt \
-    --client-key=worker-1.key \
-    --embed-certs=true \
+    --client-certificate=/var/lib/kubernetes/pki/worker-1.crt \
+    --client-key=/var/lib/kubernetes/pki/worker-1.key \
     --kubeconfig=worker-1.kubeconfig
 
   kubectl config set-context default \
@@ -88,40 +93,42 @@ worker-1.kubeconfig
 ```
 
 ### Copy certificates, private keys and kubeconfig files to the worker node:
-On master-1:
+On `master-1`:
+
+```bash
+scp ca.crt worker-1.crt worker-1.key worker-1.kubeconfig worker-1:~/
 ```
-master-1$ scp ca.crt worker-1.crt worker-1.key worker-1.kubeconfig worker-1:~/
-```
+
 
 ### Download and Install Worker Binaries
 
-Going forward all activities are to be done on the `worker-1` node.
+All the following commands from here until the [verification](#verification) step must be run on `worker-1`
 
-On worker-1:
-```
-worker-1$ wget -q --show-progress --https-only --timestamping \
-  https://storage.googleapis.com/kubernetes-release/release/v1.13.0/bin/linux/amd64/kubectl \
-  https://storage.googleapis.com/kubernetes-release/release/v1.13.0/bin/linux/amd64/kube-proxy \
-  https://storage.googleapis.com/kubernetes-release/release/v1.13.0/bin/linux/amd64/kubelet
+[//]: # (host:worker-1)
+
+
+```bash
+wget -q --show-progress --https-only --timestamping \
+  https://storage.googleapis.com/kubernetes-release/release/v1.24.3/bin/linux/amd64/kubectl \
+  https://storage.googleapis.com/kubernetes-release/release/v1.24.3/bin/linux/amd64/kube-proxy \
+  https://storage.googleapis.com/kubernetes-release/release/v1.24.3/bin/linux/amd64/kubelet 
 ```
 
-Reference: https://kubernetes.io/docs/setup/release/#node-binaries
+Reference: https://kubernetes.io/releases/download/#binaries
 
 Create the installation directories:
 
-```
-worker-1$ sudo mkdir -p \
-  /etc/cni/net.d \
-  /opt/cni/bin \
+```bash
+sudo mkdir -p \
   /var/lib/kubelet \
   /var/lib/kube-proxy \
-  /var/lib/kubernetes \
+  /var/lib/kubernetes/pki \
   /var/run/kubernetes
 ```
 
 Install the worker binaries:
 
-```
+```bash
 {
   chmod +x kubectl kube-proxy kubelet
   sudo mv kubectl kube-proxy kubelet /usr/local/bin/
@@ -130,18 +137,39 @@ Install the worker binaries:
 
 ### Configure the Kubelet
 On worker-1:
-```
+
+Copy keys and config to correct directories and secure
+
+```bash
 {
-  sudo mv ${HOSTNAME}.key ${HOSTNAME}.crt /var/lib/kubelet/
-  sudo mv ${HOSTNAME}.kubeconfig /var/lib/kubelet/kubeconfig
-  sudo mv ca.crt /var/lib/kubernetes/
+  sudo mv ${HOSTNAME}.key ${HOSTNAME}.crt /var/lib/kubernetes/pki/
+  sudo mv ${HOSTNAME}.kubeconfig /var/lib/kubelet/kubelet.kubeconfig
+  sudo mv ca.crt /var/lib/kubernetes/pki/
+  sudo mv kube-proxy.crt kube-proxy.key /var/lib/kubernetes/pki/
+  sudo chown root:root /var/lib/kubernetes/pki/*
+  sudo chmod 600 /var/lib/kubernetes/pki/*
+  sudo chown root:root /var/lib/kubelet/*
+  sudo chmod 600 /var/lib/kubelet/*
 }
+```
+
+CIDR ranges used *within* the cluster
+
+```bash
+POD_CIDR=10.244.0.0/16
+SERVICE_CIDR=10.96.0.0/16
+```
+
+Compute cluster DNS addess, which is conventionally .10 in the service CIDR range
+
+```bash
+CLUSTER_DNS=$(echo $SERVICE_CIDR | awk 'BEGIN {FS="."} ; { printf("%s.%s.%s.10", $1, $2, $3) }')
 ```
 
 Create the `kubelet-config.yaml` configuration file:
 
-```
-worker-1$ cat <<EOF | sudo tee /var/lib/kubelet/kubelet-config.yaml
+```bash
+cat <<EOF | sudo tee /var/lib/kubelet/kubelet-config.yaml
 kind: KubeletConfiguration
 apiVersion: kubelet.config.k8s.io/v1beta1
 authentication:
@@ -150,14 +178,17 @@ authentication:
   webhook:
     enabled: true
   x509:
-    clientCAFile: "/var/lib/kubernetes/ca.crt"
+    clientCAFile: /var/lib/kubernetes/pki/ca.crt
 authorization:
   mode: Webhook
-clusterDomain: "cluster.local"
+clusterDomain: cluster.local
 clusterDNS:
-  - "10.96.0.10"
-resolvConf: "/run/systemd/resolve/resolv.conf"
+  - ${CLUSTER_DNS}
+resolvConf: /run/systemd/resolve/resolv.conf
 runtimeRequestTimeout: "15m"
+tlsCertFile: /var/lib/kubernetes/pki/${HOSTNAME}.crt
+tlsPrivateKeyFile: /var/lib/kubernetes/pki/${HOSTNAME}.key
+registerNode: true
 EOF
 ```
 
@@ -165,23 +196,19 @@ EOF
 
 Create the `kubelet.service` systemd unit file:
 
-```
-worker-1$ cat <<EOF | sudo tee /etc/systemd/system/kubelet.service
+```bash
+cat <<EOF | sudo tee /etc/systemd/system/kubelet.service
 [Unit]
 Description=Kubernetes Kubelet
 Documentation=https://github.com/kubernetes/kubernetes
-After=docker.service
-Requires=docker.service
+After=containerd.service
+Requires=containerd.service
 
 [Service]
 ExecStart=/usr/local/bin/kubelet \\
   --config=/var/lib/kubelet/kubelet-config.yaml \\
-  --image-pull-progress-deadline=2m \\
-  --kubeconfig=/var/lib/kubelet/kubeconfig \\
-  --tls-cert-file=/var/lib/kubelet/${HOSTNAME}.crt \\
-  --tls-private-key-file=/var/lib/kubelet/${HOSTNAME}.key \\
-  --network-plugin=cni \\
-  --register-node=true \\
+  --container-runtime-endpoint=unix:///var/run/containerd/containerd.sock \\
+  --kubeconfig=/var/lib/kubelet/kubelet.kubeconfig \\
   --v=2
 Restart=on-failure
 RestartSec=5
@@ -193,27 +220,28 @@ EOF
 
 ### Configure the Kubernetes Proxy
 On worker-1:
-```
-worker-1$ sudo mv kube-proxy.kubeconfig /var/lib/kube-proxy/kubeconfig
+
+```bash
+sudo mv kube-proxy.kubeconfig /var/lib/kube-proxy/
 ```
 
 Create the `kube-proxy-config.yaml` configuration file:
 
-```
-worker-1$ cat <<EOF | sudo tee /var/lib/kube-proxy/kube-proxy-config.yaml
+```bash
+cat <<EOF | sudo tee /var/lib/kube-proxy/kube-proxy-config.yaml
 kind: KubeProxyConfiguration
 apiVersion: kubeproxy.config.k8s.io/v1alpha1
 clientConnection:
-  kubeconfig: "/var/lib/kube-proxy/kubeconfig"
+  kubeconfig: "/var/lib/kube-proxy/kube-proxy.kubeconfig"
 mode: "iptables"
-clusterCIDR: "192.168.5.0/24"
+clusterCIDR: ${POD_CIDR}
 EOF
 ```
 
 Create the `kube-proxy.service` systemd unit file:
 
-```
-worker-1$ cat <<EOF | sudo tee /etc/systemd/system/kube-proxy.service
+```bash
+cat <<EOF | sudo tee /etc/systemd/system/kube-proxy.service
 [Unit]
 Description=Kubernetes Kube Proxy
 Documentation=https://github.com/kubernetes/kubernetes
@@ -229,9 +257,18 @@ WantedBy=multi-user.target
 EOF
 ```
 
+## Optional - Check Certificates and kubeconfigs
+
+At `worker-1` node, run the following, selecting option 4
+
+```bash
+./cert_verify.sh
+```
+
+
 ### Start the Worker Services
 On worker-1:
-```
+```bash
 {
   sudo systemctl daemon-reload
   sudo systemctl enable kubelet kube-proxy
@@ -242,24 +279,25 @@ On worker-1:
 > Remember to run the above commands on worker node: `worker-1`
 
 ## Verification
-On master-1:
+
+[//]: # (host:master-1)
+
+Now return to the `master-1` node.
 
 List the registered Kubernetes nodes from the master node:
 
-```
-master-1$ kubectl get nodes --kubeconfig admin.kubeconfig
+```bash
+kubectl get nodes --kubeconfig admin.kubeconfig
 ```
 
 > output
 
 ```
 NAME       STATUS     ROLES    AGE   VERSION
-worker-1   NotReady   <none>   93s   v1.13.0
+worker-1   NotReady   <none>   93s   v1.24.3
 ```
 
-> Note: It is OK for the worker node to be in a NotReady state.
-  That is because we haven't configured Networking yet.
+The node is not ready as we have not yet installed pod networking. This comes later.
 
-Optional: At this point you may run the certificate verification script to make sure all certificates are configured correctly. Follow the instructions [here](verify-certificates.md)
-
-Next: [TLS Bootstrapping Kubernetes Workers](10-tls-bootstrapping-kubernetes-workers.md)
+Prev: [Installing CRI on the Kubernetes Worker Nodes](09-install-cri-workers.md)<br>
+Next: [TLS Bootstrapping Kubernetes Workers](11-tls-bootstrapping-kubernetes-workers.md)
