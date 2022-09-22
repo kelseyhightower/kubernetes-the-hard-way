@@ -39,7 +39,7 @@ vagrant destroy -f
 vagrant up
 ```
 
-If you do change any of these, please consider that a personal preference and don't submit a PR for it.
+If you do change any of these, **please consider that a personal preference and don't submit a PR for it**.
 
 ### Virtual Machine Network
 
