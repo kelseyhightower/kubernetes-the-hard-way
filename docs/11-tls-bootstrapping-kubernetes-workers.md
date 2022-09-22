@@ -449,7 +449,7 @@ Now, go back to `master-1` and approve the pending kubelet-serving certificate
 [//]: # (host:master-1)
 [//]: # (comment:Please now manually approve the certificate before proceeding)
 
-```
+```bash
 kubectl get csr --kubeconfig admin.kubeconfig
 ```
 

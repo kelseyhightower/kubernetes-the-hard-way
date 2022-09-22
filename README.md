@@ -13,6 +13,10 @@ While the original one uses GCP as the platform to deploy kubernetes,  we use Vi
 
 > The results of this tutorial should not be viewed as production ready, and may receive limited support from the community, but don't let that stop you from learning!
 
+Please note that with this particular challenge, it is all about the minute detail. If you miss one tiny step anywhere along the way, it's going to break!
+
+Always run the `cert_verify` script at the places it suggests, and always ensure you are on the correct node when you do stuff. If `cert_verify` shows anything in red, then you have made an error in a previous step. For the master node checks, run the check on `master-1` and on `master-2`
+
 ## Target Audience
 
 The target audience for this tutorial is someone planning to support a production Kubernetes cluster and wants to understand how everything fits together.
