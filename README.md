@@ -32,6 +32,14 @@ Kubernetes The Hard Way guides you through bootstrapping a highly available Kube
 * [etcd](https://github.com/coreos/etcd) v3.5.3
 * [CoreDNS](https://github.com/coredns/coredns) v1.8.6
 
+### Node configuration
+
+We will be building the following:
+
+* Two control plane nodes (`master-1` and `master-2`) running the control plane components as operating system services.
+* Two worker nodes (`worker-1` and `worker-2`)
+* One loadbalancer VM running HAProxy to balance requests between the two API servers.
+
 ## Labs
 
 * [Prerequisites](docs/01-prerequisites.md)
