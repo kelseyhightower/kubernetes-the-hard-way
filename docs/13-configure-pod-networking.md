@@ -14,14 +14,14 @@ Deploy weave network. Run only once on the `master-1` node. You will see a warni
 On `master-1`
 
 ```bash
-kubectl apply -f "https://cloud.weave.works/k8s/net?k8s-version=$(kubectl version | base64 | tr -d '\n')"
+kubectl apply -f "https://github.com/weaveworks/weave/releases/download/v2.8.1/weave-daemonset-k8s-1.11.yaml"
 ```
 
 Weave uses POD CIDR of `10.32.0.0/12` by default.
 
 ## Verification
 
-[//]: # (sleep:45)
+[//]: # (command:kubectl rollout status daemonset weave-net -n kube-system --timeout=90s)
 
 List the registered Kubernetes nodes from the master node:
 
