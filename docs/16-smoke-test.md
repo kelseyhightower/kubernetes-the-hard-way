@@ -64,7 +64,7 @@ Create a deployment for the [nginx](https://nginx.org/en/) web server:
 kubectl create deployment nginx --image=nginx:1.23.1
 ```
 
-[//]: # (sleep:15)
+[//]: # (command:kubectl wait deployment -n default nginx --for condition=Available=True --timeout=90s)
 
 List the pod created by the `nginx` deployment:
 

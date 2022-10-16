@@ -27,7 +27,7 @@ service/kube-dns created
 
 List the pods created by the `kube-dns` deployment:
 
-[//]: # (sleep:15)
+[//]: # (command:kubectl wait deployment -n kube-system coredns --for condition=Available=True --timeout=90s)
 
 ```bash
 kubectl get pods -l k8s-app=kube-dns -n kube-system
@@ -51,7 +51,7 @@ Create a `busybox` pod:
 kubectl run busybox --image=busybox:1.28 --command -- sleep 3600
 ```
 
-[//]: # (sleep:10)
+[//]: # (command:kubectl wait pods -n default -l run=busybox --for condition=Ready --timeout=90s)
 
 
 List the pod created by the `busybox` pod:

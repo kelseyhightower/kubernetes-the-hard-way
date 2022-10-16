@@ -89,6 +89,11 @@ for doc in glob.glob(os.path.join(docs_path, '*.md')):
                             f'sleep {value}',
                             newline
                         ])
+                    elif token == 'command':
+                        script.extend([
+                            value,
+                            newline
+                        ])
                     elif token == 'comment':
                         script.extend([
                             '#######################################################################',
