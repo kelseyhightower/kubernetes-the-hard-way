@@ -30,7 +30,7 @@ Kubernetes The Hard Way guides you through bootstrapping a highly available Kube
 * [CNI Container Networking](https://github.com/containernetworking/cni) 0.8.6
 * [Weave Networking](https://www.weave.works/docs/net/latest/kubernetes/kube-addon/)
 * [etcd](https://github.com/coreos/etcd) v3.5.3
-* [CoreDNS](https://github.com/coredns/coredns) v1.8.6
+* [CoreDNS](https://github.com/coredns/coredns) v1.9.4
 
 ### Node configuration
 
