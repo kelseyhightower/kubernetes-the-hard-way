@@ -6,7 +6,7 @@ In this lab you will provision a [PKI Infrastructure](https://en.wikipedia.org/w
 
 You can do these on any machine with `openssl` on it. But you should be able to copy the generated files to the provisioned VMs. Or just do these from one of the master nodes.
 
-In our case we do it on the master-1 node, as we have set it up to be the administrative client.
+In our case we do the following steps on the `master-1` node, as we have set it up to be the administrative client.
 
 [//]: # (host:master-1)
 
@@ -16,20 +16,40 @@ In this section you will provision a Certificate Authority that can be used to g
 
 Query IPs of hosts we will insert as certificate subject alternative names (SANs), which will be read from `/etc/hosts`. Note that doing this allows us to change the VM network range more easily from the default for these labs which is `192.168.56.0/24`
 
+Set up environment variables. Run the following:
+
 ```bash
 MASTER_1=$(dig +short master-1)
 MASTER_2=$(dig +short master-2)
 LOADBALANCER=$(dig +short loadbalancer)
 ```
 
-Compute cluster internal API server service address, which is always .1 in the service CIDR range. This is also required as a SAN in the API server certificate
+Compute cluster internal API server service address, which is always .1 in the service CIDR range. This is also required as a SAN in the API server certificate. Run the following:
 
 ```bash
 SERVICE_CIDR=10.96.0.0/24
 API_SERVICE=$(echo $SERVICE_CIDR | awk 'BEGIN {FS="."} ; { printf("%s.%s.%s.1", $1, $2, $3) }')
 ```
 
+Check that the environment variables are set. Run the following:
 
+```bash
+echo $MASTER_1
+echo $MASTER_2
+echo $LOADBALANCER
+echo $SERVICE_CIDR
+echo $API_SERVICE
+```
+
+The output should look like this. If you changed any of the defaults mentioned in the [prerequisites](./01-prerequisites.md) page, then addresses may differ.
+
+```
+192.168.56.11
+192.168.56.12
+192.168.56.30
+10.96.0.0/24
+10.96.0.1
+```
 
 Create a CA certificate, then generate a Certificate Signing Request and use it to create a private key:
 
