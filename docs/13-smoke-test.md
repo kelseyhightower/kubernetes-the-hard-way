@@ -111,13 +111,13 @@ curl --head http://127.0.0.1:8080
 
 ```
 HTTP/1.1 200 OK
-Server: nginx/1.19.10
-Date: Sun, 02 May 2021 05:29:25 GMT
+Server: nginx/1.23.3
+Date: Thu, 02 Feb 2023 12:52:56 GMT
 Content-Type: text/html
-Content-Length: 612
-Last-Modified: Tue, 13 Apr 2021 15:13:59 GMT
+Content-Length: 615
+Last-Modified: Tue, 13 Dec 2022 15:53:53 GMT
 Connection: keep-alive
-ETag: "6075b537-264"
+ETag: "6398a011-267"
 Accept-Ranges: bytes
 ```
 
@@ -160,7 +160,7 @@ kubectl exec -ti $POD_NAME -- nginx -v
 > output
 
 ```
-nginx version: nginx/1.19.10
+nginx version: nginx/1.23.3
 ```
 
 ## Services
@@ -207,13 +207,13 @@ curl -I http://${EXTERNAL_IP}:${NODE_PORT}
 
 ```
 HTTP/1.1 200 OK
-Server: nginx/1.19.10
-Date: Sun, 02 May 2021 05:31:52 GMT
+Server: nginx/1.23.3
+Date: Thu, 02 Feb 2023 12:56:09 GMT
 Content-Type: text/html
-Content-Length: 612
-Last-Modified: Tue, 13 Apr 2021 15:13:59 GMT
+Content-Length: 615
+Last-Modified: Tue, 13 Dec 2022 15:53:53 GMT
 Connection: keep-alive
-ETag: "6075b537-264"
+ETag: "6398a011-267"
 Accept-Ranges: bytes
 ```
 

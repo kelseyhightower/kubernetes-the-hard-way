@@ -28,10 +28,10 @@ Download the official Kubernetes release binaries:
 
 ```
 wget -q --show-progress --https-only --timestamping \
-  "https://storage.googleapis.com/kubernetes-release/release/v1.21.0/bin/linux/amd64/kube-apiserver" \
-  "https://storage.googleapis.com/kubernetes-release/release/v1.21.0/bin/linux/amd64/kube-controller-manager" \
-  "https://storage.googleapis.com/kubernetes-release/release/v1.21.0/bin/linux/amd64/kube-scheduler" \
-  "https://storage.googleapis.com/kubernetes-release/release/v1.21.0/bin/linux/amd64/kubectl"
+  "https://storage.googleapis.com/kubernetes-release/release/v1.26.1/bin/linux/amd64/kube-apiserver" \
+  "https://storage.googleapis.com/kubernetes-release/release/v1.26.1/bin/linux/amd64/kube-controller-manager" \
+  "https://storage.googleapis.com/kubernetes-release/release/v1.26.1/bin/linux/amd64/kube-scheduler" \
+  "https://storage.googleapis.com/kubernetes-release/release/v1.26.1/bin/linux/amd64/kubectl"
 ```
 
 Install the Kubernetes binaries:
@@ -170,7 +170,7 @@ Create the `kube-scheduler.yaml` configuration file:
 
 ```
 cat <<EOF | sudo tee /etc/kubernetes/config/kube-scheduler.yaml
-apiVersion: kubescheduler.config.k8s.io/v1beta1
+apiVersion: kubescheduler.config.k8s.io/v1
 kind: KubeSchedulerConfiguration
 clientConnection:
   kubeconfig: "/var/lib/kubernetes/kube-scheduler.kubeconfig"
@@ -210,6 +210,11 @@ EOF
 ```
 
 > Allow up to 10 seconds for the Kubernetes API Server to fully initialize.
+
+Check if all Controller Services are active and are running
+```
+sudo systemctl status kube-apiserver kube-controller-manager kube-scheduler
+```
 
 ### Enable HTTP Health Checks
 
@@ -274,14 +279,15 @@ curl -H "Host: kubernetes.default.svc.cluster.local" -i http://127.0.0.1/healthz
 ```
 HTTP/1.1 200 OK
 Server: nginx/1.18.0 (Ubuntu)
-Date: Sun, 02 May 2021 04:19:29 GMT
+Date: Thu, 02 Feb 2023 12:08:51 GMT
 Content-Type: text/plain; charset=utf-8
 Content-Length: 2
 Connection: keep-alive
+Audit-Id: 189350ca-dfed-4b14-83f6-36e97f598f44
 Cache-Control: no-cache, private
 X-Content-Type-Options: nosniff
-X-Kubernetes-Pf-Flowschema-Uid: c43f32eb-e038-457f-9474-571d43e5c325
-X-Kubernetes-Pf-Prioritylevel-Uid: 8ba5908f-5569-4330-80fd-c643e7512366
+X-Kubernetes-Pf-Flowschema-Uid: 93e62fd3-1ca0-4262-9975-8a40fc9f199d
+X-Kubernetes-Pf-Prioritylevel-Uid: 695ba920-5ea5-45c3-8406-1fa570d9d8af
 
 ok
 ```
@@ -412,12 +418,12 @@ curl --cacert ca.pem https://${KUBERNETES_PUBLIC_ADDRESS}:6443/version
 ```
 {
   "major": "1",
-  "minor": "21",
-  "gitVersion": "v1.21.0",
-  "gitCommit": "cb303e613a121a29364f75cc67d3d580833a7479",
+  "minor": "26",
+  "gitVersion": "v1.26.1",
+  "gitCommit": "8f94681cd294aa8cfd3407b8191f6c70214973a4",
   "gitTreeState": "clean",
-  "buildDate": "2021-04-08T16:25:06Z",
-  "goVersion": "go1.16.1",
+  "buildDate": "2023-01-18T15:51:25Z",
+  "goVersion": "go1.19.5",
   "compiler": "gc",
   "platform": "linux/amd64"
 }
