@@ -62,6 +62,8 @@ INTERNAL_IP=$(curl -s -H "Metadata-Flavor: Google" \
   http://metadata.google.internal/computeMetadata/v1/instance/network-interfaces/0/ip)
 ```
 
+For the next step, make you sure you have set a default region here: https://console.cloud.google.com/compute/settings
+
 ```
 REGION=$(curl -s -H "Metadata-Flavor: Google" \
   http://metadata.google.internal/computeMetadata/v1/project/attributes/google-compute-default-region)
