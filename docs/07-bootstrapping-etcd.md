@@ -102,7 +102,7 @@ EOF
   sudo systemctl start etcd
 }
 ```
-
+> Run the command in `controller-0`, if facing any error try it in `controller-1` and then try with `controller-0`
 > Remember to run the above commands on each controller node: `controller-0`, `controller-1`, and `controller-2`.
 
 ## Verification
