@@ -7,14 +7,11 @@ In this lab you will install the command line utilities required to complete thi
 
 The `cfssl` and `cfssljson` command line utilities will be used to provision a [PKI Infrastructure](https://en.wikipedia.org/wiki/Public_key_infrastructure) and generate TLS certificates.
 
-Download and install `cfssl` and `cfssljson`:
+Download `cfssl` and `cfssljson`: from https://github.com/cloudflare/cfssl/releases
+Rename the files to cfssl & cfssljson
+Install `cfssl` and `cfssljson`
 
 ### OS X
-
-```
-curl -o cfssl https://storage.googleapis.com/kubernetes-the-hard-way/cfssl/1.4.1/darwin/cfssl
-curl -o cfssljson https://storage.googleapis.com/kubernetes-the-hard-way/cfssl/1.4.1/darwin/cfssljson
-```
 
 ```
 chmod +x cfssl cfssljson
@@ -31,12 +28,6 @@ brew install cfssl
 ```
 
 ### Linux
-
-```
-wget -q --show-progress --https-only --timestamping \
-  https://storage.googleapis.com/kubernetes-the-hard-way/cfssl/1.4.1/linux/cfssl \
-  https://storage.googleapis.com/kubernetes-the-hard-way/cfssl/1.4.1/linux/cfssljson
-```
 
 ```
 chmod +x cfssl cfssljson
