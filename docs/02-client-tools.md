@@ -12,8 +12,8 @@ Download and install `cfssl` and `cfssljson`:
 ### OS X
 
 ```
-curl -o cfssl https://storage.googleapis.com/kubernetes-the-hard-way/cfssl/1.4.1/darwin/cfssl
-curl -o cfssljson https://storage.googleapis.com/kubernetes-the-hard-way/cfssl/1.4.1/darwin/cfssljson
+curl -o cfssl https://github.com/cloudflare/cfssl/releases/download/v1.4.1/cfssl_1.4.1_darwin_amd64
+curl -o cfssljson https://github.com/cloudflare/cfssl/releases/download/v1.4.1/cfssljson_1.4.1_darwin_amd64
 ```
 
 ```
@@ -34,8 +34,9 @@ brew install cfssl
 
 ```
 wget -q --show-progress --https-only --timestamping \
-  https://storage.googleapis.com/kubernetes-the-hard-way/cfssl/1.4.1/linux/cfssl \
-  https://storage.googleapis.com/kubernetes-the-hard-way/cfssl/1.4.1/linux/cfssljson
+  -O cfssl https://github.com/cloudflare/cfssl/releases/download/v1.4.1/cfssl_1.4.1_linux_amd64
+wget -q --show-progress --https-only --timestamping \
+  -O cfssljson https://github.com/cloudflare/cfssl/releases/download/v1.4.1/cfssljson_1.4.1_linux_amd64
 ```
 
 ```
