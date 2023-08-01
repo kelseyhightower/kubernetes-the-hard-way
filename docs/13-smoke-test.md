@@ -10,19 +10,20 @@ Create a generic secret:
 
 ```
 kubectl create secret generic kubernetes-the-hard-way \
-  --from-literal="mykey=mydata"
+  --from-literal 'mykey=mydata'
 ```
 
 Print a hexdump of the `kubernetes-the-hard-way` secret stored in etcd:
 
 ```
 gcloud compute ssh controller-0 \
-  --command "sudo ETCDCTL_API=3 etcdctl get \
-  --endpoints=https://127.0.0.1:2379 \
-  --cacert=/etc/etcd/ca.pem \
-  --cert=/etc/etcd/kubernetes.pem \
-  --key=/etc/etcd/kubernetes-key.pem\
-  /registry/secrets/default/kubernetes-the-hard-way | hexdump -C"
+  --command 'sudo ETCDCTL_API=3 etcdctl get \
+    --cacert=/etc/etcd/ca.pem \
+    --cert=/etc/etcd/kubernetes.pem \
+    --endpoints=https://127.0.0.1:2379 \
+    --key=/etc/etcd/kubernetes-key.pem\
+    /registry/secrets/default/kubernetes-the-hard-way \
+    | hexdump -C'
 ```
 
 > output
@@ -59,16 +60,16 @@ The etcd key should be prefixed with `k8s:enc:aescbc:v1:key1`, which indicates t
 
 In this section you will verify the ability to create and manage [Deployments](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/).
 
-Create a deployment for the [nginx](https://nginx.org/en/) web server:
+Create a deployment for the [nginx](https://nginx.org/) web server:
 
 ```
-kubectl create deployment nginx --image=nginx
+kubectl create deployment nginx --image nginx
 ```
 
 List the pod created by the `nginx` deployment:
 
 ```
-kubectl get pods -l app=nginx
+kubectl get pods --selector app=nginx
 ```
 
 > output
@@ -85,13 +86,13 @@ In this section you will verify the ability to access applications remotely usin
 Retrieve the full name of the `nginx` pod:
 
 ```
-POD_NAME=$(kubectl get pods -l app=nginx -o jsonpath="{.items[0].metadata.name}")
+POD_NAME="$(kubectl get pods --selector app=nginx --output jsonpath='{.items[0].metadata.name}')"
 ```
 
 Forward port `8080` on your local machine to port `80` of the `nginx` pod:
 
 ```
-kubectl port-forward $POD_NAME 8080:80
+kubectl port-forward "${POD_NAME}" 8080:80
 ```
 
 > output
@@ -111,13 +112,13 @@ curl --head http://127.0.0.1:8080
 
 ```
 HTTP/1.1 200 OK
-Server: nginx/1.19.10
-Date: Sun, 02 May 2021 05:29:25 GMT
+Server: nginx/1.25.1
+Date: Mon, 31 Jul 2023 11:17:53 GMT
 Content-Type: text/html
-Content-Length: 612
-Last-Modified: Tue, 13 Apr 2021 15:13:59 GMT
+Content-Length: 615
+Last-Modified: Tue, 13 Jun 2023 15:08:10 GMT
 Connection: keep-alive
-ETag: "6075b537-264"
+ETag: "6488865a-267"
 Accept-Ranges: bytes
 ```
 
@@ -137,30 +138,30 @@ In this section you will verify the ability to [retrieve container logs](https:/
 Print the `nginx` pod logs:
 
 ```
-kubectl logs $POD_NAME
+kubectl logs "${POD_NAME}"
 ```
 
 > output
 
 ```
 ...
-127.0.0.1 - - [02/May/2021:05:29:25 +0000] "HEAD / HTTP/1.1" 200 0 "-" "curl/7.64.0" "-"
+127.0.0.1 - - [31/Jul/2023:11:15:02 +0000] "HEAD / HTTP/1.1" 200 0 "-" "curl/8.0.1" "-"
 ```
 
 ### Exec
 
-In this section you will verify the ability to [execute commands in a container](https://kubernetes.io/docs/tasks/debug-application-cluster/get-shell-running-container/#running-individual-commands-in-a-container).
+In this section you will verify the ability to [execute commands in a container](https://kubernetes.io/docs/tasks/debug/debug-application/get-shell-running-container/#running-individual-commands-in-a-container).
 
 Print the nginx version by executing the `nginx -v` command in the `nginx` container:
 
 ```
-kubectl exec -ti $POD_NAME -- nginx -v
+kubectl exec --stdin --tty $POD_"${POD_NAME}" -- nginx -v
 ```
 
 > output
 
 ```
-nginx version: nginx/1.19.10
+nginx version: nginx/1.25.1
 ```
 
 ## Services
@@ -173,48 +174,48 @@ Expose the `nginx` deployment using a [NodePort](https://kubernetes.io/docs/conc
 kubectl expose deployment nginx --port 80 --type NodePort
 ```
 
-> The LoadBalancer service type can not be used because your cluster is not configured with [cloud provider integration](https://kubernetes.io/docs/getting-started-guides/scratch/#cloud-provider). Setting up cloud provider integration is out of scope for this tutorial.
+> The LoadBalancer service type can not be used because your cluster is not configured with [cloud provider integration](https://kubernetes.io/docs/concepts/architecture/cloud-controller/). Setting up cloud provider integration is out of scope for this tutorial.
 
 Retrieve the node port assigned to the `nginx` service:
 
 ```
-NODE_PORT=$(kubectl get svc nginx \
-  --output=jsonpath='{range .spec.ports[0]}{.nodePort}')
+NODE_PORT="$(kubectl get svc nginx \
+  --output jsonpath='{range .spec.ports[0]}{.nodePort}')"
 ```
 
 Create a firewall rule that allows remote access to the `nginx` node port:
 
 ```
 gcloud compute firewall-rules create kubernetes-the-hard-way-allow-nginx-service \
-  --allow=tcp:${NODE_PORT} \
+  --allow "tcp:${NODE_PORT}" \
   --network kubernetes-the-hard-way
 ```
 
 Retrieve the external IP address of a worker instance:
 
 ```
-EXTERNAL_IP=$(gcloud compute instances describe worker-0 \
-  --format 'value(networkInterfaces[0].accessConfigs[0].natIP)')
+EXTERNAL_IP="$(gcloud compute instances describe worker-0 \
+  --format 'value(networkInterfaces[0].accessConfigs[0].natIP)')"
 ```
 
 Make an HTTP request using the external IP address and the `nginx` node port:
 
 ```
-curl -I http://${EXTERNAL_IP}:${NODE_PORT}
+curl --head "http://${EXTERNAL_IP}:${NODE_PORT}"
 ```
 
 > output
 
 ```
 HTTP/1.1 200 OK
-Server: nginx/1.19.10
-Date: Sun, 02 May 2021 05:31:52 GMT
+Server: nginx/1.25.1
+Date: Mon, 31 Jul 2023 11:24:03 GMT
 Content-Type: text/html
-Content-Length: 612
-Last-Modified: Tue, 13 Apr 2021 15:13:59 GMT
+Content-Length: 615
+Last-Modified: Tue, 13 Jun 2023 15:08:10 GMT
 Connection: keep-alive
-ETag: "6075b537-264"
+ETag: "6488865a-267"
 Accept-Ranges: bytes
 ```
 
-Next: [Cleaning Up](14-cleanup.md)
+Next: [Cleaning Up](./14-cleanup.md)

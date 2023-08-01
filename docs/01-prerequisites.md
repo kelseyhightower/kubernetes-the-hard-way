@@ -8,16 +8,29 @@ This tutorial leverages the [Google Cloud Platform](https://cloud.google.com/) t
 
 > The compute resources required for this tutorial exceed the Google Cloud Platform free tier.
 
-## Google Cloud Platform SDK
+## Google Cloud Command Line Interface (gcloud CLI)
 
-### Install the Google Cloud SDK
+###  Install the Google Cloud CLI
 
-Follow the Google Cloud SDK [documentation](https://cloud.google.com/sdk/) to install and configure the `gcloud` command line utility.
+Follow the gcloud CLI [documentation](https://cloud.google.com/cli) to install and configure the `gcloud` command line utility.
 
-Verify the Google Cloud SDK version is 338.0.0 or higher:
+Verify the Google Cloud SDK version is 440.0.0 or higher:
 
 ```
 gcloud version
+```
+
+> output
+
+```
+Google Cloud SDK 440.0.0
+alpha 2023.07.21
+beta 2023.07.21
+bq 2.0.94
+bundled-python3-unix 3.9.16
+core 2023.07.21
+gcloud-crc32c 1.0.0
+gsutil 5.25
 ```
 
 ### Set a Default Compute Region and Zone
@@ -36,28 +49,31 @@ Then be sure to authorize gcloud to access the Cloud Platform with your Google u
 gcloud auth login
 ```
 
-Next set a default compute region and compute zone:
+Next set a default compute region and zone in your local client
 
 ```
-gcloud config set compute/region us-west1
-```
+REGION='us-east1'
 
-Set a default compute zone:
+ZONE='us-east1-d'
 
-```
-gcloud config set compute/zone us-west1-c
+gcloud config set compute/region "${REGION}"
+
+gcloud config set compute/zone "${ZONE}"
+
+gcloud compute project-info add-metadata \
+  --metadata "google-compute-default-region=${REGION},google-compute-default-zone=${ZONE}"
 ```
 
 > Use the `gcloud compute zones list` command to view additional regions and zones.
 
 ## Running Commands in Parallel with tmux
 
-[tmux](https://github.com/tmux/tmux/wiki) can be used to run commands on multiple compute instances at the same time. Labs in this tutorial may require running the same commands across multiple compute instances, in those cases consider using tmux and splitting a window into multiple panes with synchronize-panes enabled to speed up the provisioning process.
+[tmux](https://tmux.github.io/) can be used to run commands on multiple compute instances at the same time. Labs in this tutorial may require running the same commands across multiple compute instances, in those cases consider using tmux and splitting a window into multiple panes with synchronize-panes enabled to speed up the provisioning process.
 
 > The use of tmux is optional and not required to complete this tutorial.
 
-![tmux screenshot](images/tmux-screenshot.png)
+![tmux screenshot](./images/tmux-screenshot.png)
 
 > Enable synchronize-panes by pressing `ctrl+b` followed by `shift+:`. Next type `set synchronize-panes on` at the prompt. To disable synchronization: `set synchronize-panes off`.
 
-Next: [Installing the Client Tools](02-client-tools.md)
+Next: [Installing the Client Tools](./02-client-tools.md)
