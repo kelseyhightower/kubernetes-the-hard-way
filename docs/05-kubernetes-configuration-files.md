@@ -4,11 +4,11 @@ In this lab you will generate [Kubernetes configuration files](https://kubernete
 
 ## Client Authentication Configs
 
-In this section you will generate kubeconfig files for the `controller manager`, `kubelet`, `kube-proxy`, and `scheduler` clients and the `admin` user.
+In this section you will generate kubeconfig files for the `controller manager`, `kubelet`, `kube-proxy`, and `scheduler` clients, and finally the `admin` user.
 
 ### Kubernetes Public IP Address
 
-Each kubeconfig requires a Kubernetes API Server to connect to. To support high availability the IP address assigned to the external load balancer fronting the Kubernetes API Servers will be used.
+Each kubeconfig requires a Kubernetes API Server to connect to. The IP address assigned to the external load balancer fronting the Kubernetes API Servers will be used to support high availability.
 
 Retrieve the `kubernetes-the-hard-way` static IP address:
 
@@ -20,7 +20,7 @@ KUBERNETES_PUBLIC_ADDRESS=$(gcloud compute addresses describe kubernetes-the-har
 
 ### The kubelet Kubernetes Configuration File
 
-When generating kubeconfig files for Kubelets the client certificate matching the Kubelet's node name must be used. This will ensure Kubelets are properly authorized by the Kubernetes [Node Authorizer](https://kubernetes.io/docs/admin/authorization/node/).
+When generating kubeconfig files for Kubelets, the client certificate matching the Kubelet's node name must be used. This will ensure Kubelets are properly authorized by the Kubernetes [Node Authorizer](https://kubernetes.io/docs/admin/authorization/node/).
 
 > The following commands must be run in the same directory used to generate the SSL certificates during the [Generating TLS Certificates](04-certificate-authority.md) lab.
 
@@ -191,7 +191,7 @@ admin.kubeconfig
 ```
 
 
-## 
+##
 
 ## Distribute the Kubernetes Configuration Files
 

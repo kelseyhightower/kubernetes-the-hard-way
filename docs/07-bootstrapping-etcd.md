@@ -44,7 +44,7 @@ Extract and install the `etcd` server and the `etcdctl` command line utility:
 }
 ```
 
-The instance internal IP address will be used to serve client requests and communicate with etcd cluster peers. Retrieve the internal IP address for the current compute instance:
+The instance's internal IP address will be used to serve client requests and communicate with etcd cluster peers. Retrieve the internal IP address for the current compute instance:
 
 ```
 INTERNAL_IP=$(curl -s -H "Metadata-Flavor: Google" \
