@@ -65,7 +65,7 @@ gcloud compute firewall-rules list --filter="network:kubernetes-the-hard-way"
 ```
 NAME                                    NETWORK                  DIRECTION  PRIORITY  ALLOW                 DENY  DISABLED
 kubernetes-the-hard-way-allow-external  kubernetes-the-hard-way  INGRESS    1000      tcp:22,tcp:6443,icmp        False
-kubernetes-the-hard-way-allow-internal  kubernetes-the-hard-way  INGRESS    1000      tcp,udp,icmp                Fals
+kubernetes-the-hard-way-allow-internal  kubernetes-the-hard-way  INGRESS    1000      tcp,udp,icmp                False
 ```
 
 ### Kubernetes Public IP Address
@@ -96,7 +96,7 @@ The compute instances in this lab will be provisioned using [Ubuntu Server](http
 
 ### Kubernetes Controllers
 
-Create three compute instances which will host the Kubernetes control plane:
+Create three compute instances that will host the Kubernetes control plane:
 
 ```
 for i in 0 1 2; do
@@ -120,7 +120,7 @@ Each worker instance requires a pod subnet allocation from the Kubernetes cluste
 
 > The Kubernetes cluster CIDR range is defined by the Controller Manager's `--cluster-cidr` flag. In this tutorial the cluster CIDR range will be set to `10.200.0.0/16`, which supports 254 subnets.
 
-Create three compute instances which will host the Kubernetes worker nodes:
+Create three compute instances that will host the Kubernetes worker nodes:
 
 ```
 for i in 0 1 2; do
