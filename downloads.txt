@@ -1,0 +1,11 @@
+https://storage.googleapis.com/kubernetes-release/release/v1.28.3/bin/linux/arm64/kubectl
+https://storage.googleapis.com/kubernetes-release/release/v1.28.3/bin/linux/arm64/kube-apiserver
+https://storage.googleapis.com/kubernetes-release/release/v1.28.3/bin/linux/arm64/kube-controller-manager
+https://storage.googleapis.com/kubernetes-release/release/v1.28.3/bin/linux/arm64/kube-scheduler
+https://github.com/kubernetes-sigs/cri-tools/releases/download/v1.28.0/crictl-v1.28.0-linux-arm.tar.gz
+https://github.com/opencontainers/runc/releases/download/v1.1.9/runc.arm64
+https://github.com/containernetworking/plugins/releases/download/v1.3.0/cni-plugins-linux-arm64-v1.3.0.tgz
+https://github.com/containerd/containerd/releases/download/v1.7.8/containerd-1.7.8-linux-arm64.tar.gz
+https://storage.googleapis.com/kubernetes-release/release/v1.28.3/bin/linux/arm64/kube-proxy
+https://storage.googleapis.com/kubernetes-release/release/v1.28.3/bin/linux/arm64/kubelet
+https://github.com/etcd-io/etcd/releases/download/v3.4.27/etcd-v3.4.27-linux-arm64.tar.gz
