@@ -1,63 +1,30 @@
 # Prerequisites
 
-## Google Cloud Platform
+In this lab you will review the machine requirements necessary to follow this tutorial.
 
-This tutorial leverages the [Google Cloud Platform](https://cloud.google.com/) to streamline provisioning of the compute infrastructure required to bootstrap a Kubernetes cluster from the ground up. [Sign up](https://cloud.google.com/free/) for $300 in free credits.
+## Virtual or Physical Machines
 
-[Estimated cost](https://cloud.google.com/products/calculator#id=873932bc-0840-4176-b0fa-a8cfd4ca61ae) to run this tutorial: $0.23 per hour ($5.50 per day).
+This tutorial requires four (4) virtual or physical ARM64 machines running Debian 12 (bookworm). The follow table list the four machines and thier CPU, memory, and storage requirements.
 
-> The compute resources required for this tutorial exceed the Google Cloud Platform free tier.
+| Name    | Description            | CPU | RAM   | Storage |
+|---------|------------------------|-----|-------|---------|
+| jumpbox | Administration host    | 1   | 512MB | 10GB    |
+| server  | Kubernetes server      | 1   | 2GB   | 20GB    |
+| node-0  | Kubernetes worker node | 1   | 2GB   | 20GB    |
+| node-1  | Kubernetes worker node | 1   | 2GB   | 20GB    |
 
-## Google Cloud Platform SDK
+How you provision the machines is up to you, the only requirement is that each machine meet the above system requirements including the machine specs and OS version. Once you have all four machine provisioned, verify the system requirements by running the `uname` command on each machine:
 
-### Install the Google Cloud SDK
-
-Follow the Google Cloud SDK [documentation](https://cloud.google.com/sdk/) to install and configure the `gcloud` command line utility.
-
-Verify the Google Cloud SDK version is 338.0.0 or higher:
-
-```
-gcloud version
-```
-
-### Set a Default Compute Region and Zone
-
-This tutorial assumes a default compute region and zone have been configured.
-
-If you are using the `gcloud` command-line tool for the first time `init` is the easiest way to do this:
-
-```
-gcloud init
+```bash 
+uname -mov
 ```
 
-Then be sure to authorize gcloud to access the Cloud Platform with your Google user credentials:
+After running the `uname` command you should see the following output:
 
-```
-gcloud auth login
-```
-
-Next set a default compute region and compute zone:
-
-```
-gcloud config set compute/region us-west1
+```text
+#1 SMP Debian 6.1.55-1 (2023-09-29) aarch64 GNU/Linux
 ```
 
-Set a default compute zone:
+You maybe surprised to see `aarch64` here, but that is the official name for the Arm Architecture 64-bit instruction set. You will often see `arm64` used by Apple, and the maintainers of the Linux kernel, when referring to support for `aarch64`. This tutorial will use `arm64` consistently throughout to avoid confusion.
 
-```
-gcloud config set compute/zone us-west1-c
-```
-
-> Use the `gcloud compute zones list` command to view additional regions and zones.
-
-## Running Commands in Parallel with tmux
-
-[tmux](https://github.com/tmux/tmux/wiki) can be used to run commands on multiple compute instances at the same time. Labs in this tutorial may require running the same commands across multiple compute instances, in those cases consider using tmux and splitting a window into multiple panes with synchronize-panes enabled to speed up the provisioning process.
-
-> The use of tmux is optional and not required to complete this tutorial.
-
-![tmux screenshot](images/tmux-screenshot.png)
-
-> Enable synchronize-panes by pressing `ctrl+b` followed by `shift+:`. Next type `set synchronize-panes on` at the prompt. To disable synchronization: `set synchronize-panes off`.
-
-Next: [Installing the Client Tools](02-client-tools.md)
+Next: [setting-up-the-jumpbox](02-jumpbox.md)

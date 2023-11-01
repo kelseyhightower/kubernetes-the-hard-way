@@ -1,0 +1,15 @@
+{
+  "cniVersion": "1.0.0",
+  "name": "bridge",
+  "type": "bridge",
+  "bridge": "cni0",
+  "isGateway": true,
+  "ipMasq": true,
+  "ipam": {
+    "type": "host-local",
+    "ranges": [
+      [{"subnet": "SUBNET"}]
+    ],
+    "routes": [{"dst": "0.0.0.0/0"}]
+  }
+}

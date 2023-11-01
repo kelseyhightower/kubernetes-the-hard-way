@@ -1,8 +1,6 @@
 # Kubernetes The Hard Way
 
-This tutorial walks you through setting up Kubernetes the hard way. This guide is not for people looking for a fully automated command to bring up a Kubernetes cluster. If that's you then check out [Google Kubernetes Engine](https://cloud.google.com/kubernetes-engine), or the [Getting Started Guides](https://kubernetes.io/docs/setup).
-
-Kubernetes The Hard Way is optimized for learning, which means taking the long route to ensure you understand each task required to bootstrap a Kubernetes cluster.
+This tutorial walks you through setting up Kubernetes the hard way. This guide is not for someone looking for a fully automated tool to bring up a Kubernetes cluster. Kubernetes The Hard Way is optimized for learning, which means taking the long route to ensure you understand each task required to bootstrap a Kubernetes cluster.
 
 > The results of this tutorial should not be viewed as production ready, and may receive limited support from the community, but don't let that stop you from learning!
 
@@ -13,24 +11,25 @@ Kubernetes The Hard Way is optimized for learning, which means taking the long r
 
 ## Target Audience
 
-The target audience for this tutorial is someone planning to support a production Kubernetes cluster and wants to understand how everything fits together.
+The target audience for this tutorial is someone who wants to understand the fundamentals of Kubernetes and how the core components fit together.
 
 ## Cluster Details
 
-Kubernetes The Hard Way guides you through bootstrapping a highly available Kubernetes cluster with end-to-end encryption between components and RBAC authentication.
+Kubernetes The Hard Way guides you through bootstrapping a basic Kubernetes cluster with all control plane components running on a single node, and two worker nodes, which is enough to learn the core concepts.
 
-* [kubernetes](https://github.com/kubernetes/kubernetes) v1.21.0
-* [containerd](https://github.com/containerd/containerd) v1.4.4
-* [coredns](https://github.com/coredns/coredns) v1.8.3
-* [cni](https://github.com/containernetworking/cni) v0.9.1
-* [etcd](https://github.com/etcd-io/etcd) v3.4.15
+Component versions:
+
+* [kubernetes](https://github.com/kubernetes/kubernetes) v1.28.x
+* [containerd](https://github.com/containerd/containerd) v1.7.x
+* [cni](https://github.com/containernetworking/cni) v1.3.x
+* [etcd](https://github.com/etcd-io/etcd) v3.4.x
 
 ## Labs
 
-This tutorial assumes you have access to the [Google Cloud Platform](https://cloud.google.com). While GCP is used for basic infrastructure requirements the lessons learned in this tutorial can be applied to other platforms.
+This tutorial requires four (4) ARM64 based virtual or physical machines connected to the same network. While ARM64 based machines are used for the tutorial, the lessons learned can be applied to other platforms.
 
 * [Prerequisites](docs/01-prerequisites.md)
-* [Installing the Client Tools](docs/02-client-tools.md)
+* [Setting up the Jumpbox](docs/02-jumpbox.md)
 * [Provisioning Compute Resources](docs/03-compute-resources.md)
 * [Provisioning the CA and Generating TLS Certificates](docs/04-certificate-authority.md)
 * [Generating Kubernetes Configuration Files for Authentication](docs/05-kubernetes-configuration-files.md)
@@ -40,6 +39,5 @@ This tutorial assumes you have access to the [Google Cloud Platform](https://clo
 * [Bootstrapping the Kubernetes Worker Nodes](docs/09-bootstrapping-kubernetes-workers.md)
 * [Configuring kubectl for Remote Access](docs/10-configuring-kubectl.md)
 * [Provisioning Pod Network Routes](docs/11-pod-network-routes.md)
-* [Deploying the DNS Cluster Add-on](docs/12-dns-addon.md)
-* [Smoke Test](docs/13-smoke-test.md)
-* [Cleaning Up](docs/14-cleanup.md)
+* [Smoke Test](docs/12-smoke-test.md)
+* [Cleaning Up](docs/13-cleanup.md)

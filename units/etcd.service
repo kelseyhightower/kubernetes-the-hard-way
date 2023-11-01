@@ -1,0 +1,22 @@
+[Unit]
+Description=etcd
+Documentation=https://github.com/etcd-io/etcd
+
+[Service]
+Type=notify
+Environment="ETCD_UNSUPPORTED_ARCH=arm64"
+ExecStart=/usr/local/bin/etcd \
+  --name controller \
+  --initial-advertise-peer-urls http://127.0.0.1:2380 \
+  --listen-peer-urls http://127.0.0.1:2380 \
+  --listen-client-urls http://127.0.0.1:2379 \
+  --advertise-client-urls http://127.0.0.1:2379 \
+  --initial-cluster-token etcd-cluster-0 \
+  --initial-cluster controller=http://127.0.0.1:2380 \
+  --initial-cluster-state new \
+  --data-dir=/var/lib/etcd
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
