@@ -3,8 +3,8 @@
 ## Install latest Go
 
 ```bash
-GO_VERSION=$(curl -s https://go.dev/VERSION?m=text | head -1)
-wget https://dl.google.com/go/${GO_VERSION}.linux-amd64.tar.gz
+GO_VERSION=$(curl -s 'https://go.dev/VERSION?m=text' | head -1)
+wget "https://dl.google.com/go/${GO_VERSION}.linux-amd64.tar.gz"
 
 sudo tar -C /usr/local -xzf ${GO_VERSION}.linux-amd64.tar.gz
 ```
