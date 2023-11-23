@@ -16,14 +16,16 @@ You can perform this step with [tmux](01-prerequisites.md#running-commands-in-pa
 
 ### Download and Install the Kubernetes Controller Binaries
 
-Download the official Kubernetes release binaries:
+Download the latest official Kubernetes release binaries:
 
 ```bash
+KUBE_VERSION=$(curl -L -s https://dl.k8s.io/release/stable.txt)
+
 wget -q --show-progress --https-only --timestamping \
-  "https://storage.googleapis.com/kubernetes-release/release/v1.24.3/bin/linux/amd64/kube-apiserver" \
-  "https://storage.googleapis.com/kubernetes-release/release/v1.24.3/bin/linux/amd64/kube-controller-manager" \
-  "https://storage.googleapis.com/kubernetes-release/release/v1.24.3/bin/linux/amd64/kube-scheduler" \
-  "https://storage.googleapis.com/kubernetes-release/release/v1.24.3/bin/linux/amd64/kubectl"
+  "https://dl.k8s.io/release/${KUBE_VERSION}/bin/linux/amd64/kube-apiserver" \
+  "https://dl.k8s.io/release/${KUBE_VERSION}/bin/linux/amd64/kube-controller-manager" \
+  "https://dl.k8s.io/release/${KUBE_VERSION}/bin/linux/amd64/kube-scheduler" \
+  "https://dl.k8s.io/release/${KUBE_VERSION}/bin/linux/amd64/kubectl"
 ```
 
 Reference: https://kubernetes.io/releases/download/#binaries
@@ -210,7 +212,9 @@ sudo chmod 600 /var/lib/kubernetes/*.kubeconfig
 
 At `master-1` and `master-2` nodes, run the following, selecting option 3
 
-```bash
+[//]: # (command:./cert_verify.sh 3)
+
+```
 ./cert_verify.sh
 ```
 
@@ -316,7 +320,7 @@ curl  https://${LOADBALANCER}:6443/version -k
 {
   "major": "1",
   "minor": "24",
-  "gitVersion": "v1.24.3",
+  "gitVersion": "${KUBE_VERSION}",
   "gitCommit": "aef86a93758dc3cb2c658dd9657ab4ad4afc21cb",
   "gitTreeState": "clean",
   "buildDate": "2022-07-13T14:23:26Z",

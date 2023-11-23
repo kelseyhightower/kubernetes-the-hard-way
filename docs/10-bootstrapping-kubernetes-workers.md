@@ -108,10 +108,11 @@ All the following commands from here until the [verification](#verification) ste
 
 
 ```bash
+KUBE_VERSION=$(curl -L -s https://dl.k8s.io/release/stable.txt)
+
 wget -q --show-progress --https-only --timestamping \
-  https://storage.googleapis.com/kubernetes-release/release/v1.24.3/bin/linux/amd64/kubectl \
-  https://storage.googleapis.com/kubernetes-release/release/v1.24.3/bin/linux/amd64/kube-proxy \
-  https://storage.googleapis.com/kubernetes-release/release/v1.24.3/bin/linux/amd64/kubelet 
+  https://dl.k8s.io/release/${KUBE_VERSION}/bin/linux/amd64/kube-proxy \
+  https://dl.k8s.io/release/${KUBE_VERSION}/bin/linux/amd64/kubelet 
 ```
 
 Reference: https://kubernetes.io/releases/download/#binaries
@@ -130,8 +131,8 @@ Install the worker binaries:
 
 ```bash
 {
-  chmod +x kubectl kube-proxy kubelet
-  sudo mv kubectl kube-proxy kubelet /usr/local/bin/
+  chmod +x kube-proxy kubelet
+  sudo mv kube-proxy kubelet /usr/local/bin/
 }
 ```
 
@@ -168,6 +169,8 @@ CLUSTER_DNS=$(echo $SERVICE_CIDR | awk 'BEGIN {FS="."} ; { printf("%s.%s.%s.10",
 
 Create the `kubelet-config.yaml` configuration file:
 
+Reference: https://kubernetes.io/docs/reference/config-api/kubelet-config.v1beta1/
+
 ```bash
 cat <<EOF | sudo tee /var/lib/kubelet/kubelet-config.yaml
 kind: KubeletConfiguration
@@ -181,9 +184,11 @@ authentication:
     clientCAFile: /var/lib/kubernetes/pki/ca.crt
 authorization:
   mode: Webhook
+containerRuntimeEndpoint: unix:///var/run/containerd/containerd.sock
 clusterDomain: cluster.local
 clusterDNS:
   - ${CLUSTER_DNS}
+cgroupDriver: systemd
 resolvConf: /run/systemd/resolve/resolv.conf
 runtimeRequestTimeout: "15m"
 tlsCertFile: /var/lib/kubernetes/pki/${HOSTNAME}.crt
@@ -207,7 +212,6 @@ Requires=containerd.service
 [Service]
 ExecStart=/usr/local/bin/kubelet \\
   --config=/var/lib/kubelet/kubelet-config.yaml \\
-  --container-runtime-endpoint=unix:///var/run/containerd/containerd.sock \\
   --kubeconfig=/var/lib/kubelet/kubelet.kubeconfig \\
   --v=2
 Restart=on-failure
@@ -227,13 +231,15 @@ sudo mv kube-proxy.kubeconfig /var/lib/kube-proxy/
 
 Create the `kube-proxy-config.yaml` configuration file:
 
+Reference: https://kubernetes.io/docs/reference/config-api/kube-proxy-config.v1alpha1/
+
 ```bash
 cat <<EOF | sudo tee /var/lib/kube-proxy/kube-proxy-config.yaml
 kind: KubeProxyConfiguration
 apiVersion: kubeproxy.config.k8s.io/v1alpha1
 clientConnection:
-  kubeconfig: "/var/lib/kube-proxy/kube-proxy.kubeconfig"
-mode: "iptables"
+  kubeconfig: /var/lib/kube-proxy/kube-proxy.kubeconfig
+mode: ipvs
 clusterCIDR: ${POD_CIDR}
 EOF
 ```
@@ -261,7 +267,9 @@ EOF
 
 At `worker-1` node, run the following, selecting option 4
 
-```bash
+[//]: # (command:./cert_verify.sh 4)
+
+```
 ./cert_verify.sh
 ```
 
@@ -294,7 +302,7 @@ kubectl get nodes --kubeconfig admin.kubeconfig
 
 ```
 NAME       STATUS     ROLES    AGE   VERSION
-worker-1   NotReady   <none>   93s   v1.24.3
+worker-1   NotReady   <none>   93s   v1.28.4
 ```
 
 The node is not ready as we have not yet installed pod networking. This comes later.

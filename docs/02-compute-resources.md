@@ -11,8 +11,12 @@ git clone https://github.com/mmumshad/kubernetes-the-hard-way.git
 CD into vagrant directory
 
 ```bash
-cd kubernetes-the-hard-way\vagrant
+cd kubernetes-the-hard-way/vagrant
 ```
+
+The `Vagrantfile` is configured to assume you have at least an 8 core CPU which most modern core i5, i7 and i9 do, and at least 16GB RAM. You can tune these values expecially if you have *less* than this by editing the `Vagrantfile` before the next step below and adjusting the values for `RAM_SIZE` and `CPU_CORES` accordingly.
+
+This will not work if you have less than 8GB of RAM.
 
 Run Vagrant up
 

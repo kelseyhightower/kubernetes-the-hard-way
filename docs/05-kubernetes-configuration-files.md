@@ -178,7 +178,10 @@ done
 
 At `master-1` and `master-2` nodes, run the following, selecting option 2
 
-```bash
+[//]: # (command./cert_verify.sh 2)
+[//]: # (command:ssh master-2 './cert_verify.sh 2')
+
+```
 ./cert_verify.sh
 ```
 

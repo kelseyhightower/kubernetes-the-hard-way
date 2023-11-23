@@ -151,5 +151,14 @@ kubectl exec -ti $POD_NAME -- nginx -v
 nginx version: nginx/1.23.1
 ```
 
+Clean up test resources
+
+
+```bash
+kubectl delete pod -n default busybox
+kubectl delete service -n default nginx
+kubectl delete deployment -n default nginx
+```
+
 Prev: [DNS Addon](15-dns-addon.md)</br>
 Next: [End to End Tests](17-e2e-tests.md)

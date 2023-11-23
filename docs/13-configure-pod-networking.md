@@ -15,9 +15,10 @@ On `master-1`
 
 ```bash
 kubectl apply -f "https://github.com/weaveworks/weave/releases/download/v2.8.1/weave-daemonset-k8s-1.11.yaml"
+
 ```
 
-Weave uses POD CIDR of `10.32.0.0/12` by default.
+Weave uses POD CIDR of `10.244.0.0/16` by default.
 
 ## Verification
 
@@ -47,8 +48,8 @@ kubectl get nodes
 
 ```
 NAME       STATUS   ROLES    AGE     VERSION
-worker-1   Ready    <none>   4m11s   v1.24.3
-worker-2   Ready    <none>   2m49s   v1.24.3
+worker-1   Ready    <none>   4m11s   v1.28.4
+worker-2   Ready    <none>   2m49s   v1.28.4
 ```
 
 Reference: https://kubernetes.io/docs/tasks/administer-cluster/network-policy-provider/weave-network-policy/#install-the-weave-net-addon

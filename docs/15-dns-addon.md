@@ -48,7 +48,7 @@ Reference: https://kubernetes.io/docs/tasks/administer-cluster/coredns/#installi
 Create a `busybox` pod:
 
 ```bash
-kubectl run busybox --image=busybox:1.28 --command -- sleep 3600
+kubectl run busybox -n default --image=busybox:1.28 --restart Never --command -- sleep 15
 ```
 
 [//]: # (command:kubectl wait pods -n default -l run=busybox --for condition=Ready --timeout=90s)
@@ -57,7 +57,7 @@ kubectl run busybox --image=busybox:1.28 --command -- sleep 3600
 List the pod created by the `busybox` pod:
 
 ```bash
-kubectl get pods -l run=busybox
+kubectl get pods -n default -l run=busybox
 ```
 
 > output
@@ -70,7 +70,7 @@ busybox-bd8fb7cbd-vflm9   1/1     Running   0          10s
 Execute a DNS lookup for the `kubernetes` service inside the `busybox` pod:
 
 ```bash
-kubectl exec -ti busybox -- nslookup kubernetes
+kubectl exec -ti -n default busybox -- nslookup kubernetes
 ```
 
 > output

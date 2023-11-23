@@ -1,4 +1,4 @@
-# Installing CRI on the Kubernetes Worker Nodes
+# Installing Container Runtime on the Kubernetes Worker Nodes
 
 In this lab you will install the Container Runtime Interface (CRI) on both worker nodes. CRI is a standard interface for the management of containers. Since v1.24 the use of dockershim has been fully deprecated and removed from the code base. [containerd replaces docker](https://kodekloud.com/blog/kubernetes-removed-docker-what-happens-now/) as the container runtime for Kubernetes, and it requires support from [CNI Plugins](https://github.com/containernetworking/plugins) to configure container networks, and [runc](https://github.com/opencontainers/runc) to actually do the job of running containers.
 
@@ -8,74 +8,49 @@ Reference: https://github.com/containerd/containerd/blob/main/docs/getting-start
 
 The commands in this lab must be run on each worker instance: `worker-1`, and `worker-2`. Login to each controller instance using SSH Terminal.
 
+Here we will install the container runtime `containerd` from the Ubuntu distribution, and kubectl plus the CNI tools from the Kubernetes distribution. Kubectl is required on worker-2 to initialize kubeconfig files for the worker-node auto registration.
+
 [//]: # (host:worker-1-worker-2)
 
 You can perform this step with [tmux](01-prerequisites.md#running-commands-in-parallel-with-tmux)
 
-The versions chosen here align with those that are installed by the current `kubernetes-cni` package for a v1.24 cluster.
+Set up the Kubernetes `apt` repository
 
 ```bash
 {
-  CONTAINERD_VERSION=1.5.9
-  CNI_VERSION=0.8.6
-  RUNC_VERSION=1.1.1
+  KUBE_LATEST=$(curl -L -s https://dl.k8s.io/release/stable.txt | awk 'BEGIN { FS="." } { printf "%s.%s", $1, $2 }')
 
-  wget -q --show-progress --https-only --timestamping \
-    https://github.com/containerd/containerd/releases/download/v${CONTAINERD_VERSION}/containerd-${CONTAINERD_VERSION}-linux-amd64.tar.gz \
-    https://github.com/containernetworking/plugins/releases/download/v${CNI_VERSION}/cni-plugins-linux-amd64-v${CNI_VERSION}.tgz \
-    https://github.com/opencontainers/runc/releases/download/v${RUNC_VERSION}/runc.amd64
+  sudo mkdir -p /etc/apt/keyrings
+  curl -fsSL https://pkgs.k8s.io/core:/stable:/${KUBE_LATEST}/deb/Release.key | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
 
-  sudo mkdir -p /opt/cni/bin
-
-  sudo chmod +x runc.amd64
-  sudo mv runc.amd64 /usr/local/bin/runc
-
-  sudo tar -xzvf containerd-${CONTAINERD_VERSION}-linux-amd64.tar.gz -C /usr/local
-  sudo tar -xzvf cni-plugins-linux-amd64-v${CNI_VERSION}.tgz -C /opt/cni/bin
+  echo "deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/${KUBE_LATEST}/deb/ /" | sudo tee /etc/apt/sources.list.d/kubernetes.list
 }
 ```
 
-Next create the `containerd` service unit.
-
-```bash
-cat <<EOF | sudo tee /etc/systemd/system/containerd.service
-[Unit]
-Description=containerd container runtime
-Documentation=https://containerd.io
-After=network.target local-fs.target
-
-[Service]
-ExecStartPre=-/sbin/modprobe overlay
-ExecStart=/usr/local/bin/containerd
-
-Type=notify
-Delegate=yes
-KillMode=process
-Restart=always
-RestartSec=5
-# Having non-zero Limit*s causes performance problems due to accounting overhead
-# in the kernel. We recommend using cgroups to do container-local accounting.
-LimitNPROC=infinity
-LimitCORE=infinity
-LimitNOFILE=infinity
-# Comment TasksMax if your systemd version does not supports it.
-# Only systemd 226 and above support this version.
-TasksMax=infinity
-OOMScoreAdjust=-999
-
-[Install]
-WantedBy=multi-user.target
-EOF
-```
-
-Now start it
+Install `containerd` and CNI tools, first refreshing `apt` repos to get up to date versions.
 
 ```bash
 {
-  sudo systemctl enable containerd
-  sudo systemctl start containerd
+  sudo apt update
+  sudo apt install -y containerd kubernetes-cni kubectl ipvsadm ipset
 }
 ```
+
+Set up `containerd` configuration to enable systemd Cgroups
+
+```bash
+{
+  sudo mkdir -p /etc/containerd
+  containerd config default | sed 's/SystemdCgroup = false/SystemdCgroup = true/' | sudo tee /etc/containerd/config.toml
+}
+```
+
+Now restart `containerd` to read the new configuration
+
+```bash
+sudo systemctl restart containerd
+```
+
 
 Prev: [Bootstrapping the Kubernetes Control Plane](08-bootstrapping-kubernetes-controllers.md)</br>
 Next: [Bootstrapping the Kubernetes Worker Nodes](10-bootstrapping-kubernetes-workers.md)

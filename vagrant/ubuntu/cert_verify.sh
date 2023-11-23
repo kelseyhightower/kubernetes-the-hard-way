@@ -157,8 +157,14 @@ check_cert_only()
                         exit 1
                 fi
             else
-                printf "${FAILED}${cert} missing. More details: https://github.com/mmumshad/kubernetes-the-hard-way/blob/master/docs/04-certificate-authority.md#certificate-authority\n${NC}"
-                echo "These should be in ${CERT_LOCATION}${NC}"
+                if [[ $cert == *kubelet-client-current* ]]
+                then
+                    printf "${FAILED}${cert} missing. This probably means that kubelet failed to start.${NC}\n"
+                    echo -e "Check logs with\n\n  sudo journalctl -u kubelet\n"
+                else
+                    printf "${FAILED}${cert} missing. More details: https://github.com/mmumshad/kubernetes-the-hard-way/blob/master/docs/04-certificate-authority.md#certificate-authority\n${NC}"
+                    echo "These should be in ${CERT_LOCATION}"
+                fi
                 exit 1
     fi
 }
@@ -425,17 +431,27 @@ check_systemd_ks()
 
 # END OF Function - Master node #
 
+if [ ! -z "$1" ]
+then
+    choice=$1
+else
+    echo "This script will validate the certificates in master as well as worker-1 nodes. Before proceeding, make sure you ssh into the respective node [ Master or Worker-1 ] for certificate validation"
+    while true
+    do
+        echo
+        echo "  1. Verify certificates on Master Nodes after step 4"
+        echo "  2. Verify kubeconfigs on Master Nodes after step 5"
+        echo "  3. Verify kubeconfigs and PKI on Master Nodes after step 8"
+        echo "  4. Verify kubeconfigs and PKI on worker-1 Node after step 10"
+        echo "  5. Verify kubeconfigs and PKI on worker-2 Node after step 11"
+        echo
+        echo -n "Please select one of the above options: "
+        read choice
 
-echo "This script will validate the certificates in master as well as worker-1 nodes. Before proceeding, make sure you ssh into the respective node [ Master or Worker-1 ] for certificate validation"
-echo
-echo "  1. Verify certificates on Master Nodes after step 4"
-echo "  2. Verify kubeconfigs on Master Nodes after step 5"
-echo "  3. Verify kubeconfigs and PKI on Master Nodes after step 8"
-echo "  4. Verify kubeconfigs and PKI on worker-1 Node after step 10"
-echo "  5. Verify kubeconfigs and PKI on worker-2 Node after step 11"
-echo
-echo -n "Please select one of the above options: "
-read value
+        [ -z "$choice" ] && continue
+        [ $choice -gt 0 -a $choice -lt 6 ] && break
+    done
+fi
 
 HOST=$(hostname -s)
 
@@ -450,7 +466,7 @@ SUBJ_SA="Subject:CN=service-accounts,O=Kubernetes"
 SUBJ_ETCD="Subject:CN=etcd-server,O=Kubernetes"
 SUBJ_APIKC="Subject:CN=kube-apiserver-kubelet-client,O=system:masters"
 
-case $value in
+case $choice in
 
   1)
     if ! [ "${HOST}" = "master-1" -o "${HOST}" = "master-2" ]
@@ -459,7 +475,7 @@ case $value in
         exit 1
     fi
 
-    echo -e "The selected option is $value, proceeding the certificate verification of Master node"
+    echo -e "The selected option is $choice, proceeding the certificate verification of Master node"
 
     CERT_LOCATION=$HOME
     check_cert_and_key "ca" $SUBJ_CA $CERT_ISSUER

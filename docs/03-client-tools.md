@@ -10,33 +10,39 @@ Here we create an SSH key pair for the `vagrant` user who we are logged in as. W
 
 Generate Key Pair on `master-1` node
 
+[//]: # (host:master-1)
+
 ```bash
 ssh-keygen
 ```
 
-Leave all settings to default.
+Leave all settings to default by pressing `ENTER` at any prompt.
 
-View the generated public key ID at:
-
-```bash
-cat ~/.ssh/id_rsa.pub
-```
-
-Add this key to the local authorized_keys (`master-1`) as in some commands we scp to ourself
+Add this key to the local authorized_keys (`master-1`) as in some commands we scp to ourself.
 
 ```bash
 cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys
 ```
 
-Copy the output into a notepad and form it into the following command
+Copy the key to the other hosts. For this step please enter `vagrant` where a password is requested.
+
+The option `-o StrictHostKeyChecking=no` tells it not to ask if you want to connect to a previously unknown host. Not best practice in the real world, but speeds things up here.
 
 ```bash
-cat >> ~/.ssh/authorized_keys <<EOF
-ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQD...OUTPUT-FROM-ABOVE-COMMAND...8+08b vagrant@master-1
-EOF
+ssh-copy-id -o StrictHostKeyChecking=no vagrant@master-2
+ssh-copy-id -o StrictHostKeyChecking=no vagrant@loadbalancer
+ssh-copy-id -o StrictHostKeyChecking=no vagrant@worker-1
+ssh-copy-id -o StrictHostKeyChecking=no vagrant@worker-2
 ```
 
-Now ssh to each of the other nodes and paste the above from your notepad at each command prompt.
+For each host, the output should be similar to this. If it is not, then you may have entered an incorrect password. Retry the step.
+
+```
+Number of key(s) added: 1
+
+Now try logging into the machine, with:   "ssh 'vagrant@master-2'"
+and check to make sure that only the key(s) you wanted were added.
+```
 
 ## Install kubectl
 
@@ -44,37 +50,39 @@ The [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl). command l
 
 Reference: [https://kubernetes.io/docs/tasks/tools/install-kubectl/](https://kubernetes.io/docs/tasks/tools/install-kubectl/)
 
+We will be using kubectl early on to generate kubeconfig files for the controlplane components.
+
 ### Linux
 
 ```bash
-wget https://storage.googleapis.com/kubernetes-release/release/v1.24.3/bin/linux/amd64/kubectl
+curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
 chmod +x kubectl
 sudo mv kubectl /usr/local/bin/
 ```
 
 ### Verification
 
-Verify `kubectl` version 1.24.3 or higher is installed:
+Verify `kubectl` is installed:
 
 ```
 kubectl version -o yaml
 ```
 
-> output
+> output will be similar to this, although versions may be newer
 
 ```
 kubectl version -o yaml
 clientVersion:
-  buildDate: "2022-07-13T14:30:46Z"
+  buildDate: "2023-11-15T16:58:22Z"
   compiler: gc
-  gitCommit: aef86a93758dc3cb2c658dd9657ab4ad4afc21cb
+  gitCommit: bae2c62678db2b5053817bc97181fcc2e8388103
   gitTreeState: clean
-  gitVersion: v1.24.3
-  goVersion: go1.18.3
+  gitVersion: v1.28.4
+  goVersion: go1.20.11
   major: "1"
-  minor: "24"
+  minor: "28"
   platform: linux/amd64
-kustomizeVersion: v4.5.4
+kustomizeVersion: v5.0.4-0.20230601165947-6ce0bf390ce3
 
 The connection to the server localhost:8080 was refused - did you specify the right host or port?
 ```

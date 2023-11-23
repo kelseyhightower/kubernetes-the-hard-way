@@ -59,9 +59,6 @@ Create a CA certificate, then generate a Certificate Signing Request and use it 
   # Create private key for CA
   openssl genrsa -out ca.key 2048
 
-  # Comment line starting with RANDFILE in /etc/ssl/openssl.cnf definition to avoid permission issues
-  sudo sed -i '0,/RANDFILE/{s/RANDFILE/\#&/}' /etc/ssl/openssl.cnf
-
   # Create CSR using the private key
   openssl req -new -key ca.key -subj "/CN=KUBERNETES-CA/O=Kubernetes" -out ca.csr
 
@@ -355,7 +352,9 @@ service-account.crt
 
 Run the following, and select option 1 to check all required certificates were generated.
 
-```bash
+[//]: # (command:./cert_verify.sh 1)
+
+```
 ./cert_verify.sh
 ```
 
@@ -374,7 +373,7 @@ Copy the appropriate certificates and private keys to each instance:
 ```bash
 {
 for instance in master-1 master-2; do
-  scp ca.crt ca.key kube-apiserver.key kube-apiserver.crt \
+  scp -o StrictHostKeyChecking=no ca.crt ca.key kube-apiserver.key kube-apiserver.crt \
     apiserver-kubelet-client.crt apiserver-kubelet-client.key \
     service-account.key service-account.crt \
     etcd-server.key etcd-server.crt \
@@ -389,11 +388,13 @@ done
 }
 ```
 
-## Optional - Check Certificates
+## Optional - Check Certificates on master-2
 
-At `master-1` and `master-2` nodes, run the following, selecting option 1
+At `master-2` node run the following, selecting option 1
 
-```bash
+[//]: # (commandssh master-2 './cert_verify.sh 1')
+
+```
 ./cert_verify.sh
 ```
 

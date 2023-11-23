@@ -212,11 +212,14 @@ Going forward all activities are to be done on the `worker-2` node until [step 1
 
 ### Download and Install Worker Binaries
 
+Note that kubectl is required here to assist with creating the boostrap kubeconfigs for kubelet and kube-proxy
+
 ```bash
+KUBE_VERSION=$(curl -L -s https://dl.k8s.io/release/stable.txt)
+
 wget -q --show-progress --https-only --timestamping \
-  https://storage.googleapis.com/kubernetes-release/release/v1.24.3/bin/linux/amd64/kubectl \
-  https://storage.googleapis.com/kubernetes-release/release/v1.24.3/bin/linux/amd64/kube-proxy \
-  https://storage.googleapis.com/kubernetes-release/release/v1.24.3/bin/linux/amd64/kubelet
+  https://dl.k8s.io/release/${KUBE_VERSION}/bin/linux/amd64/kube-proxy \
+  https://dl.k8s.io/release/${KUBE_VERSION}/bin/linux/amd64/kubelet
 ```
 
 Reference: https://kubernetes.io/releases/download/#binaries
@@ -235,8 +238,8 @@ Install the worker binaries:
 
 ```bash
 {
-  chmod +x kubectl kube-proxy kubelet
-  sudo mv kubectl kube-proxy kubelet /usr/local/bin/
+  chmod +x kube-proxy kubelet
+  sudo mv kube-proxy kubelet /usr/local/bin/
 }
 ```
 Move the certificates and secure them.
@@ -316,6 +319,8 @@ Reference: https://kubernetes.io/docs/reference/access-authn-authz/kubelet-tls-b
 
 Create the `kubelet-config.yaml` configuration file:
 
+Reference: https://kubernetes.io/docs/reference/config-api/kubelet-config.v1beta1/
+
 ```bash
 cat <<EOF | sudo tee /var/lib/kubelet/kubelet-config.yaml
 kind: KubeletConfiguration
@@ -329,6 +334,8 @@ authentication:
     clientCAFile: /var/lib/kubernetes/pki/ca.crt
 authorization:
   mode: Webhook
+containerRuntimeEndpoint: unix:///var/run/containerd/containerd.sock
+cgroupDriver: systemd
 clusterDomain: "cluster.local"
 clusterDNS:
   - ${CLUSTER_DNS}
@@ -360,7 +367,6 @@ ExecStart=/usr/local/bin/kubelet \\
   --config=/var/lib/kubelet/kubelet-config.yaml \\
   --kubeconfig=/var/lib/kubelet/kubeconfig \\
   --cert-dir=/var/lib/kubelet/pki/ \\
-  --container-runtime-endpoint=unix:///var/run/containerd/containerd.sock \\
   --v=2
 Restart=on-failure
 RestartSec=5
@@ -379,6 +385,7 @@ Things to note here:
 
 In one of the previous steps we created the kube-proxy.kubeconfig file. Check [here](https://github.com/mmumshad/kubernetes-the-hard-way/blob/master/docs/05-kubernetes-configuration-files.md) if you missed it.
 
+
 ```bash
 {
   sudo mv kube-proxy.kubeconfig /var/lib/kube-proxy/
@@ -389,13 +396,15 @@ In one of the previous steps we created the kube-proxy.kubeconfig file. Check [h
 
 Create the `kube-proxy-config.yaml` configuration file:
 
+Reference: https://kubernetes.io/docs/reference/config-api/kube-proxy-config.v1alpha1/
+
 ```bash
 cat <<EOF | sudo tee /var/lib/kube-proxy/kube-proxy-config.yaml
 kind: KubeProxyConfiguration
 apiVersion: kubeproxy.config.k8s.io/v1alpha1
 clientConnection:
   kubeconfig: /var/lib/kube-proxy/kube-proxy.kubeconfig
-mode: iptables
+mode: ipvs
 clusterCIDR: ${POD_CIDR}
 EOF
 ```
@@ -437,7 +446,10 @@ On worker-2:
 
 At `worker-2` node, run the following, selecting option 5
 
-```bash
+[//]: # (command:sleep 5)
+[//]: # (command:./cert_verify.sh 5)
+
+```
 ./cert_verify.sh
 ```
 
@@ -447,7 +459,8 @@ At `worker-2` node, run the following, selecting option 5
 Now, go back to `master-1` and approve the pending kubelet-serving certificate
 
 [//]: # (host:master-1)
-[//]: # (comment:Please now manually approve the certificate before proceeding)
+[//]: # (command:sudo apt install -y jq)
+[//]: # (command:kubectl certificate approve --kubeconfig admin.kubeconfig $(kubectl get csr --kubeconfig admin.kubeconfig -o json | jq -r '.items | .[]  | select(.spec.username == "system:node:worker-2") | .metadata.name'))
 
 ```bash
 kubectl get csr --kubeconfig admin.kubeconfig
@@ -464,7 +477,7 @@ csr-n7z8p   98s   kubernetes.io/kube-apiserver-client-kubelet   system:bootstrap
 Approve the pending certificate. Note that the certificate name `csr-7k8nh` will be different for you, and each time you run through.
 
 ```
-kubectl certificate approve csr-7k8nh --kubeconfig admin.kubeconfig
+kubectl certificate approve --kubeconfig admin.kubeconfig csr-7k8nh
 ```
 
 
@@ -484,8 +497,8 @@ kubectl get nodes --kubeconfig admin.kubeconfig
 
 ```
 NAME       STATUS      ROLES    AGE   VERSION
-worker-1   NotReady    <none>   93s   v1.24.3
-worker-2   NotReady    <none>   93s   v1.24.3
+worker-1   NotReady    <none>   93s   v1.28.4
+worker-2   NotReady    <none>   93s   v1.28.4
 ```
 
 Prev: [Bootstrapping the Kubernetes Worker Nodes](10-bootstrapping-kubernetes-workers.md)</br>

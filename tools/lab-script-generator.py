@@ -41,13 +41,14 @@ if not os.path.isdir(qs_path):
 
 newline = chr(10)       # In case running on Windows (plus writing files as binary to not convert to \r\n)
 file_number_rx = re.compile(r'^(?P<number>\d+)')
-comment_rx = re.compile(r'^\[//\]:\s\#\s\((?P<token>\w+):(?P<value>[^\)]+)\)')
+comment_rx = re.compile(r'^\[//\]:\s\#\s\((?P<token>\w+):(?P<value>.*)\)\s*$')
 choice_rx = re.compile(r'^\s*-+\s+OR\s+-+')
 script_begin = '```bash'
 script_end = '```'
 script_open = ('{' + newline).encode('utf-8')
-script_close = '}'.encode('utf-8')
+script_close = '\n}'.encode('utf-8')
 current_host = None
+file_nos = []
 
 def write_script(filename: str, script: list):
     path = os.path.join(qs_path, filename)
@@ -57,18 +58,29 @@ def write_script(filename: str, script: list):
         f.write(script_close)
     print(f'-> {path}')
 
-
+output_file_no = 1
+script = []
+output_file = None
 for doc in glob.glob(os.path.join(docs_path, '*.md')):
     print(doc)
-    script = []
     state = State.NONE
     ignore_next_script = False
     m = file_number_rx.search(os.path.basename(doc))
     if not m:
         continue
     file_no = m['number']
+    if int(file_no) < 3:
+        continue
+    file_nos.append(file_no)
     section = 0
-    output_file = None
+    script.extend([
+        "##################################################",
+        "#",
+        f"# {os.path.basename(doc)}",
+        "#",
+        "##################################################",
+        ""
+    ])
     with codecs.open(doc, "r", encoding='utf-8') as f:
         for line in f.readlines():
             line = line.rstrip()
@@ -78,11 +90,24 @@ for doc in glob.glob(os.path.join(docs_path, '*.md')):
                     token = m['token']
                     value = m['value']
                     if token == 'host':
-                        if script:
+                        if script and current_host and current_host != value:
+                            #fns = file_no if len(file_nos) < 2 else '-'.join(file_nos[:-1])
+                            script.append('set +e')
+                            output_file = os.path.join(qs_path, f'{output_file_no}-{current_host}.sh')
                             write_script(output_file, script)
-                            script = []
+                            output_file_no += 1
+                            script = [
+                                "##################################################",
+                                "#",
+                                f"# {os.path.basename(doc)}",
+                                "#",
+                                "##################################################",
+                                ""
+                            ]
+                            file_nos = [file_no]
                         output_file = os.path.join(qs_path, f'{file_no}{chr(97 + section)}-{value}.sh')
                         section += 1
+                        current_host = value
                     elif token == 'sleep':
                         script.extend([
                             f'echo "Sleeping {value}s"',
@@ -112,8 +137,14 @@ for doc in glob.glob(os.path.join(docs_path, '*.md')):
                     state = State.NONE
                     script.append(newline)
                     ignore_next_script = False
+                # elif line.startswith('source') or line.startswith('export'):
+                #     script.append('}')
+                #     script.append(line)
+                #     script.append('{')
                 elif not (ignore_next_script or line == '{' or line == '}'):
                     script.append(line)
-        if output_file and script:
-            write_script(output_file, script)
+if script:
+    # fns = '-'.join(file_nos[1:])
+    output_file = os.path.join(qs_path, f'{output_file_no}-{current_host}.sh')
+    write_script(output_file, script)
 
