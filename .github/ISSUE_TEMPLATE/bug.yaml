@@ -16,8 +16,8 @@ body:
     attributes:
       label: Your Workstation
       description: Please tell us your PC/Mac/Laptop spec?
-      placeholder: 16 GB RAM, 8 core i7 CPU
-      value: "Specification"
+      placeholder: "Specification"
+      value: 16 GB RAM, 8 core i7 CPU
     validations:
       required: true
   - type: textarea
