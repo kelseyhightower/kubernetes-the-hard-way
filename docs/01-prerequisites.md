@@ -1,5 +1,7 @@
 # Prerequisites
 
+This tutorial can be followed using either Google Cloud Platform or Microsoft Azure. Any sections where the commands to be entered are different based on the selected platform will either be captioned ```gcloud``` or ```az```, depending on the platform that the command applies to.
+
 ## Google Cloud Platform
 
 This tutorial leverages the [Google Cloud Platform](https://cloud.google.com/) to streamline provisioning of the compute infrastructure required to bootstrap a Kubernetes cluster from the ground up. [Sign up](https://cloud.google.com/free/) for $300 in free credits.

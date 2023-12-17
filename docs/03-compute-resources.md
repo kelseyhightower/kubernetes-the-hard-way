@@ -4,6 +4,8 @@ Kubernetes requires a set of machines to host the Kubernetes control plane and t
 
 > Ensure a default compute zone and region have been set as described in the [Prerequisites](01-prerequisites.md#set-a-default-compute-region-and-zone) lab.
 
+> If you are using Azure, ensure that the azure cli has been set up and configured as described in the [Prerequisites](01-prerequisites.md#az-setup) lab.
+
 ## Networking
 
 The Kubernetes [networking model](https://kubernetes.io/docs/concepts/cluster-administration/networking/#kubernetes-model) assumes a flat network in which containers and nodes can communicate with each other. In cases where this is not desired [network policies](https://kubernetes.io/docs/concepts/services-networking/network-policies/) can limit how groups of containers are allowed to communicate with each other and external network endpoints.
@@ -12,22 +14,41 @@ The Kubernetes [networking model](https://kubernetes.io/docs/concepts/cluster-ad
 
 ### Virtual Private Cloud Network
 
-In this section a dedicated [Virtual Private Cloud](https://cloud.google.com/compute/docs/networks-and-firewalls#networks) (VPC) network will be setup to host the Kubernetes cluster.
+In this section a dedicated Virtual Private Cloud (VPC) network will be setup to host the Kubernetes cluster.
+
+[Azure VPC documentation](https://learn.microsoft.com/en-us/azure/virtual-network/)
+
+[GCloud VPC documentation](https://cloud.google.com/compute/docs/networks-and-firewalls#networks)
 
 Create the `kubernetes-the-hard-way` custom VPC network:
 
+```gcloud```
 ```
 gcloud compute networks create kubernetes-the-hard-way --subnet-mode custom
 ```
+```az```
+```
+az network vnet create --name kubernetes-the-hard-way --address-prefix 10.240.0.0/24
+```
 
-A [subnet](https://cloud.google.com/compute/docs/vpc/#vpc_networks_and_subnets) must be provisioned with an IP address range large enough to assign a private IP address to each node in the Kubernetes cluster.
+A subnet must be provisioned with an IP address range large enough to assign a private IP address to each node in the Kubernetes cluster.
+
+[Azure Subnet documentation](https://learn.microsoft.com/en-us/azure/virtual-network/network-overview#virtual-network-and-subnets)
+
+[GCloud Subnet documentation](https://cloud.google.com/compute/docs/vpc/#vpc_networks_and_subnets)
 
 Create the `kubernetes` subnet in the `kubernetes-the-hard-way` VPC network:
 
+```gcloud```
 ```
 gcloud compute networks subnets create kubernetes \
   --network kubernetes-the-hard-way \
   --range 10.240.0.0/24
+```
+
+```az```
+```
+az network vnet subnet create --name kubernetes --vnet-name kubernetes-the-hard-way --address-prefixes 10.240.0.0/24
 ```
 
 > The `10.240.0.0/24` IP address range can host up to 254 compute instances.
