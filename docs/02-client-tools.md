@@ -34,8 +34,10 @@ brew install cfssl
 
 ```
 wget -q --show-progress --https-only --timestamping \
-  https://storage.googleapis.com/kubernetes-the-hard-way/cfssl/1.4.1/linux/cfssl \
-  https://storage.googleapis.com/kubernetes-the-hard-way/cfssl/1.4.1/linux/cfssljson
+  https://github.com/cloudflare/cfssl/releases/download/v1.4.1/cfssl_1.4.1_linux_amd64 \
+  https://github.com/cloudflare/cfssl/releases/download/v1.4.1/cfssljson_1.4.1_linux_amd64
+mv cfssl_1.4.1_linux_amd64 cfssl
+mv cfssljson_1.4.1_linux_amd64 cfssljson
 ```
 
 ```
