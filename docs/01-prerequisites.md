@@ -50,6 +50,32 @@ gcloud config set compute/zone us-west1-c
 
 > Use the `gcloud compute zones list` command to view additional regions and zones.
 
+## Microsoft Azure Cloud Platform
+
+As an alternative, MS Azure can be used to provision resources to complete the tutorial. [Estimated cost](https://azure.com/e/caa9df7c786c4f93bbd5566e02bd69b5) is roughly $11 a day
+
+## Azure CLI
+
+### Installation
+
+Documentation on installing the azure CLI (```az```) is located [here](https://learn.microsoft.com/en-us/cli/azure/install-azure-cli)
+
+### az Setup
+
+If this is your first time running the ```az``` tool, you will need to login. The easiest way to do this is via ```az login```, which will bring up a web browser where you will fill out your username/password. Alternative methods for logging in are detailed [here](https://learn.microsoft.com/en-us/cli/azure/authenticate-azure-cli)
+
+Set your default location:
+
+```az config set defaults.location=eastus```
+
+Create a resource group to hold all VMs / VPCs / etc that will be created:
+
+```az group create --resource-group k8s-the-hard-way```
+
+Set the created resource group as the default:
+
+```az config set defaults.group=k8s-the-hard-way```
+
 ## Running Commands in Parallel with tmux
 
 [tmux](https://github.com/tmux/tmux/wiki) can be used to run commands on multiple compute instances at the same time. Labs in this tutorial may require running the same commands across multiple compute instances, in those cases consider using tmux and splitting a window into multiple panes with synchronize-panes enabled to speed up the provisioning process.
