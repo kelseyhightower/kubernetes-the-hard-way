@@ -126,6 +126,7 @@ az network nsg rule create \
 
 Allocate a static IP address that will be attached to the external load balancer fronting the Kubernetes API Servers:
 
+```gcloud```
 ```
 gcloud compute addresses create kubernetes-the-hard-way \
   --region $(gcloud config get-value compute/region)
@@ -142,6 +143,28 @@ gcloud compute addresses list --filter="name=('kubernetes-the-hard-way')"
 ```
 NAME                     ADDRESS/RANGE   TYPE      PURPOSE  NETWORK  REGION    SUBNET  STATUS
 kubernetes-the-hard-way  XX.XXX.XXX.XXX  EXTERNAL                    us-west1          RESERVED
+```
+
+```az```
+```
+az network public-ip create \
+  --name kubernetes-the-hard-way \
+  --allocation-method Static
+  --version IPv4
+```
+
+Verify the `kubernetes-the-hard-way` static IP address was created in your default Location:
+
+```
+az network public-ip list
+```
+
+> output
+
+```
+Name                     ResourceGroup     Location    Zones    Address          IdleTimeoutInMinutes    ProvisioningState
+-----------------------  ----------------  ----------  -------  ---------------  ----------------------  -------------------
+kubernetes-the-hard-way  k8s-the-hard-way  eastus               XXX.XXX.XXX.XXX  4                       Succeeded
 ```
 
 ## Compute Instances
