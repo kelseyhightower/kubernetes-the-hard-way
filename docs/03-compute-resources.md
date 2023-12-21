@@ -152,7 +152,7 @@ kubernetes-the-hard-way  XX.XXX.XXX.XXX  EXTERNAL                    us-west1   
 ```
 az network public-ip create \
   --name kubernetes-the-hard-way \
-  --allocation-method Static
+  --allocation-method Static \
   --version IPv4
 ```
 
