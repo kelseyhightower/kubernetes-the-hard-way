@@ -34,9 +34,18 @@ EOF
 
 Copy the `encryption-config.yaml` encryption config file to each controller instance:
 
+```gcloud```
 ```
 for instance in controller-0 controller-1 controller-2; do
   gcloud compute scp encryption-config.yaml ${instance}:~/
+done
+```
+
+```az```
+```
+for instance in controller-0 controller-1 controller-2; do
+  IP=$(az vm show -d --name ${instance} --query "publicIps" -o tsv)
+  scp encryption-config.yaml azureuser@${IP}:/home/azureuser
 done
 ```
 
