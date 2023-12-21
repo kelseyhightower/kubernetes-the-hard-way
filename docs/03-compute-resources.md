@@ -48,7 +48,10 @@ gcloud compute networks subnets create kubernetes \
 
 ```az```
 ```
-az network vnet subnet create --name kubernetes --vnet-name kubernetes-the-hard-way --address-prefixes 10.240.0.0/24
+az network vnet subnet create \
+  --name kubernetes \
+  --vnet-name kubernetes-the-hard-way \
+  --address-prefixes 10.240.0.0/24
 ```
 
 > The `10.240.0.0/24` IP address range can host up to 254 compute instances.
@@ -175,6 +178,7 @@ The compute instances in this lab will be provisioned using [Ubuntu Server](http
 
 Create three compute instances which will host the Kubernetes control plane:
 
+```gcloud```
 ```
 for i in 0 1 2; do
   gcloud compute instances create controller-${i} \
@@ -190,6 +194,27 @@ for i in 0 1 2; do
     --tags kubernetes-the-hard-way,controller
 done
 ```
+
+```az```
+```
+for i in 0 1 2; do
+  az vm create \
+    --name controller-${i} \
+    --public-ip-address "" \
+    --nsg kubernetes-the-hard-way-nsg \
+    --private-ip-address 10.240.0.1${i} \
+    --authentication-type password \
+    --image Canonical:0001-com-ubuntu-server-focal:20_04-lts:latest \
+    --admin-username azureuser \
+    --admin-password 'abc123ABC!@#' \
+    --priority Regular \
+    --subnet kubernetes \
+    --vnet-name kubernetes-the-hard-way \
+    --size Standard_DS1_v2
+done
+```
+
+> The azure VMs will have the username `azureuser` and the password `abc123ABC!@#`
 
 ### Kubernetes Workers
 
