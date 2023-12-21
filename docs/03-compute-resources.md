@@ -55,6 +55,8 @@ az network vnet subnet create --name kubernetes --vnet-name kubernetes-the-hard-
 
 ### Firewall Rules
 
+> This section only applies to gcloud
+
 Create a firewall rule that allows internal communication across all protocols:
 
 ```
@@ -87,6 +89,37 @@ gcloud compute firewall-rules list --filter="network:kubernetes-the-hard-way"
 NAME                                    NETWORK                  DIRECTION  PRIORITY  ALLOW                 DENY  DISABLED
 kubernetes-the-hard-way-allow-external  kubernetes-the-hard-way  INGRESS    1000      tcp:22,tcp:6443,icmp        False
 kubernetes-the-hard-way-allow-internal  kubernetes-the-hard-way  INGRESS    1000      tcp,udp,icmp                Fals
+```
+
+### Network Security Group
+
+> This section only applies to azure
+
+Create a [Network Security Group](https://learn.microsoft.com/en-us/azure/virtual-network/network-security-groups-overview) to allow https, ssh, and ICMP inbound traffic.
+
+```
+az network nsg create \
+  --name kubernetes-the-hard-way-nsg
+
+az network nsg rule create \
+  --name kubernetes-the-hard-way-inbound-tcp \
+  --nsg-name kubernetes-the-hard-way-nsg \
+  --priority 100 \
+  --access ALLOW \
+  --source-address-prefixes 0.0.0.0/0 \
+  --destination-port-ranges 22 6443 \
+  --protocol Tcp \
+  --direction Inbound
+
+az network nsg rule create \
+  --name kubernetes-the-hard-way-inbound-icmp \
+  --nsg-name kubernetes-the-hard-way-nsg \
+  --priority 200 \
+  --access ALLOW \
+  --source-address-prefixes 0.0.0.0/0 \
+  --destination-port-ranges "*" \
+  --protocol Icmp \
+  --direction Inbound
 ```
 
 ### Kubernetes Public IP Address
