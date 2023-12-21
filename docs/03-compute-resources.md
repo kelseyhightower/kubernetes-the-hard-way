@@ -196,17 +196,25 @@ done
 ```
 
 ```az```
+
+To start, we will create an ssh keypair which will be used to authenticate with the VMs. This keypair will be stored in `$HOME/.ssh/k8sthehardway[.pub]` and also uploaded to azure with the name `k8sthehardway`
+
+```
+mkdir -p $HOME/.ssh
+ssh-keygen -f $HOME/.ssh/k8sthehardway
+az sshkey create --name k8sthehardway --public-key "@$HOME/.ssh/k8sthehardway.pub"
+```
+
 ```
 for i in 0 1 2; do
   az vm create \
     --name controller-${i} \
-    --public-ip-address "" \
     --nsg kubernetes-the-hard-way-nsg \
     --private-ip-address 10.240.0.1${i} \
-    --authentication-type password \
+    --authentication-type ssh \
     --image Canonical:0001-com-ubuntu-server-focal:20_04-lts:latest \
     --admin-username azureuser \
-    --admin-password 'abc123ABC!@#' \
+    --ssh-key-name k8sthehardway \
     --priority Regular \
     --subnet kubernetes \
     --vnet-name kubernetes-the-hard-way \
@@ -214,7 +222,9 @@ for i in 0 1 2; do
 done
 ```
 
-> The azure VMs will have the username `azureuser` and the password `abc123ABC!@#`
+> The azure VMs will have the username `azureuser`. The only method of authentication available will be public key, with the key in question stored at $HOME/.ssh/k8sthehardway
+
+> :warning NOTE :warning: These VMs are accessible on the internet. Adding proper security beyond public key authentication is beyond the scope of this tutorial, so be very sure clean them up when you are done
 
 ### Kubernetes Workers
 
@@ -224,6 +234,7 @@ Each worker instance requires a pod subnet allocation from the Kubernetes cluste
 
 Create three compute instances which will host the Kubernetes worker nodes:
 
+```gcloud```
 ```
 for i in 0 1 2; do
   gcloud compute instances create worker-${i} \
@@ -241,10 +252,34 @@ for i in 0 1 2; do
 done
 ```
 
+```az```
+```
+for i in 0 1 2; do
+  az vm create \
+    --name worker-${i} \
+    --nsg kubernetes-the-hard-way-nsg \
+    --private-ip-address 10.240.0.2${i} \
+    --authentication-type ssh \
+    --image Canonical:0001-com-ubuntu-server-focal:20_04-lts:latest \
+    --admin-username azureuser \
+    --ssh-key-name k8sthehardway \
+    --priority Regular \
+    --subnet kubernetes \
+    --vnet-name kubernetes-the-hard-way \
+    --size Standard_DS1_v2 \
+    --tags pod-cidr=10.200.${i}.0/24
+done
+```
+
+> The azure VMs will have the username `azureuser`. The only method of authentication available will be public key, with the key in question stored at $HOME/.ssh/k8sthehardway
+
+> :warning NOTE :warning: These VMs are accessible on the internet. Adding proper security beyond public key authentication is beyond the scope of this tutorial, so be very sure clean them up when you are done
+
 ### Verification
 
 List the compute instances in your default compute zone:
 
+```gcloud```
 ```
 gcloud compute instances list --filter="tags.items=kubernetes-the-hard-way"
 ```
@@ -261,7 +296,25 @@ worker-1      us-west1-c  e2-standard-2               10.240.0.21  XX.XX.XX.XXX 
 worker-2      us-west1-c  e2-standard-2               10.240.0.22  XX.XXX.XX.XX   RUNNING
 ```
 
-## Configuring SSH Access
+```az```
+```
+az vm list
+```
+
+> output
+
+```
+Name          ResourceGroup     Location    Zones
+------------  ----------------  ----------  -------
+controller-0  k8s-the-hard-way  eastus
+controller-1  k8s-the-hard-way  eastus
+controller-2  k8s-the-hard-way  eastus
+worker-0      k8s-the-hard-way  eastus
+worker-1      k8s-the-hard-way  eastus
+worker-2      k8s-the-hard-way  eastus
+```
+
+## Configuring SSH Access (GCloud)
 
 SSH will be used to configure the controller and worker instances. When connecting to compute instances for the first time SSH keys will be generated for you and stored in the project or instance metadata as described in the [connecting to instances](https://cloud.google.com/compute/docs/instances/connecting-to-instance) documentation.
 
@@ -324,6 +377,26 @@ $USER@controller-0:~$ exit
 ```
 logout
 Connection to XX.XX.XX.XXX closed
+```
+
+## Configuring SSH Access (Azure)
+
+The VMs have been provisioned with the `k8sthehardway` keypair to allow the `azureuser` to log in. You can ssh into them via either the `az ssh` command or via normal ssh. The advantage of going through the azure cli is you don't need to remember the ip address or location of the keypair to connect, and the command is not as verbose. The advantage of plain ssh is this is more familiar to most users.
+
+### az ssh
+
+Run the following command to connect to `controller-0` (replace `controller-0` with the desired VM to connect to others). Note that the first time you use `az ssh` you will be prompted to install the `ssh` extension to the azure CLI.
+
+```
+az ssh vm --name controller-0 --local-user azureuser
+```
+
+### ssh
+
+Run the following command to connect to the `controller-0` VM instance via plain ssh
+
+```
+ssh -i $HOME/.ssh/k8sthehardway azureuser@$(az vm show -d --name controller-0 --query "publicIps" -o tsv)
 ```
 
 Next: [Provisioning a CA and Generating TLS Certificates](04-certificate-authority.md)
