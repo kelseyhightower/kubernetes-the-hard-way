@@ -224,7 +224,7 @@ done
 
 > The azure VMs will have the username `azureuser`. The only method of authentication available will be public key, with the key in question stored at $HOME/.ssh/k8sthehardway
 
-> :warning NOTE :warning: These VMs are accessible on the internet. Adding proper security beyond public key authentication is beyond the scope of this tutorial, so be very sure clean them up when you are done
+> :warning:WARNING:warning:: These VMs are accessible on the internet. Adding proper security beyond public key authentication is beyond the scope of this tutorial, so be very sure clean them up when you are done
 
 ### Kubernetes Workers
 
@@ -273,7 +273,7 @@ done
 
 > The azure VMs will have the username `azureuser`. The only method of authentication available will be public key, with the key in question stored at $HOME/.ssh/k8sthehardway
 
-> :warning NOTE :warning: These VMs are accessible on the internet. Adding proper security beyond public key authentication is beyond the scope of this tutorial, so be very sure clean them up when you are done
+> :warning:WARNING:warning:: These VMs are accessible on the internet. Adding proper security beyond public key authentication is beyond the scope of this tutorial, so be very sure clean them up when you are done
 
 ### Verification
 
