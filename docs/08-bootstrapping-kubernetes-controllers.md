@@ -78,11 +78,10 @@ KUBERNETES_PUBLIC_ADDRESS=$(gcloud compute addresses describe kubernetes-the-har
 
 ```az```
 ```
-sudo apt-get update
-sudo apt-get install -y jq
-INTERNAL_IP=$(curl -s -H Metadata:true --noproxy "*" "http://169.254.169.254/metadata/instance?api-version=2021-02-01" | jq -r '.network.interface[0].ipv4.ipAddress[0].privateIpAddress')
-REGION=$(curl -s -H Metadata:true --noproxy "*" "http://169.254.169.254/metadata/instance?api-version=2021-02-01" | jq -r '.compute.location')
-KUBERNETES_PUBLIC_ADDRESS=$(az network public-ip show --name kubernetes-the-hard-way --query ipAddress -o tsv)
+INTERNAL_IP=$(curl -s -H Metadata:true --noproxy "*" \
+  "http://169.254.169.254/metadata/instance/network/interface/0/ipv4/ipAddress/0/privateIpAddress?api-version=2021-02-01&format=text")
+REGION=$(curl -s -H Metadata:true --noproxy "*" "http://169.254.169.254/metadata/instance/compute/location?api-version=2021-02-01&format=text")
+KUBERNETES_PUBLIC_ADDRESS=$(curl -s -H Metadata:true --noproxy "*" "http://169.254.169.254/metadata/instance/compute/tagsList/0/value?api-version=2021-02-01&format=text")
 ```
 
 Create the `kube-apiserver.service` systemd unit file:
