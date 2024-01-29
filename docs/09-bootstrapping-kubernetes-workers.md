@@ -97,9 +97,15 @@ sudo mv containerd/bin/* /bin/
 
 Retrieve the Pod CIDR range for the current compute instance:
 
+```gcloud```
 ```
 POD_CIDR=$(curl -s -H "Metadata-Flavor: Google" \
   http://metadata.google.internal/computeMetadata/v1/instance/attributes/pod-cidr)
+```
+
+```az```
+```
+POD_CIDR=$(curl -s -H Metadata:true --noproxy "*" "http://169.254.169.254/metadata/instance/compute/tagsList/0/value?api-version=2021-02-01&format=text")
 ```
 
 Create the `bridge` network configuration file:
