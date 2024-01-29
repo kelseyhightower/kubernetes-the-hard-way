@@ -218,7 +218,8 @@ for i in 0 1 2; do
     --priority Regular \
     --subnet kubernetes \
     --vnet-name kubernetes-the-hard-way \
-    --size Standard_DS1_v2
+    --size Standard_DS1_v2 \
+    --tags public-ip=$(az network public-ip show --name kubernetes-the-hard-way --query ipAddress -o tsv)
 done
 ```
 
