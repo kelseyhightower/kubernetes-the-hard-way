@@ -206,8 +206,8 @@ done
 ```
 for instance in worker-0 worker-1 worker-2; do
   IP=$(az vm show -d --name ${instance} --query "publicIps" -o tsv)
-  scp ${instance}.kubeconfig azureuser@${IP}:/home/azureuser
-  scp kube-proxy.kubeconfig azureuser@${IP}:/home/azureuser
+  scp -i $HOME/.ssh/k8sthehardway ${instance}.kubeconfig azureuser@${IP}:/home/azureuser
+  scp -i $HOME/.ssh/k8sthehardway kube-proxy.kubeconfig azureuser@${IP}:/home/azureuser
 done
 ```
 
@@ -224,9 +224,9 @@ done
 ```
 for instance in controller-0 controller-1 controller-2; do
   IP=$(az vm show -d --name ${instance} --query "publicIps" -o tsv)
-  scp admin.kubeconfig azureuser@${IP}:/home/azureuser
-  scp kube-controller-manager.kubeconfig azureuser@${IP}:/home/azureuser
-  scp kube-scheduler.kubeconfig azureuser@${IP}:/home/azureuser
+  scp -i $HOME/.ssh/k8sthehardway admin.kubeconfig azureuser@${IP}:/home/azureuser
+  scp -i $HOME/.ssh/k8sthehardway kube-controller-manager.kubeconfig azureuser@${IP}:/home/azureuser
+  scp -i $HOME/.ssh/k8sthehardway kube-scheduler.kubeconfig azureuser@${IP}:/home/azureuser
 done
 ```
 
