@@ -307,9 +307,15 @@ sudo systemctl start containerd kubelet kube-proxy
 
 List the registered Kubernetes nodes:
 
+```gcloud```
 ```
 gcloud compute ssh controller-0 \
   --command "kubectl get nodes --kubeconfig admin.kubeconfig"
+```
+
+```az```
+```
+ssh -i $HOME/.ssh/k8sthehardway azureuser@$(az vm show -d --name controller-0 --query "publicIps" -o tsv) "kubectl get nodes --kubeconfig admin.kubeconfig"
 ```
 
 > output
