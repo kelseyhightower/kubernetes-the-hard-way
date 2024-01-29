@@ -62,7 +62,8 @@ INTERNAL_IP=$(curl -s -H "Metadata-Flavor: Google" \
 
 ```az```
 ```
-INTERNAL_IP=$(curl -s -H Metadata:true --noproxy "*" "http://169.254.169.254/metadata/instance/network/interface/0/ipv4/ipAddress/0/privateIpAddress?api-version=2021-02-01&format=text")
+INTERNAL_IP=$(curl -s -H Metadata:true --noproxy "*" \
+  "http://169.254.169.254/metadata/instance/network/interface/0/ipv4/ipAddress/0/privateIpAddress?api-version=2021-02-01&format=text")
 ```
 
 Each etcd member must have a unique name within an etcd cluster. Set the etcd name to match the hostname of the current compute instance:
