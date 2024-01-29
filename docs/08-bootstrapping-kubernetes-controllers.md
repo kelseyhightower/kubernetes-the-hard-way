@@ -378,6 +378,7 @@ In this section you will provision an external load balancer to front the Kubern
 
 Create the external load balancer network resources:
 
+```gcloud```
 ```
 KUBERNETES_PUBLIC_ADDRESS=$(gcloud compute addresses describe kubernetes-the-hard-way \
   --region $(gcloud config get-value compute/region) \
@@ -406,16 +407,54 @@ gcloud compute forwarding-rules create kubernetes-forwarding-rule \
   --target-pool kubernetes-target-pool
 ```
 
+```az```
+```
+KUBERNETES_PUBLIC_ADDRESS=$(az network public-ip show --name kubernetes-the-hard-way --query ipAddress -o tsv)
+
+az network lb create \
+  --name k8s-the-hard-way-lb \
+  --frontend-ip-name k8s-the-hard-way-lb-frontend \
+  --public-ip-address kubernetes-the-hard-way
+
+az network lb probe create \
+  --name http-health-checks \
+  --lb-name k8s-the-hard-way-lb \
+  --port 80 \
+  --protocol Tcp
+
+az network lb address-pool create \
+  --lb-name k8s-the-hard-way-lb \
+  --name k8s-the-hard-way-lb-backend \
+  --vnet kubernetes-the-hard-way \
+  --backend-addresses "[{name:controller-0,ip-address:10.240.0.10},{name:controller-1,ip-address:10.240.0.11},{name:controller-2,ip-address:10.240.0.12}]"
+
+az network lb rule create \
+  --lb-name k8s-the-hard-way-lb \
+  --name kubernetes-forwarding-rule \
+  --protocol Tcp \
+  --frontend-ip k8s-the-hard-way-lb-frontend \
+  --backend-port 6443 \
+  --frontend-port 6443 \
+  --probe http-health-checks \
+  --backend-pool-name k8s-the-hard-way-lb-backend
+```
+
 ### Verification
 
 > The compute instances created in this tutorial will not have permission to complete this section. **Run the following commands from the same machine used to create the compute instances**.
 
 Retrieve the `kubernetes-the-hard-way` static IP address:
 
+```gcloud```
 ```
 KUBERNETES_PUBLIC_ADDRESS=$(gcloud compute addresses describe kubernetes-the-hard-way \
   --region $(gcloud config get-value compute/region) \
   --format 'value(address)')
+```
+
+```az```
+```
+KUBERNETES_PUBLIC_ADDRESS=$(az network public-ip show --name kubernetes-the-hard-way --query ipAddress -o tsv)
 ```
 
 Make a HTTP request for the Kubernetes version info:
