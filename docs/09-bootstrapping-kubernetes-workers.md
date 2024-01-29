@@ -105,7 +105,8 @@ POD_CIDR=$(curl -s -H "Metadata-Flavor: Google" \
 
 ```az```
 ```
-POD_CIDR=$(curl -s -H Metadata:true --noproxy "*" "http://169.254.169.254/metadata/instance/compute/tagsList/0/value?api-version=2021-02-01&format=text")
+POD_CIDR=$(curl -s -H Metadata:true --noproxy "*" \
+  "http://169.254.169.254/metadata/instance/compute/tagsList/0/value?api-version=2021-02-01&format=text")
 ```
 
 Create the `bridge` network configuration file:
