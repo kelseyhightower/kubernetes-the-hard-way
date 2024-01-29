@@ -47,7 +47,7 @@ Verify if swap is enabled:
 sudo swapon --show
 ```
 
-If output is empthy then swap is not enabled. If swap is enabled run the following command to disable swap immediately:
+If output is empty then swap is not enabled. This is the desired setting. If swap is enabled run the following command to disable swap immediately:
 
 ```
 sudo swapoff -a
