@@ -2,6 +2,7 @@
 
 In this lab you will delete the compute resources created during this tutorial.
 
+```gcloud```
 ## Compute Instances
 
 Delete the controller and worker compute instances:
@@ -61,3 +62,14 @@ Delete the `kubernetes-the-hard-way` compute address:
 gcloud -q compute addresses delete kubernetes-the-hard-way \
   --region $(gcloud config get-value compute/region)
 ```
+
+```az```
+## Resource Group
+
+Delete the `k8s-the-hard-way` resource group, all other resources will be deleted automatically:
+
+```
+az group delete --resource-group k8s-the-hard-way
+```
+
+This command takes a while, be patient...

@@ -15,9 +15,21 @@ kubectl create secret generic kubernetes-the-hard-way \
 
 Print a hexdump of the `kubernetes-the-hard-way` secret stored in etcd:
 
+```gcloud```
 ```
 gcloud compute ssh controller-0 \
   --command "sudo ETCDCTL_API=3 etcdctl get \
+  --endpoints=https://127.0.0.1:2379 \
+  --cacert=/etc/etcd/ca.pem \
+  --cert=/etc/etcd/kubernetes.pem \
+  --key=/etc/etcd/kubernetes-key.pem\
+  /registry/secrets/default/kubernetes-the-hard-way | hexdump -C"
+```
+
+```az```
+```
+ssh -i $HOME/.ssh/k8sthehardway azureuser@$(az vm show -d --name controller-0 --query "publicIps" -o tsv) \
+  "sudo ETCDCTL_API=3 etcdctl get \
   --endpoints=https://127.0.0.1:2379 \
   --cacert=/etc/etcd/ca.pem \
   --cert=/etc/etcd/kubernetes.pem \
@@ -184,17 +196,37 @@ NODE_PORT=$(kubectl get svc nginx \
 
 Create a firewall rule that allows remote access to the `nginx` node port:
 
+```gcloud```
 ```
 gcloud compute firewall-rules create kubernetes-the-hard-way-allow-nginx-service \
   --allow=tcp:${NODE_PORT} \
   --network kubernetes-the-hard-way
 ```
 
+```az```
+```
+az network nsg rule create \
+  --name kubernetes-the-hard-way-inbound-smoke-test \
+  --nsg-name kubernetes-the-hard-way-nsg \
+  --priority 300 \
+  --access ALLOW \
+  --source-address-prefixes 0.0.0.0/0 \
+  --destination-port-ranges ${NODE_PORT} \
+  --protocol Tcp \
+  --direction Inbound
+```
+
 Retrieve the external IP address of a worker instance:
 
+```gcloud```
 ```
 EXTERNAL_IP=$(gcloud compute instances describe worker-0 \
   --format 'value(networkInterfaces[0].accessConfigs[0].natIP)')
+```
+
+```az```
+```
+EXTERNAL_IP=$(az vm show -d -n worker-0 --query publicIps -o tsv)
 ```
 
 Make an HTTP request using the external IP address and the `nginx` node port:
