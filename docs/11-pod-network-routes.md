@@ -6,7 +6,7 @@ In this lab you will create a route for each worker node that maps the node's Po
 
 > There are [other ways](https://kubernetes.io/docs/concepts/cluster-administration/networking/#how-to-achieve-this) to implement the Kubernetes networking model.
 
-## The Routing Table
+## The Routing Table (GCloud Only)
 
 In this section you will gather the information required to create routes in the `kubernetes-the-hard-way` VPC network.
 
@@ -31,6 +31,7 @@ done
 
 Create network routes for each worker instance:
 
+```gcloud```
 ```
 for i in 0 1 2; do
   gcloud compute routes create kubernetes-route-10-200-${i}-0-24 \
@@ -38,6 +39,26 @@ for i in 0 1 2; do
     --next-hop-address 10.240.0.2${i} \
     --destination-range 10.200.${i}.0/24
 done
+```
+
+```az```
+```
+az network route-table create \
+  --name k8s-the-hard-way-route-table
+
+for i in 0 1 2; do
+  az network route-table route create \
+    --name kubernetes-route-10-200-${i}-0-24 \
+    --route-table-name k8s-the-hard-way-route-table \
+    --address-prefix 10.200.${i}.0/24 \
+    --next-hop-ip-address 10.240.0.2${i} \
+    --next-hop-type VirtualAppliance
+done
+
+az network vnet subnet update \
+  --vnet-name kubernetes-the-hard-way \
+  --name kubernetes \
+  --route-table k8s-the-hard-way-route-table
 ```
 
 List the routes in the `kubernetes-the-hard-way` VPC network:
