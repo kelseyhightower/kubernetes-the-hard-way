@@ -4,10 +4,22 @@ In this lab you will bootstrap three Kubernetes worker nodes. The following comp
 
 ## Prerequisites
 
-The commands in this lab must be run on each worker instance: `worker-0`, `worker-1`, and `worker-2`. Login to each worker instance using the `gcloud` command. Example:
+The commands in this lab must be run on each worker instance: `worker-0`, `worker-1`, and `worker-2`. Login to each:
 
+```gcloud```
 ```
 gcloud compute ssh worker-0
+```
+
+```az```
+```
+az ssh vm --name worker-0 --local-user azureuser
+```
+
+OR
+
+```
+ssh -i $HOME/.ssh/k8sthehardway azureuser@$(az vm show -d --name worker-0 --query "publicIps" -o tsv)
 ```
 
 ### Running commands in parallel with tmux
@@ -19,10 +31,8 @@ gcloud compute ssh worker-0
 Install the OS dependencies:
 
 ```
-{
-  sudo apt-get update
-  sudo apt-get -y install socat conntrack ipset
-}
+sudo apt-get update
+sudo apt-get -y install socat conntrack ipset
 ```
 
 > The socat binary enables support for the `kubectl port-forward` command.
