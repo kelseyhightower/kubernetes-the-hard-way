@@ -311,7 +311,7 @@ kube-scheduler.pem
 
 The `kubernetes-the-hard-way` static IP address will be included in the list of subject alternative names for the Kubernetes API Server certificate. This will ensure the certificate can be validated by remote clients.
 
-Generate the Kubernetes API Server certificate and private key:
+First get address of the public IP that you generated earlier:
 
 ```gcloud```
 ```
@@ -325,6 +325,7 @@ KUBERNETES_PUBLIC_ADDRESS=$(gcloud compute addresses describe kubernetes-the-har
 KUBERNETES_PUBLIC_ADDRESS=$(az network public-ip show --name kubernetes-the-hard-way --query ipAddress -o tsv)
 ```
 
+Then generate the Kubernetes API Server certificate and private key:
 
 ```
 KUBERNETES_HOSTNAMES=kubernetes,kubernetes.default,kubernetes.default.svc,kubernetes.default.svc.cluster,kubernetes.svc.cluster.local
