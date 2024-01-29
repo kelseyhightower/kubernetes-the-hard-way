@@ -294,11 +294,9 @@ EOF
 ### Start the Worker Services
 
 ```
-{
-  sudo systemctl daemon-reload
-  sudo systemctl enable containerd kubelet kube-proxy
-  sudo systemctl start containerd kubelet kube-proxy
-}
+sudo systemctl daemon-reload
+sudo systemctl enable containerd kubelet kube-proxy
+sudo systemctl start containerd kubelet kube-proxy
 ```
 
 > Remember to run the above commands on each worker node: `worker-0`, `worker-1`, and `worker-2`.
