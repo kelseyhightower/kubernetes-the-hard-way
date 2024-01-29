@@ -78,6 +78,10 @@ Set the created resource group as the default:
 
 ```az config set defaults.group=k8s-the-hard-way```
 
+Set the default output format to Table (easier to read than JSON, see [here](https://learn.microsoft.com/en-us/cli/azure/format-output-azure-cli) for other output formats available)
+
+```az config set core.output=table```
+
 ## Running Commands in Parallel with tmux
 
 [tmux](https://github.com/tmux/tmux/wiki) can be used to run commands on multiple compute instances at the same time. Labs in this tutorial may require running the same commands across multiple compute instances, in those cases consider using tmux and splitting a window into multiple panes with synchronize-panes enabled to speed up the provisioning process.
