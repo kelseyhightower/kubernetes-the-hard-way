@@ -45,7 +45,7 @@ done
 ```
 for instance in controller-0 controller-1 controller-2; do
   IP=$(az vm show -d --name ${instance} --query "publicIps" -o tsv)
-  scp encryption-config.yaml azureuser@${IP}:/home/azureuser
+  scp -i $HOME/.ssh/k8sthehardway encryption-config.yaml azureuser@${IP}:/home/azureuser
 done
 ```
 
