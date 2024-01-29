@@ -424,9 +424,9 @@ done
 ```
 for instance in worker-0 worker-1 worker-2; do
   IP=$(az vm show -d --name ${instance} --query "publicIps" -o tsv)
-  scp ca.pem azureuser@${IP}:/home/azureuser
-  scp ${instance}-key.pem azureuser@${IP}:/home/azureuser
-  scp ${instance}.pem azureuser@${IP}:/home/azureuser
+  scp -i $HOME/.ssh/k8sthehardway ca.pem azureuser@${IP}:/home/azureuser
+  scp -i $HOME/.ssh/k8sthehardway ${instance}-key.pem azureuser@${IP}:/home/azureuser
+  scp -i $HOME/.ssh/k8sthehardway ${instance}.pem azureuser@${IP}:/home/azureuser
 done
 ```
 
@@ -444,12 +444,12 @@ done
 ```
 for instance in controller-0 controller-1 controller-2; do
   IP=$(az vm show -d --name ${instance} --query "publicIps" -o tsv)
-  scp ca.pem azureuser@${IP}:/home/azureuser
-  scp ca-key.pem azureuser@${IP}:/home/azureuser
-  scp kubernetes-key.pem azureuser@${IP}:/home/azureuser
-  scp kubernetes.pem azureuser@${IP}:/home/azureuser
-  scp service-account-key.pem azureuser@${IP}:/home/azureuser
-  scp service-account.pem azureuser@${IP}:/home/azureuser
+  scp -i $HOME/.ssh/k8sthehardway ca.pem azureuser@${IP}:/home/azureuser
+  scp -i $HOME/.ssh/k8sthehardway ca-key.pem azureuser@${IP}:/home/azureuser
+  scp -i $HOME/.ssh/k8sthehardway kubernetes-key.pem azureuser@${IP}:/home/azureuser
+  scp -i $HOME/.ssh/k8sthehardway kubernetes.pem azureuser@${IP}:/home/azureuser
+  scp -i $HOME/.ssh/k8sthehardway service-account-key.pem azureuser@${IP}:/home/azureuser
+  scp -i $HOME/.ssh/k8sthehardway service-account.pem azureuser@${IP}:/home/azureuser
 done
 ```
 
