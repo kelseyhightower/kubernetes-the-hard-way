@@ -303,8 +303,20 @@ In this section you will configure RBAC permissions to allow the Kubernetes API 
 
 The commands in this section will effect the entire cluster and only need to be run once from one of the controller nodes.
 
+```gcloud```
 ```
 gcloud compute ssh controller-0
+```
+
+```az```
+```
+az ssh vm --name controller-0 --local-user azureuser
+```
+
+OR
+
+```
+ssh -i $HOME/.ssh/k8sthehardway azureuser@$(az vm show -d --name controller-0 --query "publicIps" -o tsv)
 ```
 
 Create the `system:kube-apiserver-to-kubelet` [ClusterRole](https://kubernetes.io/docs/admin/authorization/rbac/#role-and-clusterrole) with permissions to access the Kubelet API and perform most common tasks associated with managing pods:
