@@ -10,9 +10,9 @@ body:
       value: |
         # Read This First!
         Thanks for taking the time to fill out this bug report!
-        You should only use this form to report bugs with deploying Kubernetes The Hard Way.
+        You should only use this form to report issues with deploying Kubernetes The Hard Way.
         Please *do not* use this form to ask questions about courses or exams, issues with courses, lecture requests etc.
-        Use instead the KodeKloud Forum: https://kodekloud.com/community/ as you will get a much faster answer there.
+        Use instead the KodeKloud Forum https://kodekloud.com/community/ as you will get a much faster answer there.
   - type: textarea
     id: workstation
     attributes:
@@ -34,6 +34,6 @@ body:
   - type: textarea
     id: logs
     attributes:
-      label: Relevant log output
-      description: Please copy and paste any relevant log output. This will be automatically formatted into code, so no need for backticks.
+      label: Relevant output
+      description: Please copy and paste any relevant console output. This will be automatically formatted into code, so no need for backticks.
       render: shell
