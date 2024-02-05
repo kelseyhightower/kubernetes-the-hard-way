@@ -8,8 +8,10 @@ body:
   - type: markdown
     attributes:
       value: |
+        # Read This First!
         Thanks for taking the time to fill out this bug report!
-        Please *do not* use this repository to ask questions about courses or exams, issues with courses, lecture requests etc.
+        You should only use this form to report bugs with deploying Kubernetes The Hard Way.
+        Please *do not* use this form to ask questions about courses or exams, issues with courses, lecture requests etc.
         Use instead the KodeKloud Forum: https://kodekloud.com/community/ as you will get a much faster answer there.
   - type: textarea
     id: workstation
