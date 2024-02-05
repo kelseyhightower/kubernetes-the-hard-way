@@ -9,8 +9,8 @@ body:
     attributes:
       value: |
         Thanks for taking the time to fill out this bug report!
-        Please **do not** use this repository to ask for course issues, lecture requests etc.
-        Use instead the KodeKloud Forum: https://kodekloud.com/community/.
+        Please *do not* use this repository to ask questions about courses or exams, issues with courses, lecture requests etc.
+        Use instead the KodeKloud Forum: https://kodekloud.com/community/ as you will get a much faster answer there.
   - type: textarea
     id: workstation
     attributes:
