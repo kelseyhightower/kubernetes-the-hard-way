@@ -41,9 +41,9 @@ kubectl version --short
 > output
 
 ```
-Client Version: v1.27.4
-Kustomize Version: v5.0.1
-Server Version: v1.27.4
+Client Version: v1.29.1
+Kustomize Version: v5.0.4-0.20230601165947-6ce0bf390ce3
+Server Version: v1.29.1
 ```
 
 List the nodes in the remote Kubernetes cluster:
@@ -56,9 +56,9 @@ kubectl get nodes
 
 ```
 NAME       STATUS   ROLES    AGE     VERSION
-worker-0   Ready    <none>   5m38s   v1.27.4
-worker-1   Ready    <none>   5m38s   v1.27.4
-worker-2   Ready    <none>   5m38s   v1.27.4
+worker-0   Ready    <none>   5m38s   v1.29.1
+worker-1   Ready    <none>   5m38s   v1.29.1
+worker-2   Ready    <none>   5m38s   v1.29.1
 ```
 
 Next: [Provisioning Pod Network Routes](./11-pod-network-routes.md)

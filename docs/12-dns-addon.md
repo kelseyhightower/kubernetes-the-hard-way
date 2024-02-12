@@ -7,7 +7,7 @@ In this lab you will deploy the [DNS add-on](https://kubernetes.io/docs/concepts
 Deploy the `coredns` cluster add-on:
 
 ```
-kubectl apply --filename ./manifests/coredns-1.10.1.yaml
+kubectl apply --filename ./manifests/coredns-1.11.1.yaml
 ```
 
 > output

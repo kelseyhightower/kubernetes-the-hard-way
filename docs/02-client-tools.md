@@ -54,7 +54,7 @@ cfssl version
 
 ```
 Version: 1.6.4
-Runtime: go1.18
+Runtime: go1.20.3
 ```
 
 ```
@@ -65,7 +65,7 @@ cfssljson --version
 
 ```
 Version: 1.6.4
-Runtime: go1.18
+Runtime: go1.20.3
 ```
 
 ## Install kubectl
@@ -76,7 +76,7 @@ The `kubectl` command line utility is used to interact with the Kubernetes API S
 
 ```
 curl --location --remote-name --time-cond kubectl \
-  "https://dl.k8s.io/release/v1.27.4/bin/darwin/${ARCH}/kubectl"
+  "https://dl.k8s.io/release/v1.29.1/bin/darwin/${ARCH}/kubectl"
 
 chmod +x kubectl
 
@@ -87,24 +87,24 @@ sudo mv kubectl /usr/local/bin/
 
 ```
 curl --location --remote-name --time-cond kubectl \
-  https://dl.k8s.io/release/v1.27.4/bin/linux/amd64/kubectl
+  https://dl.k8s.io/release/v1.29.1/bin/linux/amd64/kubectl
 
 sudo install --mode 0755 kubectl /usr/local/bin/
 ```
 
 ### Verification
 
-Verify `kubectl` version 1.27.4 or higher is installed:
+Verify `kubectl` version 1.29.1 or higher is installed:
 
 ```
-kubectl version --client --short
+kubectl version --client
 ```
 
 > output
 
 ```
-Client Version: v1.27.4
-Kustomize Version: v5.0.1
+Client Version: v1.29.1
+Kustomize Version: v5.0.4-0.20230601165947-6ce0bf390ce3
 ```
 
 Next: [Provisioning Compute Resources](./03-compute-resources.md)

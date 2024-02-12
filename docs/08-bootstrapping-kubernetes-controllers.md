@@ -29,13 +29,13 @@ Download the official Kubernetes release binaries:
 ```
 curl --location \
   --remote-name --time-cond kube-apiserver \
-  https://dl.k8s.io/release/v1.27.4/bin/linux/amd64/kube-apiserver \
+  https://dl.k8s.io/release/v1.29.1/bin/linux/amd64/kube-apiserver \
   --remote-name --time-cond kube-controller-manager \
-  https://dl.k8s.io/release/v1.27.4/bin/linux/amd64/kube-controller-manager \
+  https://dl.k8s.io/release/v1.29.1/bin/linux/amd64/kube-controller-manager \
   --remote-name --time-cond kube-scheduler \
-  https://dl.k8s.io/release/v1.27.4/bin/linux/amd64/kube-scheduler \
+  https://dl.k8s.io/release/v1.29.1/bin/linux/amd64/kube-scheduler \
   --remote-name --time-cond kubectl \
-  https://dl.k8s.io/release/v1.27.4/bin/linux/amd64/kubectl
+  https://dl.k8s.io/release/v1.29.1/bin/linux/amd64/kubectl
 ```
 
 Install the Kubernetes binaries:
@@ -394,12 +394,12 @@ curl --cacert ca.pem "https://${KUBERNETES_PUBLIC_ADDRESS}:6443/version"
 ```
 {
   "major": "1",
-  "minor": "27",
-  "gitVersion": "v1.27.4",
-  "gitCommit": "fa3d7990104d7c1f16943a67f11b154b71f6a132",
+  "minor": "29",
+  "gitVersion": "v1.29.1",
+  "gitCommit": "bc401b91f2782410b3fb3f9acf43a995c4de90d2",
   "gitTreeState": "clean",
-  "buildDate": "2023-07-19T12:14:49Z",
-  "goVersion": "go1.20.6",
+  "buildDate": "2024-01-17T15:41:12Z",
+  "goVersion": "go1.21.6",
   "compiler": "gc",
   "platform": "linux/amd64"
 }

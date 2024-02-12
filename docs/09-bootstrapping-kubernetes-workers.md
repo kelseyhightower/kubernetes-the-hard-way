@@ -48,22 +48,22 @@ sudo swapoff --all
 
 ```
 curl --location \
-  --remote-name --time-cond containerd-1.7.3-linux-amd64.tar.gz \
-  https://github.com/containerd/containerd/releases/download/v1.7.3/containerd-1.7.3-linux-amd64.tar.gz \
+  --remote-name --time-cond containerd-1.7.13-linux-amd64.tar.gz \
+  https://github.com/containerd/containerd/releases/download/v1.7.13/containerd-1.7.13-linux-amd64.tar.gz \
   --remote-name --time-cond containerd.service \
-  https://raw.githubusercontent.com/containerd/containerd/v1.7.3/containerd.service \
+  https://raw.githubusercontent.com/containerd/containerd/v1.7.13/containerd.service \
   --output runc --time-cond runc \
-  https://github.com/opencontainers/runc/releases/download/v1.1.8/runc.amd64 \
-  --remote-name --time-cond cni-plugins-linux-amd64-v1.3.0.tgz \
-  https://github.com/containernetworking/plugins/releases/download/v1.3.0/cni-plugins-linux-amd64-v1.3.0.tgz \
-  --remote-name --time-cond crictl-v1.27.1-linux-amd64.tar.gz \
-  https://github.com/kubernetes-sigs/cri-tools/releases/download/v1.27.1/crictl-v1.27.1-linux-amd64.tar.gz \
+  https://github.com/opencontainers/runc/releases/download/v1.1.12/runc.amd64 \
+  --remote-name --time-cond cni-plugins-linux-amd64-v1.4.0.tgz \
+  https://github.com/containernetworking/plugins/releases/download/v1.4.0/cni-plugins-linux-amd64-v1.4.0.tgz \
+  --remote-name --time-cond crictl-v1.29.0-linux-amd64.tar.gz \
+  https://github.com/kubernetes-sigs/cri-tools/releases/download/v1.29.0/crictl-v1.29.0-linux-amd64.tar.gz \
   --remote-name --time-cond kube-proxy \
-  https://dl.k8s.io/release/v1.27.4/bin/linux/amd64/kube-proxy \
+  https://dl.k8s.io/release/v1.29.1/bin/linux/amd64/kube-proxy \
   --remote-name --time-cond kubectl \
-  https://dl.k8s.io/release/v1.27.4/bin/linux/amd64/kubectl \
+  https://dl.k8s.io/release/v1.29.1/bin/linux/amd64/kubectl \
   --remote-name --time-cond kubelet \
-  https://dl.k8s.io/release/v1.27.4/bin/linux/amd64/kubelet
+  https://dl.k8s.io/release/v1.29.1/bin/linux/amd64/kubelet
 ```
 
 Create the installation directories:
@@ -82,7 +82,7 @@ Install the worker binaries:
 
 ```
 sudo tar --directory /usr/local/ --extract \
-  --file containerd-1.7.3-linux-amd64.tar.gz --gunzip --verbose
+  --file containerd-1.7.13-linux-amd64.tar.gz --gunzip --verbose
 
 sudo mkdir --parents /usr/local/lib/systemd/system
 
@@ -90,10 +90,10 @@ sudo cp containerd.service /usr/local/lib/systemd/system/
 
 sudo install --mode 0755 runc /usr/local/sbin/
 
-tar --extract --file crictl-v1.27.1-linux-amd64.tar.gz --gunzip --verbose
+tar --extract --file crictl-v1.29.0-linux-amd64.tar.gz --gunzip --verbose
 
 sudo tar --directory /opt/cni/bin/ --extract \
-  --file cni-plugins-linux-amd64-v1.3.0.tgz --gunzip --verbose
+  --file cni-plugins-linux-amd64-v1.4.0.tgz --gunzip --verbose
 
 sudo install --mode 0755 crictl kube-proxy kubectl kubelet /usr/local/bin/
 ```
@@ -277,9 +277,9 @@ gcloud compute ssh controller-0 \
 
 ```
 NAME       STATUS   ROLES    AGE   VERSION
-worker-0   Ready    <none>   37s   v1.27.4
-worker-1   Ready    <none>   37s   v1.27.4
-worker-2   Ready    <none>   37s   v1.27.4
+worker-0   Ready    <none>   37s   v1.29.1
+worker-1   Ready    <none>   37s   v1.29.1
+worker-2   Ready    <none>   37s   v1.29.1
 ```
 
 Next: [Configuring kubectl for Remote Access](./10-configuring-kubectl.md)

@@ -21,16 +21,16 @@ gcloud compute ssh controller-0
 Download the official etcd release binaries from the [etcd](https://github.com/etcd-io/etcd) GitHub project:
 
 ```
-curl --location --remote-name --time-cond etcd-v3.5.9-linux-amd64.tar.gz \
-  https://github.com/etcd-io/etcd/releases/download/v3.5.9/etcd-v3.5.9-linux-amd64.tar.gz
+curl --location --remote-name --time-cond etcd-v3.5.12-linux-amd64.tar.gz \
+  https://github.com/etcd-io/etcd/releases/download/v3.5.12/etcd-v3.5.12-linux-amd64.tar.gz
 ```
 
 Extract and install the `etcd` server and the `etcdctl` command line utility:
 
 ```
-tar --extract --file etcd-v3.5.9-linux-amd64.tar.gz --verbose
+tar --extract --file etcd-v3.5.12-linux-amd64.tar.gz --verbose
 
-sudo cp etcd-v3.5.9-linux-amd64/etcd* /usr/local/bin/
+sudo cp etcd-v3.5.12-linux-amd64/etcd* /usr/local/bin/
 ```
 
 ### Configure the etcd Server
