@@ -2,12 +2,12 @@
 
 ## VM Hardware Requirements
 
-8 GB of RAM (Preferably 16 GB)
-50 GB Disk space
+- 8 GB of RAM (preferably 16 GB)
+- 50 GB disk space
 
-## Virtual Box
+## VirtualBox
 
-Download and Install [VirtualBox](https://www.virtualbox.org/wiki/Downloads) on any one of the supported platforms:
+Download and install [VirtualBox](https://www.virtualbox.org/wiki/Downloads) on any one of the supported platforms:
 
  - Windows hosts
  - OS X hosts (x86 only, not Apple Silicon M-series)
@@ -19,7 +19,7 @@ Download and Install [VirtualBox](https://www.virtualbox.org/wiki/Downloads) on 
 Once VirtualBox is installed you may chose to deploy virtual machines manually on it.
 Vagrant provides an easier way to deploy multiple virtual machines on VirtualBox more consistently.
 
-Download and Install [Vagrant](https://www.vagrantup.com/) on your platform.
+Download and install [Vagrant](https://www.vagrantup.com/) on your platform.
 
 - Windows
 - Debian
@@ -43,7 +43,7 @@ If you do change any of these, **please consider that a personal preference and 
 
 ### Virtual Machine Network
 
-The network used by the Virtual Box virtual machines is `192.168.56.0/24`.
+The network used by the VirtualBox virtual machines is `192.168.56.0/24`.
 
 To change this, edit the [Vagrantfile](../vagrant/Vagrantfile) in your cloned copy (do not edit directly in github), and set the new value for the network prefix at line 9. This should not overlap any of the other network settings.
 

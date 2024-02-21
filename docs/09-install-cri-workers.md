@@ -12,7 +12,7 @@ Here we will install the container runtime `containerd` from the Ubuntu distribu
 
 [//]: # (host:worker-1-worker-2)
 
-You can perform this step with [tmux](01-prerequisites.md#running-commands-in-parallel-with-tmux)
+You can perform this step with [tmux](01-prerequisites.md#running-commands-in-parallel-with-tmux).
 
 Set up the Kubernetes `apt` repository
 
@@ -41,6 +41,7 @@ Set up `containerd` configuration to enable systemd Cgroups
 ```bash
 {
   sudo mkdir -p /etc/containerd
+
   containerd config default | sed 's/SystemdCgroup = false/SystemdCgroup = true/' | sudo tee /etc/containerd/config.toml
 }
 ```

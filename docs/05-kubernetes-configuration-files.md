@@ -4,7 +4,7 @@ In this lab you will generate [Kubernetes configuration files](https://kubernete
 
 Note: It is good practice to use file paths to certificates in kubeconfigs that will be used by the services. When certificates are updated, it is not necessary to regenerate the config files, as you would have to if the certificate data was embedded. Note also that the cert files don't exist in these paths yet - we will place them in later labs.
 
-User configs, like admin.kubeconfig will have the certificate info embedded within them.
+User configs, like `admin.kubeconfig` will have the certificate info embedded within them.
 
 ## Client Authentication Configs
 

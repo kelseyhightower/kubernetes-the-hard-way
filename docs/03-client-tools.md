@@ -1,6 +1,6 @@
 # Installing the Client Tools
 
-First identify a system from where you will perform administrative tasks, such as creating certificates, kubeconfig files and distributing them to the different VMs.
+First identify a system from where you will perform administrative tasks, such as creating certificates, `kubeconfig` files and distributing them to the different VMs.
 
 If you are on a Linux laptop, then your laptop could be this system. In my case I chose the `master-1` node to perform administrative tasks. Whichever system you chose make sure that system is able to access all the provisioned VMs through SSH to copy files over.
 
@@ -8,7 +8,7 @@ If you are on a Linux laptop, then your laptop could be this system. In my case 
 
 Here we create an SSH key pair for the `vagrant` user who we are logged in as. We will copy the public key of this pair to the other master and both workers to permit us to use password-less SSH (and SCP) go get from `master-1` to these other nodes in the context of the `vagrant` user which exists on all nodes.
 
-Generate Key Pair on `master-1` node
+Generate SSH key pair on `master-1` node:
 
 [//]: # (host:master-1)
 
@@ -18,7 +18,7 @@ ssh-keygen
 
 Leave all settings to default by pressing `ENTER` at any prompt.
 
-Add this key to the local authorized_keys (`master-1`) as in some commands we scp to ourself.
+Add this key to the local `authorized_keys` (`master-1`) as in some commands we `scp` to ourself.
 
 ```bash
 cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys
@@ -46,11 +46,11 @@ and check to make sure that only the key(s) you wanted were added.
 
 ## Install kubectl
 
-The [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl). command line utility is used to interact with the Kubernetes API Server. Download and install `kubectl` from the official release binaries:
+The [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl) command line utility is used to interact with the Kubernetes API Server. Download and install `kubectl` from the official release binaries:
 
 Reference: [https://kubernetes.io/docs/tasks/tools/install-kubectl/](https://kubernetes.io/docs/tasks/tools/install-kubectl/)
 
-We will be using kubectl early on to generate kubeconfig files for the controlplane components.
+We will be using `kubectl` early on to generate `kubeconfig` files for the controlplane components.
 
 ### Linux
 
@@ -68,7 +68,7 @@ Verify `kubectl` is installed:
 kubectl version -o yaml
 ```
 
-> output will be similar to this, although versions may be newer
+output will be similar to this, although versions may be newer:
 
 ```
 kubectl version -o yaml

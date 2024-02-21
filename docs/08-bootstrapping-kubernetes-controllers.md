@@ -8,7 +8,7 @@ Note that in a production-ready cluster it is recommended to have an odd number 
 
 The commands in this lab up as far as the load balancer configuration must be run on each controller instance: `master-1`, and `master-2`. Login to each controller instance using SSH Terminal.
 
-You can perform this step with [tmux](01-prerequisites.md#running-commands-in-parallel-with-tmux)
+You can perform this step with [tmux](01-prerequisites.md#running-commands-in-parallel-with-tmux).
 
 ## Provision the Kubernetes Control Plane
 

@@ -24,7 +24,7 @@ MASTER_2=$(dig +short master-2)
 LOADBALANCER=$(dig +short loadbalancer)
 ```
 
-Compute cluster internal API server service address, which is always .1 in the service CIDR range. This is also required as a SAN in the API server certificate. Run the following:
+Compute cluster internal API server service address, which is always `.1` in the service CIDR range. This is also required as a SAN in the API server certificate. Run the following:
 
 ```bash
 SERVICE_CIDR=10.96.0.0/24
@@ -53,7 +53,6 @@ The output should look like this. If you changed any of the defaults mentioned i
 
 Create a CA certificate, then generate a Certificate Signing Request and use it to create a private key:
 
-
 ```bash
 {
   # Create private key for CA
@@ -63,9 +62,10 @@ Create a CA certificate, then generate a Certificate Signing Request and use it 
   openssl req -new -key ca.key -subj "/CN=KUBERNETES-CA/O=Kubernetes" -out ca.csr
 
   # Self sign the csr using its own private key
-  openssl x509 -req -in ca.csr -signkey ca.key -CAcreateserial  -out ca.crt -days 1000
+  openssl x509 -req -in ca.csr -signkey ca.key -CAcreateserial -out ca.crt -days 1000
 }
 ```
+
 Results:
 
 ```
@@ -75,9 +75,10 @@ ca.key
 
 Reference : https://kubernetes.io/docs/tasks/administer-cluster/certificates/#openssl
 
-The ca.crt is the Kubernetes Certificate Authority certificate and ca.key is the Kubernetes Certificate Authority private key.
-You will use the ca.crt file in many places, so it will be copied to many places.
-The ca.key is used by the CA for signing certificates. And it should be securely stored. In this case our master node(s) is our CA server as well, so we will store it on master node(s). There is no need to copy this file elsewhere.
+The `ca.crt` is the Kubernetes Certificate Authority certificate and `ca.key` is the Kubernetes Certificate Authority private key.
+You will use the `ca.crt` file in many places, so it will be copied to many places.
+
+The `ca.key` is used by the CA for signing certificates. And it should be securely stored. In this case our master node(s) is our CA server as well, so we will store it on master node(s). There is no need to copy this file elsewhere.
 
 ## Client and Server Certificates
 
@@ -96,11 +97,11 @@ Generate the `admin` client certificate and private key:
   openssl req -new -key admin.key -subj "/CN=admin/O=system:masters" -out admin.csr
 
   # Sign certificate for admin user using CA servers private key
-  openssl x509 -req -in admin.csr -CA ca.crt -CAkey ca.key -CAcreateserial  -out admin.crt -days 1000
+  openssl x509 -req -in admin.csr -CA ca.crt -CAkey ca.key -CAcreateserial -out admin.crt -days 1000
 }
 ```
 
-Note that the admin user is part of the **system:masters** group. This is how we are able to perform any administrative operations on Kubernetes cluster using kubectl utility.
+Note that the admin user is part of the **system:masters** group. This is how we are able to perform any administrative operations on Kubernetes cluster using `kubectl` utility.
 
 Results:
 
@@ -109,7 +110,7 @@ admin.key
 admin.crt
 ```
 
-The admin.crt and admin.key file gives you administrative access. We will configure these to be used with the kubectl tool to perform administrative functions on kubernetes.
+The `admin.crt` and `admin.key` file gives you administrative access. We will configure these to be used with the `kubectl` tool to perform administrative functions on Kubernetes.
 
 ### The Kubelet Client Certificates
 
@@ -153,7 +154,7 @@ Generate the `kube-proxy` client certificate and private key:
     -subj "/CN=system:kube-proxy/O=system:node-proxier" -out kube-proxy.csr
 
   openssl x509 -req -in kube-proxy.csr \
-    -CA ca.crt -CAkey ca.key -CAcreateserial  -out kube-proxy.crt -days 1000
+    -CA ca.crt -CAkey ca.key -CAcreateserial -out kube-proxy.crt -days 1000
 }
 ```
 
@@ -177,7 +178,7 @@ Generate the `kube-scheduler` client certificate and private key:
   openssl req -new -key kube-scheduler.key \
     -subj "/CN=system:kube-scheduler/O=system:kube-scheduler" -out kube-scheduler.csr
 
-  openssl x509 -req -in kube-scheduler.csr -CA ca.crt -CAkey ca.key -CAcreateserial  -out kube-scheduler.crt -days 1000
+  openssl x509 -req -in kube-scheduler.csr -CA ca.crt -CAkey ca.key -CAcreateserial -out kube-scheduler.crt -days 1000
 }
 ```
 
@@ -229,7 +230,7 @@ Generate certs for kube-apiserver
     -subj "/CN=kube-apiserver/O=Kubernetes" -out kube-apiserver.csr -config openssl.cnf
 
   openssl x509 -req -in kube-apiserver.csr \
-  -CA ca.crt -CAkey ca.key -CAcreateserial  -out kube-apiserver.crt -extensions v3_req -extfile openssl.cnf -days 1000
+    -CA ca.crt -CAkey ca.key -CAcreateserial -out kube-apiserver.crt -extensions v3_req -extfile openssl.cnf -days 1000
 }
 ```
 
@@ -242,7 +243,7 @@ kube-apiserver.key
 
 # The Kubelet Client Certificate
 
-This certificate is for the api server to authenticate with the kubelets when it requests information from them
+This certificate is for the API server to authenticate with the kubelets when it requests information from them
 
 ```bash
 cat > openssl-kubelet.cnf <<EOF
@@ -267,7 +268,7 @@ Generate certs for kubelet authentication
     -subj "/CN=kube-apiserver-kubelet-client/O=system:masters" -out apiserver-kubelet-client.csr -config openssl-kubelet.cnf
 
   openssl x509 -req -in apiserver-kubelet-client.csr \
-  -CA ca.crt -CAkey ca.key -CAcreateserial  -out apiserver-kubelet-client.crt -extensions v3_req -extfile openssl-kubelet.cnf -days 1000
+    -CA ca.crt -CAkey ca.key -CAcreateserial -out apiserver-kubelet-client.crt -extensions v3_req -extfile openssl-kubelet.cnf -days 1000
 }
 ```
 
@@ -312,7 +313,7 @@ Generates certs for ETCD
     -subj "/CN=etcd-server/O=Kubernetes" -out etcd-server.csr -config openssl-etcd.cnf
 
   openssl x509 -req -in etcd-server.csr \
-    -CA ca.crt -CAkey ca.key -CAcreateserial  -out etcd-server.crt -extensions v3_req -extfile openssl-etcd.cnf -days 1000
+    -CA ca.crt -CAkey ca.key -CAcreateserial -out etcd-server.crt -extensions v3_req -extfile openssl-etcd.cnf -days 1000
 }
 ```
 
@@ -337,7 +338,7 @@ Generate the `service-account` certificate and private key:
     -subj "/CN=service-accounts/O=Kubernetes" -out service-account.csr
 
   openssl x509 -req -in service-account.csr \
-    -CA ca.crt -CAkey ca.key -CAcreateserial  -out service-account.crt -days 1000
+    -CA ca.crt -CAkey ca.key -CAcreateserial -out service-account.crt -days 1000
 }
 ```
 
@@ -354,11 +355,11 @@ Run the following, and select option 1 to check all required certificates were g
 
 [//]: # (command:./cert_verify.sh 1)
 
-```
+```bash
 ./cert_verify.sh
 ```
 
-> Expected output
+Expected output:
 
 ```
 PKI generated correctly!

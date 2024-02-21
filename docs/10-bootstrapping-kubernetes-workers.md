@@ -137,6 +137,7 @@ Install the worker binaries:
 ```
 
 ### Configure the Kubelet
+
 On worker-1:
 
 Copy keys and config to correct directories and secure
@@ -223,6 +224,7 @@ EOF
 ```
 
 ### Configure the Kubernetes Proxy
+
 On worker-1:
 
 ```bash
@@ -275,6 +277,7 @@ At `worker-1` node, run the following, selecting option 4
 
 
 ### Start the Worker Services
+
 On worker-1:
 ```bash
 {
