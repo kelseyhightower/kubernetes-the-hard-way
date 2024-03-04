@@ -43,3 +43,12 @@ This tutorial assumes you have access to the [Google Cloud Platform](https://clo
 * [Deploying the DNS Cluster Add-on](docs/12-dns-addon.md)
 * [Smoke Test](docs/13-smoke-test.md)
 * [Cleaning Up](docs/14-cleanup.md)
+
+## Implementations
+
+The following list includes the implementations by the community.
+
+| Repository | Notes |
+| ---------- | ----- |
+| [Vagrant, Ansible & Cilium; no Cloud!](https://github.com/developer-friendly/kubernetes-the-hard-way) | [A complete guide and explanation](https://developer-friendly.blog/2024/03/03/kubernetes-the-hard-way/) |
+
