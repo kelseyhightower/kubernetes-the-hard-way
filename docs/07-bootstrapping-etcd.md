@@ -103,7 +103,7 @@ EOF
 }
 ```
 
-> Remember to run the above commands on each controller node: `controller-0`, `controller-1`, and `controller-2`.
+> Remember to run the above commands on each controller node: `controller-0`, `controller-1`, and `controller-2`. Note that you may get errors on the first controller until you finish running this command on all controllers.
 
 ## Verification
 
