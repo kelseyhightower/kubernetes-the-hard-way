@@ -4,23 +4,23 @@ In this lab you will provision a [PKI Infrastructure](https://en.wikipedia.org/w
 
 # Where to do these?
 
-You can do these on any machine with `openssl` on it. But you should be able to copy the generated files to the provisioned VMs. Or just do these from one of the master nodes.
+You can do these on any machine with `openssl` on it. But you should be able to copy the generated files to the provisioned VMs. Or just do these from one of the controlplane nodes.
 
-In our case we do the following steps on the `master-1` node, as we have set it up to be the administrative client.
+In our case we do the following steps on the `controlplane01` node, as we have set it up to be the administrative client.
 
-[//]: # (host:master-1)
+[//]: # (host:controlplane01)
 
 ## Certificate Authority
 
 In this section you will provision a Certificate Authority that can be used to generate additional TLS certificates.
 
-Query IPs of hosts we will insert as certificate subject alternative names (SANs), which will be read from `/etc/hosts`. Note that doing this allows us to change the VM network range more easily from the default for these labs which is `192.168.56.0/24`
+Query IPs of hosts we will insert as certificate subject alternative names (SANs), which will be read from `/etc/hosts`.
 
 Set up environment variables. Run the following:
 
 ```bash
-MASTER_1=$(dig +short master-1)
-MASTER_2=$(dig +short master-2)
+CONTROL01=$(dig +short controlplane01)
+CONTROL02=$(dig +short controlplane02)
 LOADBALANCER=$(dig +short loadbalancer)
 ```
 
@@ -34,14 +34,14 @@ API_SERVICE=$(echo $SERVICE_CIDR | awk 'BEGIN {FS="."} ; { printf("%s.%s.%s.1", 
 Check that the environment variables are set. Run the following:
 
 ```bash
-echo $MASTER_1
-echo $MASTER_2
+echo $CONTROL01
+echo $CONTROL02
 echo $LOADBALANCER
 echo $SERVICE_CIDR
 echo $API_SERVICE
 ```
 
-The output should look like this. If you changed any of the defaults mentioned in the [prerequisites](./01-prerequisites.md) page, then addresses may differ.
+The output should look like this with one IP address per line. If you changed any of the defaults mentioned in the [prerequisites](./01-prerequisites.md) page, then addresses may differ. The first 3 addresses will also be different for Apple Silicon on Multipass (likely 192.168.64.x).
 
 ```
 192.168.56.11
@@ -51,7 +51,7 @@ The output should look like this. If you changed any of the defaults mentioned i
 10.96.0.1
 ```
 
-Create a CA certificate, then generate a Certificate Signing Request and use it to create a private key:
+Create a CA certificate by first creating a private key, then using it to create a certificate signing request, then self-signing the new certificate with our key.
 
 ```bash
 {
@@ -78,11 +78,13 @@ Reference : https://kubernetes.io/docs/tasks/administer-cluster/certificates/#op
 The `ca.crt` is the Kubernetes Certificate Authority certificate and `ca.key` is the Kubernetes Certificate Authority private key.
 You will use the `ca.crt` file in many places, so it will be copied to many places.
 
-The `ca.key` is used by the CA for signing certificates. And it should be securely stored. In this case our master node(s) is our CA server as well, so we will store it on master node(s). There is no need to copy this file elsewhere.
+The `ca.key` is used by the CA for signing certificates. And it should be securely stored. In this case our controlplane node(s) is our CA server as well, so we will store it on controlplane node(s). There is no need to copy this file elsewhere.
 
 ## Client and Server Certificates
 
 In this section you will generate client and server certificates for each Kubernetes component and a client certificate for the Kubernetes `admin` user.
+
+To better understand the role of client certificates with respect to users and groups, see [this informative video](https://youtu.be/I-iVrIWfMl8). Note that all the kubenetes services below are themselves cluster users.
 
 ### The Admin Client Certificate
 
@@ -191,7 +193,7 @@ kube-scheduler.crt
 
 ### The Kubernetes API Server Certificate
 
-The kube-apiserver certificate requires all names that various components may reach it to be part of the alternate names. These include the different DNS names, and IP addresses such as the master servers IP address, the load balancers IP address, the kube-api service IP address etc.
+The kube-apiserver certificate requires all names that various components may reach it to be part of the alternate names. These include the different DNS names, and IP addresses such as the controlplane servers IP address, the load balancers IP address, the kube-api service IP address etc. These provide an *identity* for the certificate, which is key in the SSL process for a server to prove who it is.
 
 The `openssl` command cannot take alternate names as command line parameter. So we must create a `conf` file for it:
 
@@ -213,8 +215,8 @@ DNS.3 = kubernetes.default.svc
 DNS.4 = kubernetes.default.svc.cluster
 DNS.5 = kubernetes.default.svc.cluster.local
 IP.1 = ${API_SERVICE}
-IP.2 = ${MASTER_1}
-IP.3 = ${MASTER_2}
+IP.2 = ${CONTROL01}
+IP.3 = ${CONTROL02}
 IP.4 = ${LOADBALANCER}
 IP.5 = 127.0.0.1
 EOF
@@ -241,7 +243,7 @@ kube-apiserver.crt
 kube-apiserver.key
 ```
 
-# The Kubelet Client Certificate
+### The API Server Kubelet Client Certificate
 
 This certificate is for the API server to authenticate with the kubelets when it requests information from them
 
@@ -282,7 +284,7 @@ apiserver-kubelet-client.key
 
 ### The ETCD Server Certificate
 
-Similarly ETCD server certificate must have addresses of all the servers part of the ETCD cluster
+Similarly ETCD server certificate must have addresses of all the servers part of the ETCD cluster. Similarly, this is a server certificate, which is again all about proving identity.
 
 The `openssl` command cannot take alternate names as command line parameter. So we must create a `conf` file for it:
 
@@ -297,8 +299,8 @@ basicConstraints = CA:FALSE
 keyUsage = nonRepudiation, digitalSignature, keyEncipherment
 subjectAltName = @alt_names
 [alt_names]
-IP.1 = ${MASTER_1}
-IP.2 = ${MASTER_2}
+IP.1 = ${CONTROL01}
+IP.2 = ${CONTROL02}
 IP.3 = 127.0.0.1
 EOF
 ```
@@ -326,7 +328,7 @@ etcd-server.crt
 
 ## The Service Account Key Pair
 
-The Kubernetes Controller Manager leverages a key pair to generate and sign service account tokens as describe in the [managing service accounts](https://kubernetes.io/docs/admin/service-accounts-admin/) documentation.
+The Kubernetes Controller Manager leverages a key pair to generate and sign service account tokens as described in the [managing service accounts](https://kubernetes.io/docs/reference/access-authn-authz/service-accounts-admin/) documentation.
 
 Generate the `service-account` certificate and private key:
 
@@ -355,7 +357,7 @@ Run the following, and select option 1 to check all required certificates were g
 
 [//]: # (command:./cert_verify.sh 1)
 
-```bash
+```
 ./cert_verify.sh
 ```
 
@@ -373,7 +375,7 @@ Copy the appropriate certificates and private keys to each instance:
 
 ```bash
 {
-for instance in master-1 master-2; do
+for instance in controlplane01 controlplane02; do
   scp -o StrictHostKeyChecking=no ca.crt ca.key kube-apiserver.key kube-apiserver.crt \
     apiserver-kubelet-client.crt apiserver-kubelet-client.key \
     service-account.key service-account.crt \
@@ -383,21 +385,21 @@ for instance in master-1 master-2; do
     ${instance}:~/
 done
 
-for instance in worker-1 worker-2 ; do
+for instance in node01 node02 ; do
   scp ca.crt kube-proxy.crt kube-proxy.key ${instance}:~/
 done
 }
 ```
 
-## Optional - Check Certificates on master-2
+## Optional - Check Certificates on controlplane02
 
-At `master-2` node run the following, selecting option 1
+At `controlplane02` node run the following, selecting option 1
 
-[//]: # (commandssh master-2 './cert_verify.sh 1')
+[//]: # (commandssh controlplane02 './cert_verify.sh 1')
 
 ```
 ./cert_verify.sh
 ```
 
-Prev: [Client tools](03-client-tools.md)<br>
-Next: [Generating Kubernetes Configuration Files for Authentication](05-kubernetes-configuration-files.md)
+Next: [Generating Kubernetes Configuration Files for Authentication](05-kubernetes-configuration-files.md)<br>
+Prev: [Client tools](03-client-tools.md)

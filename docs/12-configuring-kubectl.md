@@ -8,9 +8,9 @@ In this lab you will generate a kubeconfig file for the `kubectl` command line u
 
 Each kubeconfig requires a Kubernetes API Server to connect to. To support high availability the IP address assigned to the external load balancer fronting the Kubernetes API Servers will be used.
 
-[//]: # (host:master-1)
+[//]: # (host:controlplane01)
 
-On `master-1`
+On `controlplane01`
 
 Get the kube-api server load-balancer IP.
 
@@ -50,7 +50,7 @@ Check the health of the remote Kubernetes cluster:
 kubectl get componentstatuses
 ```
 
-> output
+Output will be similar to this. It may or may not list both etcd instances, however this is OK if you verified correct installation of etcd in lab 7.
 
 ```
 Warning: v1 ComponentStatus is deprecated in v1.19+
@@ -71,9 +71,9 @@ kubectl get nodes
 
 ```
 NAME       STATUS      ROLES    AGE    VERSION
-worker-1   NotReady    <none>   118s   v1.28.4
-worker-2   NotReady    <none>   118s   v1.28.4
+node01     NotReady    <none>   118s   v1.28.4
+node02     NotReady    <none>   118s   v1.28.4
 ```
 
-Prev: [TLS Bootstrapping Kubernetes Workers](11-tls-bootstrapping-kubernetes-workers.md)</br>
-Next: [Deploy Pod Networking](13-configure-pod-networking.md)
+Next: [Deploy Pod Networking](./13-configure-pod-networking.md)</br>
+Prev: [TLS Bootstrapping Kubernetes Workers](./11-tls-bootstrapping-kubernetes-workers.md)

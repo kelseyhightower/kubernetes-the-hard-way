@@ -8,8 +8,8 @@ We will now install the kubernetes components
 
 ## Prerequisites
 
-The Certificates and Configuration are created on `master-1` node and then copied over to workers using `scp`.
-Once this is done, the commands are to be run on first worker instance: `worker-1`. Login to first worker instance using SSH Terminal.
+The Certificates and Configuration are created on `controlplane01` node and then copied over to workers using `scp`.
+Once this is done, the commands are to be run on first worker instance: `node01`. Login to first worker instance using SSH Terminal.
 
 ### Provisioning Kubelet Client Certificates
 
@@ -17,16 +17,16 @@ Kubernetes uses a [special-purpose authorization mode](https://kubernetes.io/doc
 
 Generate a certificate and private key for one worker node:
 
-On `master-1`:
+On `controlplane01`:
 
-[//]: # (host:master-1)
+[//]: # (host:controlplane01)
 
 ```bash
-WORKER_1=$(dig +short worker-1)
+NODE01=$(dig +short node01)
 ```
 
 ```bash
-cat > openssl-worker-1.cnf <<EOF
+cat > openssl-node01.cnf <<EOF
 [req]
 req_extensions = v3_req
 distinguished_name = req_distinguished_name
@@ -36,27 +36,27 @@ basicConstraints = CA:FALSE
 keyUsage = nonRepudiation, digitalSignature, keyEncipherment
 subjectAltName = @alt_names
 [alt_names]
-DNS.1 = worker-1
-IP.1 = ${WORKER_1}
+DNS.1 = node01
+IP.1 = ${NODE01}
 EOF
 
-openssl genrsa -out worker-1.key 2048
-openssl req -new -key worker-1.key -subj "/CN=system:node:worker-1/O=system:nodes" -out worker-1.csr -config openssl-worker-1.cnf
-openssl x509 -req -in worker-1.csr -CA ca.crt -CAkey ca.key -CAcreateserial  -out worker-1.crt -extensions v3_req -extfile openssl-worker-1.cnf -days 1000
+openssl genrsa -out node01.key 2048
+openssl req -new -key node01.key -subj "/CN=system:node:node01/O=system:nodes" -out node01.csr -config openssl-node01.cnf
+openssl x509 -req -in node01.csr -CA ca.crt -CAkey ca.key -CAcreateserial  -out node01.crt -extensions v3_req -extfile openssl-node01.cnf -days 1000
 ```
 
 Results:
 
 ```
-worker-1.key
-worker-1.crt
+node01.key
+node01.crt
 ```
 
 ### The kubelet Kubernetes Configuration File
 
 When generating kubeconfig files for Kubelets the client certificate matching the Kubelet's node name must be used. This will ensure Kubelets are properly authorized by the Kubernetes [Node Authorizer](https://kubernetes.io/docs/admin/authorization/node/).
 
-Get the kub-api server load-balancer IP.
+Get the kube-api server load-balancer IP.
 
 ```bash
 LOADBALANCER=$(dig +short loadbalancer)
@@ -64,55 +64,55 @@ LOADBALANCER=$(dig +short loadbalancer)
 
 Generate a kubeconfig file for the first worker node.
 
-On `master-1`:
+On `controlplane01`:
 ```bash
 {
   kubectl config set-cluster kubernetes-the-hard-way \
     --certificate-authority=/var/lib/kubernetes/pki/ca.crt \
     --server=https://${LOADBALANCER}:6443 \
-    --kubeconfig=worker-1.kubeconfig
+    --kubeconfig=node01.kubeconfig
 
-  kubectl config set-credentials system:node:worker-1 \
-    --client-certificate=/var/lib/kubernetes/pki/worker-1.crt \
-    --client-key=/var/lib/kubernetes/pki/worker-1.key \
-    --kubeconfig=worker-1.kubeconfig
+  kubectl config set-credentials system:node:node01 \
+    --client-certificate=/var/lib/kubernetes/pki/node01.crt \
+    --client-key=/var/lib/kubernetes/pki/node01.key \
+    --kubeconfig=node01.kubeconfig
 
   kubectl config set-context default \
     --cluster=kubernetes-the-hard-way \
-    --user=system:node:worker-1 \
-    --kubeconfig=worker-1.kubeconfig
+    --user=system:node:node01 \
+    --kubeconfig=node01.kubeconfig
 
-  kubectl config use-context default --kubeconfig=worker-1.kubeconfig
+  kubectl config use-context default --kubeconfig=node01.kubeconfig
 }
 ```
 
 Results:
 
 ```
-worker-1.kubeconfig
+node01.kubeconfig
 ```
 
 ### Copy certificates, private keys and kubeconfig files to the worker node:
-On `master-1`:
+On `controlplane01`:
 
 ```bash
-scp ca.crt worker-1.crt worker-1.key worker-1.kubeconfig worker-1:~/
+scp ca.crt node01.crt node01.key node01.kubeconfig node01:~/
 ```
 
 
 ### Download and Install Worker Binaries
 
-All the following commands from here until the [verification](#verification) step must be run on `worker-1`
+All the following commands from here until the [verification](#verification) step must be run on `node01`
 
-[//]: # (host:worker-1)
+[//]: # (host:node01)
 
 
 ```bash
 KUBE_VERSION=$(curl -L -s https://dl.k8s.io/release/stable.txt)
 
 wget -q --show-progress --https-only --timestamping \
-  https://dl.k8s.io/release/${KUBE_VERSION}/bin/linux/amd64/kube-proxy \
-  https://dl.k8s.io/release/${KUBE_VERSION}/bin/linux/amd64/kubelet 
+  https://dl.k8s.io/release/${KUBE_VERSION}/bin/linux/${ARCH}/kube-proxy \
+  https://dl.k8s.io/release/${KUBE_VERSION}/bin/linux/${ARCH}/kubelet 
 ```
 
 Reference: https://kubernetes.io/releases/download/#binaries
@@ -138,7 +138,7 @@ Install the worker binaries:
 
 ### Configure the Kubelet
 
-On worker-1:
+On `node01`:
 
 Copy keys and config to correct directories and secure
 
@@ -214,6 +214,7 @@ Requires=containerd.service
 ExecStart=/usr/local/bin/kubelet \\
   --config=/var/lib/kubelet/kubelet-config.yaml \\
   --kubeconfig=/var/lib/kubelet/kubelet.kubeconfig \\
+  --node-ip=${PRIMARY_IP} \\
   --v=2
 Restart=on-failure
 RestartSec=5
@@ -225,7 +226,7 @@ EOF
 
 ### Configure the Kubernetes Proxy
 
-On worker-1:
+On `node01`:
 
 ```bash
 sudo mv kube-proxy.kubeconfig /var/lib/kube-proxy/
@@ -241,7 +242,7 @@ kind: KubeProxyConfiguration
 apiVersion: kubeproxy.config.k8s.io/v1alpha1
 clientConnection:
   kubeconfig: /var/lib/kube-proxy/kube-proxy.kubeconfig
-mode: ipvs
+mode: iptables
 clusterCIDR: ${POD_CIDR}
 EOF
 ```
@@ -267,7 +268,7 @@ EOF
 
 ## Optional - Check Certificates and kubeconfigs
 
-At `worker-1` node, run the following, selecting option 4
+At `node01` node, run the following, selecting option 4
 
 [//]: # (command:./cert_verify.sh 4)
 
@@ -278,7 +279,8 @@ At `worker-1` node, run the following, selecting option 4
 
 ### Start the Worker Services
 
-On worker-1:
+On `node01`:
+
 ```bash
 {
   sudo systemctl daemon-reload
@@ -287,28 +289,28 @@ On worker-1:
 }
 ```
 
-> Remember to run the above commands on worker node: `worker-1`
+> Remember to run the above commands on worker node: `node01`
 
 ## Verification
 
-[//]: # (host:master-1)
+[//]: # (host:controlplane01)
 
-Now return to the `master-1` node.
+Now return to the `controlplane01` node.
 
-List the registered Kubernetes nodes from the master node:
+List the registered Kubernetes nodes from the controlplane node:
 
 ```bash
 kubectl get nodes --kubeconfig admin.kubeconfig
 ```
 
-> output
+Output will be similar to
 
 ```
 NAME       STATUS     ROLES    AGE   VERSION
-worker-1   NotReady   <none>   93s   v1.28.4
+node01     NotReady   <none>   93s   v1.28.4
 ```
 
 The node is not ready as we have not yet installed pod networking. This comes later.
 
-Prev: [Installing CRI on the Kubernetes Worker Nodes](09-install-cri-workers.md)<br>
-Next: [TLS Bootstrapping Kubernetes Workers](11-tls-bootstrapping-kubernetes-workers.md)
+Next: [TLS Bootstrapping Kubernetes Workers](./11-tls-bootstrapping-kubernetes-workers.md)<br>
+Prev: [Installing CRI on the Kubernetes Worker Nodes](./09-install-cri-workers.md)

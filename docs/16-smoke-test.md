@@ -4,7 +4,7 @@ In this lab you will complete a series of tasks to ensure your Kubernetes cluste
 
 ## Data Encryption
 
-[//]: # (host:master-1)
+[//]: # (host:controlplane01)
 
 In this section you will verify the ability to [encrypt secret data at rest](https://kubernetes.io/docs/tasks/administer-cluster/encrypt-data/#verifying-that-data-is-encrypted).
 
@@ -61,7 +61,7 @@ In this section you will verify the ability to create and manage [Deployments](h
 Create a deployment for the [nginx](https://nginx.org/en/) web server:
 
 ```bash
-kubectl create deployment nginx --image=nginx:1.23.1
+kubectl create deployment nginx --image=nginx:alpine
 ```
 
 [//]: # (command:kubectl wait deployment -n default nginx --for condition=Available=True --timeout=90s)
@@ -89,6 +89,7 @@ Create a service to expose deployment nginx on node ports.
 kubectl expose deploy nginx --type=NodePort --port 80
 ```
 
+[//]: # (command:sleep 2)
 
 ```bash
 PORT_NUMBER=$(kubectl get svc -l app=nginx -o jsonpath="{.items[0].spec.ports[0].nodePort}")
@@ -97,8 +98,8 @@ PORT_NUMBER=$(kubectl get svc -l app=nginx -o jsonpath="{.items[0].spec.ports[0]
 Test to view NGINX page
 
 ```bash
-curl http://worker-1:$PORT_NUMBER
-curl http://worker-2:$PORT_NUMBER
+curl http://node01:$PORT_NUMBER
+curl http://node02:$PORT_NUMBER
 ```
 
 > output
@@ -160,5 +161,5 @@ kubectl delete service -n default nginx
 kubectl delete deployment -n default nginx
 ```
 
-Prev: [DNS Addon](15-dns-addon.md)</br>
-Next: [End to End Tests](17-e2e-tests.md)
+Next: [End to End Tests](./17-e2e-tests.md)</br>
+Prev: [DNS Addon](./15-dns-addon.md)

@@ -2,9 +2,11 @@
 
 Kubernetes components are stateless and store cluster state in [etcd](https://etcd.io/). In this lab you will bootstrap a two node etcd cluster and configure it for high availability and secure remote access.
 
+If you examine the command line arguments passed to etcd in its unit file, you should recognise some of the certificates and keys created in earlier sections of this course.
+
 ## Prerequisites
 
-The commands in this lab must be run on each controller instance: `master-1`, and `master-2`. Login to each of these using an SSH terminal.
+The commands in this lab must be run on each controller instance: `controlplane01`, and `controlplane02`. Login to each of these using an SSH terminal.
 
 ### Running commands in parallel with tmux
 
@@ -16,21 +18,21 @@ The commands in this lab must be run on each controller instance: `master-1`, an
 
 Download the official etcd release binaries from the [etcd](https://github.com/etcd-io/etcd) GitHub project:
 
-[//]: # (host:master-1-master2)
+[//]: # (host:controlplane01-controlplane02)
 
 
 ```bash
 ETCD_VERSION="v3.5.9"
 wget -q --show-progress --https-only --timestamping \
-  "https://github.com/coreos/etcd/releases/download/${ETCD_VERSION}/etcd-${ETCD_VERSION}-linux-amd64.tar.gz"
+  "https://github.com/coreos/etcd/releases/download/${ETCD_VERSION}/etcd-${ETCD_VERSION}-linux-${ARCH}.tar.gz"
 ```
 
 Extract and install the `etcd` server and the `etcdctl` command line utility:
 
 ```bash
 {
-  tar -xvf etcd-${ETCD_VERSION}-linux-amd64.tar.gz
-  sudo mv etcd-${ETCD_VERSION}-linux-amd64/etcd* /usr/local/bin/
+  tar -xvf etcd-${ETCD_VERSION}-linux-${ARCH}.tar.gz
+  sudo mv etcd-${ETCD_VERSION}-linux-${ARCH}/etcd* /usr/local/bin/
 }
 ```
 
@@ -52,12 +54,11 @@ Copy and secure certificates. Note that we place `ca.crt` in our main PKI direct
 ```
 
 The instance internal IP address will be used to serve client requests and communicate with etcd cluster peers.<br>
-Retrieve the internal IP address of the master(etcd) nodes, and also that of master-1 and master-2 for the etcd cluster member list
+Retrieve the internal IP address of the controlplane(etcd) nodes, and also that of controlplane01 and controlplane02 for the etcd cluster member list
 
 ```bash
-INTERNAL_IP=$(ip addr show enp0s8 | grep "inet " | awk '{print $2}' | cut -d / -f 1)
-MASTER_1=$(dig +short master-1)
-MASTER_2=$(dig +short master-2)
+CONTROL01=$(dig +short controlplane01)
+CONTROL02=$(dig +short controlplane02)
 ```
 
 Each etcd member must have a unique name within an etcd cluster. Set the etcd name to match the hostname of the current compute instance:
@@ -85,12 +86,12 @@ ExecStart=/usr/local/bin/etcd \\
   --peer-trusted-ca-file=/etc/etcd/ca.crt \\
   --peer-client-cert-auth \\
   --client-cert-auth \\
-  --initial-advertise-peer-urls https://${INTERNAL_IP}:2380 \\
-  --listen-peer-urls https://${INTERNAL_IP}:2380 \\
-  --listen-client-urls https://${INTERNAL_IP}:2379,https://127.0.0.1:2379 \\
-  --advertise-client-urls https://${INTERNAL_IP}:2379 \\
+  --initial-advertise-peer-urls https://${PRIMARY_IP}:2380 \\
+  --listen-peer-urls https://${PRIMARY_IP}:2380 \\
+  --listen-client-urls https://${PRIMARY_IP}:2379,https://127.0.0.1:2379 \\
+  --advertise-client-urls https://${PRIMARY_IP}:2379 \\
   --initial-cluster-token etcd-cluster-0 \\
-  --initial-cluster master-1=https://${MASTER_1}:2380,master-2=https://${MASTER_2}:2380 \\
+  --initial-cluster controlplane01=https://${CONTROL01}:2380,controlplane02=https://${CONTROL02}:2380 \\
   --initial-cluster-state new \\
   --data-dir=/var/lib/etcd
 Restart=on-failure
@@ -111,13 +112,15 @@ EOF
 }
 ```
 
-> Remember to run the above commands on each controller node: `master-1`, and `master-2`.
+> Remember to run the above commands on each controller node: `controlplane01`, and `controlplane02`.
 
 ## Verification
 
 [//]: # (sleep:5)
 
-List the etcd cluster members:
+List the etcd cluster members.
+
+After running the abovre commands on both controlplane nodes, run the following on either or both of `controlplane01` and `controlplane02`
 
 ```bash
 sudo ETCDCTL_API=3 etcdctl member list \
@@ -127,14 +130,14 @@ sudo ETCDCTL_API=3 etcdctl member list \
   --key=/etc/etcd/etcd-server.key
 ```
 
-> output
+Output will be similar to this
 
 ```
-45bf9ccad8d8900a, started, master-2, https://192.168.56.12:2380, https://192.168.56.12:2379
-54a5796a6803f252, started, master-1, https://192.168.56.11:2380, https://192.168.56.11:2379
+45bf9ccad8d8900a, started, controlplane02, https://192.168.56.12:2380, https://192.168.56.12:2379
+54a5796a6803f252, started, controlplane01, https://192.168.56.11:2380, https://192.168.56.11:2379
 ```
 
 Reference: https://kubernetes.io/docs/tasks/administer-cluster/configure-upgrade-etcd/#starting-etcd-clusters
 
-Prev: [Generating the Data Encryption Config and Key](06-data-encryption-keys.md)]<br>
-Next: [Bootstrapping the Kubernetes Control Plane](08-bootstrapping-kubernetes-controllers.md)
+Next: [Bootstrapping the Kubernetes Control Plane](./08-bootstrapping-kubernetes-controllers.md)<br>
+Prev: [Generating the Data Encryption Config and Key](./06-data-encryption-keys.md)

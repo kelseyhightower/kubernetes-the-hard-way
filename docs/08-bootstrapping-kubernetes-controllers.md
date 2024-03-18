@@ -2,17 +2,20 @@
 
 In this lab you will bootstrap the Kubernetes control plane across 2 compute instances and configure it for high availability. You will also create an external load balancer that exposes the Kubernetes API Servers to remote clients. The following components will be installed on each node: Kubernetes API Server, Scheduler, and Controller Manager.
 
-Note that in a production-ready cluster it is recommended to have an odd number of master nodes as for multi-node services like etcd, leader election and quorum work better. See lecture on this ([KodeKloud](https://kodekloud.com/topic/etcd-in-ha/), [Udemy](https://www.udemy.com/course/certified-kubernetes-administrator-with-practice-tests/learn/lecture/14296192#overview)). We're only using two here to save on RAM on your workstation.
+Note that in a production-ready cluster it is recommended to have an odd number of controlplane nodes as for multi-node services like etcd, leader election and quorum work better. See lecture on this ([KodeKloud](https://kodekloud.com/topic/etcd-in-ha/), [Udemy](https://www.udemy.com/course/certified-kubernetes-administrator-with-practice-tests/learn/lecture/14296192#overview)). We're only using two here to save on RAM on your workstation.
+
+
+If you examine the command line arguments passed to the various control plane components, you should recognise many of the files that were created in earlier sections of this course, such as certificates, keys, kubeconfigs, the encryption configuration etc.
 
 ## Prerequisites
 
-The commands in this lab up as far as the load balancer configuration must be run on each controller instance: `master-1`, and `master-2`. Login to each controller instance using SSH Terminal.
+The commands in this lab up as far as the load balancer configuration must be run on each controller instance: `controlplane01`, and `controlplane02`. Login to each controller instance using SSH Terminal.
 
 You can perform this step with [tmux](01-prerequisites.md#running-commands-in-parallel-with-tmux).
 
 ## Provision the Kubernetes Control Plane
 
-[//]: # (host:master-1-master2)
+[//]: # (host:controlplane01-controlplane02)
 
 ### Download and Install the Kubernetes Controller Binaries
 
@@ -22,10 +25,10 @@ Download the latest official Kubernetes release binaries:
 KUBE_VERSION=$(curl -L -s https://dl.k8s.io/release/stable.txt)
 
 wget -q --show-progress --https-only --timestamping \
-  "https://dl.k8s.io/release/${KUBE_VERSION}/bin/linux/amd64/kube-apiserver" \
-  "https://dl.k8s.io/release/${KUBE_VERSION}/bin/linux/amd64/kube-controller-manager" \
-  "https://dl.k8s.io/release/${KUBE_VERSION}/bin/linux/amd64/kube-scheduler" \
-  "https://dl.k8s.io/release/${KUBE_VERSION}/bin/linux/amd64/kubectl"
+  "https://dl.k8s.io/release/${KUBE_VERSION}/bin/linux/${ARCH}/kube-apiserver" \
+  "https://dl.k8s.io/release/${KUBE_VERSION}/bin/linux/${ARCH}/kube-controller-manager" \
+  "https://dl.k8s.io/release/${KUBE_VERSION}/bin/linux/${ARCH}/kube-scheduler" \
+  "https://dl.k8s.io/release/${KUBE_VERSION}/bin/linux/${ARCH}/kubectl"
 ```
 
 Reference: https://kubernetes.io/releases/download/#binaries
@@ -62,15 +65,14 @@ The instance internal IP address will be used to advertise the API Server to mem
 Retrieve these internal IP addresses:
 
 ```bash
-INTERNAL_IP=$(ip addr show enp0s8 | grep "inet " | awk '{print $2}' | cut -d / -f 1)
 LOADBALANCER=$(dig +short loadbalancer)
 ```
 
-IP addresses of the two master nodes, where the etcd servers are.
+IP addresses of the two controlplane nodes, where the etcd servers are.
 
 ```bash
-MASTER_1=$(dig +short master-1)
-MASTER_2=$(dig +short master-2)
+CONTROL01=$(dig +short controlplane01)
+CONTROL02=$(dig +short controlplane02)
 ```
 
 CIDR ranges used *within* the cluster
@@ -90,7 +92,7 @@ Documentation=https://github.com/kubernetes/kubernetes
 
 [Service]
 ExecStart=/usr/local/bin/kube-apiserver \\
-  --advertise-address=${INTERNAL_IP} \\
+  --advertise-address=${PRIMARY_IP} \\
   --allow-privileged=true \\
   --apiserver-count=2 \\
   --audit-log-maxage=30 \\
@@ -105,7 +107,7 @@ ExecStart=/usr/local/bin/kube-apiserver \\
   --etcd-cafile=/var/lib/kubernetes/pki/ca.crt \\
   --etcd-certfile=/var/lib/kubernetes/pki/etcd-server.crt \\
   --etcd-keyfile=/var/lib/kubernetes/pki/etcd-server.key \\
-  --etcd-servers=https://${MASTER_1}:2379,https://${MASTER_2}:2379 \\
+  --etcd-servers=https://${CONTROL01}:2379,https://${CONTROL02}:2379 \\
   --event-ttl=1h \\
   --encryption-provider-config=/var/lib/kubernetes/encryption-config.yaml \\
   --kubelet-certificate-authority=/var/lib/kubernetes/pki/ca.crt \\
@@ -210,7 +212,7 @@ sudo chmod 600 /var/lib/kubernetes/*.kubeconfig
 
 ## Optional - Check Certificates and kubeconfigs
 
-At `master-1` and `master-2` nodes, run the following, selecting option 3
+At `controlplane01` and `controlplane02` nodes, run the following, selecting option 3
 
 [//]: # (command:./cert_verify.sh 3)
 
@@ -236,6 +238,8 @@ At `master-1` and `master-2` nodes, run the following, selecting option 3
 
 [//]: # (sleep:10)
 
+After running the abovre commands on both controlplane nodes, run the following on `controlplane01`
+
 ```bash
 kubectl get componentstatuses --kubeconfig admin.kubeconfig
 ```
@@ -253,7 +257,7 @@ etcd-0               Healthy   {"health": "true"}
 etcd-1               Healthy   {"health": "true"}
 ```
 
-> Remember to run the above commands on each controller node: `master-1`, and `master-2`.
+> Remember to run the above commands on each controller node: `controlplane01`, and `controlplane02`.
 
 ## The Kubernetes Frontend Load Balancer
 
@@ -264,7 +268,7 @@ In this section you will provision an external load balancer to front the Kubern
 
 A NLB operates at [layer 4](https://en.wikipedia.org/wiki/OSI_model#Layer_4:_Transport_layer) (TCP) meaning it passes the traffic straight through to the back end servers unfettered and does not interfere with the TLS process, leaving this to the Kube API servers.
 
-Login to `loadbalancer` instance using SSH Terminal.
+Login to `loadbalancer` instance using `vagrant ssh` (or `multipass shell` on Apple Silicon).
 
 [//]: # (host:loadbalancer)
 
@@ -273,15 +277,17 @@ Login to `loadbalancer` instance using SSH Terminal.
 sudo apt-get update && sudo apt-get install -y haproxy
 ```
 
-Read IP addresses of master nodes and this host to shell variables
+Read IP addresses of controlplane nodes and this host to shell variables
 
 ```bash
-MASTER_1=$(dig +short master-1)
-MASTER_2=$(dig +short master-2)
+CONTROL01=$(dig +short controlplane01)
+CONTROL02=$(dig +short controlplane02)
 LOADBALANCER=$(dig +short loadbalancer)
 ```
 
-Create HAProxy configuration to listen on API server port on this host and distribute requests evently to the two master nodes.
+Create HAProxy configuration to listen on API server port on this host and distribute requests evently to the two controlplane nodes.
+
+We configure it to operate as a [layer 4](https://en.wikipedia.org/wiki/Transport_layer) loadbalancer (using `mode tcp`), which means it forwards any traffic directly to the backends without doing anything like [SSL offloading](https://ssl2buy.com/wiki/ssl-offloading).
 
 ```bash
 cat <<EOF | sudo tee /etc/haproxy/haproxy.cfg
@@ -289,14 +295,14 @@ frontend kubernetes
     bind ${LOADBALANCER}:6443
     option tcplog
     mode tcp
-    default_backend kubernetes-master-nodes
+    default_backend kubernetes-controlplane-nodes
 
-backend kubernetes-master-nodes
+backend kubernetes-controlplane-nodes
     mode tcp
     balance roundrobin
     option tcp-check
-    server master-1 ${MASTER_1}:6443 check fall 3 rise 2
-    server master-2 ${MASTER_2}:6443 check fall 3 rise 2
+    server controlplane01 ${CONTROL01}:6443 check fall 3 rise 2
+    server controlplane02 ${CONTROL02}:6443 check fall 3 rise 2
 EOF
 ```
 
@@ -311,24 +317,10 @@ sudo systemctl restart haproxy
 Make a HTTP request for the Kubernetes version info:
 
 ```bash
-curl  https://${LOADBALANCER}:6443/version -k
+curl -k https://${LOADBALANCER}:6443/version
 ```
 
-> output
+This should output some details about the version and build information of the API server.
 
-```
-{
-  "major": "1",
-  "minor": "24",
-  "gitVersion": "${KUBE_VERSION}",
-  "gitCommit": "aef86a93758dc3cb2c658dd9657ab4ad4afc21cb",
-  "gitTreeState": "clean",
-  "buildDate": "2022-07-13T14:23:26Z",
-  "goVersion": "go1.18.3",
-  "compiler": "gc",
-  "platform": "linux/amd64"
-}
-```
-
-Prev: [Bootstrapping the etcd Cluster](07-bootstrapping-etcd.md)<br>
-Next: [Installing CRI on the Kubernetes Worker Nodes](09-install-cri-workers.md)
+Next: [Installing CRI on the Kubernetes Worker Nodes](./09-install-cri-workers.md)<br>
+Prev: [Bootstrapping the etcd Cluster](./07-bootstrapping-etcd.md)

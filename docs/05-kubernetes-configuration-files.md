@@ -14,7 +14,7 @@ In this section you will generate kubeconfig files for the `controller manager`,
 
 Each kubeconfig requires a Kubernetes API Server to connect to. To support high availability the IP address assigned to the load balancer will be used, so let's first get the address of the loadbalancer into a shell variable such that we can use it in the kubeconfigs for services that run on worker nodes. The controller manager and scheduler need to talk to the local API server, hence they use the localhost address.
 
-[//]: # (host:master-1)
+[//]: # (host:controlplane01)
 
 ```bash
 LOADBALANCER=$(dig +short loadbalancer)
@@ -161,7 +161,7 @@ Reference docs for kubeconfig [here](https://kubernetes.io/docs/tasks/access-app
 Copy the appropriate `kube-proxy` kubeconfig files to each worker instance:
 
 ```bash
-for instance in worker-1 worker-2; do
+for instance in node01 node02; do
   scp kube-proxy.kubeconfig ${instance}:~/
 done
 ```
@@ -169,22 +169,22 @@ done
 Copy the appropriate `admin.kubeconfig`, `kube-controller-manager` and `kube-scheduler` kubeconfig files to each controller instance:
 
 ```bash
-for instance in master-1 master-2; do
+for instance in controlplane01 controlplane02; do
   scp admin.kubeconfig kube-controller-manager.kubeconfig kube-scheduler.kubeconfig ${instance}:~/
 done
 ```
 
 ## Optional - Check kubeconfigs
 
-At `master-1` and `master-2` nodes, run the following, selecting option 2
+At `controlplane01` and `controlplane02` nodes, run the following, selecting option 2
 
 [//]: # (command./cert_verify.sh 2)
-[//]: # (command:ssh master-2 './cert_verify.sh 2')
+[//]: # (command:ssh controlplane02 './cert_verify.sh 2')
 
 ```
 ./cert_verify.sh
 ```
 
 
-Prev: [Certificate Authority](04-certificate-authority.md)<br>
-Next: [Generating the Data Encryption Config and Key](06-data-encryption-keys.md)
+Next: [Generating the Data Encryption Config and Key](./06-data-encryption-keys.md)<br>
+Prev: [Certificate Authority](./04-certificate-authority.md)

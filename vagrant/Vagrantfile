@@ -20,9 +20,9 @@ if ram_selector < 8
   raise "Unsufficient memory #{RAM_SIZE}GB. min 8GB"
 end
 RESOURCES = {
-  "master" => {
+  "control" => {
     1 => {
-      # master-1 bigger since it may run e2e tests.
+      # controlplane01 bigger since it may run e2e tests.
       "ram" => [ram_selector * 128, 2048].max(),
       "cpu" => CPU_CORES >= 12 ? 4 : 2,
     },
@@ -61,7 +61,7 @@ def provision_kubernetes_node(node)
 end
 
 # Define the number of master and worker nodes. You should not change this
-NUM_MASTER_NODE = 2
+NUM_CONTROL_NODES = 2
 NUM_WORKER_NODE = 2
 
 # Host address start points
@@ -89,21 +89,21 @@ Vagrant.configure("2") do |config|
   # `vagrant box outdated`. This is not recommended.
   config.vm.box_check_update = false
 
-  # Provision Master Nodes
-  (1..NUM_MASTER_NODE).each do |i|
-    config.vm.define "master-#{i}" do |node|
+  # Provision Control Nodes
+  (1..NUM_CONTROL_NODES).each do |i|
+    config.vm.define "controlplane0#{i}" do |node|
       # Name shown in the GUI
       node.vm.provider "virtualbox" do |vb|
-        vb.name = "kubernetes-ha-master-#{i}"
-        vb.memory = RESOURCES["master"][i > 2 ? 2 : i]["ram"]
-        vb.cpus = RESOURCES["master"][i > 2 ? 2 : i]["cpu"]
+        vb.name = "kubernetes-ha-controlplane-#{i}"
+        vb.memory = RESOURCES["control"][i > 2 ? 2 : i]["ram"]
+        vb.cpus = RESOURCES["control"][i > 2 ? 2 : i]["cpu"]
       end
-      node.vm.hostname = "master-#{i}"
+      node.vm.hostname = "controlplane0#{i}"
       node.vm.network :private_network, ip: IP_NW + "#{MASTER_IP_START + i}"
       node.vm.network "forwarded_port", guest: 22, host: "#{2710 + i}"
       provision_kubernetes_node node
       if i == 1
-        # Install (opinionated) configs for vim and tmux on master-1. These used by the author for CKA exam.
+        # Install (opinionated) configs for vim and tmux on controlplane01. These used by the author for CKA exam.
         node.vm.provision "file", source: "./ubuntu/tmux.conf", destination: "$HOME/.tmux.conf"
         node.vm.provision "file", source: "./ubuntu/vimrc", destination: "$HOME/.vimrc"
       end
@@ -127,13 +127,13 @@ Vagrant.configure("2") do |config|
 
   # Provision Worker Nodes
   (1..NUM_WORKER_NODE).each do |i|
-    config.vm.define "worker-#{i}" do |node|
+    config.vm.define "node0#{i}" do |node|
       node.vm.provider "virtualbox" do |vb|
-        vb.name = "kubernetes-ha-worker-#{i}"
+        vb.name = "kubernetes-ha-node-#{i}"
         vb.memory = RESOURCES["worker"]["ram"]
         vb.cpus = RESOURCES["worker"]["cpu"]
       end
-      node.vm.hostname = "worker-#{i}"
+      node.vm.hostname = "node0#{i}"
       node.vm.network :private_network, ip: IP_NW + "#{NODE_IP_START + i}"
       node.vm.network "forwarded_port", guest: 22, host: "#{2720 + i}"
       provision_kubernetes_node node

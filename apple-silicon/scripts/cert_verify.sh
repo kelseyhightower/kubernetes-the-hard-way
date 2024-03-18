@@ -8,7 +8,7 @@ FAILED='\033[0;31;1m'
 NC='\033[0m'
 
 # IP addresses
-PRIMARY_IP=$(ip addr show enp0s8 | grep "inet " | awk '{print $2}' | cut -d / -f 1)
+PRIMARY_IP=$(ip route | grep default | awk '{ print $9 }')
 CONTROL01=$(dig +short controlplane01)
 CONTROL02=$(dig +short controlplane02)
 NODE01=$(dig +short node01)
