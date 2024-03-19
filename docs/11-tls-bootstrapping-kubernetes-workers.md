@@ -460,10 +460,9 @@ At `node02` node, run the following, selecting option 5
 Now, go back to `controlplane01` and approve the pending kubelet-serving certificate
 
 [//]: # (host:controlplane01)
-
 [//]: # (command:sudo apt install -y jq)
+[//]: # (command:. ./approve-csr.sh)
 
-[//]: # (command:kubectl certificate approve --kubeconfig admin.kubeconfig $(kubectl get csr --kubeconfig admin.kubeconfig -o json | jq -r '.items | .[]  | select(.spec.username == "system:node:node02") | .metadata.name'))
 
 ```bash
 kubectl get csr --kubeconfig admin.kubeconfig

@@ -106,6 +106,7 @@ Vagrant.configure("2") do |config|
         # Install (opinionated) configs for vim and tmux on controlplane01. These used by the author for CKA exam.
         node.vm.provision "file", source: "./ubuntu/tmux.conf", destination: "$HOME/.tmux.conf"
         node.vm.provision "file", source: "./ubuntu/vimrc", destination: "$HOME/.vimrc"
+        node.vm.provision "file", source: "../tools/approve-csr.sh", destination: "$HOME/approve-csr.sh"
       end
     end
   end

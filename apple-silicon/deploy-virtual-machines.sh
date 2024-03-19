@@ -16,6 +16,7 @@ echo -e "${BLUE}Checking system compatibility${NC}"
 
 MEM_GB=$(( $(sysctl hw.memsize | cut -d ' ' -f 2) /  1073741824 ))
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )/scripts
+TOOLS_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )/../tools
 
 CPMEM="2048M"
 WNMEM="2048M"
@@ -105,5 +106,7 @@ do
     multipass transfer $SCRIPT_DIR/cert_verify.sh $node:/home/ubuntu/
     multipass exec $node -- /tmp/01-setup-hosts.sh
 done
+
+multipass transfer $TOOLS_DIR/approve-csr.sh controlplane01:/home/ubuntu/
 
 echo -e "${GREEN}Done!${NC}"
