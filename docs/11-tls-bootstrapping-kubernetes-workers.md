@@ -49,7 +49,7 @@ Run the following steps on `controlplane01`
 
 For the workers(kubelet) to access the Certificates API, they need to authenticate to the kubernetes api-server first. For this we create a [Bootstrap Token](https://kubernetes.io/docs/reference/access-authn-authz/bootstrap-tokens/) to be used by the kubelet
 
-Bootstrap Tokens take the form of a 6 character token id followed by 16 character token secret separated by a dot. Eg: abcdef.0123456789abcdef. More formally, they must match the regular expression [a-z0-9]{6}\.[a-z0-9]{16}
+Bootstrap Tokens take the form of a 6 character token id followed by 16 character token secret separated by a dot. Eg: abcdef.0123456789abcdef. More formally, they must match the regular expression `[a-z0-9]{6}\.[a-z0-9]{16}`
 
 Set an expiration date for the bootstrap token of 7 days from now (you can adjust this)
 
@@ -460,7 +460,9 @@ At `node02` node, run the following, selecting option 5
 Now, go back to `controlplane01` and approve the pending kubelet-serving certificate
 
 [//]: # (host:controlplane01)
+
 [//]: # (command:sudo apt install -y jq)
+
 [//]: # (command:kubectl certificate approve --kubeconfig admin.kubeconfig $(kubectl get csr --kubeconfig admin.kubeconfig -o json | jq -r '.items | .[]  | select(.spec.username == "system:node:node02") | .metadata.name'))
 
 ```bash

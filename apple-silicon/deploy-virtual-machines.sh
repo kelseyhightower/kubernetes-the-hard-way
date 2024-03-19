@@ -17,11 +17,8 @@ echo -e "${BLUE}Checking system compatibility${NC}"
 MEM_GB=$(( $(sysctl hw.memsize | cut -d ' ' -f 2) /  1073741824 ))
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )/scripts
 
-if [ $MEM_GB -lt 12 ]
-then
-    echo -e "${RED}System RAM is ${MEM_GB}GB. This is insufficient to deploy a working cluster.${NC}"
-    exit 1
-fi
+CPMEM="2048M"
+WNMEM="2048M"
 
 if ! command -v multipass > /dev/null
 then
@@ -35,13 +32,21 @@ then
     exit 1
 fi
 
+if [ $MEM_GB -lt 15 ]
+then
+    CPMEM="768M"
+    WNMEM="512M"
+    echo -e "${YELLOW}System RAM is ${MEM_GB}GB. VM size is reduced."
+    echo -e "It will not be possible for you to run E2E tests (final step).${NC}"
+fi
+
 specs=/tmp/vm-specs
 cat <<EOF > $specs
-controlplane01,2,2048M,10G
-controlplane02,2,2048M,5G
+controlplane01,2,${CPMEM},10G
+controlplane02,2,${CPMEM},5G
 loadbalancer,1,512M,5G
-node01,2,2048M,5G
-node02,2,2048M,5G
+node01,2,${WNMEM},5G
+node02,2,${WNMEM},5G
 EOF
 
 echo -e "${GREEN}System OK!${NC}"
@@ -74,7 +79,7 @@ do
         multipass purge
     fi
 
-    echo -e "${BLUE}Launching ${node}${NC}"
+    echo -e "${BLUE}Launching ${node}. CPU: ${cpus}, MEM: ${ram}${NC}"
     multipass launch --disk $disk --memory $ram --cpus $cpus --name $node jammy
     echo -e "${GREEN}$node booted!${NC}"
 done

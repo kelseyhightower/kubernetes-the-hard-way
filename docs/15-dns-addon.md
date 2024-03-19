@@ -48,7 +48,7 @@ Reference: https://kubernetes.io/docs/tasks/administer-cluster/coredns/#installi
 Create a `busybox` pod:
 
 ```bash
-kubectl run busybox -n default --image=busybox:1.28 --restart Never --command -- sleep 15
+kubectl run busybox -n default --image=busybox:1.28 --restart Never --command -- sleep 180
 ```
 
 [//]: # (command:kubectl wait pods -n default -l run=busybox --for condition=Ready --timeout=90s)

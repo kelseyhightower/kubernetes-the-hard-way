@@ -1,6 +1,6 @@
 # Run End-to-End Tests
 
-Optional Lab.
+Optional Lab. If you are running this on a system with less than 16GB RAM, this step will almost certainly fail spectacularly.
 
 Observations by Alistair (KodeKloud):
 

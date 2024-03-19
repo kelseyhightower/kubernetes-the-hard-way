@@ -5,7 +5,7 @@
 This lab provisions 5 VMs on your workstation. That's a lot of compute resource!
 
 * Apple Silicon System (M1/M2/M3 etc)
-* Minimum 16GB RAM.<br/>Bear in mind that the unified memory architecture of Apple Silicon Macs means that the whole of the quoted memory is not available for software - some of it is used for the display, more if you have external displays.<br/>This rules out 8GB models - sorry.
+* 8GB RAM (16GB recommended).<br/>Bear in mind that the unified memory architecture of Apple Silicon Macs means that the whole of the quoted memory is not available for software - some of it is used for the display, more if you have external displays. With less than 16GB, significantly smaller VMs will be deployed, which will not be sufficient to run the final step E2E tests.
 * Pro or Max CPU recommended for running the e2e-tests at the end of this lab.
 
 ## Required Software
