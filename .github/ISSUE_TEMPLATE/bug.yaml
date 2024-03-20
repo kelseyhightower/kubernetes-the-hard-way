@@ -20,7 +20,7 @@ body:
       description: "Please tell us what kind of machine you have"
       multiple: false
       options:
-      - "-- Please Select --"
+      - "Please Select -->"
       - Windows (10 or 11)
       - Intel Mac
       - Apple Silicon Mac (M1/M2/M3)
@@ -35,7 +35,7 @@ body:
       description: "Please tell us how much memory your system has"
       multiple: false
       options:
-      - "-- Please Select --"
+      - "Please Select -->"
       - Less than 8GB
       - 8 - 15GB
       - 16GB or more
