@@ -25,6 +25,7 @@ body:
       - Intel Mac
       - Apple Silicon Mac (M1/M2/M3)
       - Other (specify in What Happened box)
+      default: 0
     validations:
       required: true
   - type: dropdown
@@ -38,6 +39,7 @@ body:
       - Less than 8GB
       - 8 - 15GB
       - 16GB or more
+      default: 0
     validations:
       required: true
   - type: textarea

@@ -2,4 +2,4 @@ blank_issues_enabled: false
 contact_links:
   - name: KodeKloud Forum
     url: https://community.kodekloud.com/
-    about: Please use the Communuity Forum to ask about anything unrelated to Kubernetes the Hard Way.
+    about: Please use the Communuity Forum to ask about anything unrelated to Kubernetes the Hard Way, e.g. questions about courses or exams, issues with courses, lecture requests etc.
