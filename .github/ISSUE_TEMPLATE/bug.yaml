@@ -13,6 +13,8 @@ body:
         You should only use this form to report issues with deploying Kubernetes The Hard Way.
         Please *do not* use this form to ask questions about courses or exams, issues with courses, lecture requests etc.
         Use instead the KodeKloud Forum https://kodekloud.com/community/ as you will get a much faster answer there.
+
+        Issues will be considered stale and closed if there is no response from the OP for 30 days following a repsonse from KodeKloud personnel.
   - type: dropdown
     id: workstation
     attributes:
