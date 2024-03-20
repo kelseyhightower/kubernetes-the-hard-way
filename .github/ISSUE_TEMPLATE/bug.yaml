@@ -37,7 +37,7 @@ body:
       options:
       - "Please Select -->"
       - Less than 8GB
-      - 8 - 15GB
+      - More than 8GB, less than 16GB
       - 16GB or more
       default: 0
     validations:
