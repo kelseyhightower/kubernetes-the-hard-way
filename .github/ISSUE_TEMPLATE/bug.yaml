@@ -13,13 +13,29 @@ body:
         You should only use this form to report issues with deploying Kubernetes The Hard Way.
         Please *do not* use this form to ask questions about courses or exams, issues with courses, lecture requests etc.
         Use instead the KodeKloud Forum https://kodekloud.com/community/ as you will get a much faster answer there.
-  - type: textarea
+  - type: dropdown
     id: workstation
     attributes:
       label: Your Workstation
-      description: "Please tell us your PC/Mac/Laptop spec, for example:"
-      placeholder: "Specification"
-      value: Windows 10 Laptop, 16 GB RAM, 8 core i7 CPU
+      description: "Please tell us what kind of machine you have"
+      multiple: false
+      options:
+      - Windows (10 or 11)
+      - Intel Mac
+      - Apple Silicon Mac (M1/M2/M3)
+      - Other (specify in What Happened box)
+    validations:
+      required: true
+  - type: dropdown
+    id: ram
+    attributes:
+      label: System Memory
+      description: "Please tell us how much memory your system has"
+      multiple: false
+      options:
+      - Less than 8GB
+      - 8 - 15GB
+      - 16GB or more
     validations:
       required: true
   - type: textarea
