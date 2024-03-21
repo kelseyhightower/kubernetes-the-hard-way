@@ -1,4 +1,4 @@
-# Prerequisites
+# Kubernetes The Hard Way on Apple Silicon
 
 ## Hardware Requirements
 
