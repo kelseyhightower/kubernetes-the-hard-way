@@ -142,7 +142,7 @@ Generate a kubeconfig file for the `kube-scheduler` service:
 }
 ```
 
-Results:
+It will generate two config files for each node:
 
 ```text
 kube-scheduler.kubeconfig
