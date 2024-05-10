@@ -9,6 +9,7 @@ ca-key.pem
 ca.csr                     
 ca.pem                     
 encryption-config.yaml     
+!configs/encryption-config.yaml     
 kube-controller-manager-csr.json
 kube-controller-manager-key.pem
 kube-controller-manager.csr
