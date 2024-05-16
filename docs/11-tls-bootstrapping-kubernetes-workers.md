@@ -30,7 +30,14 @@ So let's get started!
 
 **kube-apiserver** - Ensure bootstrap token based authentication is enabled on the kube-apiserver.
 
-`--enable-bootstrap-token-auth=true`
+run this command on `controlplane01` :
+```
+grep 'enable-bootstrap-token-auth=true' /etc/systemd/system/kube-apiserver.service
+```
+
+expected output : 
+
+`  --enable-bootstrap-token-auth=true \`
 
 **kube-controller-manager** - The certificate requests are signed by the kube-controller-manager ultimately. The kube-controller-manager requires the CA Certificate and Key to perform these operations.
 
