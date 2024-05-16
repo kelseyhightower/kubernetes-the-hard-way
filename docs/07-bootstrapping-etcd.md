@@ -120,7 +120,7 @@ EOF
 
 List the etcd cluster members.
 
-After running the abovre commands on both controlplane nodes, run the following on either or both of `controlplane01` and `controlplane02`
+After running the above commands on both controlplane nodes, run the following on either or both of `controlplane01` and `controlplane02`
 
 ```bash
 sudo ETCDCTL_API=3 etcdctl member list \
