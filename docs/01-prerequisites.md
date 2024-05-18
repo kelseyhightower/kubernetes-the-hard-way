@@ -4,7 +4,7 @@ In this lab you will review the machine requirements necessary to follow this tu
 
 ## Virtual or Physical Machines
 
-This tutorial requires four (4) virtual or physical ARM64 machines running Debian 12 (bookworm). The follow table list the four machines and thier CPU, memory, and storage requirements.
+This tutorial requires four (4) virtual or physical ARM64 machines running Debian 12 (bookworm). The follow table list the four machines and their CPU, memory, and storage requirements.
 
 | Name    | Description            | CPU | RAM   | Storage |
 |---------|------------------------|-----|-------|---------|
