@@ -49,3 +49,5 @@ service-account.pem
 service-account-csr.json
 *.swp
 .idea/
+.DS_Store
+/downloads/*
