@@ -8,7 +8,7 @@
 
 ### kubeletのKubernetes構成ファイル
 
-Kubeletのためのkubeconfigファイルを生成する際には、Kubeletのノード名に一致するクライアント証明書を使用する必要があります。これにより、KubeletがKubernetesの[ノード認可者](https://kubernetes.io/docs/admin/authorization/node/)によって適切に認可されることが保証されます。
+Kubeletのためのkubeconfigファイルを生成する際には、Kubeletのノード名に一致するクライアント証明書を使用する必要があります。これにより、KubeletがKubernetesの[ノード認可者](https://kubernetes.io/docs/reference/access-authn-authz/node/)によって適切に認可されることが保証されます。
 
 > 以下のコマンドは、[TLS証明書の生成](04-certificate-authority.md)ラボで使用したディレクトリ内で実行する必要があります。
 
