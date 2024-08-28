@@ -17,8 +17,8 @@ Download the `step` client and `step-ca` server binaries, and the `jq` command:
 ```
 {
 wget -q --show-progress --https-only --timestamping \
-  "https://dl.step.sm/gh-release/certificates/gh-release-header/v0.20.0/step-ca_linux_0.20.0_amd64.tar.gz" \
-  "https://dl.step.sm/gh-release/cli/gh-release-header/v0.20.0/step_linux_0.20.0_amd64.tar.gz"
+  "https://dl.smallstep.com/gh-release/certificates/gh-release-header/v0.20.0/step-ca_linux_0.20.0_amd64.tar.gz" \
+  "https://dl.smallstep.com/gh-release/cli/gh-release-header/v0.20.0/step_linux_0.20.0_amd64.tar.gz"
 sudo apt update
 sudo apt install -y jq
 }

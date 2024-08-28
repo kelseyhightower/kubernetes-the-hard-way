@@ -14,14 +14,14 @@ Download and install `step`:
 For Intel chips:
 
 ```
-curl -L https://dl.step.sm/gh-release/cli/gh-release-header/v0.20.0/step_darwin_0.20.0_amd64.tar.gz | tar xz
+curl -L https://dl.smallstep.com/gh-release/cli/gh-release-header/v0.20.0/step_darwin_0.20.0_amd64.tar.gz | tar xz
 sudo mv step_0.20.0/bin/step /usr/local/bin/
 ```
 
 For Apple Silicon:
 
 ```
-curl -L https://dl.step.sm/gh-release/cli/gh-release-header/v0.20.0/step_darwin_0.20.0_arm64.tar.gz | tar xz
+curl -L https://dl.smallstep.com/gh-release/cli/gh-release-header/v0.20.0/step_darwin_0.20.0_arm64.tar.gz | tar xz
 sudo mv step_0.20.0/bin/step /usr/local/bin/
 ```
 
@@ -34,7 +34,7 @@ brew install step
 ### Linux
 
 ```
-curl -L https://dl.step.sm/gh-release/cli/gh-release-header/v0.20.0/step_linux_0.20.0_amd64.tar.gz | tar xz
+curl -L https://dl.smallstep.com/gh-release/cli/gh-release-header/v0.20.0/step_linux_0.20.0_amd64.tar.gz | tar xz
 sudo mv step_0.20.0/bin/step /usr/local/bin/
 ```
 

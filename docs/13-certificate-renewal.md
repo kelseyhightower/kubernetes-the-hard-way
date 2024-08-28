@@ -16,7 +16,7 @@ Download the `step` CLI binary:
 
 ```
 wget -q --show-progress --https-only --timestamping \
-  "https://dl.step.sm/gh-release/cli/gh-release-header/v0.20.0/step_linux_0.20.0_amd64.tar.gz"
+  "https://dl.smallstep.com/gh-release/cli/gh-release-header/v0.20.0/step_linux_0.20.0_amd64.tar.gz"
 ```
 
 Install the binary:
