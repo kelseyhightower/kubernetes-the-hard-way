@@ -238,7 +238,7 @@ At `controlplane01` and `controlplane02` nodes, run the following, selecting opt
 
 [//]: # (sleep:10)
 
-After running the abovre commands on both controlplane nodes, run the following on `controlplane01`
+After running the above commands on both controlplane nodes, run the following on `controlplane01`
 
 ```bash
 kubectl get componentstatuses --kubeconfig admin.kubeconfig
