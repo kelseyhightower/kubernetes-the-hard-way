@@ -364,7 +364,25 @@ Run the following, and select option 1 to check all required certificates were g
 Expected output:
 
 ```
-PKI generated correctly!
+The selected option is 1, proceeding the certificate verification of Master node
+ca cert and key found, verifying the authenticity
+ca cert and key are correct
+kube-apiserver cert and key found, verifying the authenticity
+kube-apiserver cert and key are correct
+kube-controller-manager cert and key found, verifying the authenticity
+kube-controller-manager cert and key are correct
+kube-scheduler cert and key found, verifying the authenticity
+kube-scheduler cert and key are correct
+service-account cert and key found, verifying the authenticity
+service-account cert and key are correct
+apiserver-kubelet-client cert and key found, verifying the authenticity
+apiserver-kubelet-client cert and key are correct
+etcd-server cert and key found, verifying the authenticity
+etcd-server cert and key are correct
+admin cert and key found, verifying the authenticity
+admin cert and key are correct
+kube-proxy cert and key found, verifying the authenticity
+kube-proxy cert and key are correct
 ```
 
 If there are any errors, please review above steps and then re-verify
