@@ -12,7 +12,7 @@ When generating kubeconfig files for Kubelets the client certificate matching th
 
 > The following commands must be run in the same directory used to generate the SSL certificates during the [Generating TLS Certificates](04-certificate-authority.md) lab.
 
-Generate a kubeconfig file the node-0 worker node:
+Generate a kubeconfig file for the node-0 worker node:
 
 ```bash
 for host in node-0 node-1; do
