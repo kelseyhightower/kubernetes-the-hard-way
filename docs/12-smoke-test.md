@@ -100,15 +100,14 @@ curl --head http://127.0.0.1:8080
 
 ```text
 HTTP/1.1 200 OK
-Server: nginx/1.25.3
-Date: Sun, 29 Oct 2023 01:44:32 GMT
+Server: nginx/1.27.2
+Date: Thu, 14 Nov 2024 00:16:32 GMT
 Content-Type: text/html
 Content-Length: 615
-Last-Modified: Tue, 24 Oct 2023 13:46:47 GMT
+Last-Modified: Wed, 02 Oct 2024 15:13:19 GMT
 Connection: keep-alive
-ETag: "6537cac7-267"
+ETag: "66fd630f-267"
 Accept-Ranges: bytes
-
 ```
 
 Switch back to the previous terminal and stop the port forwarding to the `nginx` pod:
@@ -132,7 +131,7 @@ kubectl logs $POD_NAME
 
 ```text
 ...
-127.0.0.1 - - [01/Nov/2023:06:10:17 +0000] "HEAD / HTTP/1.1" 200 0 "-" "curl/7.88.1" "-"
+127.0.0.1 - - [14/Nov/2024:00:16:32 +0000] "HEAD / HTTP/1.1" 200 0 "-" "curl/7.88.1" "-"
 ```
 
 ### Exec
@@ -146,7 +145,7 @@ kubectl exec -ti $POD_NAME -- nginx -v
 ```
 
 ```text
-nginx version: nginx/1.25.3
+nginx version: nginx/1.27.2
 ```
 
 ## Services
@@ -168,6 +167,8 @@ Retrieve the node port assigned to the `nginx` service:
 NODE_PORT=$(kubectl get svc nginx \
   --output=jsonpath='{range .spec.ports[0]}{.nodePort}')
 ```
+
+
 
 Make an HTTP request using the IP address and the `nginx` node port:
 
