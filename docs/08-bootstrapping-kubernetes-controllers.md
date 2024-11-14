@@ -1,10 +1,10 @@
 # Bootstrapping the Kubernetes Control Plane
 
-In this lab you will bootstrap the Kubernetes control plane. The following components will be installed the controller machine: Kubernetes API Server, Scheduler, and Controller Manager.
+In this lab you will bootstrap the Kubernetes control plane. The following components will be installed on the controller machine: Kubernetes API Server, Scheduler, and Controller Manager.
 
 ## Prerequisites
 
-Copy Kubernetes binaries and systemd unit files to the `server` instance:
+Connect to the `jumpbox` and copy Kubernetes binaries and systemd unit files to the `server` instance:
 
 ```bash
 scp \
@@ -166,12 +166,12 @@ curl -k --cacert ca.crt https://server.kubernetes.local:6443/version
 ```text
 {
   "major": "1",
-  "minor": "28",
-  "gitVersion": "v1.28.3",
-  "gitCommit": "a8a1abc25cad87333840cd7d54be2efaf31a3177",
+  "minor": "31",
+  "gitVersion": "v1.31.2",
+  "gitCommit": "5864a4677267e6adeae276ad85882a8714d69d9d",
   "gitTreeState": "clean",
-  "buildDate": "2023-10-18T11:33:18Z",
-  "goVersion": "go1.20.10",
+  "buildDate": "2024-10-22T20:28:14Z",
+  "goVersion": "go1.22.8",
   "compiler": "gc",
   "platform": "linux/arm64"
 }

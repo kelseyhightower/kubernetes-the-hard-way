@@ -1,6 +1,6 @@
 # Generating Kubernetes Configuration Files for Authentication
 
-In this lab you will generate [Kubernetes configuration files](https://kubernetes.io/docs/concepts/configuration/organize-cluster-access-kubeconfig/), also known as kubeconfigs, which enable Kubernetes clients to locate and authenticate to the Kubernetes API Servers.
+In this lab you will generate [Kubernetes client configuration files](https://kubernetes.io/docs/concepts/configuration/organize-cluster-access-kubeconfig/), typically called kubeconfigs, which configure Kubernetes clients to connect and authenticate to Kubernetes API Servers.
 
 ## Client Authentication Configs
 
@@ -12,7 +12,7 @@ When generating kubeconfig files for Kubelets the client certificate matching th
 
 > The following commands must be run in the same directory used to generate the SSL certificates during the [Generating TLS Certificates](04-certificate-authority.md) lab.
 
-Generate a kubeconfig file the node-0 worker node:
+Generate a kubeconfig file for the node-0 worker node:
 
 ```bash
 for host in node-0 node-1; do
