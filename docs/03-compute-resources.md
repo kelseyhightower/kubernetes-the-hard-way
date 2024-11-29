@@ -44,7 +44,7 @@ Edit the `/etc/ssh/sshd_config` SSH daemon configuration file and set the `Permi
 
 ```bash
 sed -i \
-  's/^#PermitRootLogin.*/PermitRootLogin yes/' \
+  's/^#*PermitRootLogin.*/PermitRootLogin yes/' \
   /etc/ssh/sshd_config
 ```
 
