@@ -38,7 +38,7 @@ for host in node-0 node-1; do
 done
 ```
 
-Results:
+Generate Files:
 
 ```text
 node-0.kubeconfig
@@ -73,7 +73,7 @@ Generate a kubeconfig file for the `kube-proxy` service:
 }
 ```
 
-Results:
+Generate Files:
 
 ```text
 kube-proxy.kubeconfig
@@ -107,7 +107,7 @@ Generate a kubeconfig file for the `kube-controller-manager` service:
 }
 ```
 
-Results:
+Generate Files:
 
 ```text
 kube-controller-manager.kubeconfig
@@ -142,7 +142,7 @@ Generate a kubeconfig file for the `kube-scheduler` service:
 }
 ```
 
-Results:
+Generate Files:
 
 ```text
 kube-scheduler.kubeconfig
@@ -176,7 +176,7 @@ Generate a kubeconfig file for the `admin` user:
 }
 ```
 
-Results:
+Generate Files:
 
 ```text
 admin.kubeconfig
