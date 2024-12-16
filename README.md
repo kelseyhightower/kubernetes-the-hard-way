@@ -41,3 +41,11 @@ This tutorial requires four (4) ARM64 based virtual or physical machines connect
 * [Provisioning Pod Network Routes](docs/11-pod-network-routes.md)
 * [Smoke Test](docs/12-smoke-test.md)
 * [Cleaning Up](docs/13-cleanup.md)
+
+## Implementations
+
+The following list includes the implementations by the community.
+
+| Repository | Notes |
+| ---------- | ----- |
+| [Vagrant, Ansible & Cilium; no Cloud!](https://github.com/developer-friendly/kubernetes-the-hard-way) | [A complete guide and explanation](https://developer-friendly.blog/2024/03/03/kubernetes-the-hard-way/) |
