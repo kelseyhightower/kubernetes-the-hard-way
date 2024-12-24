@@ -54,7 +54,7 @@ Install the OS dependencies:
 ```bash
 {
   apt-get update
-  apt-get -y install socat conntrack ipset
+  apt-get -y install socat conntrack ipset kmod
 }
 ```
 
