@@ -11,8 +11,7 @@ Each kubeconfig requires a Kubernetes API Server to connect to.
 You should be able to ping `server.kubernetes.local` based on the `/etc/hosts` DNS entry from a previous lap.
 
 ```bash
-curl -k --cacert ca.crt \
-  https://server.kubernetes.local:6443/version
+curl -k https://server.kubernetes.local:6443/version
 ```
 
 ```text
