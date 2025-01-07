@@ -1,0 +1,67 @@
+site_name: Kubernetes The Hard Way
+docs_dir: docs
+site_dir: site
+repo_url: https://github.com/kelseyhightower/kubernetes-the-hard-way
+edit_uri: edit/master/docs/
+
+theme:
+  name: material
+  features:
+    - content.action.edit
+    - navigation.footer
+    - content.code.copy
+    - navigation.indexes
+    - announce.dismiss
+    - navigation.path
+    - toc.integrate
+    - navigation.sections
+    - search.highlight
+    - search.share
+    - content.tooltips
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: custom
+      accent: custom
+      font: false
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: custom
+      accent: custom
+      font: false
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - md_in_html
+  - tables
+  - toc:
+      permalink: 🔗
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences
+  - pymdownx.details
+  - pymdownx.tasklist:
+      custom_checkbox: true
+
+plugins:
+  #- tags:
+  #    tags_file: tags.md
+  - search
+  - autorefs
+  - literate-nav:
+     nav_file: README.md
+     implicit_index: true
