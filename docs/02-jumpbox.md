@@ -20,6 +20,8 @@ Now that you are logged into the `jumpbox` machine as the `root` user, you will 
 apt-get -y install wget curl vim openssl git
 ```
 
+If you get an error `E: Unable to locate package git`, simply run the command `apt-get update` and then retry.
+
 ### Sync GitHub Repository
 
 Now it's time to download a copy of this tutorial which contains the configuration files and templates that will be used build your Kubernetes cluster from the ground up. Clone the Kubernetes The Hard Way git repository using the `git` command:
