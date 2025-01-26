@@ -184,7 +184,7 @@ admin.kubeconfig
 
 ## Distribute the Kubernetes Configuration Files
 
-Copy the `kubelet` and `kube-proxy` kubeconfig files to the node-0 instance:
+Copy the `kubelet` and `kube-proxy` kubeconfig files to the node-0 and node-1 instances:
 
 ```bash
 for host in node-0 node-1; do
