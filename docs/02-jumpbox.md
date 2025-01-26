@@ -49,19 +49,13 @@ pwd
 
 In this section you will download the binaries for the various Kubernetes components. The binaries will be stored in the `downloads` directory on the `jumpbox`, which will reduce the amount of internet bandwidth required to complete this tutorial as we avoid downloading the binaries multiple times for each machine in our Kubernetes cluster.
 
-From the `kubernetes-the-hard-way` directory create a `downloads` directory using the `mkdir` command:
-
-```bash
-mkdir downloads
-```
-
 The binaries that will be downloaded are listed in the `downloads.txt` file, which you can review using the `cat` command:
 
 ```bash
 cat downloads.txt
 ```
 
-Download the binaries listed in the `downloads.txt` file using the `wget` command:
+Download the binaries listed in the `downloads.txt` file into a directory called `downloads` using the `wget` command:
 
 ```bash
 wget -q --show-progress \
@@ -78,18 +72,18 @@ ls -loh downloads
 ```
 
 ```text
-total 584M
--rw-r--r-- 1 root  41M May  9 13:35 cni-plugins-linux-arm64-v1.3.0.tgz
--rw-r--r-- 1 root  34M Oct 26 15:21 containerd-1.7.8-linux-arm64.tar.gz
--rw-r--r-- 1 root  22M Aug 14 00:19 crictl-v1.28.0-linux-arm.tar.gz
--rw-r--r-- 1 root  15M Jul 11 02:30 etcd-v3.4.27-linux-arm64.tar.gz
--rw-r--r-- 1 root 111M Oct 18 07:34 kube-apiserver
--rw-r--r-- 1 root 107M Oct 18 07:34 kube-controller-manager
--rw-r--r-- 1 root  51M Oct 18 07:34 kube-proxy
--rw-r--r-- 1 root  52M Oct 18 07:34 kube-scheduler
--rw-r--r-- 1 root  46M Oct 18 07:34 kubectl
--rw-r--r-- 1 root 101M Oct 18 07:34 kubelet
--rw-r--r-- 1 root 9.6M Aug 10 18:57 runc.arm64
+total 510M
+-rw-r--r-- 1 root 48M Oct 15 02:37 cni-plugins-linux-arm64-v1.6.0.tgz
+-rw-r--r-- 1 root 32M Nov  5 11:37 containerd-2.0.0-linux-arm64.tar.gz
+-rw-r--r-- 1 root 17M Aug 13 03:48 crictl-v1.31.1-linux-arm64.tar.gz
+-rw-r--r-- 1 root 16M Sep 11 11:28 etcd-v3.4.34-linux-arm64.tar.gz
+-rw-r--r-- 1 root 84M Oct 22 21:41 kube-apiserver
+-rw-r--r-- 1 root 79M Oct 22 21:41 kube-controller-manager
+-rw-r--r-- 1 root 53M Oct 22 21:41 kubectl
+-rw-r--r-- 1 root 72M Oct 22 21:41 kubelet
+-rw-r--r-- 1 root 61M Oct 22 21:41 kube-proxy
+-rw-r--r-- 1 root 60M Oct 22 21:41 kube-scheduler
+-rw-r--r-- 1 root 11M Nov  1 15:23 runc.arm64
 ```
 
 ### Install kubectl
@@ -112,8 +106,8 @@ kubectl version --client
 ```
 
 ```text
-Client Version: v1.28.3
-Kustomize Version: v5.0.4-0.20230601165947-6ce0bf390ce3
+Client Version: v1.31.2
+Kustomize Version: v5.4.2
 ```
 
 At this point the `jumpbox` has been set up with all the command line tools and utilities necessary to complete the labs in this tutorial.
