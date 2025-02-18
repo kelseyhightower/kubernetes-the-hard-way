@@ -16,7 +16,7 @@ for host in node-0 node-1; do
     configs/kubelet-config.yaml > kubelet-config.yaml
     
   scp 10-bridge.conf kubelet-config.yaml \
-  root@$host:~/
+    root@$host:~/
 done
 ```
 

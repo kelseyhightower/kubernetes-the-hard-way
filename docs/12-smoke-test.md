@@ -168,12 +168,17 @@ NODE_PORT=$(kubectl get svc nginx \
   --output=jsonpath='{range .spec.ports[0]}{.nodePort}')
 ```
 
+And determine which node it is on:
 
+```bash
+NODE_NAME=$(kubectl get pods -l app=nginx \
+  --output=jsonpath='{range .items[*]}{.spec.nodeName}{"\n"}{end}')
+```
 
 Make an HTTP request using the IP address and the `nginx` node port:
 
 ```bash
-curl -I http://node-0:${NODE_PORT}
+curl -I http://${NODE_NAME}:${NODE_PORT}
 ```
 
 ```text
