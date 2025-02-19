@@ -188,7 +188,7 @@ Copy the `kubelet` and `kube-proxy` kubeconfig files to the node-0 instance:
 
 ```bash
 for host in node-0 node-1; do
-  ssh root@$host "mkdir /var/lib/{kube-proxy,kubelet}"
+  ssh root@$host "mkdir -p /var/lib/{kube-proxy,kubelet}"
   
   scp kube-proxy.kubeconfig \
     root@$host:/var/lib/kube-proxy/kubeconfig \
