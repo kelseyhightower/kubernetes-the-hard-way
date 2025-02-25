@@ -68,7 +68,7 @@ wget -q --show-progress \
 Depending on your internet connection speed it may take a while to download the `584` megabytes of binaries, and once the download is complete, you can list them using the `ls` command:
 
 ```bash
-ls -loh downloads
+ls -oh downloads
 ```
 
 ```text
