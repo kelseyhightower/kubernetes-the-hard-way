@@ -1,5 +1,6 @@
 kind: KubeletConfiguration
 apiVersion: kubelet.config.k8s.io/v1beta1
+address: "0.0.0.0"
 authentication:
   anonymous:
     enabled: false
@@ -14,8 +15,15 @@ clusterDNS:
   - "10.32.0.10"
 cgroupDriver: systemd
 containerRuntimeEndpoint: "unix:///var/run/containerd/containerd.sock"
+enableServer: true
+failSwapOn: false
+maxPods: 16
+memorySwap:
+  swapBehavior: LimitedSwap
 podCIDR: "SUBNET"
+port: 10250
 resolvConf: "/etc/resolv.conf"
+registerNode: true
 runtimeRequestTimeout: "15m"
 tlsCertFile: "/var/lib/kubelet/kubelet.crt"
 tlsPrivateKeyFile: "/var/lib/kubelet/kubelet.key"

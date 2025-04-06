@@ -25,24 +25,24 @@ ssh root@server \
 00000010  73 2f 64 65 66 61 75 6c  74 2f 6b 75 62 65 72 6e  |s/default/kubern|
 00000020  65 74 65 73 2d 74 68 65  2d 68 61 72 64 2d 77 61  |etes-the-hard-wa|
 00000030  79 0a 6b 38 73 3a 65 6e  63 3a 61 65 73 63 62 63  |y.k8s:enc:aescbc|
-00000040  3a 76 31 3a 6b 65 79 31  3a 9b 79 a5 b9 49 a2 77  |:v1:key1:.y..I.w|
-00000050  c0 6a c9 12 7c b4 c7 c4  64 41 37 97 4a 83 a9 c1  |.j..|...dA7.J...|
-00000060  4f 14 ae 73 ab b8 38 26  11 14 0a 40 b8 f3 0e 0a  |O..s..8&...@....|
-00000070  f5 a7 a2 2c b6 35 b1 83  22 15 aa d0 dd 25 11 3e  |...,.5.."....%.>|
-00000080  c4 e9 69 1c 10 7a 9d f7  dc 22 28 89 2c 83 dd 0b  |..i..z..."(.,...|
-00000090  a4 5f 3a 93 0f ff 1f f8  bc 97 43 0e e5 05 5d f9  |._:.......C...].|
-000000a0  ef 88 02 80 49 81 f1 58  b0 48 39 19 14 e1 b1 34  |....I..X.H9....4|
-000000b0  f6 b0 9b 0a 9c 53 27 2b  23 b9 e6 52 b4 96 81 70  |.....S'+#..R...p|
-000000c0  a7 b6 7b 4f 44 d4 9c 07  51 a3 1b 22 96 4c 24 6c  |..{OD...Q..".L$l|
-000000d0  44 6c db 53 f5 31 e6 3f  15 7b 4c 23 06 c1 37 73  |Dl.S.1.?.{L#..7s|
-000000e0  e1 97 8e 4e 1a 2e 2c 1a  da 85 c3 ff 42 92 d0 f1  |...N..,.....B...|
-000000f0  87 b8 39 89 e8 46 2e b3  56 68 41 b8 1e 29 3d ba  |..9..F..VhA..)=.|
-00000100  dd d8 27 4c 7f d5 fe 97  3c a3 92 e9 3d ae 47 ee  |..'L....<...=.G.|
-00000110  24 6a 0b 7c ac b8 28 e6  25 a6 ce 04 80 ee c2 eb  |$j.|..(.%.......|
-00000120  4c 86 fa 70 66 13 63 59  03 c2 70 57 8b fb a1 d6  |L..pf.cY..pW....|
-00000130  f2 58 08 84 43 f3 70 7f  ad d8 30 63 3e ef ff b6  |.X..C.p...0c>...|
-00000140  b2 06 c3 45 c5 d8 89 d3  47 4a 72 ca 20 9b cf b5  |...E....GJr. ...|
-00000150  4b 3d 6d b4 58 ae 42 4b  7f 0a                    |K=m.X.BK..|
+00000040  3a 76 31 3a 6b 65 79 31  3a 5e 47 79 cf 90 88 5c  |:v1:key1:^Gy...\|
+00000050  29 69 62 5c ad 76 07 ce  6e 9a 60 8c 7c 5b c9 8d  |)ib\.v..n.`.|[..|
+00000060  8c 29 5f dc b1 71 0f 3b  b4 db d0 92 47 9e ea 64  |.)_..q.;....G..d|
+00000070  78 12 03 f8 b1 21 9c f9  21 19 0b d0 03 9c ca 09  |x....!..!.......|
+00000080  94 54 50 2f 0e d2 99 bd  38 fa d1 88 c0 0a 93 84  |.TP/....8.......|
+00000090  f0 5b c3 ce ca 8c b9 23  4a 49 52 37 20 30 55 71  |.[.....#JIR7 0Uq|
+000000a0  4d 9b 58 dd 95 83 34 7c  03 fa 66 f5 e7 24 26 99  |M.X...4|..f..$&.|
+000000b0  ba f5 f3 6c 5f f7 19 5f  0e 60 8d 68 9e d3 f0 ca  |...l_.._.`.h....|
+000000c0  4e cc 11 2e 45 ae 9e 41  3d f1 4b 2e 89 e5 05 81  |N...E..A=.K.....|
+000000d0  8e 2e 40 78 72 d5 f9 63  9c e8 cc 65 a8 34 9a 41  |..@xr..c...e.4.A|
+000000e0  f4 5b f6 9a ba b2 c2 8c  7b b5 d6 04 2a ad 79 c1  |.[......{...*.y.|
+000000f0  71 9c e8 34 17 90 07 70  f4 18 a9 fd 80 3d 18 30  |q..4...p.....=.0|
+00000100  1d 07 cb 35 e9 fd 44 ba  cb 28 15 1e 51 3b 29 75  |...5..D..(..Q;)u|
+00000110  b9 ff 16 df d1 7b 91 b9  75 4d f8 c4 26 2e 0c f9  |.....{..uM..&...|
+00000120  84 02 5e 52 a3 f5 da bd  d5 22 0e 9c 1a 87 47 89  |..^R....."....G.|
+00000130  20 11 ac ce d0 c6 98 2a  96 e9 33 c5 26 b3 ec 55  | ......*..3.&..U|
+00000140  f6 30 d5 5c 73 29 ca c8  8d af ab 4b fc 73 fc 11  |.0.\s).....K.s..|
+00000150  c0 71 eb 20 3c 95 f9 74  61 0a                    |.q. <..ta.|
 0000015a
 ```
 
@@ -100,13 +100,13 @@ curl --head http://127.0.0.1:8080
 
 ```text
 HTTP/1.1 200 OK
-Server: nginx/1.27.2
-Date: Thu, 14 Nov 2024 00:16:32 GMT
+Server: nginx/1.27.4
+Date: Sun, 06 Apr 2025 17:17:12 GMT
 Content-Type: text/html
 Content-Length: 615
-Last-Modified: Wed, 02 Oct 2024 15:13:19 GMT
+Last-Modified: Wed, 05 Feb 2025 11:06:32 GMT
 Connection: keep-alive
-ETag: "66fd630f-267"
+ETag: "67a34638-267"
 Accept-Ranges: bytes
 ```
 
@@ -131,7 +131,7 @@ kubectl logs $POD_NAME
 
 ```text
 ...
-127.0.0.1 - - [14/Nov/2024:00:16:32 +0000] "HEAD / HTTP/1.1" 200 0 "-" "curl/7.88.1" "-"
+127.0.0.1 - - [06/Apr/2025:17:17:12 +0000] "HEAD / HTTP/1.1" 200 0 "-" "curl/7.88.1" "-"
 ```
 
 ### Exec
@@ -145,7 +145,7 @@ kubectl exec -ti $POD_NAME -- nginx -v
 ```
 
 ```text
-nginx version: nginx/1.27.2
+nginx version: nginx/1.27.4
 ```
 
 ## Services
@@ -177,14 +177,13 @@ curl -I http://node-0:${NODE_PORT}
 ```
 
 ```text
-HTTP/1.1 200 OK
-Server: nginx/1.25.3
-Date: Sun, 29 Oct 2023 05:11:15 GMT
+Server: nginx/1.27.4
+Date: Sun, 06 Apr 2025 17:18:36 GMT
 Content-Type: text/html
 Content-Length: 615
-Last-Modified: Tue, 24 Oct 2023 13:46:47 GMT
+Last-Modified: Wed, 05 Feb 2025 11:06:32 GMT
 Connection: keep-alive
-ETag: "6537cac7-267"
+ETag: "67a34638-267"
 Accept-Ranges: bytes
 ```
 
