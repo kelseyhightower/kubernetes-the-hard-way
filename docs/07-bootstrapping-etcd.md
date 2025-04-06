@@ -4,7 +4,7 @@ Kubernetes components are stateless and store cluster state in [etcd](https://gi
 
 ## Prerequisites
 
-Copy `etcd` binaries and systemd unit files to the `server` instance:
+Copy `etcd` binaries and systemd unit files to the `server` machine:
 
 ```bash
 scp \

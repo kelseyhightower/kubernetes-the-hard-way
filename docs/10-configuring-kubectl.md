@@ -8,10 +8,10 @@ In this lab you will generate a kubeconfig file for the `kubectl` command line u
 
 Each kubeconfig requires a Kubernetes API Server to connect to.
 
-You should be able to ping `server.kubernetes.local` based on the `/etc/hosts` DNS entry from a previous lap.
+You should be able to ping `server.kubernetes.local` based on the `/etc/hosts` DNS entry from a previous lab.
 
 ```bash
-curl -k --cacert ca.crt \
+curl -k \
   https://server.kubernetes.local:6443/version
 ```
 
@@ -74,8 +74,8 @@ kubectl get nodes
 
 ```
 NAME     STATUS   ROLES    AGE    VERSION
-node-0   Ready    <none>   30m   v1.32.3
-node-1   Ready    <none>   30m   v1.32.3
+node-0   Ready    <none>   10m   v1.32.3
+node-1   Ready    <none>   10m   v1.32.3
 ```
 
 Next: [Provisioning Pod Network Routes](11-pod-network-routes.md)

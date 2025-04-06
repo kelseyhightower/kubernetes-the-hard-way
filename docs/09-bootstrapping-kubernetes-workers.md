@@ -1,6 +1,6 @@
 # Bootstrapping the Kubernetes Worker Nodes
 
-In this lab you will bootstrap two Kubernetes worker nodes. The following components will be installed: [runc](https://github.com/opencontainers/runc), [container networking plugins](https://github.com/containernetworking/cni), [containerd](https://github.com/containerd/containerd), [kubelet](https://kubernetes.io/docs/admin/kubelet), and [kube-proxy](https://kubernetes.io/docs/concepts/cluster-administration/proxies).
+In this lab you will bootstrap two Kubernetes worker nodes. The following components will be installed: [runc](https://github.com/opencontainers/runc), [container networking plugins](https://github.com/containernetworking/cni), [containerd](https://github.com/containerd/containerd), [kubelet](https://kubernetes.io/docs/reference/command-line-tools-reference/kubelet), and [kube-proxy](https://kubernetes.io/docs/concepts/cluster-administration/proxies).
 
 ## Prerequisites
 
@@ -34,7 +34,6 @@ for host in node-0 node-1; do
     downloads/kube-proxy \
     configs/99-loopback.conf \
     configs/containerd-config.toml \
-    configs/kubelet-config.yaml \
     configs/kube-proxy-config.yaml \
     units/containerd.service \
     units/kubelet.service \
@@ -56,11 +55,29 @@ Install the OS dependencies:
 ```bash
 {
   apt-get update
-  apt-get -y install socat conntrack ipset
+  apt-get -y install socat conntrack ipset kmod
 }
 ```
 
 > The socat binary enables support for the `kubectl port-forward` command.
+
+Disable Swap
+
+Kubernetes has limited support for the use of swap memory, as it is difficult to provide guarantees and account for pod memory utilization when swap is involved.
+
+Verify if swap is disabled:
+
+```bash
+swapon --show
+```
+
+If output is empty then swap is disabled. If swap is enabled run the following command to disable swap immediately:
+
+```bash
+swapoff -a
+```
+
+> To ensure swap remains off after reboot consult your Linux distro documentation.
 
 Create the installation directories:
 
@@ -143,7 +160,7 @@ Be sure to complete the steps in this section on each worker node, `node-0` and 
 
 ## Verification
 
-The compute instances created in this tutorial will not have permission to complete this section. Run the following commands from the `jumpbox` machine.
+Run the following commands from the `jumpbox` machine.
 
 List the registered Kubernetes nodes:
 

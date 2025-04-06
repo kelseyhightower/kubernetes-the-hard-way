@@ -44,7 +44,7 @@ Edit the `/etc/ssh/sshd_config` SSH daemon configuration file and set the `Permi
 
 ```bash
 sed -i \
-  's/^#PermitRootLogin.*/PermitRootLogin yes/' \
+  's/^#*PermitRootLogin.*/PermitRootLogin yes/' \
   /etc/ssh/sshd_config
 ```
 
@@ -105,7 +105,7 @@ Set the hostname on each machine listed in the `machines.txt` file:
 
 ```bash
 while read IP FQDN HOST SUBNET; do
-    CMD="sed -i 's/^127.0.1.1.*/127.0.1.1\t${FQDN} ${HOST}/' /etc/hosts"
+    CMD="sed -i 's/^127.0.0.1.*/127.0.0.1\t${FQDN} ${HOST} localhost/' /etc/hosts"
     ssh -n root@${IP} "$CMD"
     ssh -n root@${IP} hostnamectl hostname ${HOST}
 done < machines.txt
@@ -218,6 +218,6 @@ while read IP FQDN HOST SUBNET; do
 done < machines.txt
 ```
 
-At this point hostnames can be used when connecting to machines from your `jumpbox` machine, or any of the three machines in the Kubernetes cluster. Instead of using IP addresses you can now connect to machines using a hostname such as `server`, `node-0`, or `node-1`.
+At this point, hostnames can be used when connecting to machines from your `jumpbox` machine, or any of the three machines in the Kubernetes cluster. Instead of using IP addresses you can now connect to machines using a hostname such as `server`, `node-0`, or `node-1`.
 
 Next: [Provisioning a CA and Generating TLS Certificates](04-certificate-authority.md)

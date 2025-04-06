@@ -25,24 +25,24 @@ ssh root@server \
 00000010  73 2f 64 65 66 61 75 6c  74 2f 6b 75 62 65 72 6e  |s/default/kubern|
 00000020  65 74 65 73 2d 74 68 65  2d 68 61 72 64 2d 77 61  |etes-the-hard-wa|
 00000030  79 0a 6b 38 73 3a 65 6e  63 3a 61 65 73 63 62 63  |y.k8s:enc:aescbc|
-00000040  3a 76 31 3a 6b 65 79 31  3a 5e 47 79 cf 90 88 5c  |:v1:key1:^Gy...\|
-00000050  29 69 62 5c ad 76 07 ce  6e 9a 60 8c 7c 5b c9 8d  |)ib\.v..n.`.|[..|
-00000060  8c 29 5f dc b1 71 0f 3b  b4 db d0 92 47 9e ea 64  |.)_..q.;....G..d|
-00000070  78 12 03 f8 b1 21 9c f9  21 19 0b d0 03 9c ca 09  |x....!..!.......|
-00000080  94 54 50 2f 0e d2 99 bd  38 fa d1 88 c0 0a 93 84  |.TP/....8.......|
-00000090  f0 5b c3 ce ca 8c b9 23  4a 49 52 37 20 30 55 71  |.[.....#JIR7 0Uq|
-000000a0  4d 9b 58 dd 95 83 34 7c  03 fa 66 f5 e7 24 26 99  |M.X...4|..f..$&.|
-000000b0  ba f5 f3 6c 5f f7 19 5f  0e 60 8d 68 9e d3 f0 ca  |...l_.._.`.h....|
-000000c0  4e cc 11 2e 45 ae 9e 41  3d f1 4b 2e 89 e5 05 81  |N...E..A=.K.....|
-000000d0  8e 2e 40 78 72 d5 f9 63  9c e8 cc 65 a8 34 9a 41  |..@xr..c...e.4.A|
-000000e0  f4 5b f6 9a ba b2 c2 8c  7b b5 d6 04 2a ad 79 c1  |.[......{...*.y.|
-000000f0  71 9c e8 34 17 90 07 70  f4 18 a9 fd 80 3d 18 30  |q..4...p.....=.0|
-00000100  1d 07 cb 35 e9 fd 44 ba  cb 28 15 1e 51 3b 29 75  |...5..D..(..Q;)u|
-00000110  b9 ff 16 df d1 7b 91 b9  75 4d f8 c4 26 2e 0c f9  |.....{..uM..&...|
-00000120  84 02 5e 52 a3 f5 da bd  d5 22 0e 9c 1a 87 47 89  |..^R....."....G.|
-00000130  20 11 ac ce d0 c6 98 2a  96 e9 33 c5 26 b3 ec 55  | ......*..3.&..U|
-00000140  f6 30 d5 5c 73 29 ca c8  8d af ab 4b fc 73 fc 11  |.0.\s).....K.s..|
-00000150  c0 71 eb 20 3c 95 f9 74  61 0a                    |.q. <..ta.|
+00000040  3a 76 31 3a 6b 65 79 31  3a 4f 1b 80 d8 89 72 f4  |:v1:key1:O....r.|
+00000050  60 8a 2c a0 76 1a e1 dc  98 d6 00 7a a4 2f f3 92  |`.,.v......z./..|
+00000060  87 63 c9 22 f4 58 c8 27  b9 ff 2c 2e 1a b6 55 be  |.c.".X.'..,...U.|
+00000070  d5 5c 4d 69 82 2f b7 e4  b3 b0 12 e1 58 c4 9c 77  |.\Mi./......X..w|
+00000080  78 0c 1a 90 c9 c1 23 6c  73 8e 6e fd 8e 9c 3d 84  |x.....#ls.n...=.|
+00000090  7d bf 69 81 ce c9 aa 38  be 3b dd 66 aa a3 33 27  |}.i....8.;.f..3'|
+000000a0  df be 6d ac 1c 6d 8a 82  df b3 19 da 0f 93 94 1e  |..m..m..........|
+000000b0  e0 7d 46 8d b5 14 d0 c5  97 e2 94 76 26 a8 cb 33  |.}F........v&..3|
+000000c0  57 2a d0 27 a6 5a e1 76  a7 3f f0 b7 0a 7b ff 53  |W*.'.Z.v.?...{.S|
+000000d0  cf c9 1a 18 5b 45 f8 b1  06 3b a9 45 02 76 23 61  |....[E...;.E.v#a|
+000000e0  5e dc 86 cf 8e a4 d3 c9  5c 6a 6f e6 33 7b 5b 8f  |^.......\jo.3{[.|
+000000f0  fb 8a 14 74 58 f9 49 2f  97 98 cc 5c d4 4a 10 1a  |...tX.I/...\.J..|
+00000100  64 0a 79 21 68 a0 9e 7a  03 b7 19 e6 20 e4 1b ce  |d.y!h..z.... ...|
+00000110  91 64 ce 90 d9 4f 86 ca  fb 45 2f d6 56 93 68 e1  |.d...O...E/.V.h.|
+00000120  0b aa 8c a0 20 a6 97 fa  a1 de 07 6d 5b 4c 02 96  |.... ......m[L..|
+00000130  31 70 20 83 16 f9 0a 22  5c 63 ad f1 ea 41 a7 1e  |1p ...."\c...A..|
+00000140  29 1a d4 a4 e9 d7 0c 04  74 66 04 6d 73 d8 2e 3f  |).......tf.ms..?|
+00000150  f0 b9 2f 77 bd 07 d7 7c  42 0a                    |../w...|B.|
 0000015a
 ```
 
@@ -168,12 +168,18 @@ NODE_PORT=$(kubectl get svc nginx \
   --output=jsonpath='{range .spec.ports[0]}{.nodePort}')
 ```
 
+Retrieve the hostname of the node running the `nginx` pod:
 
+```bash
+NODE_NAME=$(kubectl get pods \
+  -l app=nginx \
+  -o jsonpath="{.items[0].spec.nodeName}")
+```
 
 Make an HTTP request using the IP address and the `nginx` node port:
 
 ```bash
-curl -I http://node-0:${NODE_PORT}
+curl -I http://${NODE_NAME}:${NODE_PORT}
 ```
 
 ```text

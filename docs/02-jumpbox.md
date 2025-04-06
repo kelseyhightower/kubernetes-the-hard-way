@@ -17,7 +17,10 @@ All commands will be run as the `root` user. This is being done for the sake of 
 Now that you are logged into the `jumpbox` machine as the `root` user, you will install the command line utilities that will be used to preform various tasks throughout the tutorial.
 
 ```bash
-apt-get -y install wget curl vim openssl git
+{
+  apt-get update
+  apt-get -y install wget curl vim openssl git
+}
 ```
 
 ### Sync GitHub Repository
@@ -68,7 +71,7 @@ wget -q --show-progress \
 Depending on your internet connection speed it may take a while to download over `500` megabytes of binaries, and once the download is complete, you can list them using the `ls` command:
 
 ```bash
-ls -loh downloads
+ls -oh downloads
 ```
 
 ```text
