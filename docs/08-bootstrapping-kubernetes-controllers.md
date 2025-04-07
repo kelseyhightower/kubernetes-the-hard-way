@@ -1,10 +1,10 @@
 # Bootstrapping the Kubernetes Control Plane
 
-In this lab you will bootstrap the Kubernetes control plane. The following components will be installed on the controller machine: Kubernetes API Server, Scheduler, and Controller Manager.
+In this lab you will bootstrap the Kubernetes control plane. The following components will be installed on the `server` machine: Kubernetes API Server, Scheduler, and Controller Manager.
 
 ## Prerequisites
 
-Connect to the `jumpbox` and copy Kubernetes binaries and systemd unit files to the `server` instance:
+Connect to the `jumpbox` and copy Kubernetes binaries and systemd unit files to the `server` machine:
 
 ```bash
 scp \
@@ -20,7 +20,7 @@ scp \
   root@server:~/
 ```
 
-The commands in this lab must be run on the controller instance: `server`. Login to the controller instance using the `ssh` command. Example:
+The commands in this lab must be run on the `server` machine. Login to the `server` machine using the `ssh` command. Example:
 
 ```bash
 ssh root@server
@@ -43,7 +43,7 @@ Install the Kubernetes binaries:
   chmod +x kube-apiserver \
     kube-controller-manager \
     kube-scheduler kubectl
-    
+
   mv kube-apiserver \
     kube-controller-manager \
     kube-scheduler kubectl \
@@ -111,10 +111,10 @@ mv kube-scheduler.service /etc/systemd/system/
 ```bash
 {
   systemctl daemon-reload
-  
+
   systemctl enable kube-apiserver \
     kube-controller-manager kube-scheduler
-    
+
   systemctl start kube-apiserver \
     kube-controller-manager kube-scheduler
 }
@@ -138,15 +138,15 @@ Kubernetes control plane is running at https://127.0.0.1:6443
 
 In this section you will configure RBAC permissions to allow the Kubernetes API Server to access the Kubelet API on each worker node. Access to the Kubelet API is required for retrieving metrics, logs, and executing commands in pods.
 
-> This tutorial sets the Kubelet `--authorization-mode` flag to `Webhook`. Webhook mode uses the [SubjectAccessReview](https://kubernetes.io/docs/admin/authorization/#checking-api-access) API to determine authorization.
+> This tutorial sets the Kubelet `--authorization-mode` flag to `Webhook`. Webhook mode uses the [SubjectAccessReview](https://kubernetes.io/docs/reference/access-authn-authz/authorization/#checking-api-access) API to determine authorization.
 
-The commands in this section will affect the entire cluster and only need to be run on the controller node.
+The commands in this section will affect the entire cluster and only need to be run on the `server` machine.
 
 ```bash
 ssh root@server
 ```
 
-Create the `system:kube-apiserver-to-kubelet` [ClusterRole](https://kubernetes.io/docs/admin/authorization/rbac/#role-and-clusterrole) with permissions to access the Kubelet API and perform most common tasks associated with managing pods:
+Create the `system:kube-apiserver-to-kubelet` [ClusterRole](https://kubernetes.io/docs/reference/access-authn-authz/rbac/#role-and-clusterrole) with permissions to access the Kubelet API and perform most common tasks associated with managing pods:
 
 ```bash
 kubectl apply -f kube-apiserver-to-kubelet.yaml \
@@ -160,18 +160,18 @@ At this point the Kubernetes control plane is up and running. Run the following 
 Make a HTTP request for the Kubernetes version info:
 
 ```bash
-curl -k --cacert ca.crt https://server.kubernetes.local:6443/version
+curl -k https://server.kubernetes.local:6443/version
 ```
 
 ```text
 {
   "major": "1",
-  "minor": "31",
-  "gitVersion": "v1.31.2",
-  "gitCommit": "5864a4677267e6adeae276ad85882a8714d69d9d",
+  "minor": "32",
+  "gitVersion": "v1.32.3",
+  "gitCommit": "32cc146f75aad04beaaa245a7157eb35063a9f99",
   "gitTreeState": "clean",
-  "buildDate": "2024-10-22T20:28:14Z",
-  "goVersion": "go1.22.8",
+  "buildDate": "2025-03-11T19:52:21Z",
+  "goVersion": "go1.23.6",
   "compiler": "gc",
   "platform": "linux/arm64"
 }
