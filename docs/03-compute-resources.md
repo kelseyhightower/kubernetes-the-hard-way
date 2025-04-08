@@ -105,9 +105,10 @@ Set the hostname on each machine listed in the `machines.txt` file:
 
 ```bash
 while read IP FQDN HOST SUBNET; do
-    CMD="sed -i 's/^127.0.0.1.*/127.0.0.1\t${FQDN} ${HOST} localhost/' /etc/hosts"
+    CMD="sed -i 's/^127.0.1.1.*/127.0.1.1\t${FQDN} ${HOST}/' /etc/hosts"
     ssh -n root@${IP} "$CMD"
-    ssh -n root@${IP} hostnamectl hostname ${HOST}
+    ssh -n root@${IP} hostnamectl set-hostname ${HOST}
+    ssh -n root@${IP} systemctl restart systemd-hostnamed
 done < machines.txt
 ```
 
@@ -199,9 +200,9 @@ done
 ```
 
 ```text
-server aarch64 GNU/Linux
-node-0 aarch64 GNU/Linux
-node-1 aarch64 GNU/Linux
+server.kubernetes.local aarch64 GNU/Linux
+node-0.kubernetes.local aarch64 GNU/Linux
+node-1.kubernetes.local aarch64 GNU/Linux
 ```
 
 ## Adding `/etc/hosts` Entries To The Remote Machines

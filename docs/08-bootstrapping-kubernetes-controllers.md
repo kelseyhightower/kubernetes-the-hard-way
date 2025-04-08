@@ -122,8 +122,27 @@ mv kube-scheduler.service /etc/systemd/system/
 
 > Allow up to 10 seconds for the Kubernetes API Server to fully initialize.
 
+You can check if the Kubernetes API Server is active by running the following command:
+
+```bash
+systemctl is-active kube-apiserver
+```
+
+For a more detailed status check run the following command:
+
+```bash
+systemctl status kube-apiserver
+```
+
+If you run into any errors or want to view the logs run the following command:
+
+```bash
+journalctl -u kube-apiserver --no-pager
+```
 
 ### Verification
+
+At this point the Kubernetes control plane components should be up and running. Verify this using the `kubectl` command line tool:
 
 ```bash
 kubectl cluster-info \

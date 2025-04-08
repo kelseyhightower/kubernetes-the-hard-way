@@ -156,6 +156,16 @@ Create the `kubelet-config.yaml` configuration file:
 }
 ```
 
+Check if the kubelet service is running:
+
+```bash
+systemctl is-active kubelet
+```
+
+```text
+active
+```
+
 Be sure to complete the steps in this section on each worker node, `node-0` and `node-1`, before moving on to the next section.
 
 ## Verification
