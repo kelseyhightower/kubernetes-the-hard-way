@@ -179,7 +179,8 @@ At this point the Kubernetes control plane is up and running. Run the following 
 Make a HTTP request for the Kubernetes version info:
 
 ```bash
-curl -k https://server.kubernetes.local:6443/version
+curl --cacert ca.crt \
+  https://server.kubernetes.local:6443/version
 ```
 
 ```text
