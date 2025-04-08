@@ -1,0 +1,11 @@
+https://dl.k8s.io/v1.32.3/bin/linux/amd64/kubectl
+https://dl.k8s.io/v1.32.3/bin/linux/amd64/kube-apiserver
+https://dl.k8s.io/v1.32.3/bin/linux/amd64/kube-controller-manager
+https://dl.k8s.io/v1.32.3/bin/linux/amd64/kube-scheduler
+https://dl.k8s.io/v1.32.3/bin/linux/amd64/kube-proxy
+https://dl.k8s.io/v1.32.3/bin/linux/amd64/kubelet
+https://github.com/kubernetes-sigs/cri-tools/releases/download/v1.32.0/crictl-v1.32.0-linux-amd64.tar.gz
+https://github.com/opencontainers/runc/releases/download/v1.3.0-rc.1/runc.amd64
+https://github.com/containernetworking/plugins/releases/download/v1.6.2/cni-plugins-linux-amd64-v1.6.2.tgz
+https://github.com/containerd/containerd/releases/download/v2.1.0-beta.0/containerd-2.1.0-beta.0-linux-amd64.tar.gz
+https://github.com/etcd-io/etcd/releases/download/v3.6.0-rc.3/etcd-v3.6.0-rc.3-linux-amd64.tar.gz
