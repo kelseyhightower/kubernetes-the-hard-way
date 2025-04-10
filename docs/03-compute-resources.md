@@ -85,14 +85,14 @@ Once each key is added, verify SSH public key access is working:
 
 ```bash
 while read IP FQDN HOST SUBNET; do
-  ssh -n root@${IP} uname -o -m
+  ssh -n root@${IP} hostname
 done < machines.txt
 ```
 
 ```text
-aarch64 GNU/Linux
-aarch64 GNU/Linux
-aarch64 GNU/Linux
+server
+node-0
+node-1
 ```
 
 ## Hostnames
@@ -195,14 +195,14 @@ At this point you should be able to SSH to each machine listed in the `machines.
 
 ```bash
 for host in server node-0 node-1
-   do ssh root@${host} uname -o -m -n
+   do ssh root@${host} hostname
 done
 ```
 
 ```text
-server.kubernetes.local aarch64 GNU/Linux
-node-0.kubernetes.local aarch64 GNU/Linux
-node-1.kubernetes.local aarch64 GNU/Linux
+server
+node-0
+node-1
 ```
 
 ## Adding `/etc/hosts` Entries To The Remote Machines

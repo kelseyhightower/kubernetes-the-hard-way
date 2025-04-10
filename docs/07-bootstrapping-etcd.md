@@ -8,7 +8,8 @@ Copy `etcd` binaries and systemd unit files to the `server` machine:
 
 ```bash
 scp \
-  downloads/etcd-v3.6.0-rc.3-linux-arm64.tar.gz \
+  downloads/controller/etcd \
+  downloads/client/etcdctl \
   units/etcd.service \
   root@server:~/
 ```
@@ -27,8 +28,7 @@ Extract and install the `etcd` server and the `etcdctl` command line utility:
 
 ```bash
 {
-  tar -xvf etcd-v3.6.0-rc.3-linux-arm64.tar.gz
-  mv etcd-v3.6.0-rc.3-linux-arm64/etcd* /usr/local/bin/
+  mv etcd etcdctl /usr/local/bin/
 }
 ```
 

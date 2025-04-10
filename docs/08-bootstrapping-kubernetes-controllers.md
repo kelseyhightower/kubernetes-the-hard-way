@@ -8,10 +8,10 @@ Connect to the `jumpbox` and copy Kubernetes binaries and systemd unit files to 
 
 ```bash
 scp \
-  downloads/kube-apiserver \
-  downloads/kube-controller-manager \
-  downloads/kube-scheduler \
-  downloads/kubectl \
+  downloads/controller/kube-apiserver \
+  downloads/controller/kube-controller-manager \
+  downloads/controller/kube-scheduler \
+  downloads/client/kubectl \
   units/kube-apiserver.service \
   units/kube-controller-manager.service \
   units/kube-scheduler.service \
@@ -40,10 +40,6 @@ Install the Kubernetes binaries:
 
 ```bash
 {
-  chmod +x kube-apiserver \
-    kube-controller-manager \
-    kube-scheduler kubectl
-
   mv kube-apiserver \
     kube-controller-manager \
     kube-scheduler kubectl \
