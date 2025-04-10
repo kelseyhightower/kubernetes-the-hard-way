@@ -9,8 +9,8 @@ The commands in this section must be run from the `jumpbox`.
 Copy the Kubernetes binaries and systemd unit files to each worker instance:
 
 ```bash
-for host in node-0 node-1; do
-  SUBNET=$(grep $host machines.txt | cut -d " " -f 4)
+for HOST in node-0 node-1; do
+  SUBNET=$(grep ${HOST} machines.txt | cut -d " " -f 4)
   sed "s|SUBNET|$SUBNET|g" \
     configs/10-bridge.conf > 10-bridge.conf
 
@@ -18,27 +18,30 @@ for host in node-0 node-1; do
     configs/kubelet-config.yaml > kubelet-config.yaml
 
   scp 10-bridge.conf kubelet-config.yaml \
-  root@$host:~/
+  root@${HOST}:~/
 done
 ```
 
 ```bash
-for host in node-0 node-1; do
+for HOST in node-0 node-1; do
   scp \
-    downloads/runc.arm64 \
-    downloads/crictl-v1.32.0-linux-arm64.tar.gz \
-    downloads/cni-plugins-linux-arm64-v1.6.2.tgz \
-    downloads/containerd-2.1.0-beta.0-linux-arm64.tar.gz \
-    downloads/kubectl \
-    downloads/kubelet \
-    downloads/kube-proxy \
+    downloads/worker/* \
+    downloads/client/kubectl \
     configs/99-loopback.conf \
     configs/containerd-config.toml \
     configs/kube-proxy-config.yaml \
     units/containerd.service \
     units/kubelet.service \
     units/kube-proxy.service \
-    root@$host:~/
+    root@${HOST}:~/
+done
+```
+
+```bash
+for HOST in node-0 node-1; do
+  scp \
+    downloads/cni-plugins/* \
+    root@${HOST}:~/cni-plugins/
 done
 ```
 
@@ -95,14 +98,10 @@ Install the worker binaries:
 
 ```bash
 {
-  mkdir -p containerd
-  tar -xvf crictl-v1.32.0-linux-arm64.tar.gz
-  tar -xvf containerd-2.1.0-beta.0-linux-arm64.tar.gz -C containerd
-  tar -xvf cni-plugins-linux-arm64-v1.6.2.tgz -C /opt/cni/bin/
-  mv runc.arm64 runc
-  chmod +x crictl kubectl kube-proxy kubelet runc
-  mv crictl kubectl kube-proxy kubelet runc /usr/local/bin/
-  mv containerd/bin/* /bin/
+  mv crictl kube-proxy kubelet runc \
+    /usr/local/bin/
+  mv containerd containerd-shim-runc-v2 containerd-stress /bin/
+  mv cni-plugins/* /opt/cni/bin/
 }
 ```
 

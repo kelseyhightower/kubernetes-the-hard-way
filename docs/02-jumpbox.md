@@ -52,20 +52,20 @@ pwd
 
 In this section you will download the binaries for the various Kubernetes components. The binaries will be stored in the `downloads` directory on the `jumpbox`, which will reduce the amount of internet bandwidth required to complete this tutorial as we avoid downloading the binaries multiple times for each machine in our Kubernetes cluster.
 
-The binaries that will be downloaded are listed in the `downloads.txt` file, which you can review using the `cat` command:
+The binaries that will be downloaded are listed in either the `downloads-amd64.txt` or `downloads-arm64.txt` file depending on your hardware architecture, which you can review using the `cat` command:
 
 ```bash
-cat downloads.txt
+cat downloads-$(dpkg --print-architecture).txt
 ```
 
-Download the binaries listed in the `downloads.txt` file into a directory called `downloads` using the `wget` command:
+Download the binaries into a directory called `downloads` using the `wget` command:
 
 ```bash
 wget -q --show-progress \
   --https-only \
   --timestamping \
   -P downloads \
-  -i downloads.txt
+  -i downloads-$(dpkg --print-architecture).txt
 ```
 
 Depending on your internet connection speed it may take a while to download over `500` megabytes of binaries, and once the download is complete, you can list them using the `ls` command:
@@ -74,19 +74,42 @@ Depending on your internet connection speed it may take a while to download over
 ls -oh downloads
 ```
 
-```text
-total 544M
--rw-r--r-- 1 root 48M Jan  6 08:13 cni-plugins-linux-arm64-v1.6.2.tgz
--rw-r--r-- 1 root 34M Mar 17 19:33 containerd-2.1.0-beta.0-linux-arm64.tar.gz
--rw-r--r-- 1 root 17M Dec  9 01:16 crictl-v1.32.0-linux-arm64.tar.gz
--rw-r--r-- 1 root 21M Mar 27 16:15 etcd-v3.6.0-rc.3-linux-arm64.tar.gz
--rw-r--r-- 1 root 87M Mar 11 20:31 kube-apiserver
--rw-r--r-- 1 root 80M Mar 11 20:31 kube-controller-manager
--rw-r--r-- 1 root 54M Mar 11 20:31 kubectl
--rw-r--r-- 1 root 72M Mar 11 20:31 kubelet
--rw-r--r-- 1 root 63M Mar 11 20:31 kube-proxy
--rw-r--r-- 1 root 62M Mar 11 20:31 kube-scheduler
--rw-r--r-- 1 root 11M Mar  4 04:14 runc.arm64
+Extract the component binaries from the release archives and organize them under the `downloads` directory.
+
+```bash
+{
+  ARCH=$(dpkg --print-architecture)
+  mkdir -p downloads/{client,cni-plugins,controller,worker}
+  tar -xvf downloads/crictl-v1.32.0-linux-${ARCH}.tar.gz \
+    -C downloads/worker/
+  tar -xvf downloads/containerd-2.1.0-beta.0-linux-${ARCH}.tar.gz \
+    --strip-components 1 \
+    -C downloads/worker/
+  tar -xvf downloads/cni-plugins-linux-${ARCH}-v1.6.2.tgz \
+    -C downloads/cni-plugins/
+  tar -xvf downloads/etcd-v3.6.0-rc.3-linux-${ARCH}.tar.gz \
+    -C downloads/ \
+    --strip-components 1 \
+    etcd-v3.6.0-rc.3-linux-${ARCH}/etcdctl \
+    etcd-v3.6.0-rc.3-linux-${ARCH}/etcd
+  mv downloads/{etcdctl,kubectl} downloads/client/
+  mv downloads/{etcd,kube-apiserver,kube-controller-manager,kube-scheduler} \
+    downloads/controller/
+  mv downloads/{kubelet,kube-proxy} downloads/worker/
+  mv downloads/runc.${ARCH} downloads/worker/runc
+}
+```
+
+```bash
+rm -rf downloads/*gz
+```
+
+Make the binaries executable.
+
+```bash
+{
+  chmod +x downloads/{client,cni-plugins,controller,worker}/*
+}
 ```
 
 ### Install kubectl
@@ -97,8 +120,7 @@ Use the `chmod` command to make the `kubectl` binary executable and move it to t
 
 ```bash
 {
-  chmod +x downloads/kubectl
-  cp downloads/kubectl /usr/local/bin/
+  cp downloads/client/kubectl /usr/local/bin/
 }
 ```
 
