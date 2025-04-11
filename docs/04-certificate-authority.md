@@ -4,7 +4,7 @@ In this lab you will provision a [PKI Infrastructure](https://en.wikipedia.org/w
 
 ## Certificate Authority
 
-In this section you will provision a Certificate Authority that can be used to generate additional TLS certificates for the other Kubernetes components. Setting up CA and generating certificates using `openssl` can be time-consuming, especially when doing it for the first time. To streamline this lab, I've included an openssl configuration file `ca.conf`, which defines all the details needed to generate certificates for each Kubernetes component. 
+In this section you will provision a Certificate Authority that can be used to generate additional TLS certificates for the other Kubernetes components. Setting up CA and generating certificates using `openssl` can be time-consuming, especially when doing it for the first time. To streamline this lab, I've included an openssl configuration file `ca.conf`, which defines all the details needed to generate certificates for each Kubernetes component.
 
 Take a moment to review the `ca.conf` configuration file:
 
@@ -57,7 +57,7 @@ for i in ${certs[*]}; do
   openssl req -new -key "${i}.key" -sha256 \
     -config "ca.conf" -section ${i} \
     -out "${i}.csr"
-  
+
   openssl x509 -req -days 3653 -in "${i}.csr" \
     -copy_extensions copyall \
     -sha256 -CA "ca.crt" \
@@ -81,15 +81,15 @@ Copy the appropriate certificates and private keys to the `node-0` and `node-1` 
 
 ```bash
 for host in node-0 node-1; do
-  ssh root@$host mkdir /var/lib/kubelet/
-  
-  scp ca.crt root@$host:/var/lib/kubelet/
-    
-  scp $host.crt \
-    root@$host:/var/lib/kubelet/kubelet.crt
-    
-  scp $host.key \
-    root@$host:/var/lib/kubelet/kubelet.key
+  ssh root@${host} mkdir /var/lib/kubelet/
+
+  scp ca.crt root@${host}:/var/lib/kubelet/
+
+  scp ${host}.crt \
+    root@${host}:/var/lib/kubelet/kubelet.crt
+
+  scp ${host}.key \
+    root@${host}:/var/lib/kubelet/kubelet.key
 done
 ```
 

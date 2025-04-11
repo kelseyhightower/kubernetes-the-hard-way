@@ -19,14 +19,14 @@ Kubernetes The Hard Way guides you through bootstrapping a basic Kubernetes clus
 
 Component versions:
 
-* [kubernetes](https://github.com/kubernetes/kubernetes) v1.31.x
-* [containerd](https://github.com/containerd/containerd) v2.0.x
+* [kubernetes](https://github.com/kubernetes/kubernetes) v1.32.x
+* [containerd](https://github.com/containerd/containerd) v2.1.x
 * [cni](https://github.com/containernetworking/cni) v1.6.x
-* [etcd](https://github.com/etcd-io/etcd) v3.4.x
+* [etcd](https://github.com/etcd-io/etcd) v3.6.x
 
 ## Labs
 
-This tutorial requires four (4) ARM64 based virtual or physical machines connected to the same network. While ARM64 based machines are used for the tutorial, the lessons learned can be applied to other platforms.
+This tutorial requires four (4) ARM64 or AMD64 based virtual or physical machines connected to the same network.
 
 * [Prerequisites](docs/01-prerequisites.md)
 * [Setting up the Jumpbox](docs/02-jumpbox.md)

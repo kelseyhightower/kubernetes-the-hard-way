@@ -1,14 +1,15 @@
 # Bootstrapping the etcd Cluster
 
-Kubernetes components are stateless and store cluster state in [etcd](https://github.com/etcd-io/etcd). In this lab you will bootstrap a three node etcd cluster and configure it for high availability and secure remote access.
+Kubernetes components are stateless and store cluster state in [etcd](https://github.com/etcd-io/etcd). In this lab you will bootstrap a single node etcd cluster.
 
 ## Prerequisites
 
-Copy `etcd` binaries and systemd unit files to the `server` instance:
+Copy `etcd` binaries and systemd unit files to the `server` machine:
 
 ```bash
 scp \
-  downloads/etcd-v3.4.34-linux-arm64.tar.gz \
+  downloads/controller/etcd \
+  downloads/client/etcdctl \
   units/etcd.service \
   root@server:~/
 ```
@@ -27,8 +28,7 @@ Extract and install the `etcd` server and the `etcdctl` command line utility:
 
 ```bash
 {
-  tar -xvf etcd-v3.4.34-linux-arm64.tar.gz
-  mv etcd-v3.4.34-linux-arm64/etcd* /usr/local/bin/
+  mv etcd etcdctl /usr/local/bin/
 }
 ```
 

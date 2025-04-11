@@ -8,22 +8,22 @@ In this lab you will generate a kubeconfig file for the `kubectl` command line u
 
 Each kubeconfig requires a Kubernetes API Server to connect to.
 
-You should be able to ping `server.kubernetes.local` based on the `/etc/hosts` DNS entry from a previous lap.
+You should be able to ping `server.kubernetes.local` based on the `/etc/hosts` DNS entry from a previous lab.
 
 ```bash
-curl -k --cacert ca.crt \
+curl --cacert ca.crt \
   https://server.kubernetes.local:6443/version
 ```
 
 ```text
 {
   "major": "1",
-  "minor": "31",
-  "gitVersion": "v1.31.2",
-  "gitCommit": "5864a4677267e6adeae276ad85882a8714d69d9d",
+  "minor": "32",
+  "gitVersion": "v1.32.3",
+  "gitCommit": "32cc146f75aad04beaaa245a7157eb35063a9f99",
   "gitTreeState": "clean",
-  "buildDate": "2024-10-22T20:28:14Z",
-  "goVersion": "go1.22.8",
+  "buildDate": "2025-03-11T19:52:21Z",
+  "goVersion": "go1.23.6",
   "compiler": "gc",
   "platform": "linux/arm64"
 }
@@ -61,9 +61,9 @@ kubectl version
 ```
 
 ```text
-Client Version: v1.31.2
-Kustomize Version: v5.4.2
-Server Version: v1.31.2
+Client Version: v1.32.3
+Kustomize Version: v5.5.0
+Server Version: v1.32.3
 ```
 
 List the nodes in the remote Kubernetes cluster:
@@ -73,9 +73,9 @@ kubectl get nodes
 ```
 
 ```
-NAME     STATUS   ROLES    AGE   VERSION
-node-0   Ready    <none>   30m   v1.31.2
-node-1   Ready    <none>   35m   v1.31.2
+NAME     STATUS   ROLES    AGE    VERSION
+node-0   Ready    <none>   10m   v1.32.3
+node-1   Ready    <none>   10m   v1.32.3
 ```
 
 Next: [Provisioning Pod Network Routes](11-pod-network-routes.md)

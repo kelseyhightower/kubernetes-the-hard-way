@@ -4,7 +4,6 @@ Documentation=https://github.com/etcd-io/etcd
 
 [Service]
 Type=notify
-Environment="ETCD_UNSUPPORTED_ARCH=arm64"
 ExecStart=/usr/local/bin/etcd \
   --name controller \
   --initial-advertise-peer-urls http://127.0.0.1:2380 \

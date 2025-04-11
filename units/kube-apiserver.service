@@ -5,7 +5,6 @@ Documentation=https://github.com/kubernetes/kubernetes
 [Service]
 ExecStart=/usr/local/bin/kube-apiserver \
   --allow-privileged=true \
-  --apiserver-count=1 \
   --audit-log-maxage=30 \
   --audit-log-maxbackup=3 \
   --audit-log-maxsize=100 \
@@ -24,7 +23,6 @@ ExecStart=/usr/local/bin/kube-apiserver \
   --service-account-key-file=/var/lib/kubernetes/service-accounts.crt \
   --service-account-signing-key-file=/var/lib/kubernetes/service-accounts.key \
   --service-account-issuer=https://server.kubernetes.local:6443 \
-  --service-cluster-ip-range=10.32.0.0/24 \
   --service-node-port-range=30000-32767 \
   --tls-cert-file=/var/lib/kubernetes/kube-api-server.crt \
   --tls-private-key-file=/var/lib/kubernetes/kube-api-server.key \
