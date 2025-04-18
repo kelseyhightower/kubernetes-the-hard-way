@@ -23,22 +23,16 @@ Print the internal IP address and Pod CIDR range for each worker instance:
 ```
 
 ```bash
-ssh root@server <<EOF
-  ip route add ${NODE_0_SUBNET} via ${NODE_0_IP}
-  ip route add ${NODE_1_SUBNET} via ${NODE_1_IP}
-EOF
+ssh root@server "ip route add ${NODE_0_SUBNET} via ${NODE_0_IP}"
+ssh root@server "ip route add ${NODE_1_SUBNET} via ${NODE_1_IP}"
 ```
 
 ```bash
-ssh root@node-0 <<EOF
-  ip route add ${NODE_1_SUBNET} via ${NODE_1_IP}
-EOF
+ssh root@node-0 "ip route add ${NODE_1_SUBNET} via ${NODE_1_IP}"
 ```
 
 ```bash
-ssh root@node-1 <<EOF
-  ip route add ${NODE_0_SUBNET} via ${NODE_0_IP}
-EOF
+ssh root@node-1 "ip route add ${NODE_0_SUBNET} via ${NODE_0_IP}"
 ```
 
 ## Verification 

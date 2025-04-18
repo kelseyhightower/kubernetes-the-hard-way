@@ -45,106 +45,39 @@ node-0.kubeconfig
 node-1.kubeconfig
 ```
 
-### The kube-proxy Kubernetes Configuration File
+### The Kubernetes Service Configuration Files
 
-Generate a kubeconfig file for the `kube-proxy` service:
+Generate a `.kubeconfig` file for the `kube-proxy`, `kube-controller-manager`, and `kube-scheduler` services:
 
 ```bash
-{
+for service in proxy controller-manager scheduler; do
   kubectl config set-cluster kubernetes-the-hard-way \
     --certificate-authority=ca.crt \
     --embed-certs=true \
     --server=https://server.kubernetes.local:6443 \
-    --kubeconfig=kube-proxy.kubeconfig
+    --kubeconfig=kube-${service}.kubeconfig
 
-  kubectl config set-credentials system:kube-proxy \
-    --client-certificate=kube-proxy.crt \
-    --client-key=kube-proxy.key \
+  kubectl config set-credentials system:kube-${service} \
+    --client-certificate=kube-${service}.crt \
+    --client-key=kube-${service}.key \
     --embed-certs=true \
-    --kubeconfig=kube-proxy.kubeconfig
+    --kubeconfig=kube-${service}.kubeconfig
 
   kubectl config set-context default \
     --cluster=kubernetes-the-hard-way \
-    --user=system:kube-proxy \
-    --kubeconfig=kube-proxy.kubeconfig
+    --user=system:kube-${service} \
+    --kubeconfig=kube-${service}.kubeconfig
 
   kubectl config use-context default \
-    --kubeconfig=kube-proxy.kubeconfig
-}
+    --kubeconfig=kube-${service}.kubeconfig
+done
 ```
 
 Results:
 
 ```text
 kube-proxy.kubeconfig
-```
-
-### The kube-controller-manager Kubernetes Configuration File
-
-Generate a kubeconfig file for the `kube-controller-manager` service:
-
-```bash
-{
-  kubectl config set-cluster kubernetes-the-hard-way \
-    --certificate-authority=ca.crt \
-    --embed-certs=true \
-    --server=https://server.kubernetes.local:6443 \
-    --kubeconfig=kube-controller-manager.kubeconfig
-
-  kubectl config set-credentials system:kube-controller-manager \
-    --client-certificate=kube-controller-manager.crt \
-    --client-key=kube-controller-manager.key \
-    --embed-certs=true \
-    --kubeconfig=kube-controller-manager.kubeconfig
-
-  kubectl config set-context default \
-    --cluster=kubernetes-the-hard-way \
-    --user=system:kube-controller-manager \
-    --kubeconfig=kube-controller-manager.kubeconfig
-
-  kubectl config use-context default \
-    --kubeconfig=kube-controller-manager.kubeconfig
-}
-```
-
-Results:
-
-```text
 kube-controller-manager.kubeconfig
-```
-
-
-### The kube-scheduler Kubernetes Configuration File
-
-Generate a kubeconfig file for the `kube-scheduler` service:
-
-```bash
-{
-  kubectl config set-cluster kubernetes-the-hard-way \
-    --certificate-authority=ca.crt \
-    --embed-certs=true \
-    --server=https://server.kubernetes.local:6443 \
-    --kubeconfig=kube-scheduler.kubeconfig
-
-  kubectl config set-credentials system:kube-scheduler \
-    --client-certificate=kube-scheduler.crt \
-    --client-key=kube-scheduler.key \
-    --embed-certs=true \
-    --kubeconfig=kube-scheduler.kubeconfig
-
-  kubectl config set-context default \
-    --cluster=kubernetes-the-hard-way \
-    --user=system:kube-scheduler \
-    --kubeconfig=kube-scheduler.kubeconfig
-
-  kubectl config use-context default \
-    --kubeconfig=kube-scheduler.kubeconfig
-}
-```
-
-Results:
-
-```text
 kube-scheduler.kubeconfig
 ```
 
@@ -191,7 +124,7 @@ for host in node-0 node-1; do
   ssh root@${host} "mkdir -p /var/lib/{kube-proxy,kubelet}"
 
   scp kube-proxy.kubeconfig \
-    root@${host}:/var/lib/kube-proxy/kubeconfig \
+    root@${host}:/var/lib/kube-proxy/kubeconfig
 
   scp ${host}.kubeconfig \
     root@${host}:/var/lib/kubelet/kubeconfig

@@ -56,7 +56,7 @@ Create a deployment for the [nginx](https://nginx.org/en/) web server:
 
 ```bash
 kubectl create deployment nginx \
-  --image=nginx:latest
+  --image=nginx:1.27.4
 ```
 
 List the pod created by the `nginx` deployment:
@@ -72,7 +72,7 @@ nginx-56fcf95486-c8dnx   1/1     Running   0          8s
 
 ### Port Forwarding
 
-In this section you will verify the ability to access applications remotely using [port forwarding](https://kubernetes.io/docs/tasks/access-application-cluster/port-forward-access-application-cluster/).
+In this section you will verify the ability to access applications remotely using [port forwarding](https://kubernetes.io/docs/tasks/access-application-cluster/port-forward-access-application-cluster/). If you are familiar with `tmux`, start a Tmux session for this part (install it with `apt-get install -y tmux`).
 
 Retrieve the full name of the `nginx` pod:
 
@@ -92,7 +92,7 @@ Forwarding from 127.0.0.1:8080 -> 80
 Forwarding from [::1]:8080 -> 80
 ```
 
-In a new terminal make an HTTP request using the forwarding address:
+In a new terminal/window, make an HTTP request using the forwarding address:
 
 ```bash
 curl --head http://127.0.0.1:8080
