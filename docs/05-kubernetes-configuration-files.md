@@ -198,7 +198,7 @@ for host in node-0 node-1; do
 done
 ```
 
-Copy the `kube-controller-manager` and `kube-scheduler` kubeconfig files to the `server` machine:
+Copy the `admin`, `kube-controller-manager` and `kube-scheduler` kubeconfig files to the `server` machine:
 
 ```bash
 scp admin.kubeconfig \
