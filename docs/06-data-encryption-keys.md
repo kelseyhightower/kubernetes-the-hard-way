@@ -21,7 +21,7 @@ envsubst < configs/encryption-config.yaml \
   > encryption-config.yaml
 ```
 
-Copy the `encryption-config.yaml` encryption config file to each controller instance:
+Copy the `encryption-config.yaml` encryption config file to the server instance:
 
 ```bash
 scp encryption-config.yaml root@server:~/
