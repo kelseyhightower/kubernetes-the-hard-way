@@ -1,0 +1,11 @@
+https://dl.k8s.io/${K8S_VERSION}/bin/linux/${ARCH}/kubectl
+https://dl.k8s.io/${K8S_VERSION}/bin/linux/${ARCH}/kube-apiserver
+https://dl.k8s.io/${K8S_VERSION}/bin/linux/${ARCH}/kube-controller-manager
+https://dl.k8s.io/${K8S_VERSION}/bin/linux/${ARCH}/kube-scheduler
+https://dl.k8s.io/${K8S_VERSION}/bin/linux/${ARCH}/kube-proxy
+https://dl.k8s.io/${K8S_VERSION}/bin/linux/${ARCH}/kubelet
+https://github.com/kubernetes-sigs/cri-tools/releases/download/${CRI_VERSION}/crictl-${CRI_VERSION}-linux-${ARCH}.tar.gz
+https://github.com/opencontainers/runc/releases/download/${RUNC_VERSION}/runc.${ARCH}
+https://github.com/containernetworking/plugins/releases/download/${CNI_VERSION}/cni-plugins-linux-${ARCH}-${CNI_VERSION}.tgz
+https://github.com/containerd/containerd/releases/download/v${CONTAINERD_VERSION}/containerd-${CONTAINERD_VERSION}-linux-${ARCH}.tar.gz
+https://github.com/etcd-io/etcd/releases/download/${ETCD_VERSION}/etcd-${ETCD_VERSION}-linux-${ARCH}.tar.gz

@@ -52,20 +52,46 @@ pwd
 
 In this section you will download the binaries for the various Kubernetes components. The binaries will be stored in the `downloads` directory on the `jumpbox`, which will reduce the amount of internet bandwidth required to complete this tutorial as we avoid downloading the binaries multiple times for each machine in our Kubernetes cluster.
 
-The binaries that will be downloaded are listed in either the `downloads-amd64.txt` or `downloads-arm64.txt` file depending on your hardware architecture, which you can review using the `cat` command:
+The binaries that will be downloaded are listed in `download-template.txt`, which is a template file that will match your system architecture and the latest software version. You can check it by the following command.
 
 ```bash
-cat downloads-$(dpkg --print-architecture).txt
+cat downloads-template.txt
 ```
 
 Download the binaries into a directory called `downloads` using the `wget` command:
 
 ```bash
-wget -q --show-progress \
+{
+  export ARCH=$(dpkg --print-architecture)
+  echo $ARCH
+
+  export K8S_VERSION=$(curl -sSL https://dl.k8s.io/release/stable.txt)
+  echo "K8S Version: $K8S_VERSION"
+
+  export CRI_VERSION=$(wget -qO- https://api.github.com/repos/kubernetes-sigs/cri-tools/releases/latest | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
+  echo "CRI Version: $CRI_VERSION"
+
+
+  export RUNC_VERSION=$(wget -qO- https://api.github.com/repos/opencontainers/runc/releases/latest | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
+  echo "runc Version: $RUNC_VERSION"
+
+  export CNI_VERSION=$(wget -qO- https://api.github.com/repos/containernetworking/plugins/releases/latest | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
+  echo "cni Version: $CNI_VERSION"
+
+  export CONTAINERD_VERSION=$(wget -qO- https://api.github.com/repos/containerd/containerd/releases/latest | grep '"tag_name":' | sed -E 's/.*"v?([^"]+)".*/\1/')
+  echo "containerd Version: v$CONTAINERD_VERSION"
+
+  export ETCD_VERSION=$(wget -qO- https://api.github.com/repos/etcd-io/etcd/releases/latest | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
+  echo "etcd Version: $ETCD_VERSION"
+
+  envsubst < download-template.txt > download.txt
+
+  wget -q --show-progress \
   --https-only \
   --timestamping \
   -P downloads \
-  -i downloads-$(dpkg --print-architecture).txt
+  -i download.txt
+}
 ```
 
 Depending on your internet connection speed it may take a while to download over `500` megabytes of binaries, and once the download is complete, you can list them using the `ls` command:
@@ -78,20 +104,19 @@ Extract the component binaries from the release archives and organize them under
 
 ```bash
 {
-  ARCH=$(dpkg --print-architecture)
   mkdir -p downloads/{client,cni-plugins,controller,worker}
-  tar -xvf downloads/crictl-v1.32.0-linux-${ARCH}.tar.gz \
+  tar -xvf downloads/crictl-${CRI_VERSION}-linux-${ARCH}.tar.gz \
     -C downloads/worker/
-  tar -xvf downloads/containerd-2.1.0-beta.0-linux-${ARCH}.tar.gz \
+  tar -xvf downloads/containerd-${CONTAINERD_VERSION}-linux-${ARCH}.tar.gz \
     --strip-components 1 \
     -C downloads/worker/
-  tar -xvf downloads/cni-plugins-linux-${ARCH}-v1.6.2.tgz \
+  tar -xvf downloads/cni-plugins-linux-${ARCH}-${CNI_VERSION}.tgz \
     -C downloads/cni-plugins/
-  tar -xvf downloads/etcd-v3.6.0-rc.3-linux-${ARCH}.tar.gz \
+  tar -xvf downloads/etcd-${ETCD_VERSION}-linux-${ARCH}.tar.gz \
     -C downloads/ \
     --strip-components 1 \
-    etcd-v3.6.0-rc.3-linux-${ARCH}/etcdctl \
-    etcd-v3.6.0-rc.3-linux-${ARCH}/etcd
+    etcd-${ETCD_VERSION}-linux-${ARCH}/etcdctl \
+    etcd-${ETCD_VERSION}-linux-${ARCH}/etcd  
   mv downloads/{etcdctl,kubectl} downloads/client/
   mv downloads/{etcd,kube-apiserver,kube-controller-manager,kube-scheduler} \
     downloads/controller/
@@ -107,9 +132,7 @@ rm -rf downloads/*gz
 Make the binaries executable.
 
 ```bash
-{
-  chmod +x downloads/{client,cni-plugins,controller,worker}/*
-}
+chmod +x downloads/{client,cni-plugins,controller,worker}/*
 ```
 
 ### Install kubectl
