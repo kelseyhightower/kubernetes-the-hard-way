@@ -10,7 +10,7 @@ Copy the Kubernetes binaries and systemd unit files to each worker instance:
 
 ```bash
 for HOST in node-0 node-1; do
-  SUBNET=$(grep ${HOST} machines.txt | cut -d " " -f 4)
+  SUBNET=$(grep "${HOST}" machines.txt | awk '{print $4}')
   sed "s|SUBNET|$SUBNET|g" \
     configs/10-bridge.conf > 10-bridge.conf
 
