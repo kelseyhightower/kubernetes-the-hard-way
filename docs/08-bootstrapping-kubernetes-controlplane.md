@@ -122,30 +122,35 @@ sudo mv kube-scheduler.service /etc/systemd/system/
 
 > Allow up to 10 seconds for the Kubernetes API Server to fully initialize.
 
-You can check if any of the control plane components are active using the `systemctl` command. For example, to check if the `kube-apiserver` fully initialized, and active, run the following command:
+You can check if any of the control plane components are active using the
+`systemctl` command. For example, to check if the `kube-apiserver` is fully
+initialized, and active, run the following command:
 
 ```bash
 systemctl is-active kube-apiserver
 ```
 
-For a more detailed status check, which includes additional process information and log messages, use the `systemctl status` command:
+For a more detailed status check, which includes additional process information
+and log messages, use the `systemctl status` command:
 
 ```bash
 sudo systemctl status kube-apiserver
 sudo systemctl status kube-controller-manager
-
 sudo systemctl status kube-scheduler
 ```
 
-If you run into any errors, or want to view the logs for any of the control plane components, use the `journalctl` command. For example, to view the logs for the `kube-apiserver` run the following command:
+If you run into any errors, or want to view the logs for any of the control
+plane components, use the `journalctl` command. For example, to view the logs
+for the `kube-apiserver` run the following command:
 
 ```bash
-journalctl -u kube-apiserver
+sudo journalctl -u kube-apiserver
 ```
 
 ### Verification
 
-At this point the Kubernetes control plane components should be up and running. Verify this using the `kubectl` command line tool:
+At this point the Kubernetes control plane components should be up and running.
+Verify this using the `kubectl` command line tool:
 
 ```bash
 kubectl cluster-info \
@@ -158,17 +163,23 @@ Kubernetes control plane is running at https://127.0.0.1:6443
 
 ## RBAC for Kubelet Authorization
 
-In this section you will configure RBAC permissions to allow the Kubernetes API Server to access the Kubelet API on each worker node. Access to the Kubelet API is required for retrieving metrics, logs, and executing commands in pods.
+In this section you will configure RBAC permissions to allow the Kubernetes API
+Server to access the Kubelet API on each worker node. Access to the Kubelet API
+is required for retrieving metrics, logs, and executing commands in pods.
 
-> This tutorial sets the Kubelet `--authorization-mode` flag to `Webhook`. Webhook mode uses the [SubjectAccessReview](https://kubernetes.io/docs/reference/access-authn-authz/authorization/#checking-api-access) API to determine authorization.
+> This tutorial sets the Kubelet `--authorization-mode` flag to `Webhook`.
+> Webhook mode uses the [SubjectAccessReview] API to determine authorization.
 
-The commands in this section will affect the entire cluster and only need to be run on the `controlplane` machine.
+The commands in this section will affect the entire cluster and only need to be
+run on the `controlplane` machine.
 
 ```bash
 ssh root@controlplane
 ```
 
-Create the `system:kube-apiserver-to-kubelet` [ClusterRole](https://kubernetes.io/docs/reference/access-authn-authz/rbac/#role-and-clusterrole) with permissions to access the Kubelet API and perform most common tasks associated with managing pods:
+Create the `system:kube-apiserver-to-kubelet` [ClusterRole] with permissions
+to access the Kubelet API and perform most common tasks associated with
+managing pods:
 
 ```bash
 kubectl apply -f kube-apiserver-to-kubelet.yaml \
@@ -177,7 +188,8 @@ kubectl apply -f kube-apiserver-to-kubelet.yaml \
 
 ### Verification
 
-At this point the Kubernetes control plane is up and running. Run the following commands from the `jumpbox` machine to verify it's working:
+At this point the Kubernetes control plane is up and running. Run the following
+commands from the `jumpbox` machine to verify it's working:
 
 Make an HTTP request for the Kubernetes version info:
 
@@ -201,3 +213,8 @@ curl --cacert ca.crt \
 ```
 
 Next: [Bootstrapping the Kubernetes Worker Nodes](09-bootstrapping-kubernetes-workers.md)
+
+---
+
+[SubjectAccessReview]: https://kubernetes.io/docs/reference/access-authn-authz/authorization/#checking-api-access
+[ClusterRole]: https://kubernetes.io/docs/reference/access-authn-authz/rbac/#role-and-clusterrole

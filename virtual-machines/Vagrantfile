@@ -137,10 +137,6 @@ Vagrant.configure("2") do |config|
   config.vm.box = BOX_IMG
   config.vm.boot_timeout = BOOT_TIMEOUT_SEC
 
-  # Set SSH login user and password
-  config.ssh.username = "root"
-  config.ssh.password = "vagrant"
-
   # Disable automatic box update checking. If you disable this, then
   # boxes will only be checked for updates when the user runs
   # `vagrant box outdated`. This is not recommended.
@@ -160,7 +156,6 @@ Vagrant.configure("2") do |config|
       node.vm.network :public_network, bridge: get_bridge_adapter()
     else
       node.vm.network :private_network, ip: NAT_IP_PREFIX + ".#{CONTROLPLANE_NAT_IP}"
-      #node.vm.network "forwarded_port", guest: 22, host: "#{2710}"
     end
     provision_kubernetes_node node
     # Install (opinionated) configs for vim and tmux on master-1. These used by the author for CKA exam.
@@ -181,7 +176,6 @@ Vagrant.configure("2") do |config|
         node.vm.network :public_network, bridge: get_bridge_adapter()
       else
         node.vm.network :private_network, ip: NAT_IP_PREFIX + ".#{NODE_IP_START + i}"
-        #node.vm.network "forwarded_port", guest: 22, host: "#{2720 + i}"
       end
       provision_kubernetes_node node
     end
@@ -202,7 +196,6 @@ Vagrant.configure("2") do |config|
         node.vm.network :public_network, bridge: get_bridge_adapter()
       else
         node.vm.network :private_network, ip: NAT_IP_PREFIX + ".#{JUMPER_NAT_START_IP}"
-        #node.vm.network "forwarded_port", guest: 22, host: "#{2730}"
       end
       provision_kubernetes_node node
     end
