@@ -1,5 +1,10 @@
 # Smoke Test
 
+In this lab you will complete a series of tasks to ensure your Kubernetes
+cluster is functioning correctly. These commands should be run from the
+`jumpbox`.
+
+
 ## Add kubectl Alias
 
 So you can just type `k` in place of `kubectl` for running Kubernetes commands.
@@ -10,9 +15,6 @@ get an error that it is an unknown command. Then run:
 ```shell
 echo "alias k='kubectl'" | tee -a ~/.bashrc && source ~/.bashrc
 ```
-
-In this lab you will complete a series of tasks to ensure your Kubernetes
-cluster is functioning correctly.
 
 ## Data Encryption
 
@@ -28,7 +30,7 @@ kubectl create secret generic kubernetes-the-hard-way \
 Print a hexdump of the `kubernetes-the-hard-way` secret stored in etcd:
 
 ```bash
-ssh root@controlplane \
+ssh vagrant@controlplane \
     'etcdctl get /registry/secrets/default/kubernetes-the-hard-way | hexdump -C'
 ```
 
@@ -69,14 +71,14 @@ In this section you will verify the ability to create and manage [Deployments].
 Create a deployment for the [nginx] web server:
 
 ```bash
-kubectl create deployment nginx \
+k create deployment nginx \
   --image=nginx:latest
 ```
 
 List the pod created by the `nginx` deployment:
 
 ```bash
-kubectl get pods -l app=nginx
+k get pods -l app=nginx
 ```
 
 ```bash
@@ -86,7 +88,8 @@ nginx-56fcf95486-c8dnx   1/1     Running   0          8s
 
 ### Port Forwarding
 
-In this section you will verify the ability to access applications remotely using [port forwarding](https://kubernetes.io/docs/tasks/access-application-cluster/port-forward-access-application-cluster/).
+In this section you will verify the ability to access applications remotely
+using [port forwarding].
 
 Retrieve the full name of the `nginx` pod:
 
@@ -98,7 +101,7 @@ POD_NAME=$(kubectl get pods -l app=nginx \
 Forward port `8080` on your local machine to port `80` of the `nginx` pod:
 
 ```bash
-kubectl port-forward $POD_NAME 8080:80
+k port-forward $POD_NAME 8080:80
 ```
 
 ```text
@@ -114,13 +117,13 @@ curl --head http://127.0.0.1:8080
 
 ```text
 HTTP/1.1 200 OK
-Server: nginx/1.27.4
-Date: Sun, 06 Apr 2025 17:17:12 GMT
+Server: nginx/1.27.5
+Date: Tue, 03 Jun 2025 16:02:14 GMT
 Content-Type: text/html
 Content-Length: 615
-Last-Modified: Wed, 05 Feb 2025 11:06:32 GMT
+Last-Modified: Wed, 16 Apr 2025 12:01:11 GMT
 Connection: keep-alive
-ETag: "67a34638-267"
+ETag: "67ff9c07-267"
 Accept-Ranges: bytes
 ```
 
@@ -140,7 +143,7 @@ In this section you will verify the ability to [retrieve container logs].
 Print the `nginx` pod logs:
 
 ```bash
-kubectl logs $POD_NAME
+k logs $POD_NAME
 ```
 
 ```text
@@ -157,7 +160,7 @@ Print the nginx version by executing the `nginx -v` command in the `nginx`
 container:
 
 ```bash
-kubectl exec -ti $POD_NAME -- nginx -v
+k exec -ti $POD_NAME -- nginx -v
 ```
 
 ```text
@@ -172,7 +175,7 @@ In this section you will verify the ability to expose applications using a
 Expose the `nginx` deployment using a [NodePort] service:
 
 ```bash
-kubectl expose deployment nginx \
+k expose deployment nginx \
   --port 80 --type NodePort
 ```
 
@@ -202,13 +205,14 @@ curl -I http://${NODE_NAME}:${NODE_PORT}
 ```
 
 ```text
-Server: nginx/1.27.4
-Date: Sun, 06 Apr 2025 17:18:36 GMT
+HTTP/1.1 200 OK
+Server: nginx/1.27.5
+Date: Tue, 03 Jun 2025 16:06:33 GMT
 Content-Type: text/html
 Content-Length: 615
-Last-Modified: Wed, 05 Feb 2025 11:06:32 GMT
+Last-Modified: Wed, 16 Apr 2025 12:01:11 GMT
 Connection: keep-alive
-ETag: "67a34638-267"
+ETag: "67ff9c07-267"
 Accept-Ranges: bytes
 ```
 
@@ -224,3 +228,4 @@ Next: [Cleaning Up](13-cleanup.md)
 [Service]: https://kubernetes.io/docs/concepts/services-networking/service/
 [NodePort]: https://kubernetes.io/docs/concepts/services-networking/service/#type-nodeport
 [cloud provider integration]: https://kubernetes.io/docs/getting-started-guides/scratch/#cloud-provider
+[port forwarding]: https://kubernetes.io/docs/tasks/access-application-cluster/port-forward-access-application-cluster/

@@ -26,28 +26,28 @@ Print the internal IP address and Pod CIDR range for each worker instance:
 ```
 
 ```bash
-ssh root@controlplane <<EOF
-  ip route add ${NODE_0_SUBNET} via ${NODE_0_IP}
-  ip route add ${NODE_1_SUBNET} via ${NODE_1_IP}
+ssh vagrant@controlplane <<EOF
+  sudo ip route add ${NODE_0_SUBNET} via ${NODE_0_IP}
+  sudo ip route add ${NODE_1_SUBNET} via ${NODE_1_IP}
 EOF
 ```
 
 ```bash
-ssh root@node01 <<EOF
-  ip route add ${NODE_1_SUBNET} via ${NODE_1_IP}
+ssh vagrant@node01 <<EOF
+  sudo ip route add ${NODE_1_SUBNET} via ${NODE_1_IP}
 EOF
 ```
 
 ```bash
-ssh root@node02 <<EOF
-  ip route add ${NODE_0_SUBNET} via ${NODE_0_IP}
+ssh vagrant@node02 <<EOF
+  sudo ip route add ${NODE_0_SUBNET} via ${NODE_0_IP}
 EOF
 ```
 
 ## Verification 
 
 ```bash
-ssh root@controlplane ip route
+ssh vagrant@controlplane ip route
 ```
 
 ```text
@@ -58,7 +58,7 @@ XXX.XXX.XXX.0/24 dev ens160 proto kernel scope link src XXX.XXX.XXX.XXX
 ```
 
 ```bash
-ssh root@node01 ip route
+ssh vagrant@node01 ip route
 ```
 
 ```text
@@ -68,7 +68,7 @@ XXX.XXX.XXX.0/24 dev ens160 proto kernel scope link src XXX.XXX.XXX.XXX
 ```
 
 ```bash
-ssh root@node02 ip route
+ssh vagrant@node02 ip route
 ```
 
 ```text

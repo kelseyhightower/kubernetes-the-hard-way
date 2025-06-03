@@ -1,6 +1,7 @@
 # Configuring kubectl for Remote Access
 
-In this lab you will generate a kubeconfig file for the `kubectl` command line utility based on the `admin` user credentials.
+In this lab you will generate a kubeconfig file for the `kubectl` command line
+utility based on the `admin` user credentials.
 
 > Run the commands in this lab from the `jumpbox` machine.
 
@@ -8,7 +9,8 @@ In this lab you will generate a kubeconfig file for the `kubectl` command line u
 
 Each kubeconfig requires a Kubernetes API Server to connect to.
 
-You should be able to ping `controlplane.kubernetes.local` based on the `/etc/hosts` DNS entry from a previous lab.
+You should be able to ping `controlplane.kubernetes.local` based on the
+`/etc/hosts` DNS entry from a previous lab.
 
 ```bash
 curl --cacert ca.crt \
@@ -49,7 +51,9 @@ Generate a kubeconfig file suitable for authenticating as the `admin` user:
   kubectl config use-context kubernetes-the-hard-way
 }
 ```
-The results of running the command above should create a kubeconfig file in the default location `~/.kube/config` used by the  `kubectl` commandline tool. This also means you can run the `kubectl` command without specifying a config.
+The results of running the command above should create a kubeconfig file in
+the default location `~/.kube/config` used by the  `kubectl` commandline tool.
+This also means you can run the `kubectl` command without specifying a config.
 
 
 ## Verification
@@ -62,7 +66,7 @@ kubectl version
 
 ```text
 Client Version: v1.33.1
-Kustomize Version: v5.5.0
+Kustomize Version: v5.6.0
 Server Version: v1.33.1
 ```
 
@@ -73,9 +77,9 @@ kubectl get nodes
 ```
 
 ```
-NAME     STATUS   ROLES    AGE    VERSION
-node01   Ready    <none>   10m   v1.33.1
-node02   Ready    <none>   10m   v1.33.1
+NAME     STATUS   ROLES    AGE   VERSION
+node01   Ready    <none>   15m   v1.33.1
+node02   Ready    <none>   15m   v1.33.1
 ```
 
 Next: [Provisioning Pod Network Routes](11-pod-network-routes.md)
