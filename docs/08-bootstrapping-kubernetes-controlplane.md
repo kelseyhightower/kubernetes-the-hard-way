@@ -174,7 +174,7 @@ The commands in this section will affect the entire cluster and only need to be
 run on the `controlplane` machine.
 
 ```bash
-ssh root@controlplane
+ssh vagrant@controlplane
 ```
 
 Create the `system:kube-apiserver-to-kubelet` [ClusterRole] with permissions

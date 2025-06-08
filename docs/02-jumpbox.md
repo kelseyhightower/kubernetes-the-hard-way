@@ -16,23 +16,23 @@ components throughout this tutorial.
 Log in to the `jumpbox`:
 
 ```bash
-ssh root@jumpbox
+ssh vagrant@jumpbox
 ```
 
-All commands will be run as the `root` user. This is being done for the sake
+All commands will be run as the `vagrant` user. This is being done for the sake
 of convenience, and will help reduce the number of commands required to set
 everything up.
 
 ### Install Command Line Utilities
 
-Now that you are logged into the `jumpbox` machine as the `root` user, you will
+Now that you are logged into the `jumpbox` machine as the `vagrant` user, you will
 install the command line utilities that will be used to preform various tasks
 throughout the tutorial.
 
 ```bash
 {
-  apt-get update
-  apt-get -y install wget curl vim openssl git
+  sudo apt-get update
+  sudo apt-get -y install wget curl vim openssl git
 }
 ```
 

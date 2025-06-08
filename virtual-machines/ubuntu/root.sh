@@ -7,14 +7,14 @@
 # commands.
 
 # Set the root user password
-echo -e "vagrant\nvagrant" | passwd root
+echo -e "vagrant\nvagrant" | sudo passwd root
 
 # unlock the root user
-passwd -u root
+sudo passwd -u root
 
 # Enable root SSH login
-sed -i 's/^#*PermitRootLogin.*/PermitRootLogin yes/' /etc/ssh/sshd_config
+sudo sed -i 's/^#*PermitRootLogin.*/PermitRootLogin yes/' /etc/ssh/sshd_config
 
-systemctl restart sshd
+sudo systemctl restart sshd
 
 echo "root account setup script done"
