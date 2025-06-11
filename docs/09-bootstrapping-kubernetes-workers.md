@@ -12,36 +12,50 @@ Copy the Kubernetes binaries and systemd unit files to each worker instance:
 
 ```bash
 for HOST in node01 node02; do
+  # Grab the subnet CIDR block from the machines database, if you want to use
   SUBNET=$(grep ${HOST} machines.txt | cut -d " " -f 4)
-  sed "s|SUBNET|$SUBNET|g" \
-    configs/10-bridge.conf > 10-bridge.conf
 
-  scp 10-bridge.conf configs/kubelet-config.yaml \
-  vagrant@${HOST}:~/
-done
-```
+  # For each machine set its subnet in the CNI config file
+  sed "s|SUBNET|${SUBNET}|g" \
+    configs/11-crio-ipv4-bridge.conflist > 11-crio-ipv4-bridge.conflist
 
-```bash
-for HOST in node01 node02; do
+  # Copy the CNI network plugin config over
+  scp 11-crio-ipv4-bridge.conflist vagrant@${HOST}:~/
+
+  # Copy binaries over
   scp \
     downloads/worker/* \
     downloads/client/kubectl \
     configs/99-loopback.conf \
     configs/containerd-config.toml \
     configs/kube-proxy-config.yaml \
+    configs/kubelet-config.yaml \
     units/containerd.service \
     units/kubelet.service \
     units/kube-proxy.service \
+    downloads/cni-plugins/ \
+    11-crio-ipv4-bridge.conflist \
+    vagrant@${HOST}:~/
+
+  # Copy CNI plugins directory over
+  scp -r \
     downloads/cni-plugins/ \
     vagrant@${HOST}:~/
 done
 ```
 
+Create the installation directories:
+
 ```bash
-for HOST in node01 node02; do
-  scp -r \
-    downloads/cni-plugins/ \
-    vagrant@${HOST}:~/cni-plugins/
+for HOST in node01 node02
+    ssh vagrant@${HOST} sudo mkdir -p \
+      /etc/cni/net.d \
+      /opt/cni/bin \
+      /var/lib/kubelet \
+      /var/lib/kube-proxy \
+      /var/lib/kubernetes \
+      /var/run/kubernetes \
+      /etc/containerd
 done
 ```
 
@@ -87,18 +101,6 @@ swapoff -a
 > To ensure swap remains off after reboot consult your Linux distro
 > documentation.
 
-Create the installation directories:
-
-```bash
-sudo mkdir -p \
-  /etc/cni/net.d \
-  /opt/cni/bin \
-  /var/lib/kubelet \
-  /var/lib/kube-proxy \
-  /var/lib/kubernetes \
-  /var/run/kubernetes
-```
-
 Install the worker binaries:
 
 ```bash
@@ -115,7 +117,7 @@ Install the worker binaries:
 Create the `bridge` network configuration file:
 
 ```bash
-sudo mv 10-bridge.conf 99-loopback.conf /etc/cni/net.d/
+sudo mv 11-crio-ipv4-bridge.conflist 99-loopback.conf /etc/cni/net.d/
 ```
 
 To ensure network traffic crossing the CNI `bridge` network is processed by
@@ -128,43 +130,30 @@ To ensure network traffic crossing the CNI `bridge` network is processed by
 }
 ```
 
+Enable for IPv4 and IPv6 (a.k.a dual-stack), then load (with `sysctl -p`) in
+sysctl settings from the file specified.
+
 ```bash
 {
   echo "net.bridge.bridge-nf-call-iptables = 1" | sudo tee -a /etc/sysctl.d/kubernetes.conf
   echo "net.bridge.bridge-nf-call-ip6tables = 1" | sudo tee -a /etc/sysctl.d/kubernetes.conf
+  # Load in sysctl settings from the file specified
   sudo sysctl -p /etc/sysctl.d/kubernetes.conf
 }
 ```
 
-### Configure containerd
+### Configure containerd, Kubelet, and the Kubernetes Proxy
 
-Install the `containerd` configuration files:
+Install the configuration files:
 
 ```bash
 {
-  sudo mkdir -p /etc/containerd/
   sudo mv containerd-config.toml /etc/containerd/config.toml
-  sudo mv containerd.service /etc/systemd/system/
-}
-```
-
-### Configure the Kubelet
-
-Create the `kubelet-config.yaml` configuration file:
-
-```bash
-{
   sudo mv kubelet-config.yaml /var/lib/kubelet/
-  sudo mv kubelet.service /etc/systemd/system/
-}
-```
-
-### Configure the Kubernetes Proxy
-
-```bash
-{
   sudo mv kube-proxy-config.yaml /var/lib/kube-proxy/
-  sudo mv kube-proxy.service /etc/systemd/system/
+
+  sudo mv containerd.service kubelet.service kube-proxy.service \
+    /etc/systemd/system/
 }
 ```
 
@@ -222,6 +211,10 @@ NAME     STATUS   ROLES    AGE     VERSION
 node01   Ready    <none>   2m5s    v1.33.1
 node02   Ready    <none>   2m12s   v1.33.1
 ```
+
+NOTE: For extra credit, see if you can also turn the controlplnae into a
+worker node that can host PODs. Hint: you need to give it a subnet such as
+`10.200.2.0/24` in the machines.txt
 
 Next: [Configuring kubectl for Remote Access](10-configuring-kubectl.md)
 

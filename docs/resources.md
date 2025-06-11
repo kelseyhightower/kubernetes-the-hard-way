@@ -8,6 +8,8 @@ Quick access to information to help you when you run into trouble.
 * [Running Kubelet in Standalone Mode]
 * [Using RBAC Authorization]
 * [Using Node Authorization]
+* [Install network plugins]
+  * [CRI-O CNI configuration] installing either 10-crio-bridge.conflist or 11-crio-ipv4-bridge.conflist.
 
 ---
 
@@ -17,3 +19,5 @@ Quick access to information to help you when you run into trouble.
 [Generate Certificates Manually with OpenSSL]: https://v1-32.docs.kubernetes.io/docs/tasks/administer-cluster/certificates/#openssl
 [Using RBAC Authorization]: https://kubernetes.io/docs/reference/access-authn-authz/rbac/
 [Using Node Authorization]: https://kubernetes.io/docs/reference/access-authn-authz/node/
+[Install network plugins]: https://v1-32.docs.kubernetes.io/docs/tutorials/cluster-management/kubelet-standalone/#install-network-plugins
+[CRI-O CNI configuration]: https://github.com/cri-o/cri-o/blob/main/contrib/cni/README.md

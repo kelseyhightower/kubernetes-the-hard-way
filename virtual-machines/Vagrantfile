@@ -12,6 +12,9 @@
 INSTALL_MODE = "MANUAL"
 
 BOX_IMG = "ubuntu/jammy64"
+#BOX_IMG = "ubuntu/lts-noble-64"
+#BASE_MAC = "080027AA5560"
+
 BOOT_TIMEOUT_SEC = 120
 
 # Set the build mode
@@ -106,7 +109,7 @@ def setup_dns(node)
   if INSTALL_MODE == "KUBEADM"
     # Set up /etc/hosts
     node.vm.provision "setup-hosts", :type => "shell", :path => "ubuntu/vagrant/setup-hosts.sh" do |s|
-      s.args = [NAT_IP_PREFIX, BUILD_MODE, NUM_WORKER_NODES, CONTROLPLANE_NAT_IP, NODE_IP_START]
+      s.args = [NAT_IP_PREFIX, BUILD_MODE, NUM_WORKER_NODES, CONTROLPLANE_NAT_IP, NODE_IP_START, INSTALL_MODE]
     end
   end
   # Set up DNS resolution
@@ -142,6 +145,29 @@ Vagrant.configure("2") do |config|
   # `vagrant box outdated`. This is not recommended.
   config.vm.box_check_update = false
 
+  #config.vm.base_mac = BASE_MAC
+
+  # Provision a jumpbox
+  if INSTALL_MODE == "MANUAL"
+    # Provision a JumpBox
+    config.vm.define JUMPER_NAME do |node|
+      # Name shown in the GUI
+      node.vm.provider "virtualbox" do |vb|
+        vb.name = JUMPER_NAME
+        vb.memory = 512
+        vb.cpus = 1
+      end
+      node.vm.hostname = JUMPER_NAME
+      if BUILD_MODE == "BRIDGE"
+        adapter = ""
+        node.vm.network :public_network, bridge: get_bridge_adapter()
+      else
+        node.vm.network :private_network, ip: NAT_IP_PREFIX + ".#{JUMPER_NAT_START_IP}"
+      end
+      provision_kubernetes_node node
+    end
+  end
+
   # Provision controlplane Nodes
   config.vm.define CONTROLPLANE_NAME do |node|
     # Name shown in the GUI
@@ -176,26 +202,6 @@ Vagrant.configure("2") do |config|
         node.vm.network :public_network, bridge: get_bridge_adapter()
       else
         node.vm.network :private_network, ip: NAT_IP_PREFIX + ".#{NODE_IP_START + i}"
-      end
-      provision_kubernetes_node node
-    end
-  end
-
-  if INSTALL_MODE == "MANUAL"
-    # Provision a JumpBox
-    config.vm.define JUMPER_NAME do |node|
-      # Name shown in the GUI
-      node.vm.provider "virtualbox" do |vb|
-        vb.name = JUMPER_NAME
-        vb.memory = 512
-        vb.cpus = 1
-      end
-      node.vm.hostname = JUMPER_NAME
-      if BUILD_MODE == "BRIDGE"
-        adapter = ""
-        node.vm.network :public_network, bridge: get_bridge_adapter()
-      else
-        node.vm.network :private_network, ip: NAT_IP_PREFIX + ".#{JUMPER_NAT_START_IP}"
       end
       provision_kubernetes_node node
     end

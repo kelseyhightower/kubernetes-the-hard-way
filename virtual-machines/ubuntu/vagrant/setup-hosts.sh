@@ -9,6 +9,7 @@ BUILD_MODE=$2
 NUM_WORKER_NODES=$3
 MASTER_IP_START=$4
 NODE_IP_START=$5
+INSTALL_MODE=$6
 
 if [ "$BUILD_MODE" = "BRIDGE" ]
 then
@@ -35,6 +36,7 @@ fi
 
 # Remove unwanted entries
 sed -e '/^.*ubuntu-jammy.*/d' -i /etc/hosts
+#sed -e '/^.*ubuntu-noble.*/d' -i /etc/hosts
 sed -e "/^.*${HOSTNAME}.*/d" -i /etc/hosts
 
 # Export PRIMARY IP as an environment variable
@@ -42,11 +44,13 @@ echo "PRIMARY_IP=${MY_IP}" >> /etc/environment
 
 [ "$BUILD_MODE" = "BRIDGE" ] && exit 0
 
-# Update /etc/hosts about other hosts (NAT mode)
-echo "${MY_NETWORK}.${MASTER_IP_START} controlplane" >> /etc//hosts
-for i in $(seq 1 $NUM_WORKER_NODES)
-do
-    num=$(( $NODE_IP_START + $i ))
-    echo "${MY_NETWORK}.${num} node0${i}" >> /etc//hosts
-done
-
+if [ "${INSTALL_MODE}" = "KUBEADM" ]
+then
+    # Update /etc/hosts about other hosts (NAT mode)
+    echo "${MY_NETWORK}.${MASTER_IP_START} controlplane" >> /etc/hosts
+    for i in $(seq 1 $NUM_WORKER_NODES)
+    do
+        num=$(( $NODE_IP_START + $i ))
+        echo "${MY_NETWORK}.${num} node0${i}" >> /etc/hosts
+    done
+fi

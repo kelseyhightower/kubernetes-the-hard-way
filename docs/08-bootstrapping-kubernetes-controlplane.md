@@ -36,6 +36,7 @@ Create the Kubernetes configuration directory:
 
 ```bash
 sudo mkdir -p /etc/kubernetes/config
+sudo mkdir -p /var/lib/kubernetes
 ```
 
 ### Install the Kubernetes Controller Binaries
@@ -55,8 +56,6 @@ Install the Kubernetes binaries:
 
 ```bash
 {
-  sudo mkdir -p /var/lib/kubernetes/
-
   sudo mv ca.crt ca.key \
     kube-apiserver.key kube-apiserver.crt \
     service-accounts.key service-accounts.crt \
@@ -65,48 +64,35 @@ Install the Kubernetes binaries:
 }
 ```
 
-Create the `kube-apiserver.service` systemd unit file:
+Install the systemd service unit files for `kube-apiserver.service`,
+`kube-controller-manager.service`, and `kube-scheduler.service`:
 
 ```bash
-sudo mv kube-apiserver.service \
-  /etc/systemd/system/kube-apiserver.service
+sudo mv kube-*.service /etc/systemd/system
 ```
 
-### Configure the Kubernetes Controller Manager
+### Configurations Kubernetes Cluster Components
 
-Move the `kube-controller-manager` kubeconfig into place:
+Install the `kube-controller-manager` and `kube-scheduler` kubeconfigs:
 
 ```bash
-sudo mv kube-controller-manager.kubeconfig /var/lib/kubernetes/
+sudo mv kube-*.kubeconfig /var/lib/kubernetes/
 ```
 
-Create the `kube-controller-manager.service` systemd unit file:
-
-```bash
-sudo mv kube-controller-manager.service /etc/systemd/system/
-```
 
 ### Configure the Kubernetes Scheduler
 
-Move the `kube-scheduler` kubeconfig into place:
+This will set up the static pod scheduler.
 
-```bash
-sudo mv kube-scheduler.kubeconfig /var/lib/kubernetes/
-```
-
-Create the `kube-scheduler.yaml` configuration file:
+Install the `kube-scheduler.yaml` configuration file:
 
 ```bash
 sudo mv kube-scheduler.yaml /etc/kubernetes/config/
 ```
 
-Create the `kube-scheduler.service` systemd unit file:
+### Start the Control Plane Components
 
-```bash
-sudo mv kube-scheduler.service /etc/systemd/system/
-```
-
-### Start the Controller Services
+These components have been installed as standalone services managed by systemd.
 
 ```bash
 {

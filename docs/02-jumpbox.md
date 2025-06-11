@@ -143,7 +143,7 @@ Make the binaries executable.
 
 ```bash
 {
-  chmod +x downloads/{client,cni-plugins,controller,worker}/*
+  chmod +x -R downloads
 }
 ```
 
