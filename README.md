@@ -1,3 +1,34 @@
+
+<div align="right">
+  <details>
+    <summary >🌐 Language</summary>
+    <div>
+      <div align="right">
+        <p><a href="https://openaitx.github.io/view.html?user=kelseyhightower&project=kubernetes-the-hard-way&lang=en">English</a></p>
+        <p><a href="https://openaitx.github.io/view.html?user=kelseyhightower&project=kubernetes-the-hard-way&lang=zh-CN">简体中文</a></p>
+        <p><a href="https://openaitx.github.io/view.html?user=kelseyhightower&project=kubernetes-the-hard-way&lang=zh-TW">繁體中文</a></p>
+        <p><a href="https://openaitx.github.io/view.html?user=kelseyhightower&project=kubernetes-the-hard-way&lang=ja">日本語</a></p>
+        <p><a href="https://openaitx.github.io/view.html?user=kelseyhightower&project=kubernetes-the-hard-way&lang=ko">한국어</a></p>
+        <p><a href="https://openaitx.github.io/view.html?user=kelseyhightower&project=kubernetes-the-hard-way&lang=hi">हिन्दी</a></p>
+        <p><a href="https://openaitx.github.io/view.html?user=kelseyhightower&project=kubernetes-the-hard-way&lang=th">ไทย</a></p>
+        <p><a href="https://openaitx.github.io/view.html?user=kelseyhightower&project=kubernetes-the-hard-way&lang=fr">Français</a></p>
+        <p><a href="https://openaitx.github.io/view.html?user=kelseyhightower&project=kubernetes-the-hard-way&lang=de">Deutsch</a></p>
+        <p><a href="https://openaitx.github.io/view.html?user=kelseyhightower&project=kubernetes-the-hard-way&lang=es">Español</a></p>
+        <p><a href="https://openaitx.github.io/view.html?user=kelseyhightower&project=kubernetes-the-hard-way&lang=it">Itapano</a></p>
+        <p><a href="https://openaitx.github.io/view.html?user=kelseyhightower&project=kubernetes-the-hard-way&lang=ru">Русский</a></p>
+        <p><a href="https://openaitx.github.io/view.html?user=kelseyhightower&project=kubernetes-the-hard-way&lang=pt">Português</a></p>
+        <p><a href="https://openaitx.github.io/view.html?user=kelseyhightower&project=kubernetes-the-hard-way&lang=nl">Nederlands</a></p>
+        <p><a href="https://openaitx.github.io/view.html?user=kelseyhightower&project=kubernetes-the-hard-way&lang=pl">Polski</a></p>
+        <p><a href="https://openaitx.github.io/view.html?user=kelseyhightower&project=kubernetes-the-hard-way&lang=ar">العربية</a></p>
+        <p><a href="https://openaitx.github.io/view.html?user=kelseyhightower&project=kubernetes-the-hard-way&lang=fa">فارسی</a></p>
+        <p><a href="https://openaitx.github.io/view.html?user=kelseyhightower&project=kubernetes-the-hard-way&lang=tr">Türkçe</a></p>
+        <p><a href="https://openaitx.github.io/view.html?user=kelseyhightower&project=kubernetes-the-hard-way&lang=vi">Tiếng Việt</a></p>
+        <p><a href="https://openaitx.github.io/view.html?user=kelseyhightower&project=kubernetes-the-hard-way&lang=id">Bahasa Indonesia</a></p>
+      </div>
+    </div>
+  </details>
+</div>
+
 # Kubernetes The Hard Way
 
 This tutorial walks you through setting up Kubernetes the hard way. This guide is not for someone looking for a fully automated tool to bring up a Kubernetes cluster. Kubernetes The Hard Way is optimized for learning, which means taking the long route to ensure you understand each task required to bootstrap a Kubernetes cluster.
