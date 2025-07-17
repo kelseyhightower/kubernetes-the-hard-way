@@ -194,9 +194,9 @@ XXX.XXX.XXX.XXX node-1.kubernetes.local node-1
 At this point you should be able to SSH to each machine listed in the `machines.txt` file using a hostname.
 
 ```bash
-for host in server node-0 node-1
-   do ssh root@${host} hostname
-done
+while read IP FQDN HOST SUBNET; do
+    ssh -n root@${HOST} hostname
+done < machines.txt
 ```
 
 ```text
