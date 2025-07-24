@@ -14,7 +14,7 @@ All commands will be run as the `root` user. This is being done for the sake of 
 
 ### Install Command Line Utilities
 
-Now that you are logged into the `jumpbox` machine as the `root` user, you will install the command line utilities that will be used to preform various tasks throughout the tutorial.
+Now that you are logged into the `jumpbox` machine as the `root` user, you will install the command line utilities that will be used to perform various tasks throughout the tutorial.
 
 ```bash
 {
