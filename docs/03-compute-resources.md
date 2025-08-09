@@ -26,6 +26,8 @@ XXX.XXX.XXX.XXX node-1.kubernetes.local node-1 10.200.1.0/24
 
 Now it's your turn to create a `machines.txt` file with the details for the three machines you will be using to create your Kubernetes cluster. Use the example machine database from above and add the details for your machines.
 
+> **Note**: Ensure your `machines.txt` file ends with a newline character to prevent the last entry from being skipped during processing.
+
 ## Configuring SSH Access
 
 SSH will be used to configure the machines in the cluster. Verify that you have `root` SSH access to each machine listed in your machine database. You may need to enable root SSH access on each node by updating the sshd_config file and restarting the SSH server.
@@ -76,17 +78,17 @@ Your public key has been saved in /root/.ssh/id_rsa.pub
 Copy the SSH public key to each machine:
 
 ```bash
-while read IP FQDN HOST SUBNET; do
+cat machines.txt | while read IP FQDN HOST SUBNET || [ -n "$IP" ]; do
   ssh-copy-id root@${IP}
-done < machines.txt
+done
 ```
 
 Once each key is added, verify SSH public key access is working:
 
 ```bash
-while read IP FQDN HOST SUBNET; do
+cat machines.txt | while read IP FQDN HOST SUBNET || [ -n "$IP" ]; do
   ssh -n root@${IP} hostname
-done < machines.txt
+done
 ```
 
 ```text
@@ -104,20 +106,20 @@ To configure the hostname for each machine, run the following commands on the `j
 Set the hostname on each machine listed in the `machines.txt` file:
 
 ```bash
-while read IP FQDN HOST SUBNET; do
+cat machines.txt | while read IP FQDN HOST SUBNET || [ -n "$IP" ]; do
     CMD="sed -i 's/^127.0.1.1.*/127.0.1.1\t${FQDN} ${HOST}/' /etc/hosts"
     ssh -n root@${IP} "$CMD"
     ssh -n root@${IP} hostnamectl set-hostname ${HOST}
     ssh -n root@${IP} systemctl restart systemd-hostnamed
-done < machines.txt
+done
 ```
 
 Verify the hostname is set on each machine:
 
 ```bash
-while read IP FQDN HOST SUBNET; do
+cat machines.txt | while read IP FQDN HOST SUBNET || [ -n "$IP" ]; do
   ssh -n root@${IP} hostname --fqdn
-done < machines.txt
+done
 ```
 
 ```text
@@ -140,10 +142,10 @@ echo "# Kubernetes The Hard Way" >> hosts
 Generate a host entry for each machine in the `machines.txt` file and append it to the `hosts` file:
 
 ```bash
-while read IP FQDN HOST SUBNET; do
+cat machines.txt | while read IP FQDN HOST SUBNET || [ -n "$IP" ]; do
     ENTRY="${IP} ${FQDN} ${HOST}"
     echo $ENTRY >> hosts
-done < machines.txt
+done
 ```
 
 Review the host entries in the `hosts` file:
@@ -212,11 +214,11 @@ In this section you will append the host entries from `hosts` to `/etc/hosts` on
 Copy the `hosts` file to each machine and append the contents to `/etc/hosts`:
 
 ```bash
-while read IP FQDN HOST SUBNET; do
+cat machines.txt | while read IP FQDN HOST SUBNET || [ -n "$IP" ]; do
   scp hosts root@${HOST}:~/
   ssh -n \
     root@${HOST} "cat hosts >> /etc/hosts"
-done < machines.txt
+done
 ```
 
 At this point, hostnames can be used when connecting to machines from your `jumpbox` machine, or any of the three machines in the Kubernetes cluster. Instead of using IP addresses you can now connect to machines using a hostname such as `server`, `node-0`, or `node-1`.
