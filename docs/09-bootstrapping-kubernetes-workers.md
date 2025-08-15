@@ -14,10 +14,7 @@ for HOST in node-0 node-1; do
   sed "s|SUBNET|$SUBNET|g" \
     configs/10-bridge.conf > 10-bridge.conf
 
-  sed "s|SUBNET|$SUBNET|g" \
-    configs/kubelet-config.yaml > kubelet-config.yaml
-
-  scp 10-bridge.conf kubelet-config.yaml \
+  scp 10-bridge.conf \
   root@${HOST}:~/
 done
 ```
@@ -30,6 +27,7 @@ for HOST in node-0 node-1; do
     configs/99-loopback.conf \
     configs/containerd-config.toml \
     configs/kube-proxy-config.yaml \
+    configs/kubelet-config.yaml \
     units/containerd.service \
     units/kubelet.service \
     units/kube-proxy.service \
