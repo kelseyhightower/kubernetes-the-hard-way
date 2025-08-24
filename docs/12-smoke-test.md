@@ -179,7 +179,7 @@ NODE_NAME=$(kubectl get pods \
 Make an HTTP request using the IP address and the `nginx` node port:
 
 ```bash
-curl -I http://${NODE_NAME}:${NODE_PORT}
+curl -I "http://${NODE_NAME}:${NODE_PORT}"
 ```
 
 ```text
