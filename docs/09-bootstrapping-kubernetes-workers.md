@@ -39,9 +39,9 @@ done
 
 ```bash
 for HOST in node-0 node-1; do
-  scp \
-    downloads/cni-plugins/* \
-    root@${HOST}:~/cni-plugins/
+  scp -r \
+    downloads/cni-plugins/ \
+    root@${HOST}:~/
 done
 ```
 
