@@ -135,6 +135,16 @@ Client Version: v1.32.3
 Kustomize Version: v5.5.0
 ```
 
+**Optionally**, you may want to install `kubectl` command auto completion with the following:
+
+```bash
+apt-get update
+apt-get install -y bash_completion
+echo "source /etc/bash_completion" >> ~/.bashrc
+echo "source <(kubectl completion bash)" >> ~/.bashrc
+source ~/.bashrc
+```
+
 At this point the `jumpbox` has been set up with all the command line tools and utilities necessary to complete the labs in this tutorial.
 
 Next: [Provisioning Compute Resources](03-compute-resources.md)
