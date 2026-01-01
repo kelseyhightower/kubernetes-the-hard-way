@@ -19,13 +19,11 @@ Every certificate authority starts with a private key and root certificate. In t
 Generate the CA configuration file, certificate, and private key:
 
 ```bash
-{
-  openssl genrsa -out ca.key 4096
-  openssl req -x509 -new -sha512 -noenc \
-    -key ca.key -days 3653 \
-    -config ca.conf \
-    -out ca.crt
-}
+openssl genrsa -out ca.key 4096
+openssl req -x509 -new -sha512 -noenc \
+  -key ca.key -days 3653 \
+  -config ca.conf \
+  -out ca.crt
 ```
 
 Results:
