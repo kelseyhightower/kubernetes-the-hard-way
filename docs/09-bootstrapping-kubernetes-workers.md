@@ -56,10 +56,8 @@ ssh root@node-0
 Install the OS dependencies:
 
 ```bash
-{
-  apt-get update
-  apt-get -y install socat conntrack ipset kmod
-}
+apt-get update
+apt-get -y install socat conntrack ipset kmod
 ```
 
 > The socat binary enables support for the `kubectl port-forward` command.
@@ -97,12 +95,10 @@ mkdir -p \
 Install the worker binaries:
 
 ```bash
-{
-  mv crictl kube-proxy kubelet runc \
-    /usr/local/bin/
-  mv containerd containerd-shim-runc-v2 containerd-stress /bin/
-  mv cni-plugins/* /opt/cni/bin/
-}
+mv crictl kube-proxy kubelet runc \
+  /usr/local/bin/
+mv containerd containerd-shim-runc-v2 containerd-stress /bin/
+mv cni-plugins/* /opt/cni/bin/
 ```
 
 ### Configure CNI Networking
@@ -116,20 +112,16 @@ mv 10-bridge.conf 99-loopback.conf /etc/cni/net.d/
 To ensure network traffic crossing the CNI `bridge` network is processed by `iptables`, load and configure the `br-netfilter` kernel module:
 
 ```bash
-{
-  modprobe br-netfilter
-  echo "br-netfilter" >> /etc/modules-load.d/modules.conf
-}
+modprobe br-netfilter
+echo "br-netfilter" >> /etc/modules-load.d/modules.conf
 ```
 
 ```bash
-{
-  echo "net.bridge.bridge-nf-call-iptables = 1" \
-    >> /etc/sysctl.d/kubernetes.conf
-  echo "net.bridge.bridge-nf-call-ip6tables = 1" \
-    >> /etc/sysctl.d/kubernetes.conf
-  sysctl -p /etc/sysctl.d/kubernetes.conf
-}
+echo "net.bridge.bridge-nf-call-iptables = 1" \
+  >> /etc/sysctl.d/kubernetes.conf
+echo "net.bridge.bridge-nf-call-ip6tables = 1" \
+  >> /etc/sysctl.d/kubernetes.conf
+sysctl -p /etc/sysctl.d/kubernetes.conf
 ```
 
 ### Configure containerd
@@ -137,11 +129,9 @@ To ensure network traffic crossing the CNI `bridge` network is processed by `ipt
 Install the `containerd` configuration files:
 
 ```bash
-{
-  mkdir -p /etc/containerd/
-  mv containerd-config.toml /etc/containerd/config.toml
-  mv containerd.service /etc/systemd/system/
-}
+mkdir -p /etc/containerd/
+mv containerd-config.toml /etc/containerd/config.toml
+mv containerd.service /etc/systemd/system/
 ```
 
 ### Configure the Kubelet
@@ -149,29 +139,23 @@ Install the `containerd` configuration files:
 Create the `kubelet-config.yaml` configuration file:
 
 ```bash
-{
-  mv kubelet-config.yaml /var/lib/kubelet/
-  mv kubelet.service /etc/systemd/system/
-}
+mv kubelet-config.yaml /var/lib/kubelet/
+mv kubelet.service /etc/systemd/system/
 ```
 
 ### Configure the Kubernetes Proxy
 
 ```bash
-{
-  mv kube-proxy-config.yaml /var/lib/kube-proxy/
-  mv kube-proxy.service /etc/systemd/system/
-}
+mv kube-proxy-config.yaml /var/lib/kube-proxy/
+mv kube-proxy.service /etc/systemd/system/
 ```
 
 ### Start the Worker Services
 
 ```bash
-{
-  systemctl daemon-reload
-  systemctl enable containerd kubelet kube-proxy
-  systemctl start containerd kubelet kube-proxy
-}
+systemctl daemon-reload
+systemctl enable containerd kubelet kube-proxy
+systemctl start containerd kubelet kube-proxy
 ```
 
 Check if the kubelet service is running:
