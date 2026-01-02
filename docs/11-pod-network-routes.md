@@ -13,13 +13,11 @@ In this section you will gather the information required to create routes in the
 Print the internal IP address and Pod CIDR range for each worker instance:
 
 ```bash
-{
-  SERVER_IP=$(grep server machines.txt | cut -d " " -f 1)
-  NODE_0_IP=$(grep node-0 machines.txt | cut -d " " -f 1)
-  NODE_0_SUBNET=$(grep node-0 machines.txt | cut -d " " -f 4)
-  NODE_1_IP=$(grep node-1 machines.txt | cut -d " " -f 1)
-  NODE_1_SUBNET=$(grep node-1 machines.txt | cut -d " " -f 4)
-}
+SERVER_IP=$(grep server machines.txt | cut -d " " -f 1)
+NODE_0_IP=$(grep node-0 machines.txt | cut -d " " -f 1)
+NODE_0_SUBNET=$(grep node-0 machines.txt | cut -d " " -f 4)
+NODE_1_IP=$(grep node-1 machines.txt | cut -d " " -f 1)
+NODE_1_SUBNET=$(grep node-1 machines.txt | cut -d " " -f 4)
 ```
 
 ```bash

@@ -39,26 +39,22 @@ mkdir -p /etc/kubernetes/config
 Install the Kubernetes binaries:
 
 ```bash
-{
-  mv kube-apiserver \
-    kube-controller-manager \
-    kube-scheduler kubectl \
-    /usr/local/bin/
-}
+mv kube-apiserver \
+  kube-controller-manager \
+  kube-scheduler kubectl \
+  /usr/local/bin/
 ```
 
 ### Configure the Kubernetes API Server
 
 ```bash
-{
-  mkdir -p /var/lib/kubernetes/
+mkdir -p /var/lib/kubernetes/
 
-  mv ca.crt ca.key \
-    kube-api-server.key kube-api-server.crt \
-    service-accounts.key service-accounts.crt \
-    encryption-config.yaml \
-    /var/lib/kubernetes/
-}
+mv ca.crt ca.key \
+  kube-api-server.key kube-api-server.crt \
+  service-accounts.key service-accounts.crt \
+  encryption-config.yaml \
+  /var/lib/kubernetes/
 ```
 
 Create the `kube-apiserver.service` systemd unit file:
@@ -105,15 +101,13 @@ mv kube-scheduler.service /etc/systemd/system/
 ### Start the Controller Services
 
 ```bash
-{
-  systemctl daemon-reload
+systemctl daemon-reload
 
-  systemctl enable kube-apiserver \
-    kube-controller-manager kube-scheduler
+systemctl enable kube-apiserver \
+  kube-controller-manager kube-scheduler
 
-  systemctl start kube-apiserver \
-    kube-controller-manager kube-scheduler
-}
+systemctl start kube-apiserver \
+  kube-controller-manager kube-scheduler
 ```
 
 > Allow up to 10 seconds for the Kubernetes API Server to fully initialize.
