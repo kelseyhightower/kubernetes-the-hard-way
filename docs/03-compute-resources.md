@@ -54,6 +54,27 @@ Restart the `sshd` SSH server to pick up the updated configuration file:
 systemctl restart sshd
 ```
 
+### Enable SSH Password Authentication
+
+For security reasons, SSH password authentication is disabled by default on many systems.  
+In this tutorial, we temporarily enable it to simplify access and streamline the setup steps.
+
+> ⚠️ **Security Note:**  
+> Enabling password authentication is **not recommended for production environments**.  
+> It is used here only for learning and lab purposes. For real systems, always prefer **SSH key-based authentication**.
+
+Update the SSH server configuration to allow password authentication:
+
+```bash
+sudo sed -i 's/^#\?PasswordAuthentication.*/PasswordAuthentication yes/' /etc/ssh/sshd_config
+```
+
+Restart the `sshd` SSH server to pick up the updated configuration file:
+
+```bash
+systemctl restart sshd
+```
+
 ### Generate and Distribute SSH Keys
 
 In this section you will generate and distribute an SSH keypair to the `server`, `node-0`, and `node-1`, machines, which will be used to run commands on those machines throughout this tutorial. Run the following commands from the `jumpbox` machine.
