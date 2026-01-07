@@ -101,7 +101,7 @@ Extract the component binaries from the release archives and organize them under
 ```
 
 ```bash
-rm -rf downloads/*gz
+rm -f downloads/*gz
 ```
 
 Make the binaries executable.
