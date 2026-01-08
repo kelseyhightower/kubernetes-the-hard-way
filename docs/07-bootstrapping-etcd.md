@@ -56,8 +56,7 @@ mv etcd.service /etc/systemd/system/
 ```bash
 {
   systemctl daemon-reload
-  systemctl enable etcd
-  systemctl start etcd
+  systemctl enable --now etcd
 }
 ```
 
