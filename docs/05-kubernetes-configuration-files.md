@@ -2,6 +2,68 @@
 
 In this lab you will generate [Kubernetes client configuration files](https://kubernetes.io/docs/concepts/configuration/organize-cluster-access-kubeconfig/), typically called kubeconfigs, which configure Kubernetes clients to connect and authenticate to Kubernetes API Servers.
 
+## What You Are Building
+
+A kubeconfig is a client connection file. It tells a Kubernetes component:
+
+- which API server to call
+- which certificate authority to trust
+- which client certificate and key to use as its identity
+- which context to use by default
+
+In this lab, you are not contacting a running API server yet. You are creating the client configuration files that the control plane and worker components will use later.
+
+```text
+                         ca.crt
+                           |
+                           v
+                  trusted certificate authority
+
+  component certificate + key        API server address        output file
+  ----------------------------       ------------------        -------------------------------
+  node-0.crt + node-0.key      --->  server.kubernetes.local   node-0.kubeconfig
+  node-1.crt + node-1.key      --->  server.kubernetes.local   node-1.kubeconfig
+  kube-proxy.crt + key         --->  server.kubernetes.local   kube-proxy.kubeconfig
+  controller-manager.crt + key --->  server.kubernetes.local   kube-controller-manager.kubeconfig
+  kube-scheduler.crt + key     --->  server.kubernetes.local   kube-scheduler.kubeconfig
+  admin.crt + admin.key        --->  127.0.0.1                 admin.kubeconfig
+```
+
+After the files are generated, they are distributed to the machines that need them:
+
+```text
+jumpbox
+  |
+  |  node-0.kubeconfig
+  |  kube-proxy.kubeconfig
+  v
+node-0
+  /var/lib/kubelet/kubeconfig
+  /var/lib/kube-proxy/kubeconfig
+
+jumpbox
+  |
+  |  node-1.kubeconfig
+  |  kube-proxy.kubeconfig
+  v
+node-1
+  /var/lib/kubelet/kubeconfig
+  /var/lib/kube-proxy/kubeconfig
+
+jumpbox
+  |
+  |  admin.kubeconfig
+  |  kube-controller-manager.kubeconfig
+  |  kube-scheduler.kubeconfig
+  v
+server
+  ~/admin.kubeconfig
+  ~/kube-controller-manager.kubeconfig
+  ~/kube-scheduler.kubeconfig
+```
+
+The worker kubeconfigs point to `https://server.kubernetes.local:6443` because the workers must reach the API server over the lab network. The `admin.kubeconfig` points to `https://127.0.0.1:6443` because it is copied to and used on the `server` machine during control plane bootstrap.
+
 ## Client Authentication Configs
 
 In this section you will generate kubeconfig files for the `kubelet` and the `admin` user.
@@ -180,6 +242,34 @@ Results:
 
 ```text
 admin.kubeconfig
+```
+
+Verify all expected kubeconfig files were created before distributing them:
+
+```bash
+{
+  test -f admin.kubeconfig
+  test -f kube-controller-manager.kubeconfig
+  test -f kube-proxy.kubeconfig
+  test -f kube-scheduler.kubeconfig
+  test -f node-0.kubeconfig
+  test -f node-1.kubeconfig
+}
+```
+
+List the generated kubeconfig files:
+
+```bash
+ls -1 *.kubeconfig
+```
+
+```text
+admin.kubeconfig
+kube-controller-manager.kubeconfig
+kube-proxy.kubeconfig
+kube-scheduler.kubeconfig
+node-0.kubeconfig
+node-1.kubeconfig
 ```
 
 ## Distribute the Kubernetes Configuration Files

@@ -1,0 +1,102 @@
+# Kubernetes The Hard Way: local VirtualBox lab.
+#
+# Usage:
+#   cd local/virtualbox
+#   vagrant up
+#
+# The VMs expose the same architecture used by the main guide:
+#   jumpbox -> administration host
+#   server  -> control plane and etcd
+#   node-0  -> worker
+#   node-1  -> worker
+
+Vagrant.configure("2") do |config|
+  config.vm.box = "debian/bookworm64"
+  config.vm.box_check_update = false
+
+  config.ssh.insert_key = true
+
+  config.vm.provider "virtualbox" do |vb|
+    vb.gui = false
+  end
+
+  machines = [
+    {
+      name: "jumpbox",
+      hostname: "jumpbox",
+      ip: "192.168.56.10",
+      memory: 1024,
+      cpus: 1
+    },
+    {
+      name: "server",
+      hostname: "server",
+      fqdn: "server.kubernetes.local",
+      ip: "192.168.56.11",
+      memory: 2048,
+      cpus: 1
+    },
+    {
+      name: "node-0",
+      hostname: "node-0",
+      fqdn: "node-0.kubernetes.local",
+      ip: "192.168.56.12",
+      memory: 2048,
+      cpus: 1,
+      pod_cidr: "10.200.0.0/24"
+    },
+    {
+      name: "node-1",
+      hostname: "node-1",
+      fqdn: "node-1.kubernetes.local",
+      ip: "192.168.56.13",
+      memory: 2048,
+      cpus: 1,
+      pod_cidr: "10.200.1.0/24"
+    }
+  ]
+
+  machines.each do |machine|
+    config.vm.define machine[:name] do |node|
+      node.vm.hostname = machine[:hostname]
+      node.vm.network "private_network", ip: machine[:ip]
+
+      node.vm.provider "virtualbox" do |vb|
+        vb.name = "khw-#{machine[:name]}"
+        vb.memory = machine[:memory]
+        vb.cpus = machine[:cpus]
+      end
+
+      node.vm.provision "shell", privileged: true, inline: <<-SHELL
+        set -eu
+
+        apt-get update
+        DEBIAN_FRONTEND=noninteractive apt-get install -y openssh-server
+
+        mkdir -p /root/.ssh
+        cp /home/vagrant/.ssh/authorized_keys /root/.ssh/authorized_keys
+        chmod 700 /root/.ssh
+        chmod 600 /root/.ssh/authorized_keys
+
+        mkdir -p /etc/ssh/sshd_config.d
+        cat >/etc/ssh/sshd_config.d/99-kubernetes-the-hard-way.conf <<'EOF'
+PermitRootLogin prohibit-password
+PubkeyAuthentication yes
+PasswordAuthentication no
+EOF
+
+        systemctl enable ssh
+        systemctl restart ssh
+
+        cat >/etc/hosts <<'EOF'
+127.0.0.1 localhost
+127.0.1.1 #{machine[:hostname]}
+
+192.168.56.11 server.kubernetes.local server
+192.168.56.12 node-0.kubernetes.local node-0
+192.168.56.13 node-1.kubernetes.local node-1
+EOF
+      SHELL
+    end
+  end
+end

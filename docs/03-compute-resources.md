@@ -105,12 +105,18 @@ Set the hostname on each machine listed in the `machines.txt` file:
 
 ```bash
 while read IP FQDN HOST SUBNET; do
-    CMD="sed -i 's/^127.0.1.1.*/127.0.1.1\t${FQDN} ${HOST}/' /etc/hosts"
+    CMD="
+      grep -q '^127.0.1.1' /etc/hosts \
+        && sed -i 's/^127.0.1.1.*/127.0.1.1 ${FQDN} ${HOST}/' /etc/hosts \
+        || echo '127.0.1.1 ${FQDN} ${HOST}' >> /etc/hosts
+    "
     ssh -n root@${IP} "$CMD"
     ssh -n root@${IP} hostnamectl set-hostname ${HOST}
     ssh -n root@${IP} systemctl restart systemd-hostnamed
 done < machines.txt
 ```
+
+The command above updates the `127.0.1.1` host entry when it already exists and creates it when using minimal or cloud images that do not include one by default.
 
 Verify the hostname is set on each machine:
 

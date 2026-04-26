@@ -19,15 +19,17 @@ Kubernetes The Hard Way guides you through bootstrapping a basic Kubernetes clus
 
 Component versions:
 
-* [kubernetes](https://github.com/kubernetes/kubernetes) v1.32.x
-* [containerd](https://github.com/containerd/containerd) v2.1.x
-* [cni](https://github.com/containernetworking/cni) v1.6.x
+* [kubernetes](https://github.com/kubernetes/kubernetes) v1.36.x
+* [containerd](https://github.com/containerd/containerd) v2.2.x
+* [cni plugins](https://github.com/containernetworking/plugins) v1.8.x
 * [etcd](https://github.com/etcd-io/etcd) v3.6.x
+* [runc](https://github.com/opencontainers/runc) v1.4.x
 
 ## Labs
 
-This tutorial requires four (4) ARM64 or AMD64 based virtual or physical machines connected to the same network.
+This tutorial requires four (4) ARM64 or AMD64 based virtual or physical machines connected to the same network for the minimal path. A modern high-availability extension is described in the architecture lab.
 
+* [Architecture](docs/00-architecture.md)
 * [Prerequisites](docs/01-prerequisites.md)
 * [Setting up the Jumpbox](docs/02-jumpbox.md)
 * [Provisioning Compute Resources](docs/03-compute-resources.md)
@@ -39,5 +41,13 @@ This tutorial requires four (4) ARM64 or AMD64 based virtual or physical machine
 * [Bootstrapping the Kubernetes Worker Nodes](docs/09-bootstrapping-kubernetes-workers.md)
 * [Configuring kubectl for Remote Access](docs/10-configuring-kubectl.md)
 * [Provisioning Pod Network Routes](docs/11-pod-network-routes.md)
-* [Smoke Test](docs/12-smoke-test.md)
-* [Cleaning Up](docs/13-cleanup.md)
+* [Modern CNI Plugin](docs/12-cni-plugin.md)
+* [Cluster DNS](docs/13-dns.md)
+* [Smoke Test](docs/14-smoke-test.md)
+* [Security Hardening](docs/15-security-hardening.md)
+* [etcd Backup And Restore](docs/16-etcd-backup-restore.md)
+* [Upgrades](docs/17-upgrades.md)
+* [Troubleshooting](docs/18-troubleshooting.md)
+* [Cleaning Up](docs/19-cleanup.md)
+* [Local libvirt Lab](docs/20-local-libvirt-lab.md)
+* [Local VirtualBox Lab](docs/21-local-virtualbox-lab.md)

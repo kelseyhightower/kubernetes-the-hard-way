@@ -75,4 +75,4 @@ XXX.XXX.XXX.0/24 dev ens160 proto kernel scope link src XXX.XXX.XXX.XXX
 ```
 
 
-Next: [Smoke Test](12-smoke-test.md)
+Next: [Modern CNI Plugin](12-cni-plugin.md)

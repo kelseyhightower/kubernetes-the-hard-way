@@ -78,20 +78,21 @@ Extract the component binaries from the release archives and organize them under
 
 ```bash
 {
+  set -e
   ARCH=$(dpkg --print-architecture)
   mkdir -p downloads/{client,cni-plugins,controller,worker}
-  tar -xvf downloads/crictl-v1.32.0-linux-${ARCH}.tar.gz \
+  tar -xvf downloads/crictl-v1.36.0-linux-${ARCH}.tar.gz \
     -C downloads/worker/
-  tar -xvf downloads/containerd-2.1.0-beta.0-linux-${ARCH}.tar.gz \
+  tar -xvf downloads/containerd-2.2.3-linux-${ARCH}.tar.gz \
     --strip-components 1 \
     -C downloads/worker/
-  tar -xvf downloads/cni-plugins-linux-${ARCH}-v1.6.2.tgz \
+  tar -xvf downloads/cni-plugins-linux-${ARCH}-v1.8.0.tgz \
     -C downloads/cni-plugins/
-  tar -xvf downloads/etcd-v3.6.0-rc.3-linux-${ARCH}.tar.gz \
+  tar -xvf downloads/etcd-v3.6.10-linux-${ARCH}.tar.gz \
     -C downloads/ \
     --strip-components 1 \
-    etcd-v3.6.0-rc.3-linux-${ARCH}/etcdctl \
-    etcd-v3.6.0-rc.3-linux-${ARCH}/etcd
+    etcd-v3.6.10-linux-${ARCH}/etcdctl \
+    etcd-v3.6.10-linux-${ARCH}/etcd
   mv downloads/{etcdctl,kubectl} downloads/client/
   mv downloads/{etcd,kube-apiserver,kube-controller-manager,kube-scheduler} \
     downloads/controller/
@@ -100,8 +101,32 @@ Extract the component binaries from the release archives and organize them under
 }
 ```
 
+Verify the expected binaries were extracted and organized before removing the release archives:
+
 ```bash
-rm -rf downloads/*gz
+{
+  test -f downloads/client/kubectl
+  test -f downloads/client/etcdctl
+  test -f downloads/controller/kube-apiserver
+  test -f downloads/controller/kube-controller-manager
+  test -f downloads/controller/kube-scheduler
+  test -f downloads/controller/etcd
+  test -f downloads/worker/kubelet
+  test -f downloads/worker/kube-proxy
+  test -f downloads/worker/containerd
+  test -f downloads/worker/runc
+  test -f downloads/cni-plugins/bridge
+  test -f downloads/cni-plugins/host-local
+  test -f downloads/cni-plugins/loopback
+}
+```
+
+Remove the downloaded release archives only after the verification step succeeds:
+
+```bash
+find downloads -maxdepth 1 -type f \
+  \( -name '*.tar.gz' -o -name '*.tgz' \) \
+  -delete
 ```
 
 Make the binaries executable.
@@ -109,6 +134,20 @@ Make the binaries executable.
 ```bash
 {
   chmod +x downloads/{client,cni-plugins,controller,worker}/*
+}
+```
+
+Verify the key binaries are now executable:
+
+```bash
+{
+  test -x downloads/client/kubectl
+  test -x downloads/client/etcdctl
+  test -x downloads/controller/kube-apiserver
+  test -x downloads/controller/etcd
+  test -x downloads/worker/kubelet
+  test -x downloads/worker/containerd
+  test -x downloads/cni-plugins/bridge
 }
 ```
 
@@ -131,8 +170,8 @@ kubectl version --client
 ```
 
 ```text
-Client Version: v1.32.3
-Kustomize Version: v5.5.0
+Client Version: v1.36.0
+Kustomize Version: v5.7.0
 ```
 
 At this point the `jumpbox` has been set up with all the command line tools and utilities necessary to complete the labs in this tutorial.

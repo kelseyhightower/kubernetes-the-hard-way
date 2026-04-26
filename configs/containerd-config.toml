@@ -1,13 +1,17 @@
-version = 2
+version = 3
 
-[plugins."io.containerd.grpc.v1.cri"]
-  [plugins."io.containerd.grpc.v1.cri".containerd]
+[plugins.'io.containerd.cri.v1.runtime']
+  [plugins.'io.containerd.cri.v1.runtime'.containerd]
     snapshotter = "overlayfs"
     default_runtime_name = "runc"
-  [plugins."io.containerd.grpc.v1.cri".containerd.runtimes.runc]
+  [plugins.'io.containerd.cri.v1.runtime'.containerd.runtimes.runc]
     runtime_type = "io.containerd.runc.v2"
-  [plugins."io.containerd.grpc.v1.cri".containerd.runtimes.runc.options]
+  [plugins.'io.containerd.cri.v1.runtime'.containerd.runtimes.runc.options]
     SystemdCgroup = true
-[plugins."io.containerd.grpc.v1.cri".cni]
-  bin_dir = "/opt/cni/bin"
+
+[plugins.'io.containerd.cri.v1.images']
+  snapshotter = "overlayfs"
+
+[plugins.'io.containerd.cri.v1.runtime'.cni]
+  bin_dirs = ["/opt/cni/bin"]
   conf_dir = "/etc/cni/net.d"

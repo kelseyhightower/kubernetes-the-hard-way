@@ -81,7 +81,7 @@ Copy the appropriate certificates and private keys to the `node-0` and `node-1` 
 
 ```bash
 for host in node-0 node-1; do
-  ssh root@${host} mkdir /var/lib/kubelet/
+  ssh root@${host} mkdir -p /var/lib/kubelet/
 
   scp ca.crt root@${host}:/var/lib/kubelet/
 

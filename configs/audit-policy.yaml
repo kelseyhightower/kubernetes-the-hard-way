@@ -1,0 +1,35 @@
+apiVersion: audit.k8s.io/v1
+kind: Policy
+omitStages:
+  - RequestReceived
+rules:
+  - level: Metadata
+    resources:
+      - group: ""
+        resources:
+          - secrets
+          - configmaps
+  - level: RequestResponse
+    verbs:
+      - create
+      - update
+      - patch
+      - delete
+    resources:
+      - group: ""
+      - group: apps
+      - group: batch
+      - group: rbac.authorization.k8s.io
+  - level: Metadata
+    resources:
+      - group: ""
+        resources:
+          - pods
+          - services
+          - nodes
+  - level: None
+    users:
+      - system:kube-proxy
+    verbs:
+      - watch
+  - level: Metadata

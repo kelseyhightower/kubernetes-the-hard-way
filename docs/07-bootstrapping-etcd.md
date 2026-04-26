@@ -2,6 +2,58 @@
 
 Kubernetes components are stateless and store cluster state in [etcd](https://github.com/etcd-io/etcd). In this lab you will bootstrap a single node etcd cluster.
 
+## What You Are Building
+
+etcd is the database for Kubernetes cluster state. The API server will use it later to store objects such as Nodes, Pods, Services, Secrets, ConfigMaps, and RBAC rules.
+
+In this learning cluster, etcd runs only on the `server` machine and listens on localhost:
+
+```text
+jumpbox
+  |
+  |  scp etcd
+  |  scp etcdctl
+  |  scp etcd.service
+  v
+server
+  |
+  +-- /usr/local/bin/etcd
+  +-- /usr/local/bin/etcdctl
+  +-- /etc/systemd/system/etcd.service
+  +-- /etc/etcd/
+  |     +-- ca.crt
+  |     +-- kube-api-server.crt
+  |     +-- kube-api-server.key
+  |
+  +-- /var/lib/etcd/
+        persistent etcd data
+```
+
+The systemd service starts a single etcd member:
+
+```text
+systemd
+  |
+  v
+etcd.service
+  |
+  v
+/usr/local/bin/etcd
+  |
+  +-- peer listener:   http://127.0.0.1:2380
+  +-- client listener: http://127.0.0.1:2379
+  +-- data directory:  /var/lib/etcd
+```
+
+At this point, no Kubernetes API server is using etcd yet. This lab only proves the datastore is installed, started, and able to report its cluster membership:
+
+```text
+etcdctl member list
+        |
+        v
+single member etcd cluster is healthy enough for the next lab
+```
+
 ## Prerequisites
 
 Copy `etcd` binaries and systemd unit files to the `server` machine:

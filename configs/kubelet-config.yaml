@@ -11,6 +11,9 @@ authentication:
 authorization:
   mode: Webhook
 cgroupDriver: systemd
+clusterDNS:
+  - "10.32.0.10"
+clusterDomain: "cluster.local"
 containerRuntimeEndpoint: "unix:///var/run/containerd/containerd.sock"
 enableServer: true
 failSwapOn: false
