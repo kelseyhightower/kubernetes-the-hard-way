@@ -8,6 +8,7 @@ Requires=containerd.service
 ExecStart=/usr/local/bin/kubelet \
   --config=/var/lib/kubelet/kubelet-config.yaml \
   --kubeconfig=/var/lib/kubelet/kubeconfig \
+  --container-runtime-endpoint=unix:///run/containerd/containerd.sock \
   --v=2
 Restart=on-failure
 RestartSec=5

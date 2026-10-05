@@ -18,14 +18,18 @@ curl --cacert ca.crt \
 ```text
 {
   "major": "1",
-  "minor": "32",
-  "gitVersion": "v1.32.3",
-  "gitCommit": "32cc146f75aad04beaaa245a7157eb35063a9f99",
+  "minor": "35",
+  "emulationMajor": "1",
+  "emulationMinor": "35",
+  "minCompatibilityMajor": "1",
+  "minCompatibilityMinor": "34",
+  "gitVersion": "v1.35.0",
+  "gitCommit": "66452049f3d692768c39c797b21b793dce80314e",
   "gitTreeState": "clean",
-  "buildDate": "2025-03-11T19:52:21Z",
-  "goVersion": "go1.23.6",
+  "buildDate": "2025-12-17T12:32:07Z",
+  "goVersion": "go1.25.5",
   "compiler": "gc",
-  "platform": "linux/arm64"
+  "platform": "linux/amd64"
 }
 ```
 
@@ -74,8 +78,8 @@ kubectl get nodes
 
 ```
 NAME     STATUS   ROLES    AGE    VERSION
-node-0   Ready    <none>   10m   v1.32.3
-node-1   Ready    <none>   10m   v1.32.3
+node-0   Ready    <none>   10m   v1.35.0
+node-1   Ready    <none>   10m   v1.35.0
 ```
 
 Next: [Provisioning Pod Network Routes](11-pod-network-routes.md)

@@ -72,6 +72,12 @@ Enter same passphrase again:
 Your identification has been saved in /root/.ssh/id_rsa
 Your public key has been saved in /root/.ssh/id_rsa.pub
 ```
+> **Note:** If a clean Debian/Ubuntu cloud image is installed on server, node-0 and node-1, the `root` user may not have a default password set.  
+> Access the console of server, node-0, node-1 and set a password manually:
+>
+> ```bash
+> sudo passwd root
+> ```
 
 Copy the SSH public key to each machine:
 

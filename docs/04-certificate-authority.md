@@ -16,6 +16,38 @@ You don't need to understand everything in the `ca.conf` file to complete this t
 
 Every certificate authority starts with a private key and root certificate. In this section we are going to create a self-signed certificate authority, and while that's all we need for this tutorial, this shouldn't be considered something you would do in a real-world production environment.
 
+### Note on Subject Alternative Names (SANs) and Real Node IPs
+
+By default, standard configurations might only include internal cluster IPs. However, in a real environment, it is **highly recommended** to include the actual LAN/WAN IP addresses of your virtual machines in the `subjectAltName` (SAN) fields. 
+
+If you omit the real IPs of your nodes, `kubectl` and cluster components trying to reach the API server or the Kubelets via their real host IPs will fail with a TLS validation error (e.g., `x509: certificate is valid for 10.32.0.1, not <your-real-ip>`).
+
+For example, if your infrastructure looks like this:
+* **Master Node:** `master-1` (e.g., IP `192.168.1.10`)
+* **Worker Node 1:** `worker-1` (e.g., IP `192.168.1.11`)
+* **Worker Node 2:** `worker-2` (e.g., IP `192.168.1.12`)
+
+Ensure your `ca.conf` (or custom config) includes these physical IPs:
+
+```ini
+# Under kube-api-server section
+[kube-api-server_alt_names]
+IP.0  = 127.0.0.1
+IP.1  = 10.32.0.1
+IP.2  = 192.168.1.10                  # Real Master IP
+DNS.5 = master-1.kubernetes.local
+DNS.6 = master-1
+
+# Under worker-1 section
+[worker-1_req_extensions]
+subjectAltName = DNS:worker-1, DNS:worker-1.kubernetes.local, IP:127.0.0.1, IP:192.168.1.11
+
+# Under worker-2 section
+[worker-2_req_extensions]
+subjectAltName = DNS:worker-2, DNS:worker-2.kubernetes.local, IP:127.0.0.1, IP:192.168.1.12
+```
+
+
 Generate the CA configuration file, certificate, and private key:
 
 ```bash
